@@ -11,12 +11,15 @@ Current Features:<br>
 <br>
 '!', 'Ciao' and 'Off' buttons on top close the application, there is no warning!
 <br>
+<br>
 a right click anywhere except on an element opens the eboard context menu that currently
 supports minimizing, maximizing, normalizing and quitting the application.
 left click and hold anywhere except buttons and elements will drag move the entire window.
 <br>
+<br>
 within the window below the top buttons is the eboard selection and below that the currently
 selected eboard instance, which is basically a WPF canvas. 
+<br>
 <br>
 atm there are 3 eboards to prove instantiation selectable from eboard selection, the eboards can be switched via leftclick
 on the button next to name, the background color in the selection field is that of the eboard instance itself.
