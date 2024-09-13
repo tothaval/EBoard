@@ -1,0 +1,45 @@
+﻿<UserControl x:Class="EBoard.Views.EBoardBrowserView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EBoard.Views"
+             xmlns:vms="clr-namespace:EBoard.ViewModels"             
+             mc:Ignorable="d" 
+             ClipToBounds="True"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.DataContext>
+        <vms:EBoardBrowserViewModel/>
+    </UserControl.DataContext>
+
+    <Border Margin="5" Background="Transparent" Padding="5"
+            BorderThickness="5" BorderBrush="Red" CornerRadius="25">
+      
+        <ItemsControl ItemsSource="{Binding EBoards}" Background="Transparent" BorderBrush="Transparent">
+
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                        <WrapPanel x:Name="wp_eBoardBrowser" Orientation="Horizontal"
+                               MinHeight="50" MinWidth="50" Background="Transparent"
+                                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{Binding EBoardBackgroundBrush}"
+                        Padding="5" CornerRadius="10" BorderBrush="Orange" BorderThickness="4">
+                        <WrapPanel>
+                            <TextBlock Text="{Binding Name}" MinWidth="50" MinHeight="50"/>
+                            <Button Command="{Binding DataContext.ShowEBoardCommand,
+                                    RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding}"
+                                    MinWidth="50" MinHeight="50"/>
+                        </WrapPanel>
+                        
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Border>
+
+</UserControl>

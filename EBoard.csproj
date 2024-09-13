@@ -1,0 +1,139 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Fonts\CastoroTitling-Regular.ttf" />
+    <None Remove="Fonts\ChakraPetch-Bold.ttf" />
+    <None Remove="Fonts\ChakraPetch-BoldItalic.ttf" />
+    <None Remove="Fonts\ChakraPetch-Italic.ttf" />
+    <None Remove="Fonts\ChakraPetch-Light.ttf" />
+    <None Remove="Fonts\ChakraPetch-LightItalic.ttf" />
+    <None Remove="Fonts\ChakraPetch-Medium.ttf" />
+    <None Remove="Fonts\ChakraPetch-MediumItalic.ttf" />
+    <None Remove="Fonts\ChakraPetch-Regular.ttf" />
+    <None Remove="Fonts\ChakraPetch-SemiBold.ttf" />
+    <None Remove="Fonts\ChakraPetch-SemiBoldItalic.ttf" />
+    <None Remove="Fonts\EBGaramond-BoldItalic.ttf" />
+    <None Remove="Fonts\EBGaramond-ExtraBold.ttf" />
+    <None Remove="Fonts\EBGaramond-ExtraBoldItalic.ttf" />
+    <None Remove="Fonts\EBGaramond-Italic-VariableFont_wght.ttf" />
+    <None Remove="Fonts\EBGaramond-Italic.ttf" />
+    <None Remove="Fonts\EBGaramond-Medium.ttf" />
+    <None Remove="Fonts\EBGaramond-MediumItalic.ttf" />
+    <None Remove="Fonts\EBGaramond-Regular.ttf" />
+    <None Remove="Fonts\EBGaramond-SemiBold.ttf" />
+    <None Remove="Fonts\EBGaramond-SemiBoldItalic.ttf" />
+    <None Remove="Fonts\EBGaramond-VariableFont_wght.ttf" />
+    <None Remove="Fonts\Freeman-Regular.ttf" />
+    <None Remove="Fonts\MajorMonoDisplay-Regular.ttf" />
+    <None Remove="Fonts\Play-Bold.ttf" />
+    <None Remove="Fonts\Play-Regular.ttf" />
+    <None Remove="Fonts\SedanSC-Regular.ttf" />
+    <None Remove="Fonts\TitilliumWeb-Black.ttf" />
+    <None Remove="Fonts\TitilliumWeb-Bold.ttf" />
+    <None Remove="Fonts\TitilliumWeb-BoldItalic.ttf" />
+    <None Remove="Fonts\TitilliumWeb-ExtraLight.ttf" />
+    <None Remove="Fonts\TitilliumWeb-ExtraLightItalic.ttf" />
+    <None Remove="Fonts\TitilliumWeb-Italic.ttf" />
+    <None Remove="Fonts\TitilliumWeb-Light.ttf" />
+    <None Remove="Fonts\TitilliumWeb-LightItalic.ttf" />
+    <None Remove="Fonts\TitilliumWeb-Regular.ttf" />
+    <None Remove="Fonts\TitilliumWeb-SemiBold.ttf" />
+    <None Remove="Fonts\TitilliumWeb-SemiBoldItalic.ttf" />
+    <None Remove="Fonts\Urbanist-Black.ttf" />
+    <None Remove="Fonts\Urbanist-BlackItalic.ttf" />
+    <None Remove="Fonts\Urbanist-Bold.ttf" />
+    <None Remove="Fonts\Urbanist-BoldItalic.ttf" />
+    <None Remove="Fonts\Urbanist-ExtraBold.ttf" />
+    <None Remove="Fonts\Urbanist-ExtraBoldItalic.ttf" />
+    <None Remove="Fonts\Urbanist-ExtraLight.ttf" />
+    <None Remove="Fonts\Urbanist-ExtraLightItalic.ttf" />
+    <None Remove="Fonts\Urbanist-Italic-VariableFont_wght.ttf" />
+    <None Remove="Fonts\Urbanist-Italic.ttf" />
+    <None Remove="Fonts\Urbanist-Light.ttf" />
+    <None Remove="Fonts\Urbanist-LightItalic.ttf" />
+    <None Remove="Fonts\Urbanist-Medium.ttf" />
+    <None Remove="Fonts\Urbanist-MediumItalic.ttf" />
+    <None Remove="Fonts\Urbanist-Regular.ttf" />
+    <None Remove="Fonts\Urbanist-SemiBold.ttf" />
+    <None Remove="Fonts\Urbanist-SemiBoldItalic.ttf" />
+    <None Remove="Fonts\Urbanist-Thin.ttf" />
+    <None Remove="Fonts\Urbanist-ThinItalic.ttf" />
+    <None Remove="Fonts\Urbanist-VariableFont_wght.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Resources\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Fonts\CastoroTitling-Regular.ttf" />
+    <Resource Include="Fonts\ChakraPetch-Bold.ttf" />
+    <Resource Include="Fonts\ChakraPetch-BoldItalic.ttf" />
+    <Resource Include="Fonts\ChakraPetch-Italic.ttf" />
+    <Resource Include="Fonts\ChakraPetch-Light.ttf" />
+    <Resource Include="Fonts\ChakraPetch-LightItalic.ttf" />
+    <Resource Include="Fonts\ChakraPetch-Medium.ttf" />
+    <Resource Include="Fonts\ChakraPetch-MediumItalic.ttf" />
+    <Resource Include="Fonts\ChakraPetch-Regular.ttf" />
+    <Resource Include="Fonts\ChakraPetch-SemiBold.ttf" />
+    <Resource Include="Fonts\ChakraPetch-SemiBoldItalic.ttf" />
+    <Resource Include="Fonts\EBGaramond-BoldItalic.ttf" />
+    <Resource Include="Fonts\EBGaramond-ExtraBold.ttf" />
+    <Resource Include="Fonts\EBGaramond-ExtraBoldItalic.ttf" />
+    <Resource Include="Fonts\EBGaramond-Italic-VariableFont_wght.ttf" />
+    <Resource Include="Fonts\EBGaramond-Italic.ttf" />
+    <Resource Include="Fonts\EBGaramond-Medium.ttf" />
+    <Resource Include="Fonts\EBGaramond-MediumItalic.ttf" />
+    <Resource Include="Fonts\EBGaramond-Regular.ttf" />
+    <Resource Include="Fonts\EBGaramond-SemiBold.ttf" />
+    <Resource Include="Fonts\EBGaramond-SemiBoldItalic.ttf" />
+    <Resource Include="Fonts\EBGaramond-VariableFont_wght.ttf" />
+    <Resource Include="Fonts\Freeman-Regular.ttf" />
+    <Resource Include="Fonts\MajorMonoDisplay-Regular.ttf" />
+    <Resource Include="Fonts\Play-Bold.ttf" />
+    <Resource Include="Fonts\Play-Regular.ttf" />
+    <Resource Include="Fonts\SedanSC-Regular.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-Black.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-Bold.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-BoldItalic.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-ExtraLight.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-ExtraLightItalic.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-Italic.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-Light.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-LightItalic.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-Regular.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-SemiBold.ttf" />
+    <Resource Include="Fonts\TitilliumWeb-SemiBoldItalic.ttf" />
+    <Resource Include="Fonts\Urbanist-Black.ttf" />
+    <Resource Include="Fonts\Urbanist-BlackItalic.ttf" />
+    <Resource Include="Fonts\Urbanist-Bold.ttf" />
+    <Resource Include="Fonts\Urbanist-BoldItalic.ttf" />
+    <Resource Include="Fonts\Urbanist-ExtraBold.ttf" />
+    <Resource Include="Fonts\Urbanist-ExtraBoldItalic.ttf" />
+    <Resource Include="Fonts\Urbanist-ExtraLight.ttf" />
+    <Resource Include="Fonts\Urbanist-ExtraLightItalic.ttf" />
+    <Resource Include="Fonts\Urbanist-Italic-VariableFont_wght.ttf" />
+    <Resource Include="Fonts\Urbanist-Italic.ttf" />
+    <Resource Include="Fonts\Urbanist-Light.ttf" />
+    <Resource Include="Fonts\Urbanist-LightItalic.ttf" />
+    <Resource Include="Fonts\Urbanist-Medium.ttf" />
+    <Resource Include="Fonts\Urbanist-MediumItalic.ttf" />
+    <Resource Include="Fonts\Urbanist-Regular.ttf" />
+    <Resource Include="Fonts\Urbanist-SemiBold.ttf" />
+    <Resource Include="Fonts\Urbanist-SemiBoldItalic.ttf" />
+    <Resource Include="Fonts\Urbanist-Thin.ttf" />
+    <Resource Include="Fonts\Urbanist-ThinItalic.ttf" />
+    <Resource Include="Fonts\Urbanist-VariableFont_wght.ttf" />
+  </ItemGroup>
+
+	
+</Project>
