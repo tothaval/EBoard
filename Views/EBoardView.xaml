@@ -1,0 +1,48 @@
+﻿<UserControl x:Class="EBoard.Views.EBoardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EBoard.Views"
+             xmlns:vms="clr-namespace:EBoard.ViewModels"
+             mc:Ignorable="d"
+             ClipToBounds="True"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Border Margin="5"
+            CornerRadius="15"
+            BorderBrush="Black"
+            BorderThickness="2"
+            Padding="5"
+            Background="{Binding EBoardBackgroundBrush}">
+
+
+        <ItemsControl ItemsSource="{Binding Elements}"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"                      
+                      ClipToBounds="True"
+                      MinWidth="200"
+                      MinHeight="200"
+                          AllowDrop="True">
+
+            <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas AllowDrop="True"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemContainerStyle>
+                    <Style>
+                        <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                        <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                    </Style>
+                </ItemsControl.ItemContainerStyle>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <local:ElementView/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        
+
+    </Border>
+</UserControl>
