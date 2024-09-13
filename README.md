@@ -2,9 +2,7 @@
 successor to AEUI and YSUI, will be created using the MVVM pattern and C#
 <br>
 <br>
-<br>
-currently unlicensed
-<br>
+
 <br>
 <br>
 <b>ad-hoc license terms</b><br>
