@@ -18,7 +18,16 @@
         MouseLeftButtonDown="EboardMainWindow_MouseLeftButtonDown"
         MouseLeftButtonUp="EboardMainWindow_MouseLeftButtonUp"
         >
-    
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="btvc"/>
+
+        <DataTemplate DataType="{x:Type vms:MainWindowMenuBarViewModel}">
+            <views:MainWindowMenuBar/>
+        </DataTemplate>
+
+
+    </Window.Resources>
 
     <WindowChrome.WindowChrome>
         <WindowChrome
@@ -80,10 +89,20 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <views:MainWindowMenuBar Grid.Row="0" Grid.Column="0"/>
+            <views:MainWindowMenuBar Grid.Row="0"
+                                     Grid.Column="0"
+                                     DataContext="{Binding MainWindowMenuBarVM}"/>
+            
             <views:MainWindowLogoutBar Grid.Row="0" Grid.Column="2"/>
 
-            <views:EBoardBrowserView Grid.Row="1" Grid.Column="1" DataContext="{Binding EBoardBrowserViewModel}"/>
+            <views:EBoardBrowserView Grid.Row="1"
+                                     Grid.Column="0"
+                                     Grid.ColumnSpan="3"
+                                     DataContext="{Binding EBoardBrowserViewModel}"
+                                     Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
+                Converter={StaticResource btvc},
+                NotifyOnSourceUpdated=True,
+                NotifyOnTargetUpdated=True}"/>
 
             <ContentControl Content="{Binding CurrentViewModel}"
                             Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"/>

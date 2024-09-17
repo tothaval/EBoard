@@ -9,7 +9,7 @@ using System.Windows.Media;
 
 namespace EBoard.ViewModels
 {
-    internal class MainWindowMenuBarViewModel : BaseViewModel
+    public class MainWindowMenuBarViewModel : BaseViewModel
     {
 
 		private string title;
@@ -27,6 +27,18 @@ namespace EBoard.ViewModels
         {
             get { return _backgroundBrush; }
             set { _backgroundBrush = value; }
+        }
+
+
+        private bool _EBoardBrowserSwitch;
+        public bool EBoardBrowserSwitch
+        {
+            get { return _EBoardBrowserSwitch; }
+            set
+            {
+                _EBoardBrowserSwitch = value;
+                OnPropertyChanged(nameof(EBoardBrowserSwitch));
+            }
         }
 
 

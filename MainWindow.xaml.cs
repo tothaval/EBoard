@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using EBoard.ViewModels;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -37,7 +38,6 @@ namespace EBoard
 
             e.Handled = true;
         }
-
 
     }
 }
