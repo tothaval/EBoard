@@ -14,8 +14,11 @@
             BorderBrush="Black"
             BorderThickness="2"
             Padding="5"
-            Background="{Binding EBoardBackgroundBrush}">
-
+            Background="{Binding EBoardBackgroundBrush}"
+            Width="{Binding EBoardWidth,
+        NotifyOnSourceUpdated=True}"
+            Height="{Binding EBoardHeight,
+        NotifyOnSourceUpdated=True}">
 
         <ItemsControl ItemsSource="{Binding Elements}"
                       HorizontalAlignment="Stretch"
@@ -23,7 +26,7 @@
                       ClipToBounds="True"
                       MinWidth="200"
                       MinHeight="200"
-                          AllowDrop="True">
+                      AllowDrop="True">
 
             <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>

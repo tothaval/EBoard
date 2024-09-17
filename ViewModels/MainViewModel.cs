@@ -1,6 +1,7 @@
 ﻿using EBoard.Commands;
 using EBoard.Commands.ContextMenuCommands;
 using EBoard.Navigation;
+using EBoard.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace EBoard.ViewModels
     internal class MainViewModel : BaseViewModel
     {
 
+        // Properties & Fields
+        #region Properties & Fields
         private readonly NavigationStore _navigationStore;
 
 
@@ -26,7 +29,9 @@ namespace EBoard.ViewModels
         public Brush BackgroundBrush
         {
             get { return _backgroundBrush; }
-            set { _backgroundBrush = value;
+            set
+            {
+                _backgroundBrush = value;
                 OnPropertyChanged(nameof(BackgroundBrush));
             }
         }
@@ -36,7 +41,9 @@ namespace EBoard.ViewModels
         public Brush BorderBrush
         {
             get { return _borderBrush; }
-            set { _borderBrush = value;
+            set
+            {
+                _borderBrush = value;
                 OnPropertyChanged(nameof(BorderBrush));
             }
         }
@@ -46,18 +53,20 @@ namespace EBoard.ViewModels
         public Thickness BorderThickness
         {
             get { return _borderThickness; }
-            set {
+            set
+            {
                 _borderThickness = value;
                 OnPropertyChanged(nameof(BorderThickness));
             }
         }
-        
-        
+
+
         private CornerRadius _cornerRadius;
         public CornerRadius CornerRadius
         {
             get { return _cornerRadius; }
-            set {
+            set
+            {
                 _cornerRadius = value;
                 OnPropertyChanged(nameof(CornerRadius));
             }
@@ -68,7 +77,8 @@ namespace EBoard.ViewModels
         public Thickness Margin
         {
             get { return _margin; }
-            set {
+            set
+            {
                 _margin = value;
                 OnPropertyChanged(nameof(Margin));
             }
@@ -79,7 +89,8 @@ namespace EBoard.ViewModels
         public Thickness Padding
         {
             get { return _padding; }
-            set {
+            set
+            {
                 _padding = value;
                 OnPropertyChanged(nameof(Padding));
             }
@@ -109,6 +120,23 @@ namespace EBoard.ViewModels
         }
 
 
+
+        private MainWindowMenuBarViewModel _MainWindowMenuBarVM;
+        public MainWindowMenuBarViewModel MainWindowMenuBarVM
+        {
+            get { return _MainWindowMenuBarVM; }
+            set
+            {
+                _MainWindowMenuBarVM = value;
+                OnPropertyChanged(nameof(MainWindowMenuBarVM));
+            }
+        }
+
+
+        #endregion
+
+
+
         // Commands
         /// <summary>
         /// Commands region holds all command properties
@@ -132,7 +160,6 @@ namespace EBoard.ViewModels
         #endregion
 
 
-
         public MainViewModel(NavigationStore navigationStore)
         {
             _navigationStore = navigationStore;
@@ -146,7 +173,9 @@ namespace EBoard.ViewModels
             MaximizeCommand = new MaximizeCommand();
             MinimizeCommand = new MinimizeCommand();
 
+            MainWindowMenuBarVM = new MainWindowMenuBarViewModel();
 
+            
             _backgroundBrush = new SolidColorBrush(Colors.White);
             _borderBrush = new SolidColorBrush(Colors.BlueViolet);
             _borderThickness = new Thickness(3);
@@ -154,8 +183,6 @@ namespace EBoard.ViewModels
             _margin = new Thickness(10);
             _padding = new Thickness(10);
             _opacity = 1;
-
-            
         }
 
 

@@ -8,9 +8,6 @@
              
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.DataContext>
-        <vms:MainWindowMenuBarViewModel/>
-    </UserControl.DataContext>
 
     <Grid>        
         <Grid.RowDefinitions>
@@ -26,7 +23,11 @@
             <Button Style="{StaticResource DefaultButtonStyle}"
                     Content="!" Command="{Binding CloseCommand}"/>
             <Button Content="?" Style="{StaticResource DefaultButtonStyle}"/>
-            <Button Content="..." Style="{StaticResource DefaultButtonStyle}"/>
+            
+            <ToggleButton Content="..."
+                          Style="{StaticResource DefaultToggleButtonStyle}"
+                          IsChecked="{Binding EBoardBrowserSwitch,
+                UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
     </Grid>

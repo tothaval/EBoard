@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace EBoard.ViewModels
 {
     internal class EBoardViewModel : BaseViewModel
     {
-        private Brush _eBoardBackgroundBrush;
 
+        private Brush _eBoardBackgroundBrush;
         public Brush EBoardBackgroundBrush
         {
             get { return _eBoardBackgroundBrush; }
@@ -23,15 +24,54 @@ namespace EBoard.ViewModels
                 _eBoardBackgroundBrush = value;
                 OnPropertyChanged(nameof(EBoardBackgroundBrush));
             }
-
         }
 
-        private string _name;
 
-        public string Name
+        private int _EBoardDepth;
+        public int EBoardDepth
         {
-            get { return _name; }
-            set { _name = value; }
+            get { return _EBoardDepth; }
+            set
+            {
+                _EBoardDepth = value;
+                OnPropertyChanged(nameof(EBoardDepth));
+            }
+        }
+
+
+        private double _EBoardHeight;
+        public double EBoardHeight
+        {
+            get { return _EBoardHeight; }
+            set
+            {
+                _EBoardHeight = value;
+                OnPropertyChanged(nameof(EBoardHeight));
+            }
+        }
+
+
+        private double _EBoardWidth;
+        public double EBoardWidth
+        {
+            get { return _EBoardWidth; }
+            set
+            {
+                _EBoardWidth = value;
+                OnPropertyChanged(nameof(EBoardWidth));
+            }
+        }
+
+
+        private string _EBoardName;
+        public string EBoardName
+        {
+            get { return _EBoardName; }
+            set
+            {
+                _EBoardName = value;
+                OnPropertyChanged(nameof(EBoardName));
+            }
         }
 
 
@@ -47,10 +87,32 @@ namespace EBoard.ViewModels
         }
 
 
-        public EBoardViewModel(string name, Brush background, int i)
+        public EBoardViewModel(string name, double width = 0, double height = 0, int depth = 0)
         {
-            _name = name;
-            _eBoardBackgroundBrush = background;
+            EBoardName = name;
+            EBoardDepth = depth;
+            EBoardHeight = height;
+            EBoardWidth = width;
+
+            if (name.Equals(""))
+            {
+                name = "eboard";
+            }
+
+            if (width == 0)
+            {   
+                EBoardWidth = 800;
+            }
+            if (height == 0)
+            {
+                EBoardHeight = 640;
+            }
+            if (depth == 0)
+            {
+                EBoardDepth = 64;
+            }
+
+            _eBoardBackgroundBrush = new SolidColorBrush(Colors.CornflowerBlue);
 
             elements = new ObservableCollection<ElementViewModel>();
 
@@ -59,9 +121,9 @@ namespace EBoard.ViewModels
                 25,
                 25,
                 0,
-                $"evm{i}",
+                $"evm",
                 new SolidColorBrush(Colors.Gray),
-                new TextBox() { Text = $"evm{i}_textbox" }
+                new TextBox() { Text = $"evm_textbox" }
                 );
 
 
@@ -72,7 +134,7 @@ namespace EBoard.ViewModels
                 250,
                 25,
                 0,
-                $"evm{i}",
+                $"evm",
                 new SolidColorBrush(Colors.Purple),
                 new Border()
                 {
@@ -90,16 +152,15 @@ namespace EBoard.ViewModels
                 0,
                 225,
                 0,
-                $"evm{i}",
+                $"evm",
                 new SolidColorBrush(Colors.Blue),
-                new Button() { Content = $"evm{i}_button", Style = Application.Current.FindResource("DefaultButtonStyle") as Style }
+                new Button() { Content = $"evm_textbox", Style = Application.Current.FindResource("DefaultButtonStyle") as Style }
                 );
 
 
             elements.Add(evm1);
             elements.Add(evm2);
             elements.Add(evm3);
-
         }
     }
 }
