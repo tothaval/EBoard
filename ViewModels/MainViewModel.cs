@@ -14,7 +14,7 @@ using System.Windows.Media;
 
 namespace EBoard.ViewModels
 {
-    internal class MainViewModel : BaseViewModel
+    public class MainViewModel : BaseViewModel
     {
 
         // Properties & Fields
@@ -173,7 +173,7 @@ namespace EBoard.ViewModels
             MaximizeCommand = new MaximizeCommand();
             MinimizeCommand = new MinimizeCommand();
 
-            MainWindowMenuBarVM = new MainWindowMenuBarViewModel();
+            MainWindowMenuBarVM = new MainWindowMenuBarViewModel(this);
 
             
             _backgroundBrush = new SolidColorBrush(Colors.White);

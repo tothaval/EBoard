@@ -20,8 +20,10 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0"
                     HorizontalAlignment="Left">
+            
             <Button Style="{StaticResource DefaultButtonStyle}"
-                    Content="!" Command="{Binding CloseCommand}"/>
+                    Content="!" Command="{Binding InvokePrototypeElementCommand}"/>
+            
             <Button Content="?" Style="{StaticResource DefaultButtonStyle}"/>
             
             <ToggleButton Content="..."

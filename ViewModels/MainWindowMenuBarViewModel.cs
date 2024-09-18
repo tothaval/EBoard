@@ -11,15 +11,19 @@ namespace EBoard.ViewModels
 {
     public class MainWindowMenuBarViewModel : BaseViewModel
     {
-
-		private string title;
-		public string Title
-		{
-			get { return title; }
-			set { title = value;
+        
+        // Properties & Fields
+        #region Properties & Fields
+        private string title;
+        public string Title
+        {
+            get { return title; }
+            set
+            {
+                title = value;
                 OnPropertyChanged(nameof(Title));
             }
-		}
+        }
 
 
         private Brush _backgroundBrush;
@@ -42,14 +46,30 @@ namespace EBoard.ViewModels
         }
 
 
-        public ICommand CloseCommand { get; }
+        private MainViewModel _MainViewModel;
+        public MainViewModel MainViewModel => _MainViewModel;
+
+        #endregion
 
 
-        public MainWindowMenuBarViewModel()
+
+        // Commands
+        #region Commands
+
+        public ICommand InvokePrototypeElementCommand { get; } 
+
+        #endregion
+
+
+        public MainWindowMenuBarViewModel(MainViewModel mainViewModel)
         {
             title = "EBoard";
 
-            CloseCommand = new CloseApplicationCommand();
+            _MainViewModel = mainViewModel;
+
+            InvokePrototypeElementCommand = new InvokePrototypeElementCommand(mainViewModel);
+
+
         }
 
 

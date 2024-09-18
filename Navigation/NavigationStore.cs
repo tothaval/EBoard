@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EBoard.Navigation
 {
-    internal class NavigationStore
+    public class NavigationStore
     {
         private BaseViewModel _baseViewModel;
 

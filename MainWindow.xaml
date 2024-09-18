@@ -95,14 +95,16 @@
             
             <views:MainWindowLogoutBar Grid.Row="0" Grid.Column="2"/>
 
-            <views:EBoardBrowserView Grid.Row="1"
-                                     Grid.Column="0"
-                                     Grid.ColumnSpan="3"
-                                     DataContext="{Binding EBoardBrowserViewModel}"
-                                     Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
+            <Border Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
                 Converter={StaticResource btvc},
                 NotifyOnSourceUpdated=True,
-                NotifyOnTargetUpdated=True}"/>
+                NotifyOnTargetUpdated=True}">
+                <views:EBoardBrowserView DataContext="{Binding EBoardBrowserViewModel}"
+                                         />
+            </Border>
 
             <ContentControl Content="{Binding CurrentViewModel}"
                             Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"/>
