@@ -12,8 +12,11 @@ using System.Windows.Shapes;
 
 namespace EBoard.ViewModels
 {
-    internal class EBoardViewModel : BaseViewModel
+    public class EBoardViewModel : BaseViewModel
     {
+
+        // Properties & Fields
+        #region Properties & Fields
 
         private Brush _eBoardBackgroundBrush;
         public Brush EBoardBackgroundBrush
@@ -72,8 +75,12 @@ namespace EBoard.ViewModels
                 _EBoardName = value;
                 OnPropertyChanged(nameof(EBoardName));
             }
-        }
+        } 
+        #endregion
 
+
+        // Collections
+        #region Collections
 
         private ObservableCollection<ElementViewModel> elements;
         public ObservableCollection<ElementViewModel> Elements
@@ -84,7 +91,9 @@ namespace EBoard.ViewModels
                 elements = value;
                 OnPropertyChanged(nameof(Elements));
             }
-        }
+        } 
+
+        #endregion
 
 
         public EBoardViewModel(string name, double width = 0, double height = 0, int depth = 0)
@@ -116,6 +125,11 @@ namespace EBoard.ViewModels
 
             elements = new ObservableCollection<ElementViewModel>();
 
+
+        }
+
+        internal void AddPrototypeElement()
+        {
             ElementViewModel evm1 = new ElementViewModel(
                 this,
                 25,
@@ -128,39 +142,7 @@ namespace EBoard.ViewModels
 
 
 
-
-            ElementViewModel evm2 = new ElementViewModel(
-                this,
-                250,
-                25,
-                0,
-                $"evm",
-                new SolidColorBrush(Colors.Purple),
-                new Border()
-                {
-                    Child = new Rectangle()
-                    {
-                        Width = 50,
-                        Height = 50,
-                        Fill = new SolidColorBrush(Colors.White)
-                    }
-                }
-                ); ;
-
-            ElementViewModel evm3 = new ElementViewModel(
-                this,
-                0,
-                225,
-                0,
-                $"evm",
-                new SolidColorBrush(Colors.Blue),
-                new Button() { Content = $"evm_textbox", Style = Application.Current.FindResource("DefaultButtonStyle") as Style }
-                );
-
-
             elements.Add(evm1);
-            elements.Add(evm2);
-            elements.Add(evm3);
         }
     }
 }

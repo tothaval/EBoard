@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace EBoard.ViewModels
 {
-    internal class EBoardBrowserViewModel : BaseViewModel
+    public class EBoardBrowserViewModel : BaseViewModel
     {
 
         // Properties & Fields

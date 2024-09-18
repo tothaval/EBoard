@@ -12,7 +12,7 @@ using System.Windows.Media;
 
 namespace EBoard.ViewModels
 {
-    internal class ElementViewModel : BaseViewModel
+    public class ElementViewModel : BaseViewModel
     {
 
         private EBoardViewModel _EBoardViewModel;

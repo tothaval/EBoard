@@ -20,6 +20,7 @@ namespace EBoard.Commands
         {
             if (_EBoardBrowserViewModel.SelectedEBoard != null)
             {
+                _EBoardBrowserViewModel.SelectedEBoard.EBoardName = _EBoardBrowserViewModel.EBoardName;
                 _EBoardBrowserViewModel.SelectedEBoard.EBoardDepth = _EBoardBrowserViewModel.EBoardDepth;
                 _EBoardBrowserViewModel.SelectedEBoard.EBoardWidth = _EBoardBrowserViewModel.EBoardWidth;
                 _EBoardBrowserViewModel.SelectedEBoard.EBoardHeight = _EBoardBrowserViewModel.EBoardHeight;
