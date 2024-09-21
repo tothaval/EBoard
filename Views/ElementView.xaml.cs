@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EBoard.InnerComponents;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -41,9 +42,10 @@ namespace EBoard.Views
 
         private UIElement _VisualParent;
 
-        private UIElement _Canvas;
+        private Canvas _Canvas;
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
 
         public ElementView()
         {
@@ -53,9 +55,9 @@ namespace EBoard.Views
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _VisualParent = VisualTreeHelper.GetParent(this as UIElement) as UIElement;
+            _VisualParent = VisualTreeHelper.GetParent(this) as UIElement;
 
-            _Canvas = VisualTreeHelper.GetParent(_VisualParent as UIElement) as Canvas;
+            _Canvas = VisualTreeHelper.GetParent(_VisualParent) as Canvas;
 
             CurrentZ = Panel.GetZIndex(_VisualParent);
 
@@ -87,7 +89,7 @@ namespace EBoard.Views
         {
             if (!_IsDragging)
                 return;
-            
+
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point canvasRelativePosition = e.GetPosition(_Canvas);
@@ -100,5 +102,25 @@ namespace EBoard.Views
 
         }
 
+        private void Element_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (_VisualParent != null)
+            {
+                _VisualParent = VisualTreeHelper.GetParent(this as UIElement) as UIElement;
+                
+                _Canvas = VisualTreeHelper.GetParent(_VisualParent as UIElement) as Canvas;
+
+                if (_Canvas != null)
+                {
+                    AdornerLayer.GetAdornerLayer(
+                        _Canvas).Add(new ResizeAdorner(Element)); 
+                }
+            }
+        }
+
+        private void Element_Unloaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
