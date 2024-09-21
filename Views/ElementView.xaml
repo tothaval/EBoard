@@ -5,10 +5,35 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoard.Views"
              xmlns:vms="clr-namespace:EBoard.ViewModels"
+             xmlns:ic="clr-namespace:EBoard.InnerComponents"
              x:Name="Element"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Foreground="Black">
+             Foreground="Black"
+             Loaded="Element_Loaded"
+             Unloaded="Element_Unloaded">
+
+    <UserControl.Resources>
+
+    <Style TargetType="local:ElementView">
+        <Setter Property="Template">
+            <Setter.Value>
+                <!--<ControlTemplate>
+                    <Ellipse Fill="{TemplateBinding Background}"
+                                   Height="{TemplateBinding Height}"
+                                   Width="{TemplateBinding Width}"/>
+                </ControlTemplate>-->
+
+                <ControlTemplate>
+                        <Rectangle Fill="Red"
+                                   Height="10"
+                                   Width="10"/>
+                    </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    </UserControl.Resources>
 
     <Border Background="{Binding ElementBackgroundBrush, NotifyOnSourceUpdated=True}"
             BorderBrush="{Binding ElementBorderBrush, NotifyOnSourceUpdated=True}"
