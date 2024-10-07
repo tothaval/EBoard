@@ -1,4 +1,5 @@
 ﻿using EBoard.InnerComponents;
+using EBoard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace EBoard.Views
 {
@@ -22,7 +24,7 @@ namespace EBoard.Views
     /// </summary>
     public partial class ElementView : UserControl, INotifyPropertyChanged
     {
-
+        
         private int _CurrentZ;
         public int CurrentZ
         {
@@ -38,13 +40,41 @@ namespace EBoard.Views
 
         private bool _IsDragging;
 
+
         private Point _Position;
+
 
         private UIElement _VisualParent;
 
+
         private Canvas _Canvas;
 
+
         public event PropertyChangedEventHandler? PropertyChanged;
+
+
+        private double _X;
+        public double X
+        {
+            get { return _X; }
+            set
+            {
+                _X = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(X)));
+            }
+        }
+
+
+        private double _Y;
+        public double Y
+        {
+            get { return _Y; }
+            set
+            {
+                _Y = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Y)));
+            }
+        }
 
 
         public ElementView()
@@ -57,16 +87,21 @@ namespace EBoard.Views
         {
             _VisualParent = VisualTreeHelper.GetParent(this) as UIElement;
 
+
             _Canvas = VisualTreeHelper.GetParent(_VisualParent) as Canvas;
 
+
             CurrentZ = Panel.GetZIndex(_VisualParent);
+
 
             _IsDragging = true;
 
 
             Panel.SetZIndex(_VisualParent, 1000);
 
+
             _Position = e.GetPosition(_VisualParent);
+
 
             e.Handled = true;
         }
@@ -81,6 +116,16 @@ namespace EBoard.Views
             Panel.SetZIndex(_VisualParent, 0);
 
             CurrentZ = Panel.GetZIndex(_VisualParent);
+
+            X = Canvas.GetLeft(_VisualParent);
+
+            Y = Canvas.GetTop(_VisualParent);
+
+            ElementViewModel thisViewmodel = (ElementViewModel)this.DataContext;
+
+            thisViewmodel.X = X;
+            thisViewmodel.Y = Y;
+            thisViewmodel.Z = CurrentZ;
 
             e.Handled = true;
         }
@@ -104,10 +149,10 @@ namespace EBoard.Views
 
         private void Element_Loaded(object sender, RoutedEventArgs e)
         {
+            _VisualParent = VisualTreeHelper.GetParent(this as UIElement) as UIElement;
+
             if (_VisualParent != null)
-            {
-                _VisualParent = VisualTreeHelper.GetParent(this as UIElement) as UIElement;
-                
+            {                
                 _Canvas = VisualTreeHelper.GetParent(_VisualParent as UIElement) as Canvas;
 
                 if (_Canvas != null)

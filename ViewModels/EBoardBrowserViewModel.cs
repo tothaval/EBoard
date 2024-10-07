@@ -63,15 +63,15 @@ namespace EBoard.ViewModels
 
 
         private NavigationStore _NavigationStore;
-        public NavigationStore NavigationStore
-        {
-            get { return _NavigationStore; }
-            set
-            {
-                _NavigationStore = value;
-                OnPropertyChanged(nameof(NavigationStore));
-            }
-        }
+        //public NavigationStore NavigationStore
+        //{
+        //    get { return _NavigationStore; }
+        //    set
+        //    {
+        //        _NavigationStore = value;
+        //        OnPropertyChanged(nameof(NavigationStore));
+        //    }
+        //}
 
 
         private EBoardViewModel _SelectedEBoard;
