@@ -15,6 +15,9 @@ namespace EBoard.ViewModels
     public class ElementViewModel : BaseViewModel
     {
 
+        // Properties & Fields
+        #region Properties & Fields
+
         private EBoardViewModel _EBoardViewModel;
 
 
@@ -77,18 +80,48 @@ namespace EBoard.ViewModels
             }
         }
 
-        public double X { get; set; }
+
+        private double _X;
+        public double X
+        {
+            get { return _X; }
+            set
+            {
+                _X = value;
+                OnPropertyChanged(nameof(_X));
+            }
+        }
 
 
-        public double Y { get; set; }
+        private double _Y;
+        public double Y
+        {
+            get { return _Y; }
+            set
+            {
+                _Y = value;
+                OnPropertyChanged(nameof(Y));
+            }
+        }
 
 
-        public double Z { get; set; }
+        private double _Z;
+        public double Z
+        {
+            get { return _Z; }
+            set
+            {
+                _Z = value;
+                OnPropertyChanged(nameof(Z));
+            }
+        } 
+
+        #endregion
 
 
         #region Commands
 
-        public ICommand LeftClickCommand { get; }
+        //public ICommand LeftClickCommand { get; }
 
 
         public ICommand RightClickCommand {get;}
@@ -98,7 +131,7 @@ namespace EBoard.ViewModels
 
         public ElementViewModel(EBoardViewModel eBoardViewModel)
         {
-            LeftClickCommand = new RelayCommand((s) => DragMove(s), (s) => true);
+            //LeftClickCommand = new RelayCommand((s) => DragMove(s), (s) => true);
 
             RightClickCommand = new RelayCommand((s) => RemoveElement(s), (s) => true);
 
@@ -117,7 +150,7 @@ namespace EBoard.ViewModels
 
             ElementContent = control;
 
-            LeftClickCommand = new RelayCommand((s) => DragMove(s), (s) => true);
+            //LeftClickCommand = new RelayCommand((s) => DragMove(s), (s) => true);
 
             RightClickCommand = new RelayCommand((s) => RemoveElement(s), (s) => true);
 
@@ -150,6 +183,7 @@ namespace EBoard.ViewModels
             OnPropertyChanged(nameof(ElementContent));
         }
 
+
         private void DragMove(object s)
         {
             /// use visualtreehelper to find canvas upwards from element
@@ -163,10 +197,16 @@ namespace EBoard.ViewModels
             DragDrop.DoDragDrop(canvas, new DataObject(DataFormats.Serializable, uIElement), DragDropEffects.Move); // ???
 
 
-            //Canvas.SetLeft(uIElement, Mouse.GetPosition(canvas).X);
-            //Canvas.SetTop(uIElement, Mouse.GetPosition(canvas).Y);
+            X = Canvas.GetLeft(uIElement);
+            
+            Y = Canvas.GetTop(uIElement);
 
-            //Panel.SetZIndex(uIElement, (int)Z);
+            Z = Panel.GetZIndex(uIElement);
+
+            Canvas.SetLeft(uIElement, Mouse.GetPosition(canvas).X);
+            Canvas.SetTop(uIElement, Mouse.GetPosition(canvas).Y);
+
+            Panel.SetZIndex(uIElement, (int)Z);
 
             //Point pos = Mouse.GetPosition(canvas);
         }

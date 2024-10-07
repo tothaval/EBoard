@@ -15,14 +15,14 @@
 
     <UserControl.Resources>
 
-    <Style TargetType="local:ElementView">
+    <!--<Style TargetType="local:ElementView">
         <Setter Property="Template">
             <Setter.Value>
-                <!--<ControlTemplate>
+                --><!--<ControlTemplate>
                     <Ellipse Fill="{TemplateBinding Background}"
                                    Height="{TemplateBinding Height}"
                                    Width="{TemplateBinding Width}"/>
-                </ControlTemplate>-->
+                </ControlTemplate>--><!--
 
                 <ControlTemplate>
                         <Rectangle Fill="Red"
@@ -31,7 +31,7 @@
                     </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
 
     </UserControl.Resources>
 
@@ -39,14 +39,20 @@
             BorderBrush="{Binding ElementBorderBrush, NotifyOnSourceUpdated=True}"
             BorderThickness="{Binding ElementBorderThickness, NotifyOnSourceUpdated=True}"
             Padding="5"
-                        
             MouseLeftButtonDown="Border_MouseLeftButtonDown"
             MouseLeftButtonUp="Border_MouseLeftButtonUp"
             MouseMove="Border_MouseMove"
             >
+                        
+        
+        <!--<Border.InputBindings>
+            <MouseBinding MouseAction="LeftClick" Command="{Binding LeftClickCommand}"
+                      CommandParameter="{Binding ElementName=Element}"/>
+            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding LeftDoubleClickCommand}"
+                      CommandParameter="{Binding ElementName=EboardMainWindow}"/>
+        </Border.InputBindings>-->
 
-
-        <Border.ContextMenu >
+        <Border.ContextMenu>
 
             <ContextMenu>
 
