@@ -10,7 +10,7 @@
         Title="EBoard"
         AllowsTransparency="True"
         WindowStyle="None"
-        WindowStartupLocation="CenterScreen"
+        WindowStartupLocation="Manual"
         Background="Transparent"
         ResizeMode="CanResizeWithGrip"
         SizeToContent="Manual"

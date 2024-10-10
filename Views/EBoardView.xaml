@@ -35,8 +35,15 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
                     <Style>
-                        <Setter Property="Canvas.Left" Value="{Binding X}"/>
-                        <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                        <Setter Property="Canvas.Left"
+                                Value="{Binding X,
+                            UpdateSourceTrigger=PropertyChanged,
+                            NotifyOnSourceUpdated=True}"/>
+                                                
+                        <Setter Property="Canvas.Top"
+                                Value="{Binding Y,
+                            UpdateSourceTrigger=PropertyChanged,
+                            NotifyOnSourceUpdated=True}"/>
                     </Style>
                 </ItemsControl.ItemContainerStyle>
                 <ItemsControl.ItemTemplate>
@@ -46,6 +53,5 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         
-
     </Border>
 </UserControl>

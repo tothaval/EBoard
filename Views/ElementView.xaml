@@ -11,7 +11,9 @@
              d:DesignHeight="450" d:DesignWidth="800"
              Foreground="Black"
              Loaded="Element_Loaded"
-             Unloaded="Element_Unloaded">
+             Unloaded="Element_Unloaded"
+             
+             >
 
     <UserControl.Resources>
 
@@ -42,6 +44,9 @@
             MouseLeftButtonDown="Border_MouseLeftButtonDown"
             MouseLeftButtonUp="Border_MouseLeftButtonUp"
             MouseMove="Border_MouseMove"
+            
+            Width="{Binding ElementName=Element, Path=CurrentWidth, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+            Height="{Binding ElementName=Element, Path=CurrentHeight, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
             >
                         
         
