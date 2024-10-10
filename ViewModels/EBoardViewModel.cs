@@ -130,19 +130,22 @@ namespace EBoard.ViewModels
 
         internal void AddPrototypeElement()
         {
-            ElementViewModel evm1 = new ElementViewModel(
+            ElementViewModel evm = new ElementViewModel(
                 this,
                 25,
                 25,
                 0,
                 $"evm",
                 new SolidColorBrush(Colors.Gray),
-                new TextBox() { Text = $"evm_textbox" }
-                );
+                new TextBox() {
+                    Text = $"evm_textbox",
+                    AcceptsReturn = true,
+                    AcceptsTab = true,
+                    TextWrapping=TextWrapping.Wrap
+                }
+            );
 
-
-
-            elements.Add(evm1);
+            elements.Add(evm);
         }
     }
 }

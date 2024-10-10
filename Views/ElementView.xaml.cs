@@ -24,7 +24,33 @@ namespace EBoard.Views
     /// </summary>
     public partial class ElementView : UserControl, INotifyPropertyChanged
     {
-        
+
+        private double _CurrentHeight = 125.0;
+        public double CurrentHeight
+        {
+            get { return _CurrentHeight; }
+            set
+            {
+                _CurrentHeight = value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentHeight)));
+            }
+        }
+
+
+        private double _CurrentWidth = 125.0;
+        public double CurrentWidth
+        {
+            get { return _CurrentWidth; }
+            set
+            {
+                _CurrentWidth = value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentWidth)));
+            }
+        }
+
+
         private int _CurrentZ;
         public int CurrentZ
         {

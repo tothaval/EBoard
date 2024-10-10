@@ -7,10 +7,10 @@ namespace EBoard.InnerComponents
     {
         public AdornerThumb()
         {
-            Width = 10;
-            Height = 10;
+            Width = 9;
+            Height = 9;
 
-            Background = Brushes.Coral;
+            Background = Brushes.DarkSlateGray;
         }
 
         public void ResetThumb(double width, double height, Brush background)
