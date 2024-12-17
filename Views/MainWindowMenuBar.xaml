@@ -22,13 +22,22 @@
                     HorizontalAlignment="Left">
             
             <Button Style="{StaticResource DefaultButtonStyle}"
-                    Content="!" Command="{Binding InvokePrototypeElementCommand}"/>
-            
-            <Button Content="?" Style="{StaticResource DefaultButtonStyle}"/>
+                    Content="!"
+                    Command="{Binding InvokePrototypeElementCommand}"/>
+
+            <Menu>
+                <MenuItem Header="?">
+                    <MenuItem Header="Rec" Command="{Binding InvokePrototypeShapeElementCommand}"/>
+                    <MenuItem Header="Ell" Command="{Binding InvokeEllipseShapeCommand}"/>
+                </MenuItem>
+                
+            </Menu>
+
             
             <ToggleButton Content="..."
                           Style="{StaticResource DefaultToggleButtonStyle}"
                           IsChecked="{Binding EBoardBrowserSwitch,
+                NotifyOnSourceUpdated=True,
                 UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 

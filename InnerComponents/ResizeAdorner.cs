@@ -1,9 +1,20 @@
-﻿using EBoard.Views;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  ResizeAdorner 
+ * 
+ *  helper class for Adorner logic
+ *  
+ *  handles resizing with resize adorners
+ */
+using EBoard.ViewModels;
+using EBoard.Views;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace EBoard.InnerComponents
 {
@@ -25,7 +36,6 @@ namespace EBoard.InnerComponents
 
         private ElementView _ElementView;
 
-
         AdornerThumb thumb1, thumb2, thumb3, thumb4;
         Rectangle rectangle;
 
@@ -42,7 +52,8 @@ namespace EBoard.InnerComponents
             thumb3 = new AdornerThumb();
             thumb4 = new AdornerThumb();
 
-            rectangle = new Rectangle() {
+            rectangle = new Rectangle()
+            {
                 Stroke = Brushes.DarkSlateGray,
                 StrokeThickness = 1,
                 StrokeDashArray = { 4, 4 }
@@ -59,15 +70,38 @@ namespace EBoard.InnerComponents
         }
 
         private void Thumb1_DragDelta(object sender, DragDeltaEventArgs e)
-        {            
-            _ElementView.CurrentHeight = height - e.VerticalChange < 0 ? 0 : height - e.VerticalChange;
-            _ElementView.CurrentWidth = width - e.HorizontalChange < 0 ? 0 : width - e.HorizontalChange;
+        {
+            ElementViewModel elementViewModel = (ElementViewModel)_ElementView.DataContext;
+
+            if (elementViewModel.IsContent)
+            {
+                elementViewModel.ContentViewModel.ElementHeight = height - e.VerticalChange < 0 ? 0 : height - e.VerticalChange;
+                elementViewModel.ContentViewModel.ElementWidth = width - e.HorizontalChange < 0 ? 0 : width - e.HorizontalChange;
+            }
+
+            if (elementViewModel.IsShape)
+            {
+                elementViewModel.ShapeViewModel.ElementHeight = height - e.VerticalChange < 0 ? 0 : height - e.VerticalChange;
+                elementViewModel.ShapeViewModel.ElementWidth = width - e.HorizontalChange < 0 ? 0 : width - e.HorizontalChange;
+            }
+
         }
 
         private void Thumb2_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            _ElementView.CurrentHeight = height + e.VerticalChange < 0 ? 0 : height + e.VerticalChange;
-            _ElementView.CurrentWidth = width + e.HorizontalChange < 0 ? 0 : width + e.HorizontalChange;
+            ElementViewModel elementViewModel = (ElementViewModel)_ElementView.DataContext;
+
+            if (elementViewModel.IsContent)
+            {
+                elementViewModel.ContentViewModel.ElementHeight = height + e.VerticalChange < 0 ? 0 : height + e.VerticalChange;
+                elementViewModel.ContentViewModel.ElementWidth = width + e.HorizontalChange < 0 ? 0 : width + e.HorizontalChange;
+            }
+
+            if (elementViewModel.IsShape)
+            {
+                elementViewModel.ShapeViewModel.ElementHeight = height + e.VerticalChange < 0 ? 0 : height + e.VerticalChange;
+                elementViewModel.ShapeViewModel.ElementWidth = width + e.HorizontalChange < 0 ? 0 : width + e.HorizontalChange;
+            }
         }
 
         protected override Visual GetVisualChild(int index)
@@ -81,12 +115,13 @@ namespace EBoard.InnerComponents
         {
             rectangle.Arrange(new Rect(-2.5, -2.5, AdornedElement.DesiredSize.Width + 5, AdornedElement.DesiredSize.Height + 5));
 
-            thumb1.Arrange(new Rect(-5,-5, width, height));
-            thumb2.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, - 5, width, height));
+            thumb1.Arrange(new Rect(-5, -5, width, height));
+            thumb2.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, -5, width, height));
             thumb3.Arrange(new Rect(AdornedElement.DesiredSize.Width - 5, AdornedElement.DesiredSize.Height - 5, width, height));
-            thumb4.Arrange(new Rect(- 5, AdornedElement.DesiredSize.Height - 5, width, height));
+            thumb4.Arrange(new Rect(-5, AdornedElement.DesiredSize.Height - 5, width, height));
 
             return base.ArrangeOverride(finalSize);
         }
     }
 }
+// EOF

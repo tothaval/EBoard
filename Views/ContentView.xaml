@@ -1,0 +1,38 @@
+﻿<UserControl x:Class="EBoard.Views.ContentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EBoard.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+
+        <Border Background="{Binding BrushManager.ElementBackground, NotifyOnSourceUpdated=True}"
+                BorderBrush="{Binding BrushManager.ElementBorder, NotifyOnSourceUpdated=True}"
+                BorderThickness="{Binding BrushManager.ElementBorderThickness, NotifyOnSourceUpdated=True}"
+                Padding="5"
+                Width="{Binding ElementWidth, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                Height="{Binding ElementHeight, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
+        
+            <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Foreground="{Binding BrushManager.ElementForeground, NotifyOnSourceUpdated=True}"
+                       Grid.Row="0" TextWrapping="Wrap">
+                        <Run Text="{Binding ElementHeaderText, NotifyOnSourceUpdated=True}" />
+                        <LineBreak/>
+                        <Run Text="{Binding ElementName=Element, Path=Z, NotifyOnSourceUpdated=True}"/>
+            </TextBlock>
+
+            <ContentPresenter Content="{Binding Control.Element}"
+                              Grid.Row="1"/>
+
+        </Grid>
+
+    </Border>
+
+</UserControl>

@@ -23,6 +23,16 @@ namespace EBoard
             InitializeComponent();
         }
 
+        private void SizeAndPositionUpdate()
+        {
+            ((MainViewModel)DataContext).PositionX = Left;
+            ((MainViewModel)DataContext).PositionY = Top;
+
+            ((MainViewModel)DataContext).EBoardWidth = ActualWidth;
+            ((MainViewModel)DataContext).EBoardHeight = ActualHeight;
+        }
+
+
 
         private void EboardMainWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -35,9 +45,17 @@ namespace EBoard
 
         private void EboardMainWindow_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            SizeAndPositionUpdate();
 
             e.Handled = true;
         }
 
+        private void EboardMainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            SizeAndPositionUpdate();
+
+            e.Handled = true;
+        }
     }
 }
+// EOF

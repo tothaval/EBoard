@@ -2,8 +2,29 @@
 
 implementieren:
 
-eboard save and load
-element save and load
+Ins eboard eher als bei aeui eine Zeichenfunktion einbauen.
+.
+BudgetWatcher als Element, sowie ein Standardtextelement, sowie MyNote als einfachen Logger/Protokollmacher.
+.
+ins Element wird gespeichert:
+	Irgendwie sollte ich auch die dopplungen im code raus schmeißen oder in eine einzelne Klasse refaktorieren.
+
+	contextmenu der elemente sollte anpassungsoptionen haben, um die element daten, also header, brushes,
+	position, rotation, größe verändern zu können
+
+	ein problem noch bei den adornern, diese sind aktuell immer sichtbar und liegen über dem rest. ich muss mal
+	schauen, ob ich einen weg finde, dass zu ändern. falls es nicht geht, müsste ich selbst einen adorner layer
+	definieren, in dem ich kleine vierecke, labels oder irgendwas in der art über der ElementView platziere und
+	dafür clickhandling implementieren, wäre deutlich komplizierter. Ggf. den Adorner layer nutzen und diesen
+	nur in einem EditMode für die Container sichtbar sein lassen.
+	
+	ElementContentType speichern, also z.b. BudgetWatcher, etc.jeweils als strings.
+	Irgendwann externe dll typen oder dlls aus einer Standardliste ziehen, die in einem anderen Ordner liegt.
+
+	Per Save and Load das ContentDictionary im elementcontentfolder speichern und laden, wie bei AEUI.
+	Das implementierte Load kann dann pro ElementContentType anders ausgeführt werden. Es muss nur der Content hergestellt werden,
+	dieser wird vom Element über MVVM dargestellt, sobald existent oder sobald Element fertig instanziert oder prozessiert wurde.
+
 
 ValueChangeLists für Debugging, Logging und Zurücksetzing-ö
 ValueChangeList<loggingobject>
@@ -25,11 +46,7 @@ separat regelbar. MixStreamSave, später MixStreamSave.
 
 textelement|texteditorelement feature: berechne zeile
 
-
 ggf. auch, wie auf dem Zettel geplant, die Elemente einschränken, die auf dem eboard erzeugt werden können
-
-
-
 
 workflow optimization:
 
@@ -42,8 +59,6 @@ festlegen(read, write and read), -f string -> specify sourcefolder, -z|7z|t(ar) 
 also zip als Prozess mit den Argumenten öffnen, auch für tar und 7z}, -m String -> move to targetfolder
 }.
 
-
-
 fixen:
 
 CanvasViewModel PropertyBinding
@@ -51,16 +66,15 @@ Panel.ZIndex, ElementViewModel/ContainerViewModel PropertyBinding
 Panel.ZIndex sowie VisibilityProperty für Levelsystem. DataContext
 für CustomElement im ElementContainerView verändern/setzen.
 
-delete führt nicht zur entfernung des sichtbaren eboards
-
-
 
 optimieren:
+save and load von eboardconfig, eboards und elementen
 
+adorners, alle thumbs definieren, zunächst nur für Elemente nutzen, später die Adorner unsichtbar machen und nur einzeln
+bei MouseOver oder ggf. erst nach Aktivierung einer Einstellung einblenden.
 
-
-
-
+bei eboards gibt es ein problem mit dem Contentpresenter, da der immer gleich ist, bezieht sich der adorner layer darauf,
+vermute ich. EBoard Adorners gibt es nur einen, statt je einen. 
 
 überlegen:
 
@@ -75,8 +89,6 @@ viewmodel zu .xml binden und darüber änderungen überwachen?
 
 file  als "öffnen mit" Funktion realisieren, hä, nur wie?. Process nicht selber realisieren lassen, 
 sondern per zugewiesenem Programm. Dieses starten mit Parameter Dateiname, erste Idee dazu.
-
-
 
 recherchieren:
 

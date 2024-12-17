@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  CloseApplicationCommand 
+ * 
+ *  command for application shutdown
+ */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,3 +22,4 @@ namespace EBoard.Commands
         }
     }
 }
+// EOF

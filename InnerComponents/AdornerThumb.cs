@@ -1,10 +1,16 @@
-﻿using System.Windows.Controls.Primitives;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  AdornerThumb 
+ * 
+ *  helper class for Adorner logic
+ */
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
 namespace EBoard.InnerComponents
-{
+{    
     internal class AdornerThumb : Thumb, IThumb
-    {
+    {        
         public AdornerThumb()
         {
             Width = 9;
@@ -22,3 +28,4 @@ namespace EBoard.InnerComponents
         }
     }
 }
+// EOF

@@ -11,55 +11,24 @@
              d:DesignHeight="450" d:DesignWidth="800"
              Foreground="Black"
              Loaded="Element_Loaded"
-             Unloaded="Element_Unloaded"
-             
-             >
+             Unloaded="Element_Unloaded">
 
     <UserControl.Resources>
 
-    <!--<Style TargetType="local:ElementView">
-        <Setter Property="Template">
-            <Setter.Value>
-                --><!--<ControlTemplate>
-                    <Ellipse Fill="{TemplateBinding Background}"
-                                   Height="{TemplateBinding Height}"
-                                   Width="{TemplateBinding Width}"/>
-                </ControlTemplate>--><!--
-
-                <ControlTemplate>
-                        <Rectangle Fill="Red"
-                                   Height="10"
-                                   Width="10"/>
-                    </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>-->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
     </UserControl.Resources>
-
-    <Border Background="{Binding ElementBackgroundBrush, NotifyOnSourceUpdated=True}"
-            BorderBrush="{Binding ElementBorderBrush, NotifyOnSourceUpdated=True}"
-            BorderThickness="{Binding ElementBorderThickness, NotifyOnSourceUpdated=True}"
-            Padding="5"
-            MouseLeftButtonDown="Border_MouseLeftButtonDown"
+    
+    <Border MouseLeftButtonDown="Border_MouseLeftButtonDown"
             MouseLeftButtonUp="Border_MouseLeftButtonUp"
-            MouseMove="Border_MouseMove"
-            
-            Width="{Binding ElementName=Element, Path=CurrentWidth, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-            Height="{Binding ElementName=Element, Path=CurrentHeight, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-            >
-                        
-        
-        <!--<Border.InputBindings>
-            <MouseBinding MouseAction="LeftClick" Command="{Binding LeftClickCommand}"
-                      CommandParameter="{Binding ElementName=Element}"/>
-            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding LeftDoubleClickCommand}"
-                      CommandParameter="{Binding ElementName=EboardMainWindow}"/>
-        </Border.InputBindings>-->
+            MouseMove="Border_MouseMove">
 
         <Border.ContextMenu>
 
             <ContextMenu>
+
+                <MenuItem Header="+Image" Command="{Binding ImageCommand}"
+                          CommandParameter="{Binding ElementName=Element}"/>
 
                 <MenuItem Header="Delete" Command="{Binding RightClickCommand}"
                           CommandParameter="{Binding ElementName=Element}"/>
@@ -70,24 +39,17 @@
 
 
         <Grid Background="Transparent">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+            <Border Visibility="{Binding IsContent, Converter={StaticResource BooleanToVisibilityConverter}}">                
+                <local:ContentView DataContext="{Binding ContentViewModel}"/>
+            </Border>
 
-
-            <TextBlock Foreground="Black"
-                       Grid.Row="0">
-                <Run Text="{Binding ElementHeaderText, NotifyOnSourceUpdated=True}"/>
-                <LineBreak/>
-                <Run Text="{Binding ElementName=Element, Path=CurrentZ, NotifyOnSourceUpdated=True}"/>
-
-            </TextBlock>
-
-                <ContentPresenter Content="{Binding ElementContent, NotifyOnSourceUpdated=True}"
-                          Grid.Row="1"/>
-
+            <Border Visibility="{Binding IsShape, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <local:ShapeView DataContext="{Binding ShapeViewModel}"/>
+            </Border>
         </Grid>
-        
+
     </Border>
+
+    
+    
 </UserControl>

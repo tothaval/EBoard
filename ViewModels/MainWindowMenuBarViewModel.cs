@@ -1,4 +1,11 @@
-﻿using EBoard.Commands;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  MainWindowMenuBarViewModel 
+ * 
+ *  helper class for
+
+ */
+using EBoard.Commands.ElementCreationCommands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +65,10 @@ namespace EBoard.ViewModels
 
         public ICommand InvokePrototypeElementCommand { get; } 
 
+        public ICommand InvokeEllipseShapeCommand { get; }
+
+        public ICommand InvokePrototypeShapeElementCommand { get; }
+
         #endregion
 
 
@@ -69,7 +80,9 @@ namespace EBoard.ViewModels
 
             InvokePrototypeElementCommand = new InvokePrototypeElementCommand(mainViewModel);
 
+            InvokePrototypeShapeElementCommand = new InvokePrototypeShapeElementCommand(mainViewModel);
 
+            InvokeEllipseShapeCommand = new InvokeEllipseShapeCommand(mainViewModel);
         }
 
 

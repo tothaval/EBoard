@@ -1,4 +1,14 @@
-﻿using System;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  EBoardViewModel 
+ * 
+ *  view model class for EBoardView
+ *  
+ *  it is basically a canvas within a frame and some properties, that can be edited,
+ *  stored(WIP) and loaded(WIP)
+ */
+using EBoard.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -17,6 +27,26 @@ namespace EBoard.ViewModels
 
         // Properties & Fields
         #region Properties & Fields
+
+        private string _EBID;
+        /// <summary>
+        /// EBoard ID, created upon first creation,
+        /// built using $"EBoard_{DateTime().Ticks}"        
+        /// </summary>
+        public string EBID => _EBID;
+
+
+        private bool _EBoardActive;
+        public bool EBoardActive
+        {
+            get { return _EBoardActive; }
+            set
+            {
+                _EBoardActive = value;
+                OnPropertyChanged(nameof(EBoardActive));
+            }
+        }
+
 
         private Brush _eBoardBackgroundBrush;
         public Brush EBoardBackgroundBrush
@@ -96,12 +126,13 @@ namespace EBoard.ViewModels
         #endregion
 
 
-        public EBoardViewModel(string name, double width = 0, double height = 0, int depth = 0)
+        public EBoardViewModel(string name, double width = 0, double height = 0, int depth = 0, string eboardID = "-1")
         {
             EBoardName = name;
             EBoardDepth = depth;
             EBoardHeight = height;
             EBoardWidth = width;
+            _EBID = eboardID;
 
             if (name.Equals(""))
             {
@@ -125,27 +156,22 @@ namespace EBoard.ViewModels
 
             elements = new ObservableCollection<ElementViewModel>();
 
+            if (_EBID == null || (eboardID != null && eboardID.Equals("-1")))
+            {
+
+                DateTime dateTime = DateTime.Now;
+
+                _EBID = $"EBoard_{dateTime.Ticks}";
+            }
+
 
         }
 
-        internal void AddPrototypeElement()
+        internal void AddElement(ElementViewModel elementViewModel)
         {
-            ElementViewModel evm = new ElementViewModel(
-                this,
-                25,
-                25,
-                0,
-                $"evm",
-                new SolidColorBrush(Colors.Gray),
-                new TextBox() {
-                    Text = $"evm_textbox",
-                    AcceptsReturn = true,
-                    AcceptsTab = true,
-                    TextWrapping=TextWrapping.Wrap
-                }
-            );
-
-            elements.Add(evm);
+            elements.Add(elementViewModel);
         }
+
     }
 }
+// EOF

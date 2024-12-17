@@ -1,4 +1,15 @@
-﻿using EBoard.Commands;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  ElementViewModel 
+ * 
+ *  helper class for
+
+ */
+
+using EBoard.Commands;
+using EBoard.Commands.ContextMenuCommands;
+using EBoard.Interfaces;
+using EBoard.Models;
 using EBoard.Views;
 using System;
 using System.Collections.Generic;
@@ -7,8 +18,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace EBoard.ViewModels
 {
@@ -20,63 +33,53 @@ namespace EBoard.ViewModels
 
         private EBoardViewModel _EBoardViewModel;
 
+        private ContentViewModel _ContentViewModel;
+        public ContentViewModel ContentViewModel => _ContentViewModel;
 
-        private Brush _elementBackgroundBrush;
-        public Brush ElementBackgroundBrush
+        private ShapeViewModel _ShapeViewModel;
+        public ShapeViewModel ShapeViewModel => _ShapeViewModel;
+
+
+        private string _EID;
+        /// <summary>
+        /// Element ID, created upon first creation,
+        /// built using $"Element_{DateTime().Ticks}"        
+        /// </summary>
+        public string EID => _EID;
+
+
+        private double _ElementRotation;
+        public double ElementRotation
         {
-            get { return _elementBackgroundBrush; }
+            get { return _ElementRotation; }
             set
             {
-                _elementBackgroundBrush = value;
-                OnPropertyChanged(nameof(ElementBackgroundBrush));
+                _ElementRotation = value;
+                OnPropertyChanged(nameof(ElementRotation));
             }
         }
 
 
-        private Brush _ElementBorderBrush;
-        public Brush ElementBorderBrush
+        private bool _IsShape = false;
+        public bool IsShape
         {
-            get { return _ElementBorderBrush; }
+            get { return _IsShape; }
             set
             {
-                _ElementBorderBrush = value;
-                OnPropertyChanged(nameof(ElementBorderBrush));
+                _IsShape = value;
+                OnPropertyChanged(nameof(IsShape));
             }
         }
 
 
-        private Thickness _ElementBorderThickness;
-        public Thickness ElementBorderThickness
+        private bool _IsContent = false;
+        public bool IsContent
         {
-            get { return _ElementBorderThickness; }
+            get { return _IsContent; }
             set
             {
-                _ElementBorderThickness = value;
-                OnPropertyChanged(nameof(ElementBorderThickness));
-            }
-        }
-
-
-        private FrameworkElement _elementContent;
-        public FrameworkElement ElementContent
-        {
-            get { return _elementContent; }
-            set
-            {
-                _elementContent = value;
-                OnPropertyChanged(nameof(ElementContent));
-            }
-        }
-
-
-        private string _elementHeaderText;
-        public string ElementHeaderText
-        {
-            get { return _elementHeaderText; }
-            set
-            {
-                _elementHeaderText = value;
-                OnPropertyChanged(nameof(ElementHeaderText));
+                _IsContent = value;
+                OnPropertyChanged(nameof(IsContent));
             }
         }
 
@@ -114,7 +117,7 @@ namespace EBoard.ViewModels
                 _Z = value;
                 OnPropertyChanged(nameof(Z));
             }
-        } 
+        }
 
         #endregion
 
@@ -123,8 +126,9 @@ namespace EBoard.ViewModels
 
         //public ICommand LeftClickCommand { get; }
 
+        public ICommand ImageCommand { get; }
 
-        public ICommand RightClickCommand {get;}
+        public ICommand RightClickCommand { get; }
 
         #endregion
 
@@ -133,92 +137,76 @@ namespace EBoard.ViewModels
         {
             //LeftClickCommand = new RelayCommand((s) => DragMove(s), (s) => true);
 
+            ImageCommand = new ImageCommand(this);
+
             RightClickCommand = new RelayCommand((s) => RemoveElement(s), (s) => true);
 
-            ConfigurateElementProperties();
             _EBoardViewModel = eBoardViewModel;
         }
 
 
-        public ElementViewModel(EBoardViewModel eBoardViewModel, double x, double y, double z, string text, Brush brush, FrameworkElement control)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="eBoardViewModel"></param>
+        /// <param name="x">x axis</param>
+        /// <param name="y">y axis</param>
+        /// <param name="z">depth</param>
+        /// <param name="elementHeaderText">element header</param>
+        /// <param name="brush">background brush</param>
+        /// <param name="control">element content</param>
+        public ElementViewModel(
+            EBoardViewModel eBoardViewModel,
+            ElementDataSet elementDataSet
+            )
         {
-            X = x; Y = y; Z = z;
-
-            ElementHeaderText = text;
-
-            ElementBackgroundBrush = brush;
-
-            ElementContent = control;
 
             //LeftClickCommand = new RelayCommand((s) => DragMove(s), (s) => true);
-
+            ImageCommand = new ImageCommand(this);
             RightClickCommand = new RelayCommand((s) => RemoveElement(s), (s) => true);
 
-            ConfigurateElementProperties(brush);
             _EBoardViewModel = eBoardViewModel;
+
+            _EID = elementDataSet.EID;
+
+            X = elementDataSet.X; Y = elementDataSet.Y; Z = elementDataSet.Z;
+
+
+
+            if (_EID == null || _EID.Equals("-1"))
+            {
+                DateTime dateTime = DateTime.Now;
+
+                _EID = $"Element_{dateTime.Ticks}";
+            }
+
+
+            if (elementDataSet.ElementContent != null)
+            {
+                if (elementDataSet.ElementContent.ContentIsUserControlAndNotShape)
+                {
+                    _ContentViewModel = new ContentViewModel(elementDataSet);
+                    IsContent = true;
+
+                    OnPropertyChanged(nameof(ContentViewModel));
+                }
+                else
+                {
+                    _ShapeViewModel = new ShapeViewModel(elementDataSet);
+                    IsShape = true;
+
+                    OnPropertyChanged(nameof(ShapeViewModel));
+                }
+            }
         }
 
 
         // Methods
         #region Methods
 
-        private void ConfigurateElementProperties(Brush brush = null)
-        {
-            if (brush == null)
-            {
-                ElementBackgroundBrush = new SolidColorBrush(Colors.AntiqueWhite);
-            }
-            else
-            {
-                ElementBackgroundBrush = brush;
-            }            
-                        
-
-            ElementBorderThickness = new Thickness(1,2,1,1);
-
-            ElementBorderBrush = new SolidColorBrush(Colors.Blue);
-
-
-            OnPropertyChanged(nameof(ElementHeaderText));
-            OnPropertyChanged(nameof(ElementContent));
-        }
-
-
-        private void DragMove(object s)
-        {
-            /// use visualtreehelper to find canvas upwards from element
-            /// 
-
-            UIElement uIElement = VisualTreeHelper.GetParent(s as UIElement) as UIElement;
-
-            Canvas canvas = VisualTreeHelper.GetParent(uIElement as UIElement) as Canvas;
-
-
-            DragDrop.DoDragDrop(canvas, new DataObject(DataFormats.Serializable, uIElement), DragDropEffects.Move); // ???
-
-
-            X = Canvas.GetLeft(uIElement);
-            
-            Y = Canvas.GetTop(uIElement);
-
-            Z = Panel.GetZIndex(uIElement);
-
-            Canvas.SetLeft(uIElement, Mouse.GetPosition(canvas).X);
-            Canvas.SetTop(uIElement, Mouse.GetPosition(canvas).Y);
-
-            Panel.SetZIndex(uIElement, (int)Z);
-
-            //Point pos = Mouse.GetPosition(canvas);
-        }
-
 
         private void RemoveElement(object s)
         {
-            /// use visualtreehelper to find canvas upwards from element
-            //UIElement uIElement = VisualTreeHelper.GetParent(s as UIElement) as UIElement;
-
-            //Canvas canvas = VisualTreeHelper.GetParent(uIElement as UIElement) as Canvas;
-                 
             _EBoardViewModel.Elements.Remove(this);
         }
 

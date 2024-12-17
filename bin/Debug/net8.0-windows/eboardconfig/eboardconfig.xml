@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EboardConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <EBoardCount>2</EBoardCount>
+  <EBoardIndex>1</EBoardIndex>
+  <EBoardBrowserSwitch>true</EBoardBrowserSwitch>
+  <EBoardPosition>
+    <X>124</X>
+    <Y>107</Y>
+  </EBoardPosition>
+  <EBoardHeight>957</EBoardHeight>
+  <EBoardWidth>1667</EBoardWidth>
+</EboardConfiguration>

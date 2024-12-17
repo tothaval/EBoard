@@ -1,4 +1,10 @@
-﻿using EBoard.ViewModels;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  NavigationStore 
+ * 
+ *  helper class for ViewModel changes
+ */
+using EBoard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,3 +36,4 @@ namespace EBoard.Navigation
 
     }
 }
+// EOF

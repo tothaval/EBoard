@@ -1,4 +1,11 @@
-﻿using EBoard.Commands;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  EBoardBrowserViewModel 
+ * 
+ *  helper class for
+ */
+using EBoard.Commands;
+using EBoard.Models;
 using EBoard.Navigation;
 using System.Collections.ObjectModel;
 using System.Reflection.Metadata;
@@ -13,6 +20,10 @@ namespace EBoard.ViewModels
 
         // Properties & Fields
         #region Properties & Fields
+
+        public int EBoardCount { get; set; }
+
+
 
         private int _EBoardDepth;
         public int EBoardDepth
@@ -80,6 +91,11 @@ namespace EBoard.ViewModels
             get { return _SelectedEBoard; }
             set
             {
+                if (_SelectedEBoard != null)
+                {
+                    _SelectedEBoard.EBoardActive = false;
+                }                
+
                 _SelectedEBoard = value;
 
                 RefreshEBoardParameters();
@@ -160,6 +176,29 @@ namespace EBoard.ViewModels
             }
 
             EBoards.Add(new EBoardViewModel(EBoardName, EBoardWidth, EBoardHeight, EBoardDepth));
+
+            SelectedEBoard = EBoards.Last();
+
+        }
+
+
+        public Task InstantiateEBoardDataSet(EboardDataSet eboardDataSet)
+        {
+            if (eboardDataSet != null)
+            {
+                EBoardViewModel eBoardViewModel = new EBoardViewModel(
+                    eboardDataSet.EBoardName,
+                    eboardDataSet.EBoardWidth,
+                    eboardDataSet.EBoardHeight,
+                    eboardDataSet.EBoardDepth,
+                    eboardDataSet.EBID);
+
+                eBoardViewModel.Elements = eboardDataSet.EBoardViewModel.Elements;
+
+                EBoards.Add(eBoardViewModel);                
+            }
+
+            return Task.CompletedTask;
         }
 
 
@@ -168,6 +207,15 @@ namespace EBoard.ViewModels
             if (SelectedEBoard != null && EBoards.Count > 0)
             {
                 EBoards.Remove(SelectedEBoard);
+
+                if (EBoards.Count > 0)
+                {
+                    SelectedEBoard = EBoards.First();
+                }
+                else
+                {
+                    _NavigationStore.CurrentViewModel = null;
+                }
             }
         }
 
@@ -182,6 +230,7 @@ namespace EBoard.ViewModels
                 EBoardDepth = SelectedEBoard.EBoardDepth;
                 EBoardHeight = SelectedEBoard.EBoardHeight;
                 EBoardWidth = SelectedEBoard.EBoardWidth;
+                SelectedEBoard.EBoardActive = true;
             }
         }
 
@@ -189,3 +238,4 @@ namespace EBoard.ViewModels
 
     }
 }
+// EOF
