@@ -24,46 +24,7 @@ namespace EBoard.Views
     /// </summary>
     public partial class ElementView : UserControl, INotifyPropertyChanged
     {
-
-        private double _CurrentHeight = 125.0;
-        public double CurrentHeight
-        {
-            get { return _CurrentHeight; }
-            set
-            {
-                _CurrentHeight = value;
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentHeight)));
-            }
-        }
-
-
-        private double _CurrentWidth = 125.0;
-        public double CurrentWidth
-        {
-            get { return _CurrentWidth; }
-            set
-            {
-                _CurrentWidth = value;
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentWidth)));
-            }
-        }
-
-
-        private int _CurrentZ;
-        public int CurrentZ
-        {
-            get { return _CurrentZ; }
-            set
-            {
-                _CurrentZ = value;
-
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentZ)));
-            }
-        }
-
-
+          
         private bool _IsDragging;
 
 
@@ -103,6 +64,19 @@ namespace EBoard.Views
         }
 
 
+        private int _Z;
+        public int Z
+        {
+            get { return _Z; }
+            set
+            {
+                _Z = value;
+
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Z)));
+            }
+        }
+
+
         public ElementView()
         {
             InitializeComponent();
@@ -111,13 +85,8 @@ namespace EBoard.Views
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _VisualParent = VisualTreeHelper.GetParent(this) as UIElement;
-
-
-            _Canvas = VisualTreeHelper.GetParent(_VisualParent) as Canvas;
-
-
-            CurrentZ = Panel.GetZIndex(_VisualParent);
+           
+            Z = Panel.GetZIndex(_VisualParent);
 
 
             _IsDragging = true;
@@ -141,7 +110,7 @@ namespace EBoard.Views
 
             Panel.SetZIndex(_VisualParent, 0);
 
-            CurrentZ = Panel.GetZIndex(_VisualParent);
+            Z = Panel.GetZIndex(_VisualParent);
 
             X = Canvas.GetLeft(_VisualParent);
 
@@ -151,7 +120,7 @@ namespace EBoard.Views
 
             thisViewmodel.X = X;
             thisViewmodel.Y = Y;
-            thisViewmodel.Z = CurrentZ;
+            thisViewmodel.Z = Z;
 
             e.Handled = true;
         }
@@ -168,7 +137,7 @@ namespace EBoard.Views
                 Canvas.SetTop(_VisualParent, canvasRelativePosition.Y - _Position.Y);
                 Canvas.SetLeft(_VisualParent, canvasRelativePosition.X - _Position.X);
 
-                CurrentZ = Panel.GetZIndex(_VisualParent);
+                Z = Panel.GetZIndex(_VisualParent);
             }
 
         }
@@ -195,3 +164,4 @@ namespace EBoard.Views
         }
     }
 }
+// EOF

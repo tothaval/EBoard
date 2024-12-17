@@ -1,4 +1,10 @@
-﻿using EBoard.Commands;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  MainViewModel 
+ * 
+ *  helper class for
+ */
+using EBoard.Commands;
 using EBoard.Commands.ContextMenuCommands;
 using EBoard.Navigation;
 using EBoard.Views;
@@ -69,6 +75,57 @@ namespace EBoard.ViewModels
             {
                 _cornerRadius = value;
                 OnPropertyChanged(nameof(CornerRadius));
+            }
+        }
+
+
+        private double _EBoardHeight;
+        public double EBoardHeight
+        {
+            get { return _EBoardHeight; }
+            set
+            {
+                _EBoardHeight = value;
+                OnPropertyChanged(nameof(EBoardHeight));
+            }
+        }
+
+
+        private double _EBoardWidth;
+        public double EBoardWidth
+        {
+            get { return _EBoardWidth; }
+            set
+            {
+                _EBoardWidth = value;
+                OnPropertyChanged(nameof(EBoardWidth));
+            }
+        }
+
+
+
+
+
+        private double _PositionX;
+        public double PositionX
+        {
+            get { return _PositionX; }
+            set
+            {
+                _PositionX = value;
+                OnPropertyChanged(nameof(PositionX));
+            }
+        }
+
+
+        private double _PositionY;
+        public double PositionY
+        {
+            get { return _PositionY; }
+            set
+            {
+                _PositionY = value;
+                OnPropertyChanged(nameof(PositionY));
             }
         }
 
@@ -169,7 +226,7 @@ namespace EBoard.ViewModels
 
             CloseCommand = new CloseCommand();
             LeftDoubleClickCommand = new MaximizeCommand();
-            LeftPressCommand = new RelayCommand((s) => DragMove(), (s) => true);
+            //LeftPressCommand = new RelayCommand((s) => DragMove(), (s) => true);
             MaximizeCommand = new MaximizeCommand();
             MinimizeCommand = new MinimizeCommand();
 
@@ -193,12 +250,12 @@ namespace EBoard.ViewModels
         /// </summary>
         #region Methods
 
-        private void DragMove()
-        {
-            MainWindow window = (MainWindow)Application.Current.MainWindow;
+        //private void DragMove()
+        //{
+        //    MainWindow window = (MainWindow)Application.Current.MainWindow;
 
-            window.DragMove();
-        }
+        //    window.DragMove();
+        //}
 
         #endregion
 

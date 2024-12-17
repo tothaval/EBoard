@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  BaseViewModel 
+ * 
+ *  helper class for PropertyChangedEventHandler interactions
+ */
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -17,3 +23,4 @@ namespace EBoard.ViewModels
         }
     }
 }
+// EOF

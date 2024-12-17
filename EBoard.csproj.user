@@ -7,6 +7,9 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Views\ContentView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\EBoardBrowserView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -22,6 +25,9 @@
     <Compile Update="Views\MainWindowMenuBar.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\ShapeView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="MainWindow.xaml">
@@ -31,6 +37,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Utilities\DataTemplate.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ContentView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\EBoardBrowserView.xaml">
@@ -46,6 +55,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\MainWindowMenuBar.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Views\ShapeView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

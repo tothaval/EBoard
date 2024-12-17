@@ -1,4 +1,11 @@
-﻿using System.Windows.Media;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  IThumb 
+ * 
+ *  interface for Adorner logic
+ */
+
+using System.Windows.Media;
 
 namespace EBoard.InnerComponents
 {
@@ -7,3 +14,4 @@ namespace EBoard.InnerComponents
         public void ResetThumb(double width, double height, Brush background);
     }
 }
+// EOF

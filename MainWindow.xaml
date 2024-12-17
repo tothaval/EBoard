@@ -17,6 +17,8 @@
         
         MouseLeftButtonDown="EboardMainWindow_MouseLeftButtonDown"
         MouseLeftButtonUp="EboardMainWindow_MouseLeftButtonUp"
+        
+        SizeChanged="EboardMainWindow_SizeChanged"
         >
 
     <Window.Resources>
@@ -107,7 +109,12 @@
             </Border>
 
             <ContentControl Content="{Binding CurrentViewModel}"
-                            Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"/>
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                            />
         </Grid>
     </Border>
 </Window>
