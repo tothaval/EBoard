@@ -9,11 +9,6 @@ Current Features:<br>
 <br>
 top Buttons
 <br>
-<<<<<<< Updated upstream
-'!', 'Ciao' and 'Off' buttons on top close the application, there is no warning!
-<br>
-<br>
-=======
 '!', instantiates a prototype container element with a textbox onto the selected eboard, content save and load not yet implemented
 <br><br>
 '?', opens a crude menu that offers the ability to instantiate an ellipse shape element or a rectangle shape element onto the
@@ -23,25 +18,16 @@ selected eboard
 <br><br>
 'Ciao' and 'Off' buttons close the application, there is no warning!
 <br><br>
->>>>>>> Stashed changes
 a right click anywhere except on an element opens the eboard context menu that currently
 supports minimizing, maximizing, normalizing and quitting the application.
 <br><br>
 left click and hold anywhere except buttons and elements will drag move the entire window.
-<<<<<<< Updated upstream
 <br>
 <br>
 within the window below the top buttons is the eboard selection and below that the currently
 selected eboard instance, which is basically a WPF canvas. 
 <br>
 <br>
-atm there are 3 eboards to prove instantiation selectable from eboard selection, the eboards can be switched via leftclick
-on the button next to name, the background color in the selection field is that of the eboard instance itself.
-there are 3 elements per eboard to prove element instantiation, each element can be drag moved via leftclick and hold,
-while dragging, the element gets a z-index of 1000, after that, z-index is reset to initial value, which is 0 atm.
-right click on an element opens a context menu, where the element can be deleted.
-=======
-<br><br>
 leftclick 
 <br><br>
 each element within an eboard can be drag moved via leftclick and hold, while dragging, the element gets a z-index of 1000,
@@ -58,7 +44,6 @@ one content information atm, container elements do not have storage of content o
 any number of eboards with any size, depth and name can be instantiated, to instantiate a new eboard, use 'AddEBoard' button
 in eboard browser, eboards can be switched clicking on the small eboard representation within the eboard browser.
 the background color in the selection field is that of the eboard instance itself.
->>>>>>> Stashed changes
 <br>
 <br>
 <br>
