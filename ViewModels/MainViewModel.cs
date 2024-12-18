@@ -6,6 +6,7 @@
  */
 using EBoard.Commands;
 using EBoard.Commands.ContextMenuCommands;
+using EBoard.Models;
 using EBoard.Navigation;
 using EBoard.Views;
 using System;
@@ -31,38 +32,14 @@ namespace EBoard.ViewModels
         public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
 
 
-        private Brush _backgroundBrush;
-        public Brush BackgroundBrush
+        private BrushManagement _BrushManager;
+        public BrushManagement BrushManager
         {
-            get { return _backgroundBrush; }
+            get { return _BrushManager; }
             set
             {
-                _backgroundBrush = value;
-                OnPropertyChanged(nameof(BackgroundBrush));
-            }
-        }
-
-
-        private Brush _borderBrush;
-        public Brush BorderBrush
-        {
-            get { return _borderBrush; }
-            set
-            {
-                _borderBrush = value;
-                OnPropertyChanged(nameof(BorderBrush));
-            }
-        }
-
-
-        private Thickness _borderThickness;
-        public Thickness BorderThickness
-        {
-            get { return _borderThickness; }
-            set
-            {
-                _borderThickness = value;
-                OnPropertyChanged(nameof(BorderThickness));
+                _BrushManager = value;
+                OnPropertyChanged(nameof(BrushManager));
             }
         }
 
@@ -101,9 +78,6 @@ namespace EBoard.ViewModels
                 OnPropertyChanged(nameof(EBoardWidth));
             }
         }
-
-
-
 
 
         private double _PositionX;
@@ -177,7 +151,6 @@ namespace EBoard.ViewModels
         }
 
 
-
         private MainWindowMenuBarViewModel _MainWindowMenuBarVM;
         public MainWindowMenuBarViewModel MainWindowMenuBarVM
         {
@@ -188,7 +161,6 @@ namespace EBoard.ViewModels
                 OnPropertyChanged(nameof(MainWindowMenuBarVM));
             }
         }
-
 
         #endregion
 
@@ -220,9 +192,10 @@ namespace EBoard.ViewModels
         public MainViewModel(NavigationStore navigationStore)
         {
             _navigationStore = navigationStore;
-            _EBoardBrowserViewModel = new EBoardBrowserViewModel(_navigationStore);
 
             _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+
+            _EBoardBrowserViewModel = new EBoardBrowserViewModel(_navigationStore);
 
             CloseCommand = new CloseCommand();
             LeftDoubleClickCommand = new MaximizeCommand();
@@ -232,14 +205,16 @@ namespace EBoard.ViewModels
 
             MainWindowMenuBarVM = new MainWindowMenuBarViewModel(this);
 
-            
-            _backgroundBrush = new SolidColorBrush(Colors.White);
-            _borderBrush = new SolidColorBrush(Colors.BlueViolet);
-            _borderThickness = new Thickness(3);
+            BrushManager = new BrushManagement();
+            BrushManager.Background = new SolidColorBrush(Colors.White);
+            BrushManager.Border = new SolidColorBrush(Colors.BlueViolet);
+            BrushManager.BorderThickness = new Thickness(3);
+
             _cornerRadius = new CornerRadius(10);
             _margin = new Thickness(10);
             _padding = new Thickness(10);
             _opacity = 1;
+
         }
 
 
@@ -256,6 +231,14 @@ namespace EBoard.ViewModels
 
         //    window.DragMove();
         //}
+
+        public void UpdateBrushManager(BrushManagement brushManagement)
+        {
+            BrushManager = brushManagement;
+
+            _EBoardBrowserViewModel.UpdateBrushManager(brushManagement);
+
+        }
 
         #endregion
 

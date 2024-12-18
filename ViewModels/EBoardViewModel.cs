@@ -48,14 +48,14 @@ namespace EBoard.ViewModels
         }
 
 
-        private Brush _eBoardBackgroundBrush;
-        public Brush EBoardBackgroundBrush
+        private BrushManagement _BrushManager;
+        public BrushManagement BrushManager
         {
-            get { return _eBoardBackgroundBrush; }
+            get { return _BrushManager; }
             set
             {
-                _eBoardBackgroundBrush = value;
-                OnPropertyChanged(nameof(EBoardBackgroundBrush));
+                _BrushManager = value;
+                OnPropertyChanged(nameof(BrushManager));
             }
         }
 
@@ -152,7 +152,8 @@ namespace EBoard.ViewModels
                 EBoardDepth = 64;
             }
 
-            _eBoardBackgroundBrush = new SolidColorBrush(Colors.CornflowerBlue);
+            BrushManager = new BrushManagement();
+            BrushManager.Background = new SolidColorBrush(Colors.CornflowerBlue);
 
             elements = new ObservableCollection<ElementViewModel>();
 

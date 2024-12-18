@@ -13,8 +13,12 @@
     </UserControl.DataContext>
 
     
-    <Border Margin="5" Background="Transparent" Padding="5"
-            BorderThickness="5" BorderBrush="Red" CornerRadius="25">
+    <Border Margin="5"
+            Background="{Binding BrushManager.Background}"
+            Padding="5"
+            BorderThickness="{Binding BrushManager.BorderThickness}"
+            BorderBrush="{Binding BrushManager.Border}"
+            CornerRadius="25">
 
         <StackPanel Orientation="Horizontal">
 
@@ -105,11 +109,11 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="{Binding EBoardBackgroundBrush}"
+                        <Border Background="{Binding BrushManager.Background}"
                                 Padding="5"
                                 CornerRadius="10"
-                                BorderBrush="Orange"
-                                BorderThickness="4">
+                                BorderBrush="{Binding BrushManager.Border}"
+                                BorderThickness="{Binding BrushManager.BorderThickness}">
                                 <TextBlock Text="{Binding EBoardName, NotifyOnSourceUpdated=True}"
                                            MinWidth="42" MinHeight="40"/>
                         </Border>

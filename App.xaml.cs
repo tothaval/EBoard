@@ -45,6 +45,8 @@ namespace EBoard
             
             _MainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch = initializationManager.EBoardConfig.EBoardBrowserSwitch;
 
+            _MainViewModel.UpdateBrushManager(new Models.BrushManagement(eboardConfig.EBoardMainWindowBrushManager));
+
             Current.MainWindow.Left = initializationManager.EBoardConfig.EBoardPosition.X;
             Current.MainWindow.Top = initializationManager.EBoardConfig.EBoardPosition.Y;
 
@@ -70,7 +72,6 @@ namespace EBoard
             _MainViewModel = new MainViewModel(_navigationStore);
 
             EBoardInitializationManager initializationManager = new EBoardInitializationManager(ioProxIM, _MainViewModel);
-
 
             MainWindow mainWindow = new MainWindow()
             {

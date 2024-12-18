@@ -45,12 +45,12 @@ namespace EBoard.IOProcesses.DataSets
                 _BrushManagement = new BrushManagement();
             }
 
-            BackgroundColor = new ColorDataSet(_BrushManagement.ElementBackground);
-            ForegroundColor = new ColorDataSet(_BrushManagement.ElementForeground);
-            BorderColor = new ColorDataSet(_BrushManagement.ElementBorder);
-            HighlightColor = new ColorDataSet(_BrushManagement.ElementHighlight);
+            BackgroundColor = new ColorDataSet(_BrushManagement.Background);
+            ForegroundColor = new ColorDataSet(_BrushManagement.Foreground);
+            BorderColor = new ColorDataSet(_BrushManagement.Border);
+            HighlightColor = new ColorDataSet(_BrushManagement.Highlight);
 
-            BorderThickness = _BrushManagement.ElementBorderThickness;
+            BorderThickness = _BrushManagement.BorderThickness;
         }
 
 

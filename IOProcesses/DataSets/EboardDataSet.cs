@@ -14,6 +14,7 @@
  *  feature.
  */
 
+using EBoard.IOProcesses.DataSets;
 using EBoard.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace EBoard.Models
         public int EBoardDepth { get; set; }
         public double EBoardWidth { get; set; }
         public double EBoardHeight { get; set; }
-
+        public BrushDataSet EBoardBrushManager { get; set; }
         //[XmlIgnore]
         //private readonly FlatViewModel _flatViewModel;
 
@@ -70,7 +71,9 @@ namespace EBoard.Models
             EBoardName = eBoardViewModel.EBoardName;
             EBoardDepth = eBoardViewModel.EBoardDepth;
             EBoardWidth = eBoardViewModel.EBoardWidth;
-            EBoardHeight = eBoardViewModel.EBoardHeight;                
+            EBoardHeight = eBoardViewModel.EBoardHeight;
+
+            EBoardBrushManager = new BrushDataSet(eBoardViewModel.BrushManager);
         }
 
 

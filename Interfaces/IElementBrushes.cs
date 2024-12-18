@@ -11,22 +11,22 @@ namespace EBoard.Interfaces
     public interface IElementBrushes
     {
 
-        public Brush ElementBackground { get; set; }
+        public Brush Background { get; set; }
         
         
-        public Brush ElementForeground { get; set; }
+        public Brush Foreground { get; set; }
 
 
-        public Brush ElementBorder { get; set; }
+        public Brush Border { get; set; }
 
 
-        public Brush ElementHighlight { get; set; }
+        public Brush Highlight { get; set; }
 
 
-        public Thickness ElementBorderThickness { get; set; }
+        public Thickness BorderThickness { get; set; }
 
 
-        public string ElementImagePath { get; set; }
+        public string ImagePath { get; set; }
 
     }
 }

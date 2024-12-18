@@ -13,36 +13,36 @@ namespace EBoard.Models
     public class BrushManagement : IElementBrushes
     {
         // background brush related properties, background is used on content border or as shape fill
-        public Brush ElementBackground { get; set; }
-        public string ElementImagePath { get; set; }
+        public Brush Background { get; set; }
+        public string ImagePath { get; set; }
 
 
 
         // foreground brush related properties, foreground is used for text color
-        public Brush ElementForeground { get; set; }
+        public Brush Foreground { get; set; }
 
 
 
         // border brush related properties, border is used on content border or as shape stroke
-        public Brush ElementBorder { get; set; }
-        public Thickness ElementBorderThickness { get; set; }
+        public Brush Border { get; set; }
+        public Thickness BorderThickness { get; set; }
         
 
 
         // higlight brush related properties, highlight is used on element selection
-        public Brush ElementHighlight { get; set; }
+        public Brush Highlight { get; set; }
 
 
         public BrushManagement()
         {
-            ElementBackground = new SolidColorBrush(Color.FromArgb(205, 0, 0, 0));
-            ElementBorder = new SolidColorBrush(Colors.Goldenrod);
-            ElementForeground = new SolidColorBrush(Colors.DarkGoldenrod);
-            ElementHighlight = new SolidColorBrush(Colors.YellowGreen);
+            Background = new SolidColorBrush(Color.FromArgb(205, 0, 0, 0));
+            Border = new SolidColorBrush(Colors.Goldenrod);
+            Foreground = new SolidColorBrush(Colors.DarkGoldenrod);
+            Highlight = new SolidColorBrush(Colors.YellowGreen);
 
-            ElementBorderThickness = new Thickness(2, 2, 2, 2);
+            BorderThickness = new Thickness(2, 2, 2, 2);
 
-            ElementImagePath = string.Empty;
+            ImagePath = string.Empty;
         }
 
         public BrushManagement(BrushDataSet brushDataSet)
@@ -54,14 +54,29 @@ namespace EBoard.Models
 
         private async void LoadBrushDataSet(BrushDataSet brushDataSet)
         {
-            ElementBackground = await brushDataSet.BackgroundColor.GetBrush();
-            ElementForeground = await brushDataSet.ForegroundColor.GetBrush();
-            ElementBorder = await brushDataSet.BorderColor.GetBrush();
-            ElementHighlight = await brushDataSet.HighlightColor.GetBrush();
+            if (brushDataSet != null)
+            {
+                Background = await brushDataSet.BackgroundColor.GetBrush();
+                Foreground = await brushDataSet.ForegroundColor.GetBrush();
+                Border = await brushDataSet.BorderColor.GetBrush();
+                Highlight = await brushDataSet.HighlightColor.GetBrush();
 
-            ElementBorderThickness = brushDataSet.BorderThickness;
+                BorderThickness = brushDataSet.BorderThickness;
 
-            ElementImagePath = brushDataSet.BackgroundColor.ImagePath;
+                ImagePath = brushDataSet.BackgroundColor.ImagePath;
+
+                return;
+            }
+
+            Background = new SolidColorBrush(Colors.White);
+            Foreground = new SolidColorBrush(Colors.Black);
+            Border = new SolidColorBrush(Colors.CornflowerBlue);
+            Highlight = new SolidColorBrush(Colors.LightGreen);
+
+            BorderThickness = new Thickness(4);
+
+            ImagePath = string.Empty;
+
         }
 
     }

@@ -8,9 +8,9 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
 
-        <Border Background="{Binding BrushManager.ElementBackground, NotifyOnSourceUpdated=True}"
-                BorderBrush="{Binding BrushManager.ElementBorder, NotifyOnSourceUpdated=True}"
-                BorderThickness="{Binding BrushManager.ElementBorderThickness, NotifyOnSourceUpdated=True}"
+        <Border Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+                BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
+                BorderThickness="{Binding BrushManager.BorderThickness, NotifyOnSourceUpdated=True}"
                 Padding="5"
                 Width="{Binding ElementWidth, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
                 Height="{Binding ElementHeight, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
@@ -21,7 +21,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <TextBlock Foreground="{Binding BrushManager.ElementForeground, NotifyOnSourceUpdated=True}"
+            <TextBlock Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
                        Grid.Row="0" TextWrapping="Wrap">
                         <Run Text="{Binding ElementHeaderText, NotifyOnSourceUpdated=True}" />
                         <LineBreak/>

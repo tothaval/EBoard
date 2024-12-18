@@ -199,6 +199,7 @@ namespace EBoard.IOProcesses
         public async Task Load()
         {
             await DeserializeEBoardConfig(_IOProcessesInitializationManager.EBoardConfigFolder);
+
             await DeserializeEBoardDataSets(_IOProcessesInitializationManager.EBoardFolder);
 
         }

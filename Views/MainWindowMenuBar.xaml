@@ -25,15 +25,21 @@
                     Content="!"
                     Command="{Binding InvokePrototypeElementCommand}"/>
 
-            <Menu>
-                <MenuItem Header="?">
-                    <MenuItem Header="Rec" Command="{Binding InvokePrototypeShapeElementCommand}"/>
-                    <MenuItem Header="Ell" Command="{Binding InvokeEllipseShapeCommand}"/>
-                </MenuItem>
-                
-            </Menu>
+            <Border CornerRadius="5" Background="Black"
+                    BorderBrush="Orange"
+                    BorderThickness="3"
+                    MinWidth="50" MaxHeight="50"
+                    >
+                <Menu>
+                    <MenuItem Header="?">
+                        <MenuItem Header="Rec" Command="{Binding InvokePrototypeShapeElementCommand}"/>
+                        <MenuItem Header="Ell" Command="{Binding InvokeEllipseShapeCommand}"/>
+                    </MenuItem>
 
-            
+                </Menu>
+            </Border>
+
+
             <ToggleButton Content="..."
                           Style="{StaticResource DefaultToggleButtonStyle}"
                           IsChecked="{Binding EBoardBrowserSwitch,

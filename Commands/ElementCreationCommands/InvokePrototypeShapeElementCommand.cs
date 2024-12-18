@@ -48,9 +48,9 @@ namespace EBoard.Commands.ElementCreationCommands
                     {
                         Width = elementDataSet.ElementWidth,
                         Height = elementDataSet.ElementHeight,
-                        Fill = elementDataSet.BrushManager.ElementBackground,
-                        Stroke = elementDataSet.BrushManager.ElementBorder,
-                        StrokeThickness = elementDataSet.BrushManager.ElementBorderThickness.Left
+                        Fill = elementDataSet.BrushManager.Background,
+                        Stroke = elementDataSet.BrushManager.Border,
+                        StrokeThickness = elementDataSet.BrushManager.BorderThickness.Left
                     });
 
 

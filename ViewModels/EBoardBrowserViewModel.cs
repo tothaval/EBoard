@@ -21,6 +21,21 @@ namespace EBoard.ViewModels
         // Properties & Fields
         #region Properties & Fields
 
+
+
+        private BrushManagement _BrushManager;
+        public BrushManagement BrushManager
+        {
+            get { return _BrushManager; }
+            set
+            {
+                _BrushManager = value;
+                OnPropertyChanged(nameof(BrushManager));
+            }
+        }
+
+
+
         public int EBoardCount { get; set; }
 
 
@@ -151,7 +166,7 @@ namespace EBoard.ViewModels
             DeleteEBoardCommand = new RelayCommand((s) => DeleteSelectedEBoard(s), (s) => true);
 
             _NavigationStore = navigationStore;
-
+            
             EditEBoardParametersCommand = new EditEBoardParametersCommand(this);
 
             EBoards = new ObservableCollection<EBoardViewModel>();
@@ -194,6 +209,8 @@ namespace EBoard.ViewModels
                     eboardDataSet.EBID);
 
                 eBoardViewModel.Elements = eboardDataSet.EBoardViewModel.Elements;
+                
+                eBoardViewModel.BrushManager = new BrushManagement(eboardDataSet.EBoardBrushManager);
 
                 EBoards.Add(eBoardViewModel);                
             }
@@ -232,6 +249,13 @@ namespace EBoard.ViewModels
                 EBoardWidth = SelectedEBoard.EBoardWidth;
                 SelectedEBoard.EBoardActive = true;
             }
+        }
+
+
+        public void UpdateBrushManager(BrushManagement brushManagement)
+        {
+            BrushManager = brushManagement;
+
         }
 
         #endregion

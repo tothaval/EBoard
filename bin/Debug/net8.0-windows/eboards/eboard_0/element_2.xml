@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ElementDataSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <EID>Element_638700644688428431</EID>
-  <ElementTypeString>EBoard.Models.ContainerManagement</ElementTypeString>
-  <ElementHeader>Prototype Element</ElementHeader>
-  <X>309</X>
-  <Y>56</Y>
+  <EID>Element_638701247761231352</EID>
+  <ElementTypeString>EBoard.Models.ShapeManagement</ElementTypeString>
+  <ElementHeader>Shape Element</ElementHeader>
+  <X>693</X>
+  <Y>304</Y>
   <Z>0</Z>
   <ElementWidth>225</ElementWidth>
   <ElementHeight>75</ElementHeight>

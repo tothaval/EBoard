@@ -103,7 +103,7 @@ namespace EBoard.ViewModels
             ElementHeight = elementDataSet.ElementHeight;
             ElementWidth = elementDataSet.ElementWidth;
 
-            ElementImagePath = BrushManager.ElementImagePath;
+            ElementImagePath = BrushManager.ImagePath;
         }
 
 
@@ -119,7 +119,7 @@ namespace EBoard.ViewModels
             try
             {
 
-                BrushManager.ElementBackground = new ImageBrush(new BitmapImage(
+                BrushManager.Background = new ImageBrush(new BitmapImage(
                     new Uri(_ElementImagePath, UriKind.Absolute)));
             }
             catch (Exception)
@@ -129,7 +129,7 @@ namespace EBoard.ViewModels
 
             OnPropertyChanged(nameof(BrushManager));
 
-            OnPropertyChanged(nameof(BrushManager.ElementBackground));
+            OnPropertyChanged(nameof(BrushManager.Background));
         }
 
     }
