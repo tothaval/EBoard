@@ -42,9 +42,9 @@
     </WindowChrome.WindowChrome>
 
    
-    <Border Background="{Binding BackgroundBrush}"
-            BorderBrush="{Binding BorderBrush}"
-            BorderThickness="{Binding BorderThickness}"
+    <Border Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+            BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
+            BorderThickness="{Binding BrushManager.BorderThickness, NotifyOnSourceUpdated=True}"
             CornerRadius="{Binding CornerRadius}"
             Margin="{Binding Margin}"
             Padding="{Binding Padding}"
@@ -88,6 +88,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
@@ -97,24 +98,27 @@
             
             <views:MainWindowLogoutBar Grid.Row="0" Grid.Column="2"/>
 
-            <Border Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="3"
-                    Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
-                Converter={StaticResource btvc},
-                NotifyOnSourceUpdated=True,
-                NotifyOnTargetUpdated=True}">
-                <views:EBoardBrowserView DataContext="{Binding EBoardBrowserViewModel}"
-                                         />
-            </Border>
+    
 
             <ContentControl Content="{Binding CurrentViewModel}"
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"
+                            VerticalAlignment="Top"
+                            Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3"
                             />
+
+            <Border Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
+            Converter={StaticResource btvc},
+            NotifyOnSourceUpdated=True,
+            NotifyOnTargetUpdated=True}">
+                <views:EBoardBrowserView DataContext="{Binding EBoardBrowserViewModel}"
+                                     />
+            </Border>
+            
         </Grid>
     </Border>
 </Window>

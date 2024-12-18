@@ -18,38 +18,36 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 
     </UserControl.Resources>
-    
-    <Border MouseLeftButtonDown="Border_MouseLeftButtonDown"
+
+        <Border MouseLeftButtonDown="Border_MouseLeftButtonDown"
             MouseLeftButtonUp="Border_MouseLeftButtonUp"
             MouseMove="Border_MouseMove">
 
-        <Border.ContextMenu>
+            <Border.ContextMenu>
 
-            <ContextMenu>
+                <ContextMenu>
 
-                <MenuItem Header="+Image" Command="{Binding ImageCommand}"
+                    <MenuItem Header="+Image" Command="{Binding ImageCommand}"
                           CommandParameter="{Binding ElementName=Element}"/>
 
-                <MenuItem Header="Delete" Command="{Binding RightClickCommand}"
+                    <MenuItem Header="Delete" Command="{Binding RightClickCommand}"
                           CommandParameter="{Binding ElementName=Element}"/>
 
-            </ContextMenu>
+                </ContextMenu>
 
-        </Border.ContextMenu>
+            </Border.ContextMenu>
 
 
-        <Grid Background="Transparent">
-            <Border Visibility="{Binding IsContent, Converter={StaticResource BooleanToVisibilityConverter}}">                
-                <local:ContentView DataContext="{Binding ContentViewModel}"/>
-            </Border>
+            <Grid Background="Transparent">
+                <Border Visibility="{Binding IsContent, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <local:ContentView DataContext="{Binding ContentViewModel}"/>
+                </Border>
 
-            <Border Visibility="{Binding IsShape, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <local:ShapeView DataContext="{Binding ShapeViewModel}"/>
-            </Border>
-        </Grid>
+                <Border Visibility="{Binding IsShape, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <local:ShapeView DataContext="{Binding ShapeViewModel}"/>
+                </Border>
+            </Grid>
 
-    </Border>
+        </Border>
 
-    
-    
 </UserControl>

@@ -117,8 +117,9 @@ namespace EBoard.ViewModels
             }
 
 
-            ((Shape)Control.Element).Stroke = BrushManager.ElementBorder;
-            ((Shape)Control.Element).StrokeThickness = BrushManager.ElementBorderThickness.Left;
+            ((Shape)Control.Element).Fill = BrushManager.Background;
+            ((Shape)Control.Element).Stroke = BrushManager.Border;
+            ((Shape)Control.Element).StrokeThickness = BrushManager.BorderThickness.Left;
 
 
             ElementHeaderText = elementDataSet.ElementHeader;
@@ -126,7 +127,7 @@ namespace EBoard.ViewModels
             ElementHeight = elementDataSet.ElementHeight;
             ElementWidth = elementDataSet.ElementWidth;
 
-            ElementImagePath = BrushManager.ElementImagePath;
+            ElementImagePath = BrushManager.ImagePath;
 
             if (ElementImagePath == null)
             {
@@ -151,17 +152,17 @@ namespace EBoard.ViewModels
 
             try
             {
-                BrushManager.ElementBackground = new ImageBrush(new BitmapImage(
+                BrushManager.Background = new ImageBrush(new BitmapImage(
             new Uri(ElementImagePath, UriKind.Absolute)));
 
-                ((Shape)Control.Element).Fill = BrushManager.ElementBackground;
+                ((Shape)Control.Element).Fill = BrushManager.Background;
             }
             catch (Exception)
             {
 
             }
 
-            OnPropertyChanged(nameof(BrushManager.ElementBackground));
+            OnPropertyChanged(nameof(BrushManager.Background));
         }
 
 

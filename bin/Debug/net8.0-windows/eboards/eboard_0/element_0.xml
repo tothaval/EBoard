@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ElementDataSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <EID>Element_638700644635474772</EID>
-  <ElementTypeString>EBoard.Models.ShapeManagement</ElementTypeString>
-  <ElementHeader>Shape Element</ElementHeader>
-  <X>953</X>
-  <Y>51</Y>
+  <EID>Element_638701247733463913</EID>
+  <ElementTypeString>EBoard.Models.ContainerManagement</ElementTypeString>
+  <ElementHeader>Prototype Element</ElementHeader>
+  <X>328</X>
+  <Y>121.24333333333334</Y>
   <Z>0</Z>
-  <ElementWidth>225</ElementWidth>
-  <ElementHeight>75</ElementHeight>
+  <ElementWidth>308</ElementWidth>
+  <ElementHeight>190</ElementHeight>
 </ElementDataSet>

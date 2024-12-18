@@ -12,11 +12,11 @@
 
     <Border Margin="5"
             CornerRadius="15"
-            BorderBrush="Black"
-            BorderThickness="2"
             Padding="5"          
                                     
-            Background="{Binding EBoardBackgroundBrush}"
+            Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+            BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
+            BorderThickness="{Binding BrushManager.BorderThickness, NotifyOnSourceUpdated=True}"
             Width="{Binding EBoardWidth,
         NotifyOnSourceUpdated=True}"
             Height="{Binding EBoardHeight,
@@ -51,7 +51,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <local:ElementView/>
-                    </DataTemplate>
+                </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         

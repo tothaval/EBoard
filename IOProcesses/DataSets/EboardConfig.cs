@@ -59,6 +59,7 @@ namespace EBoard.IOProcesses.DataSets
 
         public double EBoardWidth { get; set; }
 
+        public BrushDataSet EBoardMainWindowBrushManager { get; set; }
 
         //public string FlatNotes { get; set; }
 
@@ -69,8 +70,7 @@ namespace EBoard.IOProcesses.DataSets
 
         public EboardConfig()
         {
-            _EBoardBrowserViewModel = new EBoardBrowserViewModel();
-                
+            _EBoardBrowserViewModel = new EBoardBrowserViewModel();                
         }
 
 
@@ -87,6 +87,8 @@ namespace EBoard.IOProcesses.DataSets
 
             EBoardHeight = mainViewModel.EBoardHeight;
             EBoardWidth = mainViewModel.EBoardWidth;
+
+            EBoardMainWindowBrushManager = new BrushDataSet(mainViewModel.BrushManager);
         }
     }
 }

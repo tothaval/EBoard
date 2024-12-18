@@ -16,7 +16,7 @@ top Buttons
 =======
 '!', instantiates a prototype container element with a textbox onto the selected eboard, content save and load not yet implemented
 <br><br>
-'?', opens a crude menu that offers the ability to instantiate an ellipse shape element or a rectangle shape element onto the
+'?', opens a menu that offers the ability to instantiate an ellipse shape element or a rectangle shape element onto the
 selected eboard
 <br><br>
 '...' shows or hides the eboard browser, where eboards can be created, edited, browsed and deleted.
