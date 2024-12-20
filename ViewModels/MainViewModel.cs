@@ -6,6 +6,8 @@
  */
 using EBoard.Commands;
 using EBoard.Commands.ContextMenuCommands;
+using EBoard.Interfaces;
+using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
 using EBoard.Navigation;
 using EBoard.Views;
@@ -18,10 +20,11 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace EBoard.ViewModels
 {
-    public class MainViewModel : BaseViewModel
+    public class MainViewModel : BaseViewModel, IElementBackgroundImage
     {
 
         // Properties & Fields
@@ -30,6 +33,18 @@ namespace EBoard.ViewModels
 
 
         public BaseViewModel CurrentViewModel => _navigationStore.CurrentViewModel;
+
+
+        private BorderManagement _BorderManager;
+        public BorderManagement BorderManager
+        {
+            get { return _BorderManager; }
+            set
+            {
+                _BorderManager = value;
+                OnPropertyChanged(nameof(BorderManager));
+            }
+        }
 
 
         private BrushManagement _BrushManager;
@@ -44,98 +59,33 @@ namespace EBoard.ViewModels
         }
 
 
-        private CornerRadius _cornerRadius;
-        public CornerRadius CornerRadius
+        /// <summary>
+        /// the path to an optional background image for the
+        /// element, if empty, the stored brush or a default
+        /// solidColorBrush will be used for the background
+        /// </summary>
+        private string _ImagePath;
+        public string ImagePath
         {
-            get { return _cornerRadius; }
+            get { return _ImagePath; }
             set
             {
-                _cornerRadius = value;
-                OnPropertyChanged(nameof(CornerRadius));
+                _ImagePath = value;
+                OnPropertyChanged(nameof(ImagePath));
+
+                ChangeElementBackgroundToImage();
             }
         }
 
 
-        private double _EBoardHeight;
-        public double EBoardHeight
+        private PlacementManagement _PlacementManagement;
+        public PlacementManagement PlacementManager
         {
-            get { return _EBoardHeight; }
+            get { return _PlacementManagement; }
             set
             {
-                _EBoardHeight = value;
-                OnPropertyChanged(nameof(EBoardHeight));
-            }
-        }
-
-
-        private double _EBoardWidth;
-        public double EBoardWidth
-        {
-            get { return _EBoardWidth; }
-            set
-            {
-                _EBoardWidth = value;
-                OnPropertyChanged(nameof(EBoardWidth));
-            }
-        }
-
-
-        private double _PositionX;
-        public double PositionX
-        {
-            get { return _PositionX; }
-            set
-            {
-                _PositionX = value;
-                OnPropertyChanged(nameof(PositionX));
-            }
-        }
-
-
-        private double _PositionY;
-        public double PositionY
-        {
-            get { return _PositionY; }
-            set
-            {
-                _PositionY = value;
-                OnPropertyChanged(nameof(PositionY));
-            }
-        }
-
-
-        private Thickness _margin;
-        public Thickness Margin
-        {
-            get { return _margin; }
-            set
-            {
-                _margin = value;
-                OnPropertyChanged(nameof(Margin));
-            }
-        }
-
-
-        private Thickness _padding;
-        public Thickness Padding
-        {
-            get { return _padding; }
-            set
-            {
-                _padding = value;
-                OnPropertyChanged(nameof(Padding));
-            }
-        }
-
-
-        private double _opacity;
-        public double Opacity
-        {
-            get { return _opacity; }
-            set
-            {
-                _opacity = value;
-                OnPropertyChanged(nameof(Opacity));
+                _PlacementManagement = value;
+                OnPropertyChanged(nameof(PlacementManager));
             }
         }
 
@@ -174,6 +124,7 @@ namespace EBoard.ViewModels
 
         public ICommand CloseCommand { get; }
 
+        public ICommand MainWindowImageCommand { get; }
 
         public ICommand LeftDoubleClickCommand {get;}
 
@@ -189,8 +140,10 @@ namespace EBoard.ViewModels
         #endregion
 
 
-        public MainViewModel(NavigationStore navigationStore)
+        public MainViewModel(NavigationStore navigationStore, EboardConfig? eboardConfig)
         {
+            MainWindowImageCommand = new MainWindowImageCommand(this);
+
             _navigationStore = navigationStore;
 
             _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
@@ -205,16 +158,25 @@ namespace EBoard.ViewModels
 
             MainWindowMenuBarVM = new MainWindowMenuBarViewModel(this);
 
-            BrushManager = new BrushManagement();
-            BrushManager.Background = new SolidColorBrush(Colors.White);
-            BrushManager.Border = new SolidColorBrush(Colors.BlueViolet);
-            BrushManager.BorderThickness = new Thickness(3);
+            if (eboardConfig == null)
+            {
+                BrushManager = new BrushManagement();
+                BrushManager.Background = new SolidColorBrush(Colors.White);
+                BrushManager.Border = new SolidColorBrush(Colors.BlueViolet);
 
-            _cornerRadius = new CornerRadius(10);
-            _margin = new Thickness(10);
-            _padding = new Thickness(10);
-            _opacity = 1;
+                BorderManager = new BorderManagement();
+                BorderManager.Width = 640.0;
+                BorderManager.Height = 320.0;
 
+                PlacementManager = new PlacementManagement();
+            }
+            else
+            {
+                BorderManager = new BorderManagement(eboardConfig.BorderDataSet);
+                BrushManager = new BrushManagement(eboardConfig.BrushDataSet);
+                PlacementManager = new PlacementManagement(eboardConfig.PlacementDataSet);
+            }
+            
         }
 
 
@@ -225,19 +187,29 @@ namespace EBoard.ViewModels
         /// </summary>
         #region Methods
 
-        //private void DragMove()
-        //{
-        //    MainWindow window = (MainWindow)Application.Current.MainWindow;
-
-        //    window.DragMove();
-        //}
-
-        public void UpdateBrushManager(BrushManagement brushManagement)
+        public void ChangeElementBackgroundToImage()
         {
-            BrushManager = brushManagement;
+            //if (_ElementImagePath == null || !File.Exists(_ElementImagePath) || _ElementImagePath.Equals(string.Empty))
+            //{                
+            //    BrushManager.ElementBackground = new SolidColorBrush(Colors.BlanchedAlmond);
 
-            _EBoardBrowserViewModel.UpdateBrushManager(brushManagement);
+            //    return;
+            //}
 
+            try
+            {
+
+                BrushManager.Background = new ImageBrush(new BitmapImage(
+                    new Uri(ImagePath, UriKind.Absolute)));
+
+
+                OnPropertyChanged(nameof(BrushManager));
+
+                OnPropertyChanged(nameof(BrushManager.Background));
+            }
+            catch (Exception)
+            {
+            }
         }
 
         #endregion
@@ -253,6 +225,14 @@ namespace EBoard.ViewModels
         private void OnCurrentViewModelChanged()
         {
             OnPropertyChanged(nameof(CurrentViewModel));
+
+            OnPropertyChanged(nameof(BrushManager));
+            OnPropertyChanged(nameof(BrushManager.Background));
+            OnPropertyChanged(nameof(BrushManager.Border));
+
+            OnPropertyChanged(nameof(BorderManager));
+            OnPropertyChanged(nameof(BorderManager.CornerRadius));
+            OnPropertyChanged(nameof(BorderManager.BorderThickness));
         }
 
         #endregion

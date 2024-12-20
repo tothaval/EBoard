@@ -12,8 +12,20 @@ using System.Windows.Media.Imaging;
 
 namespace EBoard.ViewModels
 {
-    public class ContentViewModel : BaseViewModel
+    public class ContentViewModel : BaseViewModel, IElementBackgroundImage
     {
+
+        private BorderManagement _BorderManager;
+        public BorderManagement BorderManager
+        {
+            get { return _BorderManager; }
+            set
+            {
+                _BorderManager = value;
+                OnPropertyChanged(nameof(BorderManager));
+            }
+        }
+
 
         private BrushManagement _BrushManager;
         public BrushManagement BrushManager
@@ -39,28 +51,6 @@ namespace EBoard.ViewModels
         }
 
 
-        private double _ElementHeight = 64.0;
-        public double ElementHeight
-        {
-            get { return _ElementHeight; }
-            set
-            {
-                _ElementHeight = value;
-                OnPropertyChanged(nameof(ElementHeight));
-            }
-        }
-
-
-        private double _ElementWidth = 128.0;
-        public double ElementWidth
-        {
-            get { return _ElementWidth; }
-            set
-            {
-                _ElementWidth = value;
-                OnPropertyChanged(nameof(ElementWidth));
-            }
-        }
 
 
         /// <summary>
@@ -68,18 +58,47 @@ namespace EBoard.ViewModels
         /// element, if empty, the stored brush or a default
         /// solidColorBrush will be used for the background
         /// </summary>
-        private string _ElementImagePath;
-        public string ElementImagePath
+        private string _ImagePath;
+        public string ImagePath
         {
-            get { return _ElementImagePath; }
+            get { return _ImagePath; }
             set
             {
-                _ElementImagePath = value;
-                OnPropertyChanged(nameof(ElementImagePath));
+                _ImagePath = value;
+                OnPropertyChanged(nameof(ImagePath));
 
                 ChangeElementBackgroundToImage();
             }
         }
+
+        private double _Height;
+        public double Height
+        {
+            get { return _Height; }
+            set
+            {
+                _Height = value;
+
+                BorderManager.Height = value;
+                OnPropertyChanged(nameof(Height));
+                OnPropertyChanged(nameof(BorderManager));
+            }
+        }
+
+
+        private double _Width;
+        public double Width
+        {
+            get { return _Width; }
+            set
+            {
+                _Width = value;
+                BorderManager.Width = value;
+                OnPropertyChanged(nameof(Width));
+                OnPropertyChanged(nameof(BorderManager));
+            }
+        }
+
 
 
         public ElementDataSet ElementDataSet { get; }
@@ -90,20 +109,25 @@ namespace EBoard.ViewModels
         public ContentViewModel(ElementDataSet elementDataSet)
         {
             ElementDataSet = elementDataSet;
-            BrushManager = elementDataSet.BrushManager;
+            BorderManager = new BorderManagement(elementDataSet.BorderDataSet);
+            BrushManager = new BrushManagement(elementDataSet.BrushDataSet);
             Control = elementDataSet.ElementContent;
+
+            if (BorderManager == null)
+            {
+                BorderManager = new BorderManagement();
+            }
 
             if (BrushManager == null)
             {
                 BrushManager = new BrushManagement();
             }
 
+
             ElementHeaderText = elementDataSet.ElementHeader;
 
-            ElementHeight = elementDataSet.ElementHeight;
-            ElementWidth = elementDataSet.ElementWidth;
-
-            ElementImagePath = BrushManager.ImagePath;
+            ImagePath = BrushManager.ImagePath;
+            
         }
 
 
@@ -120,7 +144,7 @@ namespace EBoard.ViewModels
             {
 
                 BrushManager.Background = new ImageBrush(new BitmapImage(
-                    new Uri(_ElementImagePath, UriKind.Absolute)));
+                    new Uri(ImagePath, UriKind.Absolute)));
             }
             catch (Exception)
             {

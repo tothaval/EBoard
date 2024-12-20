@@ -24,8 +24,19 @@ selected eboard
 'Ciao' and 'Off' buttons close the application, there is no warning!
 <br><br>
 >>>>>>> Stashed changes
-a right click anywhere except on an element opens the eboard context menu that currently
-supports minimizing, maximizing, normalizing and quitting the application.
+a right click anywhere except on an element opens either the eboard contextmenu, the eboardbrowser contextmenu or
+the eboard context menu
+<br><br>
+mainwindow context menu supports:
++image, minimizing, maximizing, normalizing and quitting the application
+<br><br>
+eboard context menu supports: +image 
++image, switch to (first, previous, next or last) eboard, delete eboard,
+<br><br>
+eboardbrowser context menu supports:
++image, reset to default brush
+<br><br>
+ that currently supports 
 <br><br>
 left click and hold anywhere except buttons and elements will drag move the entire window.
 <<<<<<< Updated upstream

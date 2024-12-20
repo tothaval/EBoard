@@ -41,26 +41,15 @@ namespace EBoard.Models
         public string EBID { get; set; }
         public string EBoardName { get; set; }
         public int EBoardDepth { get; set; }
-        public double EBoardWidth { get; set; }
-        public double EBoardHeight { get; set; }
-        public BrushDataSet EBoardBrushManager { get; set; }
-        //[XmlIgnore]
-        //private readonly FlatViewModel _flatViewModel;
+
+        public BorderDataSet BorderDataSet { get; set; }
+        public BrushDataSet BrushDataSet { get; set; }
 
 
-        //[XmlArray("Elements")]
-        //public ObservableCollection<ElementViewModel> Elements { get; set; }
 
         public EboardDataSet()
         {
-            _EBoardViewModel = new EBoardViewModel("new", 1000.0, 500.0, 100);
-
-            EBID = "-1";
-            EBoardName = "new";
-            EBoardDepth = 100;
-            EBoardWidth = 1000.0;
-            EBoardHeight = 500.0;
-                
+            _EBoardViewModel = new EBoardViewModel("new", new BorderManagement() { Width = 1000.0, Height = 500.0}, 100);                            
         }
 
         public EboardDataSet(EBoardViewModel eBoardViewModel)
@@ -70,10 +59,21 @@ namespace EBoard.Models
             EBID = eBoardViewModel.EBID;
             EBoardName = eBoardViewModel.EBoardName;
             EBoardDepth = eBoardViewModel.EBoardDepth;
-            EBoardWidth = eBoardViewModel.EBoardWidth;
-            EBoardHeight = eBoardViewModel.EBoardHeight;
 
-            EBoardBrushManager = new BrushDataSet(eBoardViewModel.BrushManager);
+            BorderDataSet = new BorderDataSet(eBoardViewModel.BorderManager);
+
+            BrushDataSet = new BrushDataSet(eBoardViewModel.BrushManager);
+
+
+            if (BorderDataSet == null)
+            {
+                BorderDataSet = new BorderDataSet(new BorderManagement());
+            }
+
+            if (BrushDataSet == null)
+            {
+                BrushDataSet = new BrushDataSet(new BrushManagement());
+            }
         }
 
 

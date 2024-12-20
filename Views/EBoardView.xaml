@@ -5,6 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoard.Views"
              xmlns:vms="clr-namespace:EBoard.ViewModels"
+             
+             x:Name="EBoard_Board"
              mc:Ignorable="d"
              ClipToBounds="True"
                                                    
@@ -16,11 +18,39 @@
                                     
             Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
             BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
-            BorderThickness="{Binding BrushManager.BorderThickness, NotifyOnSourceUpdated=True}"
-            Width="{Binding EBoardWidth,
+            BorderThickness="{Binding BorderManager.BorderThickness, NotifyOnSourceUpdated=True}"
+            Width="{Binding BorderManager.Width,
         NotifyOnSourceUpdated=True}"
-            Height="{Binding EBoardHeight,
+            Height="{Binding BorderManager.Height,
         NotifyOnSourceUpdated=True}">
+
+
+        <Border.ContextMenu>
+
+            <ContextMenu>
+
+                <MenuItem Header="+Image" Command="{Binding EBoardImageCommand}"
+                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
+                
+                <MenuItem Header="First" Command="{Binding SwitchToFirstEBoardCommand}"
+                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
+                
+                <MenuItem Header="Prev" Command="{Binding SwitchToPrevEBoardCommand}"
+                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
+
+                <MenuItem Header="Next" Command="{Binding SwitchToNextEBoardCommand}"
+                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
+                
+                <MenuItem Header="Last" Command="{Binding SwitchToLastEBoardCommand}"
+                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
+                                
+                <MenuItem Header="Delete" Command="{Binding DeleteEBoardCommand}"
+                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
+
+            </ContextMenu>
+
+        </Border.ContextMenu>
+
 
         <ItemsControl ItemsSource="{Binding Elements}"
                       HorizontalAlignment="Stretch"
@@ -38,12 +68,17 @@
                 <ItemsControl.ItemContainerStyle>
                     <Style>
                         <Setter Property="Canvas.Left"
-                                Value="{Binding X,
+                                Value="{Binding PlacementManager.Position.X,
                             UpdateSourceTrigger=PropertyChanged,
                             NotifyOnSourceUpdated=True}"/>
                                                 
                         <Setter Property="Canvas.Top"
-                                Value="{Binding Y,
+                                Value="{Binding PlacementManager.Position.Y,
+                            UpdateSourceTrigger=PropertyChanged,
+                            NotifyOnSourceUpdated=True}"/>
+                        
+                        <Setter Property="Panel.ZIndex"
+                                Value="{Binding PlacementManager.Z,
                             UpdateSourceTrigger=PropertyChanged,
                             NotifyOnSourceUpdated=True}"/>
                     </Style>

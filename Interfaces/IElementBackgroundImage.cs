@@ -11,9 +11,7 @@ namespace EBoard.Interfaces
 {
     public interface IElementBackgroundImage
     {
-        public string ElementImagePath { get; set; }
-
-        public Brush FallbackBackgroundBrush { get; }
+        public string ImagePath { get; set; }
 
         public void ChangeElementBackgroundToImage();
     }

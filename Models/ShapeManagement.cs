@@ -41,7 +41,7 @@ namespace EBoard.Models
         }
 
 
-        public Task Load(string path, ElementDataSet elementDataSet)
+        public async Task Load(string path, ElementDataSet elementDataSet)
         {
             
             string shapeDataPath = $"{path}shapedata.xml";
@@ -56,11 +56,11 @@ namespace EBoard.Models
             {
                 _Element = new Rectangle()
                 {
-                    Width = elementDataSet.ElementWidth,
-                    Height = elementDataSet.ElementHeight,
-                    Fill = elementDataSet.BrushManager.Background,
-                    Stroke = elementDataSet.BrushManager.Border,
-                    StrokeThickness = elementDataSet.BrushManager.BorderThickness.Left
+                    Width = elementDataSet.BorderDataSet.Width,
+                    Height = elementDataSet.BorderDataSet.Height,
+                    Fill = await elementDataSet.BrushDataSet.BackgroundColor.GetBrush(),
+                    Stroke = await elementDataSet.BrushDataSet.BackgroundColor.GetBrush(),
+                    StrokeThickness = elementDataSet.BorderDataSet.BorderThickness.Left
                 };
             }
 
@@ -68,35 +68,20 @@ namespace EBoard.Models
             {
                 _Element = new Ellipse()
                 {
-                    Width = elementDataSet.ElementWidth,
-                    Height = elementDataSet.ElementHeight,
-                    Fill = elementDataSet.BrushManager.Background,
-                    Stroke = elementDataSet.BrushManager.Border,
-                    StrokeThickness = elementDataSet.BrushManager.BorderThickness.Left
+                    Width = elementDataSet.BorderDataSet.Width,
+                    Height = elementDataSet.BorderDataSet.Height,
+                    Fill = await elementDataSet.BrushDataSet.BackgroundColor.GetBrush(),
+                    Stroke = await elementDataSet.BrushDataSet.BackgroundColor.GetBrush(),
+                    StrokeThickness = elementDataSet.BorderDataSet.BorderThickness.Left
                 };
             }
 
-
-            return Task.CompletedTask;
+            return;
         }
 
 
         public async Task Save(string path, ElementDataSet elementDataSet)
         {
-
-            string brushDataPath = $"{path}brushdata.xml";
-
-            // serialize brushes
-            var xmlSerializer_BrushDataSet = new XmlSerializer(typeof(BrushDataSet));
-
-            BrushDataSet brushDataSet = new BrushDataSet(elementDataSet.BrushManager);
-
-            await using (var writer = new StreamWriter(brushDataPath))
-            {
-                xmlSerializer_BrushDataSet.Serialize(writer, brushDataSet);
-            }
-
-
             string shapeDataPath = $"{path}shapedata.xml";
 
             // serialize content

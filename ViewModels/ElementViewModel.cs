@@ -40,24 +40,23 @@ namespace EBoard.ViewModels
         public ShapeViewModel ShapeViewModel => _ShapeViewModel;
 
 
+        private PlacementManagement _PlacementManagement;
+        public PlacementManagement PlacementManager
+        {
+            get { return _PlacementManagement; }
+            set
+            {
+                _PlacementManagement = value;
+                OnPropertyChanged(nameof(PlacementManager));
+            }
+        }
+
         private string _EID;
         /// <summary>
         /// Element ID, created upon first creation,
         /// built using $"Element_{DateTime().Ticks}"        
         /// </summary>
         public string EID => _EID;
-
-
-        private double _ElementRotation;
-        public double ElementRotation
-        {
-            get { return _ElementRotation; }
-            set
-            {
-                _ElementRotation = value;
-                OnPropertyChanged(nameof(ElementRotation));
-            }
-        }
 
 
         private bool _IsShape = false;
@@ -80,42 +79,6 @@ namespace EBoard.ViewModels
             {
                 _IsContent = value;
                 OnPropertyChanged(nameof(IsContent));
-            }
-        }
-
-
-        private double _X;
-        public double X
-        {
-            get { return _X; }
-            set
-            {
-                _X = value;
-                OnPropertyChanged(nameof(_X));
-            }
-        }
-
-
-        private double _Y;
-        public double Y
-        {
-            get { return _Y; }
-            set
-            {
-                _Y = value;
-                OnPropertyChanged(nameof(Y));
-            }
-        }
-
-
-        private double _Z;
-        public double Z
-        {
-            get { return _Z; }
-            set
-            {
-                _Z = value;
-                OnPropertyChanged(nameof(Z));
             }
         }
 
@@ -142,6 +105,8 @@ namespace EBoard.ViewModels
             RightClickCommand = new RelayCommand((s) => RemoveElement(s), (s) => true);
 
             _EBoardViewModel = eBoardViewModel;
+
+            PlacementManager = new PlacementManagement();
         }
 
 
@@ -169,9 +134,13 @@ namespace EBoard.ViewModels
 
             _EID = elementDataSet.EID;
 
-            X = elementDataSet.X; Y = elementDataSet.Y; Z = elementDataSet.Z;
+            PlacementManager = new PlacementManagement();
 
-
+            if (elementDataSet.PlacementDataSet != null)
+            {
+                PlacementManager.Position = elementDataSet.PlacementDataSet.Position;
+                PlacementManager.Z = elementDataSet.PlacementDataSet.Z; 
+            }
 
             if (_EID == null || _EID.Equals("-1"))
             {
