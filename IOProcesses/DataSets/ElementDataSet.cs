@@ -15,6 +15,7 @@
  */
 
 using EBoard.Interfaces;
+using EBoard.IOProcesses.DataSets;
 using EBoard.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -43,11 +44,10 @@ namespace EBoard.Models
         public ElementViewModel ElementViewModel => _ElementViewModel;
 
 
-        [XmlIgnore]
-        private BrushManagement _BrushManager { get; set; }
+        public BorderDataSet BorderDataSet { get; set; }
+        public BrushDataSet BrushDataSet { get; set; }
+        public PlacementDataSet PlacementDataSet { get; set; }
 
-        [XmlIgnore]
-        public BrushManagement BrushManager => _BrushManager;
 
 
         [XmlIgnore]
@@ -79,55 +79,81 @@ namespace EBoard.Models
         public string ElementHeader { get; set; }
 
 
-        /// <summary>
-        /// the x axis value of an elements left border
-        /// </summary>
-        public double X { get; set; }
-
-
-        /// <summary>
-        /// the y axis value of an elements top border
-        /// </summary>
-        public double Y { get; set; }
-
-
-        /// <summary>
-        /// the panel z index value of an element
-        /// </summary>
-        public double Z { get; set; }
-
-
-        /// <summary>
-        /// the x axis length of the element in pixel
-        /// </summary>
-        public double ElementWidth { get; set; }
-
-
-        /// <summary>
-        /// the y axis length of the element in pixel
-        /// </summary>
-        public double ElementHeight { get; set; }
 
 
         public ElementDataSet()
         {
-            _EBoardViewModel = new EBoardViewModel("new", 1000.0, 500.0, 100);
+            _EBoardViewModel = new EBoardViewModel("new", new BorderManagement() { Width = 1000.0, Height = 500.0}, 100);
     
-            _ElementViewModel = new ElementViewModel(_EBoardViewModel);                       
+            _ElementViewModel = new ElementViewModel(_EBoardViewModel);
         }
 
 
         public ElementDataSet(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel)
         {
             _EBoardViewModel = eBoardViewModel;
-            _ElementViewModel = elementViewModel;         
-        }
+            _ElementViewModel = elementViewModel;
+                       
 
-        public void AddBrushManager(BrushManagement brushManager)
+            if (elementViewModel.IsShape)
+            {
+                BorderDataSet = new BorderDataSet(elementViewModel.ShapeViewModel.BorderManager);
+                BrushDataSet = new BrushDataSet(elementViewModel.ShapeViewModel.BrushManager);
+            }
+
+            if (elementViewModel.IsContent)
+            {
+                BorderDataSet = new BorderDataSet(elementViewModel.ContentViewModel.BorderManager);
+                BrushDataSet = new BrushDataSet(elementViewModel.ContentViewModel.BrushManager);
+            }
+
+
+            PlacementDataSet = new PlacementDataSet(elementViewModel.PlacementManager);
+
+            if (BorderDataSet == null)
+            {
+                BorderDataSet = new BorderDataSet();
+            }
+
+            if (BrushDataSet == null)
+            {                
+                BrushDataSet = new BrushDataSet();
+            }
+
+            if (PlacementDataSet == null)
+            {
+                PlacementDataSet = new PlacementDataSet();
+            }
+
+        }
+        public void AddBorderDataSet(BorderDataSet borderDataSet)
         {
-            _BrushManager = brushManager;
+            BorderDataSet = borderDataSet;
+
+            if (BorderDataSet == null)
+            {
+                BorderDataSet = new BorderDataSet(new BorderManagement());
+            }
         }
 
+        public void AddBrushDataSet(BrushDataSet brushDataSet)
+        {
+            BrushDataSet = brushDataSet;
+
+            if (BrushDataSet == null)
+            {
+                BrushDataSet = new BrushDataSet(new BrushManagement());
+            }
+        }
+        public void AddPlacementDataSet(PlacementDataSet placementDataSet)
+        {
+            PlacementDataSet = placementDataSet;
+
+            if (PlacementDataSet == null)
+            {
+                PlacementDataSet = new PlacementDataSet(new PlacementManagement());
+            }
+        }
 
         public async Task ConvertData()
         {
@@ -140,10 +166,9 @@ namespace EBoard.Models
 
                 ElementTypeString = ElementContent.GetType().FullName;
 
-                ElementWidth = ElementViewModel.ContentViewModel.ElementWidth;
-                ElementHeight = ElementViewModel.ContentViewModel.ElementHeight;
+                BorderDataSet = new BorderDataSet(ElementViewModel.ContentViewModel.BorderManager);
 
-                _BrushManager = ElementViewModel.ContentViewModel.BrushManager;
+                BrushDataSet = new BrushDataSet(ElementViewModel.ContentViewModel.BrushManager);
             }
 
             if (ElementViewModel.IsShape)
@@ -153,16 +178,12 @@ namespace EBoard.Models
 
                 ElementTypeString = ElementContent.GetType().FullName;
 
-                ElementWidth = ElementViewModel.ShapeViewModel.ElementWidth;
-                ElementHeight = ElementViewModel.ShapeViewModel.ElementHeight;
+                BorderDataSet = new BorderDataSet(ElementViewModel.ShapeViewModel.BorderManager);
 
-                _BrushManager = ElementViewModel.ShapeViewModel.BrushManager;
+                BrushDataSet = new BrushDataSet(ElementViewModel.ShapeViewModel.BrushManager);
             }
 
-            X = ElementViewModel.X;
-            Y = ElementViewModel.Y;
-            Z = ElementViewModel.Z;
-
+            PlacementDataSet = new PlacementDataSet(ElementViewModel.PlacementManager);
 
             await Task.CompletedTask;
         }

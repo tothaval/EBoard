@@ -1,11 +1,4 @@
 ﻿using EBoard.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
 using System.Xml.Serialization;
 
 namespace EBoard.IOProcesses.DataSets
@@ -14,7 +7,7 @@ namespace EBoard.IOProcesses.DataSets
     public class BrushDataSet
     {
         [XmlIgnore]
-        private BrushManagement _BrushManagement;
+        private BrushManagement _BrushManagement = new BrushManagement();
 
         public ColorDataSet BackgroundColor { get; set; }
 
@@ -25,9 +18,6 @@ namespace EBoard.IOProcesses.DataSets
 
 
         public ColorDataSet HighlightColor { get; set; }
-
-
-        public Thickness BorderThickness { get; set; }
 
 
         public BrushDataSet()
@@ -50,7 +40,6 @@ namespace EBoard.IOProcesses.DataSets
             BorderColor = new ColorDataSet(_BrushManagement.Border);
             HighlightColor = new ColorDataSet(_BrushManagement.Highlight);
 
-            BorderThickness = _BrushManagement.BorderThickness;
         }
 
 

@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows;
+using EBoard.IOProcesses.DataSets;
 
 namespace EBoard.Commands.ElementCreationCommands
 {
@@ -48,16 +49,14 @@ namespace EBoard.Commands.ElementCreationCommands
             {
                 ElementDataSet elementDataSet = new ElementDataSet();
                 elementDataSet.EID = "-1";
-                elementDataSet.X = 25;
-                elementDataSet.Y = 25;
-                elementDataSet.Z = 0;
+
                 elementDataSet.ElementHeader = "Prototype Element";
-                elementDataSet.ElementHeight = 75.0;
-                elementDataSet.ElementWidth = 225.0;
+
                 elementDataSet.ElementTypeString = "EBoard.Models.ContainerManagement";
 
-                elementDataSet.AddBrushManager(new BrushManagement());
-
+                elementDataSet.AddBorderDataSet(new BorderDataSet(new BorderManagement()));
+                elementDataSet.AddBrushDataSet(new BrushDataSet(new BrushManagement()));
+                elementDataSet.AddPlacementDataSet(new PlacementDataSet(new PlacementManagement()));
 
                 elementDataSet.ElementContent = new ContainerManagement(new TextBox()
                 {
@@ -66,7 +65,6 @@ namespace EBoard.Commands.ElementCreationCommands
                     AcceptsTab = true,
                     TextWrapping = TextWrapping.Wrap
                 });
-
 
                 ElementViewModel evm = new ElementViewModel(
                     _MainViewModel.EBoardBrowserViewModel.SelectedEBoard,

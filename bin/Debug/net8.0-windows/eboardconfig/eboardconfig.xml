@@ -2,42 +2,51 @@
 <EboardConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <EBoardCount>2</EBoardCount>
   <EBoardIndex>1</EBoardIndex>
-  <EBoardBrowserSwitch>false</EBoardBrowserSwitch>
-  <EBoardPosition>
-    <X>532</X>
-    <Y>125</Y>
-  </EBoardPosition>
-  <EBoardHeight>811</EBoardHeight>
-  <EBoardWidth>1278</EBoardWidth>
-  <EBoardMainWindowBrushManager>
+  <EBoardBrowserSwitch>true</EBoardBrowserSwitch>
+  <BorderDataSet>
+    <BorderThickness>
+      <Left>12</Left>
+      <Top>2</Top>
+      <Right>13</Right>
+      <Bottom>2</Bottom>
+    </BorderThickness>
+    <CornerRadius>
+      <TopLeft>0</TopLeft>
+      <TopRight>25</TopRight>
+      <BottomRight>0</BottomRight>
+      <BottomLeft>4</BottomLeft>
+    </CornerRadius>
+    <Height>769</Height>
+    <Margin>
+      <Left>22</Left>
+      <Top>10</Top>
+      <Right>0</Right>
+      <Bottom>0</Bottom>
+    </Margin>
+    <Padding>
+      <Left>0</Left>
+      <Top>0</Top>
+      <Right>15</Right>
+      <Bottom>3</Bottom>
+    </Padding>
+    <Width>1500</Width>
+  </BorderDataSet>
+  <BrushDataSet>
     <BackgroundColor>
-      <BrushType>SolidColorBrush</BrushType>
+      <BrushType>ImageBrush</BrushType>
       <Color>
-        <A>255</A>
-        <R>255</R>
-        <G>255</G>
-        <B>255</B>
-        <ScA>1</ScA>
-        <ScR>1</ScR>
-        <ScG>1</ScG>
-        <ScB>1</ScB>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
       </Color>
-      <ImagePath />
-      <GradientColors>
-        <Color>
-          <A>255</A>
-          <R>255</R>
-          <G>255</G>
-          <B>255</B>
-          <ScA>1</ScA>
-          <ScR>1</ScR>
-          <ScG>1</ScG>
-          <ScB>1</ScB>
-        </Color>
-      </GradientColors>
-      <GradientStops>
-        <double>0</double>
-      </GradientStops>
+      <ImagePath>file:///E:/Render/blend_files/trial02.png</ImagePath>
+      <GradientColors />
+      <GradientStops />
       <GradientPoints />
     </BackgroundColor>
     <ForegroundColor>
@@ -74,25 +83,25 @@
       <BrushType>SolidColorBrush</BrushType>
       <Color>
         <A>255</A>
-        <R>194</R>
-        <G>114</G>
-        <B>242</B>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
         <ScA>1</ScA>
-        <ScR>0.5411</ScR>
-        <ScG>0.1686</ScG>
-        <ScB>0.8862</ScB>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
       </Color>
       <ImagePath />
       <GradientColors>
         <Color>
           <A>255</A>
-          <R>194</R>
-          <G>114</G>
-          <B>242</B>
+          <R>0</R>
+          <G>0</G>
+          <B>0</B>
           <ScA>1</ScA>
-          <ScR>0.5411</ScR>
-          <ScG>0.1686</ScG>
-          <ScB>0.8862</ScB>
+          <ScR>0</ScR>
+          <ScG>0</ScG>
+          <ScB>0</ScB>
         </Color>
       </GradientColors>
       <GradientStops>
@@ -104,25 +113,25 @@
       <BrushType>SolidColorBrush</BrushType>
       <Color>
         <A>255</A>
-        <R>144</R>
-        <G>238</G>
-        <B>144</B>
+        <R>154</R>
+        <G>205</G>
+        <B>50</B>
         <ScA>1</ScA>
-        <ScR>0.2788943</ScR>
-        <ScG>0.8549926</ScG>
-        <ScB>0.2788943</ScB>
+        <ScR>0.32314324</ScR>
+        <ScG>0.61049557</ScG>
+        <ScB>0.031896032</ScB>
       </Color>
       <ImagePath />
       <GradientColors>
         <Color>
           <A>255</A>
-          <R>144</R>
-          <G>238</G>
-          <B>144</B>
+          <R>154</R>
+          <G>205</G>
+          <B>50</B>
           <ScA>1</ScA>
-          <ScR>0.2788943</ScR>
-          <ScG>0.8549926</ScG>
-          <ScB>0.2788943</ScB>
+          <ScR>0.32314324</ScR>
+          <ScG>0.61049557</ScG>
+          <ScB>0.031896032</ScB>
         </Color>
       </GradientColors>
       <GradientStops>
@@ -130,11 +139,13 @@
       </GradientStops>
       <GradientPoints />
     </HighlightColor>
-    <BorderThickness>
-      <Left>4</Left>
-      <Top>4</Top>
-      <Right>4</Right>
-      <Bottom>4</Bottom>
-    </BorderThickness>
-  </EBoardMainWindowBrushManager>
+  </BrushDataSet>
+  <PlacementDataSet>
+    <Angle>0</Angle>
+    <Position>
+      <X>681</X>
+      <Y>120</Y>
+    </Position>
+    <Z>0</Z>
+  </PlacementDataSet>
 </EboardConfiguration>

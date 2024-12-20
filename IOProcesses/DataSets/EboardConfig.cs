@@ -24,6 +24,7 @@
  *  
  */
 
+using EBoard.Models;
 using EBoard.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -51,15 +52,15 @@ namespace EBoard.IOProcesses.DataSets
 
         public bool EBoardBrowserSwitch { get; set; }
 
-        public Point EBoardPosition { get; set; }
+
+        public BorderDataSet BorderDataSet { get; set; }
 
 
-        public double EBoardHeight { get; set; }
+        public BrushDataSet BrushDataSet { get; set; }
 
 
-        public double EBoardWidth { get; set; }
-
-        public BrushDataSet EBoardMainWindowBrushManager { get; set; }
+        public PlacementDataSet PlacementDataSet { get; set; }
+        
 
         //public string FlatNotes { get; set; }
 
@@ -83,12 +84,26 @@ namespace EBoard.IOProcesses.DataSets
 
             EBoardBrowserSwitch = mainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch;
 
-            EBoardPosition = new Point(mainViewModel.PositionX, mainViewModel.PositionY);
+            BorderDataSet = new BorderDataSet(mainViewModel.BorderManager);
 
-            EBoardHeight = mainViewModel.EBoardHeight;
-            EBoardWidth = mainViewModel.EBoardWidth;
+            BrushDataSet = new BrushDataSet(mainViewModel.BrushManager);
 
-            EBoardMainWindowBrushManager = new BrushDataSet(mainViewModel.BrushManager);
+            PlacementDataSet = new PlacementDataSet(mainViewModel.PlacementManager);
+
+            if (BorderDataSet == null)
+            {
+                BorderDataSet = new BorderDataSet(new BorderManagement());
+            }
+
+            if (BrushDataSet == null)
+            {
+                BrushDataSet = new BrushDataSet(new BrushManagement());
+            }
+
+            if (PlacementDataSet == null)
+            {
+                PlacementDataSet = new PlacementDataSet(new PlacementManagement());
+            }
         }
     }
 }

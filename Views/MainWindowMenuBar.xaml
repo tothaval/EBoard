@@ -15,7 +15,7 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding Title}" Foreground="Orange" FontSize="28"
+        <TextBlock Text="{Binding Title}" Foreground="{Binding MainViewModel.BrushManager.Foreground, NotifyOnSourceUpdated=True}" FontSize="28"
                    Grid.Row="0" Grid.Column="0"/>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0"

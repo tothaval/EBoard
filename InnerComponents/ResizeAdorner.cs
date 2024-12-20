@@ -75,14 +75,14 @@ namespace EBoard.InnerComponents
 
             if (elementViewModel.IsContent)
             {
-                elementViewModel.ContentViewModel.ElementHeight = height - e.VerticalChange < 0 ? 0 : height - e.VerticalChange;
-                elementViewModel.ContentViewModel.ElementWidth = width - e.HorizontalChange < 0 ? 0 : width - e.HorizontalChange;
+                elementViewModel.ContentViewModel.Height = height - e.VerticalChange < 0 ? 0 : height - e.VerticalChange;
+                elementViewModel.ContentViewModel.Width = width - e.HorizontalChange < 0 ? 0 : width - e.HorizontalChange;
             }
 
             if (elementViewModel.IsShape)
             {
-                elementViewModel.ShapeViewModel.ElementHeight = height - e.VerticalChange < 0 ? 0 : height - e.VerticalChange;
-                elementViewModel.ShapeViewModel.ElementWidth = width - e.HorizontalChange < 0 ? 0 : width - e.HorizontalChange;
+                elementViewModel.ShapeViewModel.Height = height - e.VerticalChange < 0 ? 0 : height - e.VerticalChange;
+                elementViewModel.ShapeViewModel.Width = width - e.HorizontalChange < 0 ? 0 : width - e.HorizontalChange;
             }
 
         }
@@ -93,14 +93,14 @@ namespace EBoard.InnerComponents
 
             if (elementViewModel.IsContent)
             {
-                elementViewModel.ContentViewModel.ElementHeight = height + e.VerticalChange < 0 ? 0 : height + e.VerticalChange;
-                elementViewModel.ContentViewModel.ElementWidth = width + e.HorizontalChange < 0 ? 0 : width + e.HorizontalChange;
+                elementViewModel.ContentViewModel.Height = height + e.VerticalChange < 0 ? 0 : height + e.VerticalChange;
+                elementViewModel.ContentViewModel.Width = width + e.HorizontalChange < 0 ? 0 : width + e.HorizontalChange;
             }
 
             if (elementViewModel.IsShape)
             {
-                elementViewModel.ShapeViewModel.ElementHeight = height + e.VerticalChange < 0 ? 0 : height + e.VerticalChange;
-                elementViewModel.ShapeViewModel.ElementWidth = width + e.HorizontalChange < 0 ? 0 : width + e.HorizontalChange;
+                elementViewModel.ShapeViewModel.Height = height + e.VerticalChange < 0 ? 0 : height + e.VerticalChange;
+                elementViewModel.ShapeViewModel.Width = width + e.HorizontalChange < 0 ? 0 : width + e.HorizontalChange;
             }
         }
 

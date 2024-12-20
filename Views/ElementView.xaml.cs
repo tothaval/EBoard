@@ -118,9 +118,8 @@ namespace EBoard.Views
 
             ElementViewModel thisViewmodel = (ElementViewModel)this.DataContext;
 
-            thisViewmodel.X = X;
-            thisViewmodel.Y = Y;
-            thisViewmodel.Z = Z;
+            thisViewmodel.PlacementManager.Position = new Point(X, Y);                
+            thisViewmodel.PlacementManager.Z = Z;
 
             e.Handled = true;
         }
