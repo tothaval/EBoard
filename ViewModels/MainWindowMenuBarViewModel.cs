@@ -2,8 +2,8 @@
  *  
  *  MainWindowMenuBarViewModel 
  * 
- *  helper class for
-
+ *  view model for MainWindowMenuBarView, which has prototype element instantiation
+ *  button and a prototype shape menu and a button to switch on or off the EBoardBrowserView
  */
 using EBoard.Commands.ElementCreationCommands;
 using System;

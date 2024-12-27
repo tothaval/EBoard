@@ -59,6 +59,10 @@
                 <MenuItem Header="+Image" Command="{Binding MainWindowImageCommand}"
                           CommandParameter="{Binding ElementName=EboardMainWindow}"/>
 
+                <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"
+                          CommandParameter="{Binding ElementName=EboardMainWindow}"/>
+
+                <Separator/>
 
                 <MenuItem Header="{DynamicResource MaximizeContextMenuItemHeader}"
                       Command="{Binding MaximizeCommand}"

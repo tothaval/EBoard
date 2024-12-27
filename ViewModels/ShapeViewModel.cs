@@ -1,12 +1,12 @@
-﻿using EBoard.Interfaces;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  ShapeViewModel 
+ * 
+ *  viewmodel for shape content elements
+ */
+using EBoard.Interfaces;
 using EBoard.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+using EBoard.Utilities.SharedMethods;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -67,8 +67,9 @@ namespace EBoard.ViewModels
                 _ImagePath = value;
 
                 OnPropertyChanged(nameof(ImagePath));
-
-                ChangeElementBackgroundToImage();
+                
+                ChangeElementBackgroundToImage(); 
+                
             }
         }
 
@@ -106,13 +107,15 @@ namespace EBoard.ViewModels
         }
 
 
-
         public ElementDataSet ElementDataSet { get; }
+
 
         private Brush _FallbackBackgroundBrush;
         public Brush FallbackBackgroundBrush => _FallbackBackgroundBrush;
 
+
         public IElementContent Control { get; }
+
 
         public ShapeViewModel(ElementDataSet elementDataSet)
         {
@@ -150,28 +153,17 @@ namespace EBoard.ViewModels
                 ElementHeaderText = "Shape Element";
             }
         }
+
+
         public void ChangeElementBackgroundToImage()
         {
-            //if (ElementImagePath == null || !File.Exists(ElementImagePath) || ElementImagePath.Equals(string.Empty))
-            //{
-            //    BrushManager.ElementBackground = new SolidColorBrush(Colors.BlanchedAlmond);
+            BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
 
-            //    ((Shape)Control.Element).Fill = new SolidColorBrush(Colors.BlanchedAlmond);
+            ((Shape)Control.Element).Fill = BrushManager.Background;
+            ((Shape)Control.Element).Stroke = BrushManager.Border;
+            ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
 
-            //    return;
-            //}
-
-            try
-            {
-                BrushManager.Background = new ImageBrush(new BitmapImage(
-            new Uri(ImagePath, UriKind.Absolute)));
-
-                ((Shape)Control.Element).Fill = BrushManager.Background;
-            }
-            catch (Exception)
-            {
-
-            }
+            OnPropertyChanged(nameof(BrushManager));
 
             OnPropertyChanged(nameof(BrushManager.Background));
         }
@@ -192,3 +184,4 @@ namespace EBoard.ViewModels
 
     }
 }
+// EOF

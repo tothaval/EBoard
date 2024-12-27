@@ -1,9 +1,11 @@
-﻿using EBoard.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  ShapeDataSet 
+ * 
+ *  serializable helper class to store and retrieve shape related data to
+ *  or from hard drive storage.
+ */
+using EBoard.Models;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
 
@@ -36,3 +38,4 @@ namespace EBoard.IOProcesses.DataSets
     }
 
 }
+// EOF

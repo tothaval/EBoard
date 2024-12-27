@@ -1,10 +1,13 @@
-﻿using EBoard.Interfaces;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  PlacementManagement 
+ * 
+ *  model for placement property changes
+ *  can be applied to MainWindowViewModel and ElementViewModel to define the initial
+ *  values on load or upon creation, as well as to store changes during runtime.
+ */
+using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace EBoard.Models
@@ -68,3 +71,4 @@ namespace EBoard.Models
 
     }
 }
+// EOF

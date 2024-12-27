@@ -1,4 +1,10 @@
-﻿using EBoard.Interfaces;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  BrushManagement 
+ * 
+ *  model for brush property changes
+ */
+using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
 using System;
 using System.Collections.Generic;
@@ -78,3 +84,4 @@ namespace EBoard.Models
 
     }
 }
+// EOF

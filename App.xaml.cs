@@ -4,13 +4,9 @@
  */
 using EBoard.IOProcesses;
 using EBoard.IOProcesses.DataSets;
-using EBoard.Models;
 using EBoard.Navigation;
 using EBoard.ViewModels;
-using System.Configuration;
-using System.Data;
 using System.Windows;
-using System.Windows.Media;
 
 namespace EBoard
 {

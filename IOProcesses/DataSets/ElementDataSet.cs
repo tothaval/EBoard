@@ -17,15 +17,6 @@
 using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
 using EBoard.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Xml.Serialization;
 
 namespace EBoard.Models
@@ -83,9 +74,9 @@ namespace EBoard.Models
 
         public ElementDataSet()
         {
-            _EBoardViewModel = new EBoardViewModel("new", new BorderManagement() { Width = 1000.0, Height = 500.0}, 100);
+            //_EBoardViewModel = new EBoardViewModel("new", new BorderManagement() { Width = 1000.0, Height = 500.0}, 100);
     
-            _ElementViewModel = new ElementViewModel(_EBoardViewModel);
+            //_ElementViewModel = new ElementViewModel(_EBoardViewModel);
         }
 
 

@@ -2,16 +2,19 @@
  *  
  *  EBoardBrowserViewModel 
  * 
- *  helper class for
+ *  view model class for EBoardBrowserView
+ *  
+ *  EBoardBrowserView presents the EBoardViewModels currently existent within the application,
+ *  as well as functionality to create, edit or delete eboard instances.
  */
 using EBoard.Commands;
+using EBoard.Commands.ContextMenuCommands;
 using EBoard.Commands.ContextMenuCommands.EBoardBrowserContextMenu;
 using EBoard.Interfaces;
 using EBoard.Models;
 using EBoard.Navigation;
+using EBoard.Utilities.SharedMethods;
 using System.Collections.ObjectModel;
-using System.Reflection.Metadata;
-using System.Security.Policy;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -26,7 +29,7 @@ namespace EBoard.ViewModels
 
 
 
-        private double _NewEBoardHeight;
+        private double _NewEBoardHeight = 480;
         public double NewEBoardHeight
         {
             get { return _NewEBoardHeight; }
@@ -38,7 +41,7 @@ namespace EBoard.ViewModels
         }
 
 
-        private double _NewEBoardWidth;
+        private double _NewEBoardWidth = 720;
         public double NewEBoardWidth
         {
             get { return _NewEBoardWidth; }
@@ -64,7 +67,7 @@ namespace EBoard.ViewModels
         public int EBoardCount { get; set; }
 
 
-        private int _EBoardDepth;
+        private int _EBoardDepth = 100;
         public int EBoardDepth
         {
             get { return _EBoardDepth; }
@@ -76,7 +79,7 @@ namespace EBoard.ViewModels
         }
 
 
-        private string _EBoardName;
+        private string _EBoardName  = "new";
         public string EBoardName
         {
             get { return _EBoardName; }
@@ -88,7 +91,7 @@ namespace EBoard.ViewModels
         }
 
 
-        private string _ImagePath;
+        private string _ImagePath = string.Empty;
         public string ImagePath
         {
             get { return _ImagePath; }
@@ -162,7 +165,7 @@ namespace EBoard.ViewModels
         public ICommand EditEBoardParametersCommand { get; set; }
 
 
-        public ICommand ResetEBoardBrowserBackgroundCommand { get; set; }
+        public ICommand ResetBackgroundCommand { get; set; }
 
 
         public ICommand ShowEBoardCommand { get; }
@@ -183,7 +186,7 @@ namespace EBoard.ViewModels
 
             EditEBoardParametersCommand = new EditEBoardParametersCommand(this);
 
-            ResetEBoardBrowserBackgroundCommand = new ResetEBoardBrowserBackgroundCommand(this);
+            ResetBackgroundCommand = new ResetBackgroundCommand(this);
 
             BrushManager = new BrushManagement();
             BrushManager.Background = new SolidColorBrush(Colors.CornflowerBlue);
@@ -204,7 +207,7 @@ namespace EBoard.ViewModels
 
             EditEBoardParametersCommand = new EditEBoardParametersCommand(this);
 
-            ResetEBoardBrowserBackgroundCommand = new ResetEBoardBrowserBackgroundCommand(this);
+            ResetBackgroundCommand = new ResetBackgroundCommand(this);
 
             BrushManager = new BrushManagement();
             BrushManager.Background = new SolidColorBrush(Colors.White);
@@ -238,23 +241,7 @@ namespace EBoard.ViewModels
 
         public void ChangeElementBackgroundToImage()
         {
-            //if (_ElementImagePath == null || !File.Exists(_ElementImagePath) || _ElementImagePath.Equals(string.Empty))
-            //{                
-            //    BrushManager.ElementBackground = new SolidColorBrush(Colors.BlanchedAlmond);
-
-            //    return;
-            //}
-
-            try
-            {
-                BrushManager.Background = new ImageBrush(new BitmapImage(
-                    new Uri(ImagePath, UriKind.Absolute)));
-            }
-            catch (Exception)
-            {
-                BrushManager.Background = new SolidColorBrush(Colors.White);
-            }
-
+            BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
 
             OnPropertyChanged(nameof(BrushManager));
 

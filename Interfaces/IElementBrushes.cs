@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  IElementBrushes 
+ * 
+ *  interface for BrusManagement
+ */
 using System.Windows.Media;
 
 namespace EBoard.Interfaces
@@ -27,3 +27,4 @@ namespace EBoard.Interfaces
 
     }
 }
+// EOF

@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  IElementBorder 
+ * 
+ *  interface for BorderManagement
+ */
 using System.Windows;
 
 namespace EBoard.Interfaces
@@ -22,3 +23,4 @@ namespace EBoard.Interfaces
         public Thickness Padding { get; set; }
     }
 }
+// EOF

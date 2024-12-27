@@ -2,8 +2,7 @@
  *  
  *  MainWindowLogoutBarViewModel 
  * 
- *  helper class for
-
+ *  view model for MainWindowLogoutBarView, which has two buttons atm to close the application
  */
 using EBoard.Commands;
 using System;

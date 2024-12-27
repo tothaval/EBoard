@@ -14,15 +14,8 @@
 using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
 using EBoard.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Resources;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Animation;
 using System.Xml.Serialization;
 
 namespace EBoard.IOProcesses

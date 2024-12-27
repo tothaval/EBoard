@@ -2,24 +2,16 @@
  *  
  *  ElementViewModel 
  * 
- *  helper class for
-
+ *  view model for ElementView, which offers some basic dragmove functionality,
+ *  element placement properties within EBoardView canvas and basic content management
  */
 
 using EBoard.Commands;
 using EBoard.Commands.ContextMenuCommands;
-using EBoard.Interfaces;
 using EBoard.Models;
-using EBoard.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -82,6 +74,47 @@ namespace EBoard.ViewModels
             }
         }
 
+
+        private int _ZIndexValue = 0;
+        public int ZIndexValue
+        {
+            get { return _ZIndexValue; }
+            set
+            {
+                _ZIndexValue = value;
+
+                PlacementManager.Z = value;
+
+                OnPropertyChanged(nameof(PlacementManager.Z));
+                OnPropertyChanged(nameof(ZIndexValue));
+            }
+        }
+
+
+        private int _ZMinimumValue;
+        public int ZMinimumValue
+        {
+            get { return _ZMinimumValue; }
+            set
+            {
+                _ZMinimumValue = value;
+                OnPropertyChanged(nameof(ZMinimumValue));
+            }
+        }
+
+
+        private int _ZMaximumValue;
+        public int ZMaximumValue
+        {
+            get { return _ZMaximumValue; }
+            set
+            {
+                _ZMaximumValue = value;
+                OnPropertyChanged(nameof(ZMaximumValue));
+            }
+        }
+
+
         #endregion
 
 
@@ -90,6 +123,10 @@ namespace EBoard.ViewModels
         //public ICommand LeftClickCommand { get; }
 
         public ICommand ImageCommand { get; }
+
+
+        public ICommand ResetBackgroundCommand { get; set; }
+
 
         public ICommand RightClickCommand { get; }
 
@@ -107,7 +144,13 @@ namespace EBoard.ViewModels
             _EBoardViewModel = eBoardViewModel;
 
             PlacementManager = new PlacementManagement();
+
+            ZIndexValue = PlacementManager.Z;
+
+            CalibrateZSliderValues(_EBoardViewModel.EBoardDepth);
+
         }
+
 
 
         /// <summary>
@@ -128,18 +171,23 @@ namespace EBoard.ViewModels
 
             //LeftClickCommand = new RelayCommand((s) => DragMove(s), (s) => true);
             ImageCommand = new ImageCommand(this);
+
             RightClickCommand = new RelayCommand((s) => RemoveElement(s), (s) => true);
+
+            PlacementManager = new PlacementManagement();
+
 
             _EBoardViewModel = eBoardViewModel;
 
             _EID = elementDataSet.EID;
 
-            PlacementManager = new PlacementManagement();
 
             if (elementDataSet.PlacementDataSet != null)
             {
                 PlacementManager.Position = elementDataSet.PlacementDataSet.Position;
-                PlacementManager.Z = elementDataSet.PlacementDataSet.Z; 
+                PlacementManager.Z = elementDataSet.PlacementDataSet.Z;
+
+                ZIndexValue = PlacementManager.Z;
             }
 
             if (_EID == null || _EID.Equals("-1"))
@@ -157,6 +205,8 @@ namespace EBoard.ViewModels
                     _ContentViewModel = new ContentViewModel(elementDataSet);
                     IsContent = true;
 
+                    ResetBackgroundCommand = new ResetBackgroundCommand(_ContentViewModel);
+
                     OnPropertyChanged(nameof(ContentViewModel));
                 }
                 else
@@ -164,19 +214,50 @@ namespace EBoard.ViewModels
                     _ShapeViewModel = new ShapeViewModel(elementDataSet);
                     IsShape = true;
 
+                    ResetBackgroundCommand = new ResetBackgroundCommand(_ShapeViewModel);
+
                     OnPropertyChanged(nameof(ShapeViewModel));
                 }
+
+
+                CalibrateZSliderValues(_EBoardViewModel.EBoardDepth);
             }
         }
 
-
         // Methods
         #region Methods
+
+        public void CalibrateZSliderValues(int eboardDepth)
+        {
+            if (eboardDepth >= 0)
+            {
+                ZMinimumValue = 0;
+                ZMaximumValue = eboardDepth;
+
+                if (eboardDepth == 0)
+                {
+                    ZMaximumValue = 1;
+                }
+            }
+            else if (eboardDepth < 0)
+            {
+                ZMinimumValue = eboardDepth;
+                ZMaximumValue = 0;
+            }
+
+            OnPropertyChanged(nameof(ZMinimumValue));
+            OnPropertyChanged(nameof(ZMaximumValue));
+        }
 
 
         private void RemoveElement(object s)
         {
             _EBoardViewModel.Elements.Remove(this);
+        }
+
+        internal void WasLastActive()
+        {
+            _EBoardViewModel.MoveLastClickedElement(this);
         }
 
         #endregion

@@ -1,12 +1,12 @@
-﻿using EBoard.Interfaces;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  ContentViewModel 
+ * 
+ *  view model for usercontrol content elements
+ */
+using EBoard.Interfaces;
 using EBoard.Models;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+using EBoard.Utilities.SharedMethods;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -133,23 +133,7 @@ namespace EBoard.ViewModels
 
         public void ChangeElementBackgroundToImage()
         {
-            //if (_ElementImagePath == null || !File.Exists(_ElementImagePath) || _ElementImagePath.Equals(string.Empty))
-            //{                
-            //    BrushManager.ElementBackground = new SolidColorBrush(Colors.BlanchedAlmond);
-
-            //    return;
-            //}
-
-            try
-            {
-
-                BrushManager.Background = new ImageBrush(new BitmapImage(
-                    new Uri(ImagePath, UriKind.Absolute)));
-            }
-            catch (Exception)
-            {
-            }
-
+            BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
 
             OnPropertyChanged(nameof(BrushManager));
 
@@ -158,3 +142,4 @@ namespace EBoard.ViewModels
 
     }
 }
+// EOF

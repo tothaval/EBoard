@@ -1,15 +1,13 @@
-﻿using EBoard.Interfaces;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  InvokePrototypeShapeElementCommand 
+ * 
+ *  command to instantiate a rectangle shape onto the selected eboard instance
+ */
 using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
 using EBoard.ViewModels;
-using Microsoft.Windows.Themes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Shapes;
-using System.Xml.Linq;
 
 namespace EBoard.Commands.ElementCreationCommands
 {
@@ -66,3 +64,4 @@ namespace EBoard.Commands.ElementCreationCommands
         }
     }
 }
+// EOF

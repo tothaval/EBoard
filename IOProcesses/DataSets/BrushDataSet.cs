@@ -1,4 +1,11 @@
-﻿using EBoard.Models;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  BrushDataSet 
+ * 
+ *  serializable helper class to store and retrieve Brush related data to
+ *  or from hard drive storage.
+ */
+using EBoard.Models;
 using System.Xml.Serialization;
 
 namespace EBoard.IOProcesses.DataSets
@@ -45,3 +52,4 @@ namespace EBoard.IOProcesses.DataSets
 
     }
 }
+// EOF

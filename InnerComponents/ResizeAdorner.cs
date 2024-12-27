@@ -5,16 +5,21 @@
  *  helper class for Adorner logic
  *  
  *  handles resizing with resize adorners
+ *  
+ *  only the top thumbs are implemented atm
+ *  
+ *  it is unsure whether adorners will stay, they probably must be removed to keep
+ *  a consistent appearance throughout the application, because it is not possible
+ *  to have ui elements above the adorner layer, they will be allways visible if 
+ *  allways active and probably won't look good, if they are just visible on an option
  */
 using EBoard.ViewModels;
 using EBoard.Views;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Xml.Linq;
 
 namespace EBoard.InnerComponents
 {
