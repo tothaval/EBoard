@@ -2,7 +2,7 @@
 <EboardConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <EBoardCount>2</EBoardCount>
   <EBoardIndex>1</EBoardIndex>
-  <EBoardBrowserSwitch>true</EBoardBrowserSwitch>
+  <EBoardBrowserSwitch>false</EBoardBrowserSwitch>
   <BorderDataSet>
     <BorderThickness>
       <Left>12</Left>
@@ -16,7 +16,7 @@
       <BottomRight>0</BottomRight>
       <BottomLeft>4</BottomLeft>
     </CornerRadius>
-    <Height>769</Height>
+    <Height>730</Height>
     <Margin>
       <Left>22</Left>
       <Top>10</Top>
@@ -29,24 +29,37 @@
       <Right>15</Right>
       <Bottom>3</Bottom>
     </Padding>
-    <Width>1500</Width>
+    <Width>1015</Width>
   </BorderDataSet>
   <BrushDataSet>
     <BackgroundColor>
-      <BrushType>ImageBrush</BrushType>
+      <BrushType>SolidColorBrush</BrushType>
       <Color>
-        <A>0</A>
-        <R>0</R>
-        <G>0</G>
-        <B>0</B>
-        <ScA>0</ScA>
-        <ScR>0</ScR>
-        <ScG>0</ScG>
-        <ScB>0</ScB>
+        <A>255</A>
+        <R>255</R>
+        <G>255</G>
+        <B>255</B>
+        <ScA>1</ScA>
+        <ScR>1</ScR>
+        <ScG>1</ScG>
+        <ScB>1</ScB>
       </Color>
-      <ImagePath>file:///E:/Render/blend_files/trial02.png</ImagePath>
-      <GradientColors />
-      <GradientStops />
+      <ImagePath />
+      <GradientColors>
+        <Color>
+          <A>255</A>
+          <R>255</R>
+          <G>255</G>
+          <B>255</B>
+          <ScA>1</ScA>
+          <ScR>1</ScR>
+          <ScG>1</ScG>
+          <ScB>1</ScB>
+        </Color>
+      </GradientColors>
+      <GradientStops>
+        <double>0</double>
+      </GradientStops>
       <GradientPoints />
     </BackgroundColor>
     <ForegroundColor>
@@ -143,8 +156,8 @@
   <PlacementDataSet>
     <Angle>0</Angle>
     <Position>
-      <X>681</X>
-      <Y>120</Y>
+      <X>517</X>
+      <Y>153</Y>
     </Position>
     <Z>0</Z>
   </PlacementDataSet>

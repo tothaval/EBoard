@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  ColorDataSet 
+ * 
+ *  serializable helper class to store and retrieve color and brush related data to
+ *  or from hard drive storage, to allow for saving and loading of complex brushes
+ *  like LinearGradientBrush, RadialGradientBrush, VisualBrush
+ */
+using EBoard.Utilities.SharedMethods;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml.Linq;
-
 namespace EBoard.IOProcesses.DataSets
 {
     [Serializable]
@@ -58,6 +60,7 @@ namespace EBoard.IOProcesses.DataSets
         {
 
         }
+
 
         public ColorDataSet(Brush brush)
         {
@@ -124,6 +127,7 @@ namespace EBoard.IOProcesses.DataSets
             return radialGradientBrush;
         }
 
+
         public async Task<Brush> GetBrush()
         {
             if (BrushType.Equals("SolidColorBrush"))
@@ -156,54 +160,28 @@ namespace EBoard.IOProcesses.DataSets
 
             if (BrushType.Equals("ImageBrush"))
             {
-                ImageBrush imageBrush = new ImageBrush();
+                Brush brush = new ImageBrush();
 
-                bool file = File.Exists(ImagePath);
+                brush = new SharedMethod_UI().ChangeBackgroundToImage(brush, ImagePath);
 
-                bool uri = Uri.TryCreate(ImagePath, UriKind.Absolute, out Uri? result);
-
-
-
-
-                if (File.Exists(ImagePath))
-                {
-                    ImageSource? imageSource = new BitmapImage(new Uri(ImagePath));
-
-                    if (imageSource != null)
-                    {
-                        imageBrush = new ImageBrush(imageSource);
-                        
-                        imageBrush.TileMode = TileMode.None;
-                        imageBrush.Stretch = Stretch.Uniform;
-
-                    }
-                }
-                
-                if (result != null && result.IsFile) {
-             
-                    ImageSource? imageSource = new BitmapImage(result);
-
-                    if (imageSource != null)
-                    {
-                        imageBrush = new ImageBrush(imageSource);
-
-                        imageBrush.TileMode = TileMode.None;
-                        imageBrush.Stretch = Stretch.Uniform;
-
-                    }
-                }
-                      
-
-                if (imageBrush == null)
+                if (brush.GetType().Name.Equals("SolidColorBrush"))
                 {
                     BrushType = "SolidColorBrush";
 
-                    return new SolidColorBrush(Color);
-                }
+                    Color = ((SolidColorBrush)brush).Color;
+
+                    GradientColors.Clear();
+
+                    GradientColors.Add(Color);
+
+                    await Task.CompletedTask;
+
+                    return brush as SolidColorBrush;
+                }            
 
                 await Task.CompletedTask;
 
-                return imageBrush;
+                return brush as ImageBrush;
 
             }
 
@@ -293,3 +271,4 @@ namespace EBoard.IOProcesses.DataSets
 
     }
 }
+// EOF

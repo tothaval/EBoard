@@ -31,7 +31,13 @@
 
                 <MenuItem Header="+Image" Command="{Binding EBoardImageCommand}"
                           CommandParameter="{Binding ElementName=EBoard_Board}"/>
-                
+
+                <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"
+                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
+
+                <Separator/>
+
+
                 <MenuItem Header="First" Command="{Binding SwitchToFirstEBoardCommand}"
                           CommandParameter="{Binding ElementName=EBoard_Board}"/>
                 
@@ -69,17 +75,14 @@
                     <Style>
                         <Setter Property="Canvas.Left"
                                 Value="{Binding PlacementManager.Position.X,
-                            UpdateSourceTrigger=PropertyChanged,
                             NotifyOnSourceUpdated=True}"/>
                                                 
                         <Setter Property="Canvas.Top"
                                 Value="{Binding PlacementManager.Position.Y,
-                            UpdateSourceTrigger=PropertyChanged,
                             NotifyOnSourceUpdated=True}"/>
                         
                         <Setter Property="Panel.ZIndex"
-                                Value="{Binding PlacementManager.Z,
-                            UpdateSourceTrigger=PropertyChanged,
+                                Value="{Binding PlacementManager.Position.Z,
                             NotifyOnSourceUpdated=True}"/>
                     </Style>
                 </ItemsControl.ItemContainerStyle>

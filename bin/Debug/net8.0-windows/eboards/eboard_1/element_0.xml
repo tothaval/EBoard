@@ -13,7 +13,7 @@
       <BottomRight>5</BottomRight>
       <BottomLeft>5</BottomLeft>
     </CornerRadius>
-    <Height>124</Height>
+    <Height>100</Height>
     <Margin>
       <Left>5</Left>
       <Top>5</Top>
@@ -26,24 +26,37 @@
       <Right>5</Right>
       <Bottom>5</Bottom>
     </Padding>
-    <Width>429</Width>
+    <Width>200</Width>
   </BorderDataSet>
   <BrushDataSet>
     <BackgroundColor>
-      <BrushType>ImageBrush</BrushType>
+      <BrushType>SolidColorBrush</BrushType>
       <Color>
-        <A>0</A>
-        <R>0</R>
-        <G>0</G>
-        <B>0</B>
-        <ScA>0</ScA>
-        <ScR>0</ScR>
-        <ScG>0</ScG>
-        <ScB>0</ScB>
+        <A>255</A>
+        <R>255</R>
+        <G>255</G>
+        <B>255</B>
+        <ScA>1</ScA>
+        <ScR>1</ScR>
+        <ScG>1</ScG>
+        <ScB>1</ScB>
       </Color>
-      <ImagePath>file:///E:/Render/blend_files/scene-0003-00.png</ImagePath>
-      <GradientColors />
-      <GradientStops />
+      <ImagePath />
+      <GradientColors>
+        <Color>
+          <A>255</A>
+          <R>255</R>
+          <G>255</G>
+          <B>255</B>
+          <ScA>1</ScA>
+          <ScR>1</ScR>
+          <ScG>1</ScG>
+          <ScB>1</ScB>
+        </Color>
+      </GradientColors>
+      <GradientStops>
+        <double>0</double>
+      </GradientStops>
       <GradientPoints />
     </BackgroundColor>
     <ForegroundColor>
@@ -140,12 +153,12 @@
   <PlacementDataSet>
     <Angle>0</Angle>
     <Position>
-      <X>677</X>
-      <Y>212</Y>
+      <X>202</X>
+      <Y>262</Y>
     </Position>
-    <Z>0</Z>
+    <Z>113</Z>
   </PlacementDataSet>
-  <EID>Element_638703199571255573</EID>
-  <ElementTypeString>EBoard.Models.ShapeManagement</ElementTypeString>
-  <ElementHeader>Shape Element</ElementHeader>
+  <EID>Element_638709255462137364</EID>
+  <ElementTypeString>EBoard.Models.ContainerManagement</ElementTypeString>
+  <ElementHeader>Prototype Element</ElementHeader>
 </ElementDataSet>

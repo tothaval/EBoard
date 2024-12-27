@@ -28,7 +28,7 @@
                 <MenuItem Header="+Image" Command="{Binding EBoardBrowserImageCommand}"
                           CommandParameter="{Binding ElementName=EBoard_EBoardBrowser}"/>
 
-                <MenuItem Header="Reset" Command="{Binding ResetEBoardBrowserBackgroundCommand}"
+                <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"
                           CommandParameter="{Binding ElementName=EBoard_EBoardBrowser}"/>
                 
             </ContextMenu>

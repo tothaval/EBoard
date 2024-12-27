@@ -1,9 +1,10 @@
-﻿using EBoard.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  EBoardBrowserImageCommand 
+ * 
+ *  command to apply an image to the EBoardBrowserViewModel background
+ */
+using EBoard.ViewModels;
 using System.Windows.Input;
 
 namespace EBoard.Commands.ContextMenuCommands.EBoardBrowserContextMenu
@@ -43,3 +44,4 @@ namespace EBoard.Commands.ContextMenuCommands.EBoardBrowserContextMenu
         }
     }
 }
+// EOF

@@ -2,29 +2,18 @@
  *  
  *  EBoardInitializationManager 
  * 
- *  helper class for loading and deserialization of EBoardConfig, EBoardDataSet(s) and ElementDataSet(s)
+ *  helper class for loading and deserialization of EBoardDataSet(s) and ElementDataSet(s)
  *  on program startup
  *  
  *  steps:
- *  1. load EBoardConfig
- *  2. load EBoardDataSet(s)
- *  3. for each EBoardDataSet load ElementDataSet(s)
+ *  1. load EBoardDataSet(s)
+ *  2. for each EBoardDataSet load ElementDataSet(s)
  */
 
-using EBoard.Interfaces;
-using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
 using EBoard.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
 using System.Xml.Serialization;
 
 namespace EBoard.IOProcesses
@@ -83,15 +72,19 @@ namespace EBoard.IOProcesses
 
                                                 if (elementData.ElementTypeString.Equals("EBoard.Models.ContainerManagement"))
                                                 {
-                                                    elementData.ElementContent = new ContainerManagement(new TextBox());                                                    
+                                                    elementData.ElementContent = new ContainerManagement();                                                 
                                                 }
 
                                                 if (elementData.ElementTypeString.Equals("EBoard.Models.ShapeManagement"))
                                                 {
-                                                    elementData.ElementContent = new ShapeManagement();
+                                                    elementData.ElementContent = new ShapeManagement();                                                    
+                                                }
+
+                                                if (elementData.ElementContent != null)
+                                                {
                                                     await elementData.ElementContent.Load($"{folderPath}eboard_{files.IndexOf(file)}\\element_{i}\\", elementData);
                                                 }
-                                                                                                                                  
+
 
                                                 //Type? type = Type.GetType($"AidingElementsUserInterface.Elements.{node_Type.InnerText}, AidingElementsUserInterface");
 

@@ -1,8 +1,8 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *  
  *  MainViewModel 
- * 
- *  helper class for
+ *  
+ *  view model for MainWindow
  */
 using EBoard.Commands;
 using EBoard.Commands.ContextMenuCommands;
@@ -10,14 +10,7 @@ using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
 using EBoard.Navigation;
-using EBoard.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Data;
+using EBoard.Utilities.SharedMethods;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -126,6 +119,7 @@ namespace EBoard.ViewModels
 
         public ICommand MainWindowImageCommand { get; }
 
+
         public ICommand LeftDoubleClickCommand {get;}
 
 
@@ -137,12 +131,17 @@ namespace EBoard.ViewModels
 
         public ICommand MinimizeCommand {get;}
 
+
+        public ICommand ResetBackgroundCommand { get; set; }
+
         #endregion
 
 
         public MainViewModel(NavigationStore navigationStore, EboardConfig? eboardConfig)
         {
             MainWindowImageCommand = new MainWindowImageCommand(this);
+
+            ResetBackgroundCommand = new ResetBackgroundCommand(this);
 
             _navigationStore = navigationStore;
 
@@ -189,27 +188,12 @@ namespace EBoard.ViewModels
 
         public void ChangeElementBackgroundToImage()
         {
-            //if (_ElementImagePath == null || !File.Exists(_ElementImagePath) || _ElementImagePath.Equals(string.Empty))
-            //{                
-            //    BrushManager.ElementBackground = new SolidColorBrush(Colors.BlanchedAlmond);
+            BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
 
-            //    return;
-            //}
+            OnPropertyChanged(nameof(BrushManager));
+            
+            OnPropertyChanged(nameof(BrushManager.Background));
 
-            try
-            {
-
-                BrushManager.Background = new ImageBrush(new BitmapImage(
-                    new Uri(ImagePath, UriKind.Absolute)));
-
-
-                OnPropertyChanged(nameof(BrushManager));
-
-                OnPropertyChanged(nameof(BrushManager.Background));
-            }
-            catch (Exception)
-            {
-            }
         }
 
         #endregion

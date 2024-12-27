@@ -1,4 +1,10 @@
-﻿using EBoard.ViewModels;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  ImageCommand 
+ * 
+ *  command to apply an image to the element background
+ */
+using EBoard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,3 +56,4 @@ namespace EBoard.Commands.ContextMenuCommands
         }
     }
 }
+// EOF

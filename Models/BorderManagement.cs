@@ -1,10 +1,10 @@
-﻿using EBoard.IOProcesses.DataSets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  BorderManagement 
+ * 
+ *  model class for border properties
+ */
+using EBoard.IOProcesses.DataSets;
 using System.Windows;
 using EBoard.Interfaces;
 
@@ -79,3 +79,4 @@ namespace EBoard.Models
 
     }
 }
+// EOF

@@ -23,7 +23,9 @@
 
             <TextBlock Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
                        Grid.Row="0" TextWrapping="Wrap">
-                        <Run Text="{Binding ElementHeaderText, NotifyOnSourceUpdated=True}" />
+                        <Run Text="{Binding ElementHeaderText, NotifyOnSourceUpdated=True}"
+                             Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                             FontWeight="Bold"/>
                         <LineBreak/>
                         <Run Text="{Binding ElementName=Element, Path=Z, NotifyOnSourceUpdated=True}"/>
             </TextBlock>

@@ -32,26 +32,26 @@
     <BackgroundColor>
       <BrushType>SolidColorBrush</BrushType>
       <Color>
-        <A>205</A>
-        <R>0</R>
-        <G>0</G>
-        <B>0</B>
-        <ScA>0.8039216</ScA>
-        <ScR>0</ScR>
-        <ScG>0</ScG>
-        <ScB>0</ScB>
+        <A>255</A>
+        <R>255</R>
+        <G>255</G>
+        <B>255</B>
+        <ScA>1</ScA>
+        <ScR>1</ScR>
+        <ScG>1</ScG>
+        <ScB>1</ScB>
       </Color>
       <ImagePath />
       <GradientColors>
         <Color>
-          <A>205</A>
-          <R>0</R>
-          <G>0</G>
-          <B>0</B>
-          <ScA>0.8039216</ScA>
-          <ScR>0</ScR>
-          <ScG>0</ScG>
-          <ScB>0</ScB>
+          <A>255</A>
+          <R>255</R>
+          <G>255</G>
+          <B>255</B>
+          <ScA>1</ScA>
+          <ScR>1</ScR>
+          <ScG>1</ScG>
+          <ScB>1</ScB>
         </Color>
       </GradientColors>
       <GradientStops>
@@ -153,12 +153,12 @@
   <PlacementDataSet>
     <Angle>0</Angle>
     <Position>
-      <X>544</X>
-      <Y>160</Y>
+      <X>205</X>
+      <Y>225</Y>
     </Position>
-    <Z>0</Z>
+    <Z>-17</Z>
   </PlacementDataSet>
-  <EID>Element_638703199475851501</EID>
-  <ElementTypeString>EBoard.Models.ContainerManagement</ElementTypeString>
-  <ElementHeader>Prototype Element</ElementHeader>
+  <EID>Element_638709255185301888</EID>
+  <ElementTypeString>EBoard.Models.ShapeManagement</ElementTypeString>
+  <ElementHeader>Shape Element</ElementHeader>
 </ElementDataSet>

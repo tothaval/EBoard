@@ -1,10 +1,10 @@
-﻿using EBoard.Models;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  MainWindowImageCommand 
+ * 
+ *  command to apply an image as background for the mainwindow
+ */
 using EBoard.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace EBoard.Commands.ContextMenuCommands
@@ -47,3 +47,4 @@ namespace EBoard.Commands.ContextMenuCommands
         }
     }
 }
+// EOF

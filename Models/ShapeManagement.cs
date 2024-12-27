@@ -2,24 +2,18 @@
  *  
  *  ShapeManagement 
  * 
- *  data model for shape elements - oder shape element hier so definieren, dass es immer
- *  den hintergrund der usercontrol kriegt. da müssten die daten von der usercontrol hier
- *  transformiert werden in die neuen shape werte
+ *  data model for shape elements
  *  
- *  should i use an interface or abstract base class to further channel the logic?
+ *  they are problematic in regards of property changes, because they are handled
+ *  differently by the WPF framework compared to UserControls, so right now there
+ *  is a bit of code duplication, which shall be refactored later in development
  */
 using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
-using static System.Net.WebRequestMethods;
 
 namespace EBoard.Models
 {
@@ -98,3 +92,4 @@ namespace EBoard.Models
         }
     }
 }
+// EOF

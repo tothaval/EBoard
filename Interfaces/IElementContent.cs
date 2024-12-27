@@ -1,9 +1,10 @@
-﻿using EBoard.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  IElementContent 
+ * 
+ *  interface for basic element content logic
+ */
+using EBoard.Models;
 using System.Windows;
 
 namespace EBoard.Interfaces
@@ -19,3 +20,4 @@ namespace EBoard.Interfaces
         public Task Save(string path, ElementDataSet elementDataSet);
     }
 }
+// EOF

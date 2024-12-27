@@ -1,4 +1,10 @@
-﻿using System.Windows;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  BorderDataSet 
+ * 
+ *  command to maximize mainwindow
+ */
+using System.Windows;
 using System.Windows.Media;
 
 namespace EBoard.Commands.ContextMenuCommands

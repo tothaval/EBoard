@@ -1,11 +1,9 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *  
- *  EBoardViewModel 
+ *  SwitchToFirstEBoardCommand 
  * 
- *  view model class for EBoardView
- *  
- *  it is basically a canvas within a frame and some properties, that can be edited,
- *  stored(WIP) and loaded(WIP)
+ *  command to switch the selected eboard within EBoardBrowserViewModel to
+ *  the first eboard in EBoardBrowserViewModel.EBoards observable collection.
  */
 using EBoard.ViewModels;
 using System.Windows;
@@ -45,3 +43,4 @@ namespace EBoard.Commands.ContextMenuCommands.EBoardContextMenu
         }
     }
 }
+// EOF

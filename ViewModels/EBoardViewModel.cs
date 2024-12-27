@@ -5,25 +5,17 @@
  *  view model class for EBoardView
  *  
  *  it is basically a canvas within a frame and some properties, that can be edited,
- *  stored(WIP) and loaded(WIP)
+ *  stored and loaded
  */
 using EBoard.Commands.ContextMenuCommands;
 using EBoard.Commands.ContextMenuCommands.EBoardContextMenu;
 using EBoard.Interfaces;
 using EBoard.Models;
-using System;
-using System.Collections.Generic;
+using EBoard.Utilities.SharedMethods;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace EBoard.ViewModels
 {
@@ -114,9 +106,13 @@ namespace EBoard.ViewModels
             set
             {
                 _EBoardDepth = value;
+                
                 OnPropertyChanged(nameof(EBoardDepth));
+
+                UpdateElementsZIndexProperties(value);
             }
-        }    
+        }
+
 
         private string _EBoardName;
         public string EBoardName
@@ -170,6 +166,8 @@ namespace EBoard.ViewModels
 
         public ICommand EBoardImageCommand { get; }
 
+        public ICommand ResetBackgroundCommand { get; set; }
+
         public ICommand SwitchToFirstEBoardCommand { get; }
         public ICommand SwitchToNextEBoardCommand { get; }
         public ICommand SwitchToPrevEBoardCommand { get; }
@@ -183,6 +181,8 @@ namespace EBoard.ViewModels
         {
 
             EBoardImageCommand = new EBoardImageCommand(this);
+
+            ResetBackgroundCommand = new ResetBackgroundCommand(this);
 
             SwitchToNextEBoardCommand = new SwitchToNextEBoardCommand(this);
             SwitchToPrevEBoardCommand = new SwitchToPrevEBoardCommand(this);
@@ -238,29 +238,28 @@ namespace EBoard.ViewModels
 
         public void ChangeElementBackgroundToImage()
         {
-            //if (_ElementImagePath == null || !File.Exists(_ElementImagePath) || _ElementImagePath.Equals(string.Empty))
-            //{                
-            //    BrushManager.ElementBackground = new SolidColorBrush(Colors.BlanchedAlmond);
-
-            //    return;
-            //}
-
-            try
-            {
-
-                BrushManager.Background = new ImageBrush(new BitmapImage(
-                    new Uri(ImagePath, UriKind.Absolute)));
-            }
-            catch (Exception)
-            {
-            }
-
+            BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
 
             OnPropertyChanged(nameof(BrushManager));
 
             OnPropertyChanged(nameof(BrushManager.Background));
         }
 
+        internal void MoveLastClickedElement(ElementViewModel elementViewModel)
+        {
+                Elements.Move(Elements.IndexOf(elementViewModel), Elements.Count - 1);
+        }
+
+        private void UpdateElementsZIndexProperties(int newEBoardDepth)
+        {
+            if (Elements != null && Elements.Count > 0)
+            {
+                foreach (ElementViewModel item in Elements)
+                {
+                    item.CalibrateZSliderValues(newEBoardDepth);
+                }
+            }
+        }
     }
 }
 // EOF

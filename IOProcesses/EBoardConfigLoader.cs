@@ -1,11 +1,12 @@
-﻿using EBoard.IOProcesses.DataSets;
-using EBoard.ViewModels;
-using System;
-using System.Collections.Generic;
+﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *  
+ *  EBoardConfigLoader 
+ * 
+ *  helper class for loading and deserialization of EBoardConfig
+ *  on program startup
+ */
+using EBoard.IOProcesses.DataSets;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace EBoard.IOProcesses
@@ -65,3 +66,4 @@ namespace EBoard.IOProcesses
 
     }
 }
+// EOF

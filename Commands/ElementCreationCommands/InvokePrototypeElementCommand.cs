@@ -11,21 +11,14 @@
  *  within the standard element type can be manipulated equally, independend of content. 
  *  
  *  shapes need their own standard container, because user controls and shapes are handled
- *  different by WPF. in previous iterations of this concept, it often led to huge classes,
- *  because of the shape logic and container logic being different. and if the data type 
- *  is chosen to be of the more basic types, filtering becomes necessary and a lot of type
- *  casting becomes mandatory, which adds complexity but not much else.
+ *  different by WPF. in previous iterations of the concept EBoard is based upon, it often
+ *  led to huge classes, because of the shape logic and container logic being different.
+ *  and if the data type is chosen to be of the more basic types, filtering becomes necessary
+ *  and a lot of type casting becomes mandatory, which adds complexity but not much else.
  */
-using EBoard.Interfaces;
 using EBoard.Models;
 using EBoard.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows;
 using EBoard.IOProcesses.DataSets;
 

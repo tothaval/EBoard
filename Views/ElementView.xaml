@@ -25,11 +25,34 @@
 
             <Border.ContextMenu>
 
-                <ContextMenu>
+            <ContextMenu>
+                
+                <WrapPanel Orientation="Horizontal">
+                    <Label Content="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"
+                           MinWidth="30"/>
+                    <Slider Value="{Binding ZIndexValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="{Binding ZMinimumValue, NotifyOnSourceUpdated=True}"
+                            Maximum="{Binding ZMaximumValue, NotifyOnSourceUpdated=True}"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
 
-                    <MenuItem Header="+Image" Command="{Binding ImageCommand}"
+                </WrapPanel>
+
+                <Separator/>
+
+                <MenuItem Header="+Image" Command="{Binding ImageCommand}"
                           CommandParameter="{Binding ElementName=Element}"/>
 
+                <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"
+                          CommandParameter="{Binding ElementName=Element}"/>
+
+                    
+                    
+                <Separator/>
+                    
                     <MenuItem Header="Delete" Command="{Binding RightClickCommand}"
                           CommandParameter="{Binding ElementName=Element}"/>
 
@@ -38,7 +61,14 @@
             </Border.ContextMenu>
 
 
-            <Grid Background="Transparent">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Text="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"/>
+
+            <Grid Background="Transparent" Grid.Row="1">
                 <Border Visibility="{Binding IsContent, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <local:ContentView DataContext="{Binding ContentViewModel}"/>
                 </Border>
@@ -47,7 +77,8 @@
                     <local:ShapeView DataContext="{Binding ShapeViewModel}"/>
                 </Border>
             </Grid>
+        </Grid>
 
-        </Border>
+    </Border>
 
 </UserControl>

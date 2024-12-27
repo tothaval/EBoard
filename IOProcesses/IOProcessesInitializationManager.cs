@@ -54,7 +54,19 @@ namespace EBoard.IOProcesses
             {
                 foreach (string folder in folders)
                 {
-                    Directory.Delete(folder, true);
+                    try
+                    {
+                        Directory.Delete(folder, true);
+                    }
+                    catch (Exception)
+                    {
+                        // diese exception mal handlen oder im try block prüfen,
+                        // ob die datei frei oder in verwendung ist, ggf. ein paar
+                        // mal wiederholen bis zum abbruch
+
+                        // mitunter ist die shapedata.xml noch von einem anderen prozess
+                        // blockiert, aktuell keine ahnung weswegen, low prio
+                    }
                 }
             }
 
