@@ -38,12 +38,12 @@ namespace EBoard.Commands.ContextMenuCommands
             {
                 if (_ElementViewModel.IsContent)
                 {
-                    _ElementViewModel.ContentViewModel.ElementImagePath = setPath.FileName;
+                    _ElementViewModel.ContentViewModel.ImagePath = setPath.FileName;
                 }
 
                 if (_ElementViewModel.IsShape)
                 {
-                    _ElementViewModel.ShapeViewModel.ElementImagePath = setPath.FileName;
+                    _ElementViewModel.ShapeViewModel.ImagePath = setPath.FileName;
                 }
             }
 

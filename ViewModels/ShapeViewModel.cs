@@ -15,6 +15,21 @@ namespace EBoard.ViewModels
 {
     public class ShapeViewModel : BaseViewModel, IElementBackgroundImage
     {
+        // mit properties ersetzen um die größe zu ändern,
+        // die änderung in BorderManagement reinschreiben
+
+        private BorderManagement _BorderManager;
+        public BorderManagement BorderManager
+        {
+            get { return _BorderManager; }
+            set
+            {
+                _BorderManager = value;
+                OnPropertyChanged(nameof(BorderManager));
+            }
+        }
+
+
         private BrushManagement _BrushManager;
         public BrushManagement BrushManager
         {
@@ -23,18 +38,6 @@ namespace EBoard.ViewModels
             {
                 _BrushManager = value;
                 OnPropertyChanged(nameof(BrushManager));
-            }
-        }
-
-
-        private Thickness _ElementBorderThickness;
-        public Thickness ElementBorderThickness
-        {
-            get { return _ElementBorderThickness; }
-            set
-            {
-                _ElementBorderThickness = value;
-                OnPropertyChanged(nameof(ElementBorderThickness));
             }
         }
 
@@ -50,56 +53,62 @@ namespace EBoard.ViewModels
             }
         }
 
-
-        private double _ElementHeight = 64.0;
-        public double ElementHeight
-        {
-            get { return _ElementHeight; }
-            set
-            {
-                _ElementHeight = value;
-                OnPropertyChanged(nameof(ElementHeight));
-
-                UpdateDimensions();
-            }
-        }
-
-
-        private double _ElementWidth = 128.0;
-        public double ElementWidth
-        {
-            get { return _ElementWidth; }
-            set
-            {
-                _ElementWidth = value;
-                OnPropertyChanged(nameof(ElementWidth));
-
-                UpdateDimensions();
-            }
-        }
-
-
         /// <summary>
         /// the path to an optional background image for the
         /// element, if empty, the stored brush or a default
         /// solidColorBrush will be used for the background
         /// </summary>
-        private string _ElementImagePath;
-        public string ElementImagePath
+        private string _ImagePath;
+        public string ImagePath
         {
-            get { return _ElementImagePath; }
+            get { return _ImagePath; }
             set
             {
-                _ElementImagePath = value;
-                OnPropertyChanged(nameof(ElementImagePath));
+                _ImagePath = value;
+
+                OnPropertyChanged(nameof(ImagePath));
 
                 ChangeElementBackgroundToImage();
             }
         }
 
 
+        private double _Height;
+        public double Height
+        {
+            get { return _Height; }
+            set
+            {
+                _Height = value;
+                BorderManager.Height = value;
+
+                OnPropertyChanged(nameof(Height));
+                OnPropertyChanged(nameof(BorderManager));
+
+                UpdateDimensions();
+            }
+        }
+
+
+        private double _Width;
+        public double Width
+        {
+            get { return _Width; }
+            set
+            {
+                _Width = value;
+                BorderManager.Width = value;
+                OnPropertyChanged(nameof(Width));
+                OnPropertyChanged(nameof(BorderManager));
+
+                UpdateDimensions();
+            }
+        }
+
+
+
         public ElementDataSet ElementDataSet { get; }
-        
+
         private Brush _FallbackBackgroundBrush;
         public Brush FallbackBackgroundBrush => _FallbackBackgroundBrush;
 
@@ -108,30 +117,32 @@ namespace EBoard.ViewModels
         public ShapeViewModel(ElementDataSet elementDataSet)
         {
             ElementDataSet = elementDataSet;
-            BrushManager = elementDataSet.BrushManager;
+            BorderManager = new BorderManagement(elementDataSet.BorderDataSet);
+            BrushManager = new BrushManagement(elementDataSet.BrushDataSet);
             Control = elementDataSet.ElementContent;
+
+
+            if (BorderManager == null)
+            {
+                BorderManager = new BorderManagement();
+            }
 
             if (BrushManager == null)
             {
                 BrushManager = new BrushManagement();
             }
-
-
+            
             ((Shape)Control.Element).Fill = BrushManager.Background;
             ((Shape)Control.Element).Stroke = BrushManager.Border;
-            ((Shape)Control.Element).StrokeThickness = BrushManager.BorderThickness.Left;
-
+            ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
 
             ElementHeaderText = elementDataSet.ElementHeader;
 
-            ElementHeight = elementDataSet.ElementHeight;
-            ElementWidth = elementDataSet.ElementWidth;
+            ImagePath = BrushManager.ImagePath;
 
-            ElementImagePath = BrushManager.ImagePath;
-
-            if (ElementImagePath == null)
+            if (ImagePath == null)
             {
-                ElementImagePath = string.Empty;
+                ImagePath = string.Empty;
             }
 
             if (ElementHeaderText == null)
@@ -153,7 +164,7 @@ namespace EBoard.ViewModels
             try
             {
                 BrushManager.Background = new ImageBrush(new BitmapImage(
-            new Uri(ElementImagePath, UriKind.Absolute)));
+            new Uri(ImagePath, UriKind.Absolute)));
 
                 ((Shape)Control.Element).Fill = BrushManager.Background;
             }
@@ -167,9 +178,15 @@ namespace EBoard.ViewModels
 
 
         public void UpdateDimensions()
-        {            
-            ((Shape)Control.Element).Width = ElementWidth;
-            ((Shape)Control.Element).Height = ElementHeight;
+        {
+            if (BorderManager != null && Control != null)
+            {
+                if (Control.Element != null)
+                {
+                    ((Shape)Control.Element).Width = BorderManager.Width;
+                    ((Shape)Control.Element).Height = BorderManager.Height;  
+                }
+            }
         }
 
 

@@ -51,20 +51,6 @@ namespace EBoard.Models
 
         public async Task Save(string path, ElementDataSet elementDataSet)
         {
-
-            string brushDataPath = $"{path}brushdata.xml";
-
-            // serialize brushes
-            var xmlSerializer_BrushDataSet = new XmlSerializer(typeof(BrushDataSet));
-
-            BrushDataSet brushDataSet = new BrushDataSet(elementDataSet.BrushManager);
-
-            await using (var writer = new StreamWriter(brushDataPath))
-            {
-                xmlSerializer_BrushDataSet.Serialize(writer, brushDataSet);
-            }
-
-
             // serialize content
             //var xmlSerializer_ContainerContentDataSet = new XmlSerializer(typeof(ContainerDataSet));
 

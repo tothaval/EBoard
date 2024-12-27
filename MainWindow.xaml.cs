@@ -25,11 +25,10 @@ namespace EBoard
 
         private void SizeAndPositionUpdate()
         {
-            ((MainViewModel)DataContext).PositionX = Left;
-            ((MainViewModel)DataContext).PositionY = Top;
+            ((MainViewModel)DataContext).PlacementManager.Position = new Point(Left, Top);
 
-            ((MainViewModel)DataContext).EBoardWidth = ActualWidth;
-            ((MainViewModel)DataContext).EBoardHeight = ActualHeight;
+            ((MainViewModel)DataContext).BorderManager.Width = ActualWidth;
+            ((MainViewModel)DataContext).BorderManager.Height = ActualHeight;
         }
 
 

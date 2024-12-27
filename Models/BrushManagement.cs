@@ -14,8 +14,9 @@ namespace EBoard.Models
     {
         // background brush related properties, background is used on content border or as shape fill
         public Brush Background { get; set; }
-        public string ImagePath { get; set; }
 
+
+        public string ImagePath { get; set; }
 
 
         // foreground brush related properties, foreground is used for text color
@@ -25,7 +26,6 @@ namespace EBoard.Models
 
         // border brush related properties, border is used on content border or as shape stroke
         public Brush Border { get; set; }
-        public Thickness BorderThickness { get; set; }
         
 
 
@@ -35,19 +35,12 @@ namespace EBoard.Models
 
         public BrushManagement()
         {
-            Background = new SolidColorBrush(Color.FromArgb(205, 0, 0, 0));
-            Border = new SolidColorBrush(Colors.Goldenrod);
-            Foreground = new SolidColorBrush(Colors.DarkGoldenrod);
-            Highlight = new SolidColorBrush(Colors.YellowGreen);
-
-            BorderThickness = new Thickness(2, 2, 2, 2);
-
-            ImagePath = string.Empty;
+            SetInitialValues();
         }
+
 
         public BrushManagement(BrushDataSet brushDataSet)
         {
-
             LoadBrushDataSet(brushDataSet);
         }
 
@@ -61,22 +54,26 @@ namespace EBoard.Models
                 Border = await brushDataSet.BorderColor.GetBrush();
                 Highlight = await brushDataSet.HighlightColor.GetBrush();
 
-                BorderThickness = brushDataSet.BorderThickness;
-
                 ImagePath = brushDataSet.BackgroundColor.ImagePath;
+
+                await Task.CompletedTask;
 
                 return;
             }
 
-            Background = new SolidColorBrush(Colors.White);
-            Foreground = new SolidColorBrush(Colors.Black);
-            Border = new SolidColorBrush(Colors.CornflowerBlue);
-            Highlight = new SolidColorBrush(Colors.LightGreen);
+            SetInitialValues();
 
-            BorderThickness = new Thickness(4);
+            await Task.CompletedTask;
+        }
+
+        private void SetInitialValues()
+        {
+            Background = new SolidColorBrush(Color.FromArgb(205, 0, 0, 0));
+            Border = new SolidColorBrush(Colors.Goldenrod);
+            Foreground = new SolidColorBrush(Colors.DarkGoldenrod);
+            Highlight = new SolidColorBrush(Colors.YellowGreen);
 
             ImagePath = string.Empty;
-
         }
 
     }

@@ -10,10 +10,10 @@
 
         <Border Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
                 BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
-                BorderThickness="{Binding BrushManager.BorderThickness, NotifyOnSourceUpdated=True}"
+                BorderThickness="{Binding BorderManager.BorderThickness, NotifyOnSourceUpdated=True}"
                 Padding="5"
-                Width="{Binding ElementWidth, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-                Height="{Binding ElementHeight, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
+                Width="{Binding BorderManager.Width, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                Height="{Binding BorderManager.Height, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
         
             <Grid>
             <Grid.RowDefinitions>

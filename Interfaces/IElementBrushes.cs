@@ -23,9 +23,6 @@ namespace EBoard.Interfaces
         public Brush Highlight { get; set; }
 
 
-        public Thickness BorderThickness { get; set; }
-
-
         public string ImagePath { get; set; }
 
     }

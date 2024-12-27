@@ -7,7 +7,7 @@
         xmlns:views="clr-namespace:EBoard.Views"
         x:Name="EboardMainWindow"
         mc:Ignorable="d"
-        Title="EBoard"
+        Title="EBoard 2024"
         AllowsTransparency="True"
         WindowStyle="None"
         WindowStartupLocation="Manual"
@@ -15,6 +15,7 @@
         ResizeMode="CanResizeWithGrip"
         SizeToContent="Manual"
         
+        Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
         MouseLeftButtonDown="EboardMainWindow_MouseLeftButtonDown"
         MouseLeftButtonUp="EboardMainWindow_MouseLeftButtonUp"
         
@@ -34,7 +35,7 @@
     <WindowChrome.WindowChrome>
         <WindowChrome
             CaptionHeight="1"  
-            CornerRadius ="{Binding CornerRadius}"
+            CornerRadius ="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"
             ResizeBorderThickness="20"         
             GlassFrameThickness="0"            
             >
@@ -44,16 +45,20 @@
    
     <Border Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
             BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
-            BorderThickness="{Binding BrushManager.BorderThickness, NotifyOnSourceUpdated=True}"
-            CornerRadius="{Binding CornerRadius}"
-            Margin="{Binding Margin}"
-            Padding="{Binding Padding}"
-            Opacity="{Binding Opacity}"
+            BorderThickness="{Binding BorderManager.BorderThickness, NotifyOnSourceUpdated=True}"
+            CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"
+            Margin="{Binding BorderManager.Margin, NotifyOnSourceUpdated=True}"
+            Padding="{Binding BorderManager.Padding, NotifyOnSourceUpdated=True}"
             x:Name="Border_MainWindow"
             ClipToBounds="True">
 
         <Border.ContextMenu >
             <ContextMenu>
+
+
+                <MenuItem Header="+Image" Command="{Binding MainWindowImageCommand}"
+                          CommandParameter="{Binding ElementName=EboardMainWindow}"/>
+
 
                 <MenuItem Header="{DynamicResource MaximizeContextMenuItemHeader}"
                       Command="{Binding MaximizeCommand}"

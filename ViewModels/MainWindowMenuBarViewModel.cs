@@ -33,14 +33,6 @@ namespace EBoard.ViewModels
         }
 
 
-        private Brush _backgroundBrush;
-        public Brush BackgroundBrush
-        {
-            get { return _backgroundBrush; }
-            set { _backgroundBrush = value; }
-        }
-
-
         private bool _EBoardBrowserSwitch;
         public bool EBoardBrowserSwitch
         {

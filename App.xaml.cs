@@ -4,6 +4,7 @@
  */
 using EBoard.IOProcesses;
 using EBoard.IOProcesses.DataSets;
+using EBoard.Models;
 using EBoard.Navigation;
 using EBoard.ViewModels;
 using System.Configuration;
@@ -22,7 +23,7 @@ namespace EBoard
 
         private NavigationStore _navigationStore;
 
-        
+
 
         public App()
         {
@@ -32,26 +33,25 @@ namespace EBoard
         }
 
 
-        private async Task EBoardConfigInitialization(EBoardInitializationManager initializationManager)
+        private async Task<EboardConfig?> EBoardConfigInitialization(EboardConfig eboardConfig)
         {
-            await initializationManager.Load();
-
-            EboardConfig eboardConfig = initializationManager.EBoardConfig;
-
-            if (eboardConfig.EBoardIndex > -1 && eboardConfig.EBoardIndex  < _MainViewModel.EBoardBrowserViewModel.EBoards.Count)
+            if (eboardConfig != null)
             {
-                _MainViewModel.EBoardBrowserViewModel.SelectedEBoard = _MainViewModel.EBoardBrowserViewModel.EBoards[initializationManager.EBoardConfig.EBoardIndex];
+                if (eboardConfig.EBoardIndex > -1 && eboardConfig.EBoardIndex < _MainViewModel.EBoardBrowserViewModel.EBoards.Count)
+                {
+                    _MainViewModel.EBoardBrowserViewModel.SelectedEBoard = _MainViewModel.EBoardBrowserViewModel.EBoards[eboardConfig.EBoardIndex];
+                }
+
+                _MainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch = eboardConfig.EBoardBrowserSwitch;
+
+                Current.MainWindow.Left = eboardConfig.PlacementDataSet.Position.X;
+                Current.MainWindow.Top = eboardConfig.PlacementDataSet.Position.Y;
+
+                Current.MainWindow.Width = eboardConfig.BorderDataSet.Width;
+                Current.MainWindow.Height = eboardConfig.BorderDataSet.Height;
             }
-            
-            _MainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch = initializationManager.EBoardConfig.EBoardBrowserSwitch;
 
-            _MainViewModel.UpdateBrushManager(new Models.BrushManagement(eboardConfig.EBoardMainWindowBrushManager));
-
-            Current.MainWindow.Left = initializationManager.EBoardConfig.EBoardPosition.X;
-            Current.MainWindow.Top = initializationManager.EBoardConfig.EBoardPosition.Y;
-
-            Current.MainWindow.Width = initializationManager.EBoardConfig.EBoardWidth;
-            Current.MainWindow.Height = initializationManager.EBoardConfig.EBoardHeight;
+            return eboardConfig;
         }
 
 
@@ -68,24 +68,26 @@ namespace EBoard
         protected async override void OnStartup(StartupEventArgs e)
         {
             IOProcessesInitializationManager ioProxIM = new IOProcessesInitializationManager();
+            EBoardConfigLoader eBoardConfigLoader = new EBoardConfigLoader(ioProxIM);
+            EboardConfig eboardConfig = await eBoardConfigLoader.LoadEBoardConfig();
 
-            _MainViewModel = new MainViewModel(_navigationStore);
-
-            EBoardInitializationManager initializationManager = new EBoardInitializationManager(ioProxIM, _MainViewModel);
-
+            _MainViewModel = new MainViewModel(_navigationStore, eboardConfig);
+            
             MainWindow mainWindow = new MainWindow()
             {
                 DataContext = _MainViewModel
             };
 
-            await EBoardConfigInitialization(initializationManager);
+            EBoardInitializationManager initializationManager = new EBoardInitializationManager(ioProxIM, _MainViewModel);
+
+            await initializationManager.LoadEBoardDataSets();
+
+            await EBoardConfigInitialization(eboardConfig);          
 
             mainWindow.Show();
 
             base.OnStartup(e);
-
         }
-
 
     }
 

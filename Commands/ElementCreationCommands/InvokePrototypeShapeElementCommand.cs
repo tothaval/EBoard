@@ -1,4 +1,5 @@
 ﻿using EBoard.Interfaces;
+using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
 using EBoard.ViewModels;
 using Microsoft.Windows.Themes;
@@ -25,32 +26,30 @@ namespace EBoard.Commands.ElementCreationCommands
         }
 
 
-        public override void Execute(object? parameter)
+        public async override void Execute(object? parameter)
         {
             if (_MainViewModel.EBoardBrowserViewModel.SelectedEBoard != null)
             {
                 ElementDataSet elementDataSet = new ElementDataSet();
                 elementDataSet.EID = "-1";
-                elementDataSet.X = 25;
-                elementDataSet.Y = 25;
-                elementDataSet.Z = 0;
+
                 elementDataSet.ElementHeader = "Shape Element";
-                elementDataSet.ElementHeight = 75.0;
-                elementDataSet.ElementWidth = 225.0;
+
                 elementDataSet.ElementTypeString = "EBoard.Models.ShapeManagement";
 
-                elementDataSet.AddBrushManager(new BrushManagement());
-
+                elementDataSet.AddBorderDataSet(new BorderDataSet(new BorderManagement()));
+                elementDataSet.AddBrushDataSet(new BrushDataSet(new BrushManagement()));
+                elementDataSet.AddPlacementDataSet(new PlacementDataSet(new PlacementManagement()));
 
                 // refactor this later into a separate function or class for shape creation, only call the
                 // class or the function
                 elementDataSet.ElementContent = new ShapeManagement(new Rectangle()
                     {
-                        Width = elementDataSet.ElementWidth,
-                        Height = elementDataSet.ElementHeight,
-                        Fill = elementDataSet.BrushManager.Background,
-                        Stroke = elementDataSet.BrushManager.Border,
-                        StrokeThickness = elementDataSet.BrushManager.BorderThickness.Left
+                        Width = elementDataSet.BorderDataSet.Width,
+                        Height = elementDataSet.BorderDataSet.Height,
+                        Fill = await elementDataSet.BrushDataSet.BackgroundColor.GetBrush(),
+                    Stroke = await elementDataSet.BrushDataSet.BorderColor.GetBrush(),
+                    StrokeThickness = elementDataSet.BorderDataSet.BorderThickness.Left
                     });
 
 
@@ -59,8 +58,7 @@ namespace EBoard.Commands.ElementCreationCommands
                     IsContent = false,
                     IsShape = true
                 };
-
-                
+                               
 
 
                 _MainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(evm);
