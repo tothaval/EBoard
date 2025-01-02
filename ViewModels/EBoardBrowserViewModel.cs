@@ -26,7 +26,65 @@ namespace EBoard.ViewModels
 
         // Properties & Fields
         #region Properties & Fields
+        
+        private int _CurrentSelectionID;
+        public int CurrentSelectionID
+        {
+            get { return _CurrentSelectionID; }
+            set
+            {
+                _CurrentSelectionID = value;
+                OnPropertyChanged(nameof(CurrentSelectionID));
+            }
+        }
 
+
+        private DateTime _EBoardCreatedDate;
+        public DateTime EBoardCreatedDate
+        {
+            get { return _EBoardCreatedDate; }
+            set
+            {
+                _EBoardCreatedDate = value;
+                OnPropertyChanged(nameof(EBoardCreatedDate));
+            }
+        }
+
+
+        private int _EBoardContainerCount;
+        public int EBoardContainerCount
+        {
+            get { return _EBoardContainerCount; }
+            set
+            {
+                _EBoardContainerCount = value;
+                OnPropertyChanged(nameof(EBoardContainerCount));
+            }
+        }
+
+
+        private int _EBoardElementCount;
+        public int EBoardElementCount
+        {
+            get { return _EBoardElementCount; }
+            set
+            {
+                _EBoardElementCount = value;
+                OnPropertyChanged(nameof(EBoardElementCount));
+            }
+        }
+
+
+        private int _EBoardShapeCount;
+        public int EBoardShapeCount
+        {
+            get { return _EBoardShapeCount; }
+            set
+            {
+                _EBoardShapeCount = value;
+                OnPropertyChanged(nameof(EBoardShapeCount));
+            }
+        }
 
 
         private double _NewEBoardHeight = 480;
@@ -53,6 +111,19 @@ namespace EBoard.ViewModels
         }
 
 
+        private BorderManagement _BorderManager;
+        public BorderManagement BorderManager
+        {
+            get { return _BorderManager; }
+            set
+            {
+                _BorderManager = value;
+                OnPropertyChanged(nameof(BorderManager));
+            }
+        }
+
+
+
         private BrushManagement _BrushManager;
         public BrushManagement BrushManager
         {
@@ -64,7 +135,17 @@ namespace EBoard.ViewModels
             }
         }
 
-        public int EBoardCount { get; set; }
+
+        private int _EBoardCount;
+        public int EBoardCount
+        {
+            get { return _EBoardCount; }
+            set
+            {
+                _EBoardCount = value;
+                OnPropertyChanged(nameof(EBoardCount));
+            }
+        }
 
 
         private int _EBoardDepth = 100;
@@ -98,7 +179,7 @@ namespace EBoard.ViewModels
             set
             {
                 _ImagePath = value;
-                OnPropertyChanged(nameof(ImagePath));
+                OnPropertyChanged(nameof(value));
 
                 ChangeElementBackgroundToImage();
             }
@@ -125,16 +206,27 @@ namespace EBoard.ViewModels
             {
                 if (_SelectedEBoard != null)
                 {
-                    _SelectedEBoard.EBoardActive = false;
+                    _SelectedEBoard.EBoardActive = false; // changing the active value of the old one, should do this in a different way
                 }
 
                 _SelectedEBoard = value;
+
+                if (_SelectedEBoard != null)
+                {
+                    _SelectedEBoard.Elements.CollectionChanged += SelectedEBoardElements_CollectionChanged;
+                }
 
                 RefreshEBoardParameters();
 
                 OnPropertyChanged(nameof(SelectedEBoard));
             }
         }
+
+        private void SelectedEBoardElements_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            RefreshEBoardParameters();
+        }
+
 
         #endregion
 
@@ -180,7 +272,7 @@ namespace EBoard.ViewModels
         {
             AddEBoardCommand = new RelayCommand((s) => AddEBoard(), (s) => true);
 
-            DeleteEBoardCommand = new RelayCommand((s) => DeleteSelectedEBoard(s), (s) => true);
+            DeleteEBoardCommand = new RelayCommand((s) => DeleteSelectedEBoard(), (s) => true);
 
             EBoardBrowserImageCommand = new EBoardBrowserImageCommand(this);
 
@@ -188,10 +280,15 @@ namespace EBoard.ViewModels
 
             ResetBackgroundCommand = new ResetBackgroundCommand(this);
 
-            BrushManager = new BrushManagement();
-            BrushManager.Background = new SolidColorBrush(Colors.CornflowerBlue);
+            BorderManager = new BorderManagement();
 
-            EBoards = new ObservableCollection<EBoardViewModel>();
+            BrushManager = new BrushManagement();
+            BrushManager.Background = new SolidColorBrush(Colors.White);
+            BrushManager.Foreground = new SolidColorBrush(Colors.Orange);
+            BrushManager.Border = new SolidColorBrush(Colors.Blue);
+            BrushManager.Highlight = new SolidColorBrush(Colors.Red);
+
+            EBoards = new ObservableCollection<EBoardViewModel>(); 
         }
 
 
@@ -199,7 +296,7 @@ namespace EBoard.ViewModels
         {
             AddEBoardCommand = new RelayCommand((s) => AddEBoard(), (s) => true);
 
-            DeleteEBoardCommand = new RelayCommand((s) => DeleteSelectedEBoard(s), (s) => true);
+            DeleteEBoardCommand = new RelayCommand((s) => DeleteSelectedEBoard(), (s) => true);
 
             _NavigationStore = navigationStore;
 
@@ -209,8 +306,15 @@ namespace EBoard.ViewModels
 
             ResetBackgroundCommand = new ResetBackgroundCommand(this);
 
+            BorderManager = new BorderManagement();
+
             BrushManager = new BrushManagement();
             BrushManager.Background = new SolidColorBrush(Colors.White);
+            BrushManager.Foreground = new SolidColorBrush(Colors.Black);
+            BrushManager.Border = new SolidColorBrush(Colors.Blue);
+            BrushManager.Highlight = new SolidColorBrush(Colors.Red);
+
+
 
             EBoards = new ObservableCollection<EBoardViewModel>();
 
@@ -218,6 +322,7 @@ namespace EBoard.ViewModels
             {
                 navigationStore.CurrentViewModel = EBoards[0];
             }
+
         }
 
         #endregion
@@ -236,12 +341,18 @@ namespace EBoard.ViewModels
             EBoards.Add(new EBoardViewModel(EBoardName, new BorderManagement() { Width = NewEBoardWidth, Height = NewEBoardHeight }, EBoardDepth));
 
             SelectedEBoard = EBoards.Last();
+            RefreshEBoardParameters();
 
         }
 
         public void ChangeElementBackgroundToImage()
         {
             BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
+
+            if (ImagePath.Equals(string.Empty))
+            {
+                BrushManager.Background = new SolidColorBrush(Colors.White);
+            }
 
             OnPropertyChanged(nameof(BrushManager));
 
@@ -270,7 +381,7 @@ namespace EBoard.ViewModels
         }
 
 
-        private void DeleteSelectedEBoard(object s)
+        private void DeleteSelectedEBoard()
         {
             if (SelectedEBoard != null && EBoards.Count > 0)
             {
@@ -278,7 +389,8 @@ namespace EBoard.ViewModels
 
                 if (EBoards.Count > 0)
                 {
-                    SelectedEBoard = EBoards.First();
+                    SelectedEBoard = EBoards.Last();
+                    RefreshEBoardParameters();
                 }
                 else
                 {
@@ -299,7 +411,29 @@ namespace EBoard.ViewModels
                 NewEBoardHeight = SelectedEBoard.BorderManager.Height;
                 NewEBoardWidth = SelectedEBoard.BorderManager.Width;
                 SelectedEBoard.EBoardActive = true;
+
+                CurrentSelectionID = EBoards.IndexOf(SelectedEBoard) + 1;
+                EBoardContainerCount = SelectedEBoard.GetContainerCount();
+                EBoardCount = EBoards.Count;
+                EBoardCreatedDate = SelectedEBoard.GetCreatedDate();
+                EBoardElementCount = SelectedEBoard.GetElementCount();
+                EBoardShapeCount = SelectedEBoard.GetShapeCount();
             }
+            else
+            {
+                EBoardName = "no board selected";
+                EBoardDepth = 10;
+                NewEBoardHeight = 620;
+                NewEBoardWidth = 1240;
+
+                CurrentSelectionID = 0;
+                EBoardContainerCount = 0;
+                EBoardCount = 0;
+                EBoardCreatedDate = DateTime.Now;
+                EBoardElementCount = 0;
+                EBoardShapeCount = 0;
+            }
+
         }
 
         #endregion

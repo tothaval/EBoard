@@ -20,10 +20,28 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0"
                     HorizontalAlignment="Left">
+
+            <ToggleButton Content="Eboard Browser"
+                          Style="{StaticResource DefaultToggleButtonStyle}"
+                          IsChecked="{Binding EBoardBrowserSwitch,
+                NotifyOnSourceUpdated=True,
+                UpdateSourceTrigger=PropertyChanged}"/>
             
-            <Button Style="{StaticResource DefaultButtonStyle}"
-                    Content="!"
-                    Command="{Binding InvokePrototypeElementCommand}"/>
+            <Border CornerRadius="5" Background="Black"
+                    BorderBrush="Orange"
+                    BorderThickness="3"
+                    MinWidth="50" MaxHeight="50"
+                    >
+                
+                <Menu>
+                    <MenuItem Header="+Elements">
+                        <MenuItem Header="Text" Command="{Binding InvokePrototypeElementCommand}"/>
+                        <MenuItem Header="Empty" Command="{Binding InvokeEmptyElementCommand}"/>
+                        <MenuItem Header="Empty2" Command="{Binding InvokeEmpty2ElementCommand}"/>
+                    </MenuItem>
+
+                </Menu>
+            </Border>
 
             <Border CornerRadius="5" Background="Black"
                     BorderBrush="Orange"
@@ -31,7 +49,7 @@
                     MinWidth="50" MaxHeight="50"
                     >
                 <Menu>
-                    <MenuItem Header="?">
+                    <MenuItem Header="+Shapes">
                         <MenuItem Header="Rec" Command="{Binding InvokePrototypeShapeElementCommand}"/>
                         <MenuItem Header="Ell" Command="{Binding InvokeEllipseShapeCommand}"/>
                     </MenuItem>
@@ -40,11 +58,6 @@
             </Border>
 
 
-            <ToggleButton Content="..."
-                          Style="{StaticResource DefaultToggleButtonStyle}"
-                          IsChecked="{Binding EBoardBrowserSwitch,
-                NotifyOnSourceUpdated=True,
-                UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
     </Grid>

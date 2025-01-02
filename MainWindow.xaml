@@ -31,18 +31,18 @@
 
 
     </Window.Resources>
-
+    
     <WindowChrome.WindowChrome>
         <WindowChrome
             CaptionHeight="1"  
             CornerRadius ="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"
-            ResizeBorderThickness="20"         
+            ResizeBorderThickness="25"         
             GlassFrameThickness="0"            
             >
         </WindowChrome>
     </WindowChrome.WindowChrome>
 
-   
+
     <Border Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
             BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
             BorderThickness="{Binding BorderManager.BorderThickness, NotifyOnSourceUpdated=True}"
@@ -54,15 +54,34 @@
 
         <Border.ContextMenu >
             <ContextMenu>
+                
+                <Label Content="MainWindow"
+                       Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"/>
+                <MenuItem Header="UI">
+               
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="Corners"
+                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="50"/>
+                        <Label Content="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True}"
+                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="30"/>
+                        <Slider Value="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            Maximum="50"
+                            MinWidth="50"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+
+                    </WrapPanel>
 
 
-                <MenuItem Header="+Image" Command="{Binding MainWindowImageCommand}"
-                          CommandParameter="{Binding ElementName=EboardMainWindow}"/>
+                    <MenuItem Header="+Image" Command="{Binding MainWindowImageCommand}"/>
 
-                <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"
-                          CommandParameter="{Binding ElementName=EboardMainWindow}"/>
-
-                <Separator/>
+                    <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"/>
+                </MenuItem>
 
                 <MenuItem Header="{DynamicResource MaximizeContextMenuItemHeader}"
                       Command="{Binding MaximizeCommand}"
@@ -93,7 +112,7 @@
                 <ColumnDefinition Width="auto" />
 
             </Grid.ColumnDefinitions>
-            
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
@@ -103,23 +122,31 @@
 
             <views:MainWindowMenuBar Grid.Row="0"
                                      Grid.Column="0"
-                                     DataContext="{Binding MainWindowMenuBarVM}"/>
-            
-            <views:MainWindowLogoutBar Grid.Row="0" Grid.Column="2"/>
+                                     DataContext="{Binding MainWindowMenuBarVM}" Margin="10 0 0 0"/>
 
-    
+            <views:MainWindowLogoutBar Grid.Row="0" Grid.Column="2" Margin="0 0 10 0"/>
 
-            <ContentControl Content="{Binding CurrentViewModel}"
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Top"
+                            Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3"
+                          CanContentScroll="True"
+                          Margin="25">
+
+            <ContentControl Content="{Binding CurrentViewModel}"                            
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Top"
-                            Grid.Row="1" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="3"
                             />
+                
+            </ScrollViewer>
 
             <Border Grid.Row="1"
                 Grid.Column="0"
-                Grid.ColumnSpan="3"
+                Grid.ColumnSpan="1"
                 Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
             Converter={StaticResource btvc},
             NotifyOnSourceUpdated=True,
@@ -127,7 +154,7 @@
                 <views:EBoardBrowserView DataContext="{Binding EBoardBrowserViewModel}"
                                      />
             </Border>
-            
+
         </Grid>
     </Border>
 </Window>

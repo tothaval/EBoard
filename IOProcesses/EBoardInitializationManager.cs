@@ -43,8 +43,11 @@ namespace EBoard.IOProcesses
             {
                 foreach (string file in files)
                 {
-                    if (file.EndsWith($"eboard_{files.IndexOf(file)}.xml"))
+                    if (file.Contains("eboard_") && file.EndsWith($".xml"))
                     {
+                        string eboard_folder = file.Replace(".xml", "\\");
+
+
                         var xmlSerializer = new XmlSerializer(typeof(EboardDataSet));
 
                         using (var reader = new StreamReader(file))
@@ -61,7 +64,7 @@ namespace EBoard.IOProcesses
 
                                     for (int i = 0; i < elements.Count; i++)
                                     {
-                                        if (elements[i].EndsWith($"element_{i}.xml"))
+                                        if (elements[i].Contains("element_") && elements[i].EndsWith($".xml"))
                                         {
                                             var reader_elements = new StreamReader(elements[i]);
 
@@ -82,7 +85,9 @@ namespace EBoard.IOProcesses
 
                                                 if (elementData.ElementContent != null)
                                                 {
-                                                    await elementData.ElementContent.Load($"{folderPath}eboard_{files.IndexOf(file)}\\element_{i}\\", elementData);
+                                                    string element_folder = elements[i].Replace(".xml", "\\");
+
+                                                    await elementData.ElementContent.Load($"{element_folder}", elementData);
                                                 }
 
 

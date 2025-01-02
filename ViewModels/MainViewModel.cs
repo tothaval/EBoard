@@ -11,6 +11,7 @@ using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
 using EBoard.Navigation;
 using EBoard.Utilities.SharedMethods;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -52,6 +53,22 @@ namespace EBoard.ViewModels
         }
 
 
+        private int _CornerRadius;
+        public int CornerRadiusValue
+        {
+            get { return _CornerRadius; }
+            set
+            {
+                _CornerRadius = value;
+
+                BorderManager.CornerRadius = new CornerRadius(value);
+
+                OnPropertyChanged(nameof(BorderManager));
+                OnPropertyChanged(nameof(CornerRadiusValue));
+            }
+        }
+
+
         /// <summary>
         /// the path to an optional background image for the
         /// element, if empty, the stored brush or a default
@@ -67,6 +84,35 @@ namespace EBoard.ViewModels
                 OnPropertyChanged(nameof(ImagePath));
 
                 ChangeElementBackgroundToImage();
+            }
+        }
+
+
+        private int _Height;
+        public int Height
+        {
+            get { return _Height; }
+            set
+            {
+                _Height = value;
+
+                BorderManager.Height = value;
+                OnPropertyChanged(nameof(Height));
+                OnPropertyChanged(nameof(BorderManager));
+            }
+        }
+
+
+        private int _Width;
+        public int Width
+        {
+            get { return _Width; }
+            set
+            {
+                _Width = value;
+                BorderManager.Width = value;
+                OnPropertyChanged(nameof(Width));
+                OnPropertyChanged(nameof(BorderManager));
             }
         }
 
@@ -116,6 +162,7 @@ namespace EBoard.ViewModels
         #region Commands
 
         public ICommand CloseCommand { get; }
+
 
         public ICommand MainWindowImageCommand { get; }
 
@@ -175,7 +222,8 @@ namespace EBoard.ViewModels
                 BrushManager = new BrushManagement(eboardConfig.BrushDataSet);
                 PlacementManager = new PlacementManagement(eboardConfig.PlacementDataSet);
             }
-            
+
+            CornerRadiusValue = (int)BorderManager.CornerRadius.TopLeft;
         }
 
 
@@ -186,6 +234,7 @@ namespace EBoard.ViewModels
         /// </summary>
         #region Methods
 
+
         public void ChangeElementBackgroundToImage()
         {
             BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
@@ -193,8 +242,18 @@ namespace EBoard.ViewModels
             OnPropertyChanged(nameof(BrushManager));
             
             OnPropertyChanged(nameof(BrushManager.Background));
+        }
+
+
+        internal void DeselectElements()
+        {
+            if (_EBoardBrowserViewModel.SelectedEBoard != null)
+            {
+                _EBoardBrowserViewModel.SelectedEBoard.DeselectElements(); 
+            }
 
         }
+
 
         #endregion
 

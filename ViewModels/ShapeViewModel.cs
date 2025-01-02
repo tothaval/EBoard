@@ -4,19 +4,29 @@
  * 
  *  viewmodel for shape content elements
  */
+using EBoard.Commands;
 using EBoard.Interfaces;
 using EBoard.Models;
 using EBoard.Utilities.SharedMethods;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Policy;
+using System.Security.RightsManagement;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace EBoard.ViewModels
 {
-    public class ShapeViewModel : BaseViewModel, IElementBackgroundImage
+    public class ShapeViewModel : BaseViewModel, IElementBackgroundImage, IUIManager
     {
-        // mit properties ersetzen um die größe zu ändern,
-        // die änderung in BorderManagement reinschreiben
+
+        private ElementViewModel _ElementViewModel;
+        public ElementViewModel ElementViewModel => _ElementViewModel;
+
+
+        public bool IsSelected { get; set; } = false;
+
 
         private BorderManagement _BorderManager;
         public BorderManagement BorderManager
@@ -67,9 +77,9 @@ namespace EBoard.ViewModels
                 _ImagePath = value;
 
                 OnPropertyChanged(nameof(ImagePath));
-                
-                ChangeElementBackgroundToImage(); 
-                
+
+                ChangeElementBackgroundToImage();
+
             }
         }
 
@@ -116,14 +126,17 @@ namespace EBoard.ViewModels
 
         public IElementContent Control { get; }
 
+        public ICommand SelectCommand { get; }
 
-        public ShapeViewModel(ElementDataSet elementDataSet)
+        public ShapeViewModel(ElementDataSet elementDataSet, ElementViewModel elementViewModel)
         {
+            _ElementViewModel = elementViewModel;
             ElementDataSet = elementDataSet;
             BorderManager = new BorderManagement(elementDataSet.BorderDataSet);
             BrushManager = new BrushManagement(elementDataSet.BrushDataSet);
             Control = elementDataSet.ElementContent;
 
+            SelectCommand = new RelayCommand((s) => SelectElement(), (s) => true);
 
             if (BorderManager == null)
             {
@@ -134,7 +147,7 @@ namespace EBoard.ViewModels
             {
                 BrushManager = new BrushManagement();
             }
-            
+
             ((Shape)Control.Element).Fill = BrushManager.Background;
             ((Shape)Control.Element).Stroke = BrushManager.Border;
             ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
@@ -155,17 +168,63 @@ namespace EBoard.ViewModels
         }
 
 
-        public void ChangeElementBackgroundToImage()
+        public void ApplyBackgroundBrush(Brush brush)
         {
-            BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
+            BrushManager.Background = brush;
 
-            ((Shape)Control.Element).Fill = BrushManager.Background;
-            ((Shape)Control.Element).Stroke = BrushManager.Border;
-            ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
+            ((Shape)Control.Element).Fill = brush;
 
             OnPropertyChanged(nameof(BrushManager));
 
             OnPropertyChanged(nameof(BrushManager.Background));
+        }
+
+        public void ChangeElementBackgroundToImage()
+        {
+            if (ImagePath != null && ImagePath != string.Empty)
+            {
+                BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
+
+                ((Shape)Control.Element).Fill = BrushManager.Background;
+                ((Shape)Control.Element).Stroke = BrushManager.Border;
+                ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
+
+                _ElementViewModel.EBoardViewModel.ChangeSelection_BackgroundBrush(_ElementViewModel, BrushManager.Background);
+            }
+
+            OnPropertyChanged(nameof(BrushManager));
+
+            OnPropertyChanged(nameof(BrushManager.Background));
+        }
+
+
+        public void DeselectElement()
+        {
+            IsSelected = false;
+
+            BrushManager.SwitchBorderToBorder();
+
+            ((Shape)Control.Element).Stroke = BrushManager.Border;
+
+            OnPropertyChanged(nameof(BrushManager));
+        }
+
+
+        public void SelectElement()
+        {
+            if (IsSelected)
+            {
+                DeselectElement();
+                return;
+            }
+
+            IsSelected = true;
+
+            BrushManager.SwitchBorderToHighlight();
+
+            ((Shape)Control.Element).Stroke = BrushManager.Border;
+
+            OnPropertyChanged(nameof(BrushManager));
         }
 
 
@@ -176,7 +235,7 @@ namespace EBoard.ViewModels
                 if (Control.Element != null)
                 {
                     ((Shape)Control.Element).Width = BorderManager.Width;
-                    ((Shape)Control.Element).Height = BorderManager.Height;  
+                    ((Shape)Control.Element).Height = BorderManager.Height;
                 }
             }
         }

@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:EBoard.Views"
              xmlns:vms="clr-namespace:EBoard.ViewModels"
              xmlns:ic="clr-namespace:EBoard.InnerComponents"
+             xmlns:ut="clr-namespace:EBoard.Utilities"
              x:Name="Element"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
@@ -15,25 +16,54 @@
 
     <UserControl.Resources>
 
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <ut:VisibilityConverterToCollapsed x:Key="VisibilityToCollapsed"/>
 
     </UserControl.Resources>
 
-        <Border MouseLeftButtonDown="Border_MouseLeftButtonDown"
+
+    <Border MouseLeftButtonDown="Border_MouseLeftButtonDown"
             MouseLeftButtonUp="Border_MouseLeftButtonUp"
-            MouseMove="Border_MouseMove">
+            MouseMove="Border_MouseMove"
+            RenderTransformOrigin="{Binding TransformOriginPoint, NotifyOnSourceUpdated=True}"
+            RenderTransform="{Binding RotateTransformValue, NotifyOnSourceUpdated=True}">
 
-            <Border.ContextMenu>
 
-            <ContextMenu>
-                
-                <WrapPanel Orientation="Horizontal">
+
+        <Border.ContextMenu>
+
+            <ContextMenu Name="ElementContextMenu">
+
+                <Label Content="Element" Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"/>
+
+                <MenuItem Header="Placement">
+                    <WrapPanel Orientation="Horizontal">
+                    <Label Content="Z"
+                               Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="50"/>
                     <Label Content="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"
+                               Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"
                            MinWidth="30"/>
                     <Slider Value="{Binding ZIndexValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="{Binding ZMinimumValue, NotifyOnSourceUpdated=True}"
                             Maximum="{Binding ZMaximumValue, NotifyOnSourceUpdated=True}"
-                            MinWidth="100"
+                            Width="360"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                </WrapPanel>
+
+                <WrapPanel Orientation="Horizontal">
+                <Label Content="R"
+                               Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="50"/>
+                    <Label Content="{Binding RotationAngleValue, NotifyOnSourceUpdated=True}"
+                               Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="30"/>
+                    <Slider Value="{Binding RotationAngleValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            Maximum="359"
+                            Width="360"
                             SmallChange="1"
                             LargeChange="5"
                             Interval="1"
@@ -41,24 +71,80 @@
 
                 </WrapPanel>
 
-                <Separator/>
+                </MenuItem>
+                
+                
+                <MenuItem Header="Design">
 
-                <MenuItem Header="+Image" Command="{Binding ImageCommand}"
-                          CommandParameter="{Binding ElementName=Element}"/>
 
-                <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"
-                          CommandParameter="{Binding ElementName=Element}"/>
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="Width"
+                               Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="50"/>
+                        <Label Content="{Binding WidthValue, NotifyOnSourceUpdated=True}"
+                               Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="35"/>
+                        <Slider Value="{Binding WidthValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="1"
+                            Maximum="1024"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
 
-                    
-                    
-                <Separator/>
-                    
-                    <MenuItem Header="Delete" Command="{Binding RightClickCommand}"
-                          CommandParameter="{Binding ElementName=Element}"/>
+                    </WrapPanel>
 
-                </ContextMenu>
 
-            </Border.ContextMenu>
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="Height"
+                               Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="50"/>
+                        <Label Content="{Binding HeightValue, StringFormat=d0, NotifyOnSourceUpdated=True}"
+                               Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="35"/>
+                        <Slider Value="{Binding HeightValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="1"
+                            Maximum="1024"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+
+                    </WrapPanel>
+
+                    <Border Visibility="{Binding IsContent, Converter={StaticResource VisibilityToCollapsed}, NotifyOnSourceUpdated=True}">
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="Corners"
+                               Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="50"/>
+                            <Label Content="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True}"
+                               Foreground="{Binding ContentContainer.BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="30"/>
+                            <Slider Value="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            Maximum="90"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+
+                        </WrapPanel>
+                    </Border>
+
+                    <MenuItem Header="+Image" Command="{Binding ImageCommand}"/>
+
+                    <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"/>
+
+                </MenuItem>
+
+                <MenuItem Header="Delete" Command="{Binding RightClickCommand}"/>
+
+            </ContextMenu>
+
+        </Border.ContextMenu>
 
 
         <Grid>
@@ -69,11 +155,11 @@
             <TextBlock Text="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"/>
 
             <Grid Background="Transparent" Grid.Row="1">
-                <Border Visibility="{Binding IsContent, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Border Visibility="{Binding IsContent, Converter={StaticResource VisibilityToCollapsed}}">
                     <local:ContentView DataContext="{Binding ContentViewModel}"/>
                 </Border>
 
-                <Border Visibility="{Binding IsShape, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Border Visibility="{Binding IsShape, Converter={StaticResource VisibilityToCollapsed}}">
                     <local:ShapeView DataContext="{Binding ShapeViewModel}"/>
                 </Border>
             </Grid>

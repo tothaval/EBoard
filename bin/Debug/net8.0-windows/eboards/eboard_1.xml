@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <EboardConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <EBID>EBoard_638709255144574310</EBID>
-  <EBoardName>new</EBoardName>
-  <EBoardDepth>150</EBoardDepth>
+  <EBID>EBoard_638714465794194254</EBID>
+  <EBoardName>new2</EBoardName>
+  <EBoardDepth>100</EBoardDepth>
   <BorderDataSet>
     <BorderThickness>
       <Left>2</Left>
@@ -16,7 +16,7 @@
       <BottomRight>5</BottomRight>
       <BottomLeft>5</BottomLeft>
     </CornerRadius>
-    <Height>480</Height>
+    <Height>240</Height>
     <Margin>
       <Left>5</Left>
       <Top>5</Top>

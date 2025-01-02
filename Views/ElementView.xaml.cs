@@ -31,9 +31,11 @@ namespace EBoard.Views
 
 
         private Point _Position;
+        public Point Position => _Position;
 
 
         private UIElement _VisualParent;
+        public UIElement VisualParent => _VisualParent;
 
 
         private Canvas _Canvas;
@@ -85,10 +87,12 @@ namespace EBoard.Views
 
         }
 
+
         private void _ElementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             UpdatePlacement();
         }
+
 
         private void UpdatePlacement()
         {
@@ -97,41 +101,24 @@ namespace EBoard.Views
             Y = Canvas.GetTop(_VisualParent);
 
             Panel.SetZIndex(_VisualParent, _ElementViewModel.ZIndexValue);
+
+            _ElementViewModel.SetView(Element);
         }
 
+
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {           
+        {
             Z = _ElementViewModel.ZIndexValue;
 
             _IsDragging = true;
 
             _Position = e.GetPosition(_VisualParent);
 
+            _ElementViewModel.EBoardViewModel.BeginElementSelectionMovement(_ElementViewModel);
 
             e.Handled = true;
         }
 
-        private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if (!_IsDragging)
-                return;
-
-            _IsDragging = false;
-            
-            X = Canvas.GetLeft(_VisualParent);
-
-            Y = Canvas.GetTop(_VisualParent);
-          
-            Panel.SetZIndex(_VisualParent, Z);
-
-            _ElementViewModel.PlacementManager.Position = new Point(X, Y);
-            
-            _ElementViewModel.ZIndexValue = Z;
-            
-            _ElementViewModel.WasLastActive();
-
-            e.Handled = true;
-        }
 
         private void Border_MouseMove(object sender, MouseEventArgs e)
         {
@@ -142,43 +129,87 @@ namespace EBoard.Views
             {
                 Point canvasRelativePosition = e.GetPosition(_Canvas);
 
-                Canvas.SetTop(_VisualParent, canvasRelativePosition.Y - _Position.Y);
-                Canvas.SetLeft(_VisualParent, canvasRelativePosition.X - _Position.X);
+                double x, y;
+
+                x = canvasRelativePosition.X - _Position.X ;
+                
+                y = canvasRelativePosition.Y - _Position.Y;
+
+                Canvas.SetLeft(_VisualParent,x) ;
+                Canvas.SetTop(_VisualParent, y);
 
                 Panel.SetZIndex(_VisualParent, 1000);
                 _ElementViewModel.ZIndexValue = 1000;
 
+                Point delta = new Point(x, y);
 
+                _ElementViewModel.EBoardViewModel.MoveElementSelection(_ElementViewModel, delta);
+            }
+        }
+
+
+        private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            //if (!_IsDragging)
+            //    return;
+
+            if (_IsDragging)
+            {
+                _IsDragging = false;
+
+                X = Canvas.GetLeft(_VisualParent);
+
+                Y = Canvas.GetTop(_VisualParent);
+
+                _Position = new Point(X,Y);
+
+                Panel.SetZIndex(_VisualParent, Z);
+
+                _ElementViewModel.PlacementManager.Position = new Point(X, Y);
+
+                _ElementViewModel.ZIndexValue = Z;
+
+                _ElementViewModel.EBoardViewModel.StopElementSelectionMovement(_ElementViewModel);
             }
 
+            _ElementViewModel.WasLastActive();
+
+            e.Handled = true;
         }
+
+
+
+
 
         private void Element_Loaded(object sender, RoutedEventArgs e)
         {
             _VisualParent = VisualTreeHelper.GetParent(this) as UIElement;
 
             if (_VisualParent != null)
-            {                
+            {
                 _Canvas = VisualTreeHelper.GetParent(_VisualParent) as Canvas;
 
-                if (_Canvas != null)
-                {
-                    AdornerLayer.GetAdornerLayer(
-                        _Canvas).Add(new ResizeAdorner(Element)); 
-                }
+                //if (_Canvas != null)
+                //{
+                //    AdornerLayer.GetAdornerLayer(
+                //        _Canvas).Add(new ResizeAdorner(Element));
+                //}
             }
 
             _ElementViewModel = (ElementViewModel)DataContext;
 
-            _ElementViewModel.PropertyChanged += _ElementViewModel_PropertyChanged;
+            _ElementViewModel.PropertyChanged += _ElementViewModel_PropertyChanged;                   
 
             UpdatePlacement();
         }
+
 
         private void Element_Unloaded(object sender, RoutedEventArgs e)
         {
 
         }
+
+
     }
 }
 // EOF

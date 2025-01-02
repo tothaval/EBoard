@@ -67,22 +67,22 @@
                                                     From="Orange"
                                                     To="Black"
                                                     Duration="0:0:0.3"/>
-                                </Storyboard>                                
-                                
+                                </Storyboard>
+
                             </BeginStoryboard>
-                            
+
                         </EventTrigger>
-                        
-                        
+
+
                     </ControlTemplate.Triggers>
-                    
+
                 </ControlTemplate>
-                
+
             </Setter.Value>
-            
-            
+
+
         </Setter>
-                
+
 
 
     </Style>
@@ -125,7 +125,15 @@
 
 
 
+
                     <ControlTemplate.Triggers>
+
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter Property="Background" TargetName="DefaultButtonBorder" Value="Orange"/>
+                            <Setter Property="Foreground" Value="Black"/>
+
+                        </Trigger>
+
 
                         <EventTrigger RoutedEvent="Border.MouseEnter"
                                       SourceName="DefaultButtonBorder">
@@ -170,7 +178,7 @@
         </Setter>
 
     </Style>
-    
+
     <Style x:Key="EBoardBrowserViewButtonStyle"
         TargetType="Button">
 

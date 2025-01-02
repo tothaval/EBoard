@@ -55,6 +55,8 @@ namespace EBoard.ViewModels
         // Commands
         #region Commands
 
+        public ICommand InvokeEmptyElementCommand { get; }
+        public ICommand InvokeEmpty2ElementCommand { get; }
         public ICommand InvokePrototypeElementCommand { get; } 
 
         public ICommand InvokeEllipseShapeCommand { get; }
@@ -69,6 +71,9 @@ namespace EBoard.ViewModels
             title = "EBoard";
 
             _MainViewModel = mainViewModel;
+
+            InvokeEmptyElementCommand = new InvokeEmptyElementCommand(mainViewModel);
+            InvokeEmpty2ElementCommand = new InvokeEmpty2ElementCommand(mainViewModel);
 
             InvokePrototypeElementCommand = new InvokePrototypeElementCommand(mainViewModel);
 
