@@ -9,49 +9,115 @@
              x:Name="EBoard_Board"
              mc:Ignorable="d"
              ClipToBounds="True"
-                                                   
+                                                                
              d:DesignHeight="450" d:DesignWidth="800">
 
     <Border Margin="5"
-            CornerRadius="15"
             Padding="5"          
-                                    
-            Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+                                                           
+            Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"            
             BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
             BorderThickness="{Binding BorderManager.BorderThickness, NotifyOnSourceUpdated=True}"
+            CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"
             Width="{Binding BorderManager.Width,
         NotifyOnSourceUpdated=True}"
             Height="{Binding BorderManager.Height,
-        NotifyOnSourceUpdated=True}">
+        NotifyOnSourceUpdated=True}"
+            MouseLeftButtonDown="Border_MouseLeftButtonDown"
+            MouseLeftButtonUp="Border_MouseLeftButtonUp"
+            >
 
 
         <Border.ContextMenu>
 
             <ContextMenu>
 
-                <MenuItem Header="+Image" Command="{Binding EBoardImageCommand}"
-                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
-
-                <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"
-                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
-
-                <Separator/>
-
-
-                <MenuItem Header="First" Command="{Binding SwitchToFirstEBoardCommand}"
-                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
+                <Label Content="EBoard"
+                       Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"/>
                 
-                <MenuItem Header="Prev" Command="{Binding SwitchToPrevEBoardCommand}"
-                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
+                    <MenuItem Header="EBoard Switch"
+                               Style="{StaticResource SubMenuItemStyle}">
+                        <WrapPanel Orientation="Horizontal" Background="Transparent" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <MenuItem Header="First" Command="{Binding SwitchToFirstEBoardCommand}"
+                               Style="{StaticResource SubMenuItemStyle2}"/>
+                            <MenuItem Header="Last" Command="{Binding SwitchToLastEBoardCommand}"
+                               Style="{StaticResource SubMenuItemStyle2}"/>
 
-                <MenuItem Header="Next" Command="{Binding SwitchToNextEBoardCommand}"
-                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
-                
-                <MenuItem Header="Last" Command="{Binding SwitchToLastEBoardCommand}"
-                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
-                                
-                <MenuItem Header="Delete" Command="{Binding DeleteEBoardCommand}"
-                          CommandParameter="{Binding ElementName=EBoard_Board}"/>
+                        </WrapPanel>
+
+                        <WrapPanel Orientation="Horizontal" Background="Transparent" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <MenuItem Header="Prev" Command="{Binding SwitchToPrevEBoardCommand}"
+                               Style="{StaticResource SubMenuItemStyle2}"/>
+                            <MenuItem Header="Next" Command="{Binding SwitchToNextEBoardCommand}"
+                               Style="{StaticResource SubMenuItemStyle2}"/>
+
+                        </WrapPanel>
+                    </MenuItem>
+
+
+                <MenuItem Header="Design">
+
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="Width" 
+                                   Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                                   MinWidth="50"/>
+                            <Label Content="{Binding Width, NotifyOnSourceUpdated=True}"
+                                   Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                                   MinWidth="30"/>
+                            <Slider Value="{Binding Width, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="150"
+                            Maximum="2048"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+
+                        </WrapPanel>
+                    
+                    
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="Height"
+                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="50"/>
+                        <Label Content="{Binding Height, StringFormat=d0, NotifyOnSourceUpdated=True}"
+                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="30"/>
+                        <Slider Value="{Binding Height, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="50"
+                            Maximum="1024"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+
+                    </WrapPanel>
+
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="Corners"
+                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="50"/>
+                        <Label Content="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True}"
+                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+                           MinWidth="30"/>
+                        <Slider Value="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            Maximum="90"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+
+                    </WrapPanel>
+
+                    <MenuItem Header="+Image" Command="{Binding EBoardImageCommand}"/>
+
+                    <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"/>
+                </MenuItem>
+
+                <MenuItem Header="Delete" Command="{Binding DeleteEBoardCommand}"/>
 
             </ContextMenu>
 
@@ -64,25 +130,26 @@
                       ClipToBounds="True"
                       MinWidth="200"
                       MinHeight="200"
-                      AllowDrop="True">
+                      AllowDrop="True"
+                      >
 
             <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <Canvas AllowDrop="True"/>
-                    </ItemsPanelTemplate>
+                </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
                     <Style>
                         <Setter Property="Canvas.Left"
-                                Value="{Binding PlacementManager.Position.X,
+                                Value="{Binding XPosition, Mode=TwoWay,
                             NotifyOnSourceUpdated=True}"/>
                                                 
                         <Setter Property="Canvas.Top"
-                                Value="{Binding PlacementManager.Position.Y,
+                                Value="{Binding YPosition, Mode=TwoWay,
                             NotifyOnSourceUpdated=True}"/>
                         
                         <Setter Property="Panel.ZIndex"
-                                Value="{Binding PlacementManager.Position.Z,
+                                Value="{Binding PlacementManager.Z, Mode=TwoWay,
                             NotifyOnSourceUpdated=True}"/>
                     </Style>
                 </ItemsControl.ItemContainerStyle>
@@ -92,6 +159,6 @@
                 </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-        
+
     </Border>
 </UserControl>

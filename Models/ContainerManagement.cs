@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Xml.Serialization;
 
@@ -79,7 +80,16 @@ namespace EBoard.Models
                             TextWrapping = TextWrapping.Wrap
                         };
                     }
-                } 
+                }
+                else if(containerData.UserControlType.Equals("System.Windows.Controls.Label"))
+                {
+                    _Element = new Label()
+                    {
+                        Content = "\t\t\t",
+                        Background = new SolidColorBrush(Colors.Transparent)
+                    };
+                }              
+
             }
 
             await Task.CompletedTask;

@@ -9,6 +9,7 @@ using EBoard.IOProcesses.DataSets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,6 +22,9 @@ namespace EBoard.Models
         // background brush related properties, background is used on content border or as shape fill
         public Brush Background { get; set; }
 
+        // store background brush while user control object is highlighted due to selection or due to having focus
+        public Brush SelectionFallbackBrush { get; set; } = new SolidColorBrush(Colors.Black);
+
 
         public string ImagePath { get; set; }
 
@@ -32,7 +36,7 @@ namespace EBoard.Models
 
         // border brush related properties, border is used on content border or as shape stroke
         public Brush Border { get; set; }
-        
+
 
 
         // higlight brush related properties, highlight is used on element selection
@@ -71,6 +75,20 @@ namespace EBoard.Models
 
             await Task.CompletedTask;
         }
+
+
+        public void SwitchBorderToHighlight()
+        {
+            SelectionFallbackBrush = Border;
+            Border = Highlight;
+        }
+
+
+        public void SwitchBorderToBorder()
+        {
+            Border = SelectionFallbackBrush;
+        }
+
 
         private void SetInitialValues()
         {

@@ -19,7 +19,7 @@ namespace EBoard.Utilities.SharedMethods
         {
             if (imagePath == null || imagePath == string.Empty)
             {
-                return ImagePathErrorDefaultBrush;
+                return brush;
             }
 
             try

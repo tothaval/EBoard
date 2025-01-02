@@ -23,6 +23,7 @@ namespace EBoard
             InitializeComponent();
         }
 
+
         private void SizeAndPositionUpdate()
         {
             ((MainViewModel)DataContext).PlacementManager.Position = new Point(Left, Top);
@@ -32,13 +33,16 @@ namespace EBoard
         }
 
 
-
         private void EboardMainWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
+        {          
+            ((MainViewModel)DataContext).DeselectElements();
+
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 DragMove();
             }
+
+
         }
 
 
@@ -49,12 +53,15 @@ namespace EBoard
             e.Handled = true;
         }
 
+
         private void EboardMainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             SizeAndPositionUpdate();
 
             e.Handled = true;
         }
+
+
     }
 }
 // EOF

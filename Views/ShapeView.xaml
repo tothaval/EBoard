@@ -6,7 +6,10 @@
              xmlns:local="clr-namespace:EBoard.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>        
+    <Grid>
+        <Grid.InputBindings>
+            <MouseBinding Gesture="Shift+LeftClick" Command="{Binding SelectCommand}"/>
+        </Grid.InputBindings>
         <ContentPresenter Content="{Binding Control.Element}"/>
     </Grid>
 </UserControl>

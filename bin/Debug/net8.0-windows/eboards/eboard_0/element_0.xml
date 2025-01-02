@@ -30,34 +30,54 @@
   </BorderDataSet>
   <BrushDataSet>
     <BackgroundColor>
-      <BrushType>SolidColorBrush</BrushType>
+      <BrushType>RadialGradientBrush</BrushType>
       <Color>
-        <A>255</A>
-        <R>255</R>
-        <G>255</G>
-        <B>255</B>
-        <ScA>1</ScA>
-        <ScR>1</ScR>
-        <ScG>1</ScG>
-        <ScB>1</ScB>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
       </Color>
       <ImagePath />
       <GradientColors>
         <Color>
           <A>255</A>
-          <R>255</R>
-          <G>255</G>
+          <R>240</R>
+          <G>248</G>
           <B>255</B>
           <ScA>1</ScA>
-          <ScR>1</ScR>
-          <ScG>1</ScG>
+          <ScR>0.8713671</ScR>
+          <ScG>0.9386857</ScG>
           <ScB>1</ScB>
+        </Color>
+        <Color>
+          <A>255</A>
+          <R>47</R>
+          <G>79</G>
+          <B>79</B>
+          <ScA>1</ScA>
+          <ScR>0.02842604</ScR>
+          <ScG>0.07818743</ScG>
+          <ScB>0.07818743</ScB>
         </Color>
       </GradientColors>
       <GradientStops>
         <double>0</double>
+        <double>0.5</double>
       </GradientStops>
-      <GradientPoints />
+      <GradientPoints>
+        <Point>
+          <X>0.5</X>
+          <Y>0.5</Y>
+        </Point>
+        <Point>
+          <X>0.25</X>
+          <Y>0.5</Y>
+        </Point>
+      </GradientPoints>
     </BackgroundColor>
     <ForegroundColor>
       <BrushType>SolidColorBrush</BrushType>
@@ -153,12 +173,12 @@
   <PlacementDataSet>
     <Angle>0</Angle>
     <Position>
-      <X>205</X>
-      <Y>225</Y>
+      <X>380</X>
+      <Y>222</Y>
     </Position>
-    <Z>-17</Z>
+    <Z>0</Z>
   </PlacementDataSet>
-  <EID>Element_638709255185301888</EID>
-  <ElementTypeString>EBoard.Models.ShapeManagement</ElementTypeString>
-  <ElementHeader>Shape Element</ElementHeader>
+  <EID>Element_638714465855405330</EID>
+  <ElementTypeString>EBoard.Models.ContainerManagement</ElementTypeString>
+  <ElementHeader />
 </ElementDataSet>

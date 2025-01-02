@@ -4,16 +4,25 @@
  * 
  *  view model for usercontrol content elements
  */
+using EBoard.Commands;
 using EBoard.Interfaces;
 using EBoard.Models;
 using EBoard.Utilities.SharedMethods;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace EBoard.ViewModels
 {
-    public class ContentViewModel : BaseViewModel, IElementBackgroundImage
+    public class ContentViewModel : BaseViewModel, IElementBackgroundImage, IUIManager
     {
+        private ElementViewModel _ElementViewModel;
+        public ElementViewModel ElementViewModel => _ElementViewModel;
+
+
+        public bool IsSelected { get; set; } = false;
 
         private BorderManagement _BorderManager;
         public BorderManagement BorderManager
@@ -38,6 +47,21 @@ namespace EBoard.ViewModels
             }
         }
 
+
+        private int _CornerRadius;
+        public int CornerRadiusValue
+        {
+            get { return _CornerRadius; }
+            set
+            {
+                _CornerRadius = value;
+                
+                BorderManager.CornerRadius = new CornerRadius(value);
+
+                OnPropertyChanged(nameof(BorderManager));
+                OnPropertyChanged(nameof(CornerRadiusValue));
+            }
+        }
 
         private string _ElementHeaderText;
         public string ElementHeaderText
@@ -105,13 +129,18 @@ namespace EBoard.ViewModels
         public IElementContent Control { get; }
 
 
+        public ICommand SelectCommand { get; }
 
-        public ContentViewModel(ElementDataSet elementDataSet)
+
+        public ContentViewModel(ElementDataSet elementDataSet, ElementViewModel elementViewModel)
         {
+            _ElementViewModel = elementViewModel;
             ElementDataSet = elementDataSet;
             BorderManager = new BorderManagement(elementDataSet.BorderDataSet);
             BrushManager = new BrushManagement(elementDataSet.BrushDataSet);
             Control = elementDataSet.ElementContent;
+
+            SelectCommand = new RelayCommand((s) => SelectElement(), (s) => true);
 
             if (BorderManager == null)
             {
@@ -127,17 +156,62 @@ namespace EBoard.ViewModels
             ElementHeaderText = elementDataSet.ElementHeader;
 
             ImagePath = BrushManager.ImagePath;
-            
+
+            CornerRadiusValue = (int)elementDataSet.BorderDataSet.CornerRadius.TopLeft;
+
+        }
+
+
+
+        public void ApplyBackgroundBrush(Brush brush)
+        {
+            BrushManager.Background = brush;
+
+            OnPropertyChanged(nameof(BrushManager));
+
+            OnPropertyChanged(nameof(BrushManager.Background));
         }
 
 
         public void ChangeElementBackgroundToImage()
         {
-            BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
+            if (ImagePath != null && ImagePath != string.Empty)
+            {
+                BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
+
+                _ElementViewModel.EBoardViewModel.ChangeSelection_BackgroundBrush(_ElementViewModel, BrushManager.Background); 
+            }
+
 
             OnPropertyChanged(nameof(BrushManager));
 
             OnPropertyChanged(nameof(BrushManager.Background));
+        }
+
+
+        public void DeselectElement()
+        {
+            IsSelected = false;
+
+            BrushManager.SwitchBorderToBorder();
+
+            OnPropertyChanged(nameof(BrushManager));
+        }
+
+
+        public void SelectElement()
+        {
+            if (IsSelected)
+            {
+                DeselectElement();
+                return;
+            }
+
+            IsSelected = true;
+
+            BrushManager.SwitchBorderToHighlight();
+
+            OnPropertyChanged(nameof(BrushManager));
         }
 
     }

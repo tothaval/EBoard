@@ -66,6 +66,8 @@ namespace EBoard.IOProcesses
             {
                 for (int i = 0; i < eBoardViewModels.Count; i++)
                 {
+                    eBoardViewModels[i].DeselectElements();
+
                     EboardDataSet dataSet = new EboardDataSet(eBoardViewModels[i]);
 
                     string path = $"{saveFolderPath}eboard_{i}.xml";
@@ -117,6 +119,13 @@ namespace EBoard.IOProcesses
 
                 string elementFilePath = $"{elementFolderPath}element_{ii}.xml";
 
+
+                /// file is sometimes used by another process which leads to crashs, don't know if it is an visual studio issue
+                /// on debugging or not, does not happen everytime.
+                /// 
+                /// maybe it is the loading process, that hasn't finished, gonna have to implement some sort of check if process
+                /// is available or if it can be freed/closed to free the file.
+                
                 await using (var writer = new StreamWriter(elementFilePath))
                 {
                     xmlSerializer_ElementDataSet.Serialize(writer, elementDataSet);

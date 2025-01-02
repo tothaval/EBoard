@@ -28,8 +28,8 @@ namespace EBoard.Commands
             {
                 _EBoardBrowserViewModel.SelectedEBoard.EBoardName = _EBoardBrowserViewModel.EBoardName;
                 _EBoardBrowserViewModel.SelectedEBoard.EBoardDepth = _EBoardBrowserViewModel.EBoardDepth;
-                _EBoardBrowserViewModel.SelectedEBoard.Width = _EBoardBrowserViewModel.NewEBoardWidth;
-                _EBoardBrowserViewModel.SelectedEBoard.Height = _EBoardBrowserViewModel.NewEBoardHeight;
+                _EBoardBrowserViewModel.SelectedEBoard.Width = (int)_EBoardBrowserViewModel.NewEBoardWidth;
+                _EBoardBrowserViewModel.SelectedEBoard.Height = (int)_EBoardBrowserViewModel.NewEBoardHeight;
             }
 
         }

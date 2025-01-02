@@ -30,34 +30,54 @@
   </BorderDataSet>
   <BrushDataSet>
     <BackgroundColor>
-      <BrushType>SolidColorBrush</BrushType>
+      <BrushType>LinearGradientBrush</BrushType>
       <Color>
-        <A>255</A>
-        <R>255</R>
-        <G>255</G>
-        <B>255</B>
-        <ScA>1</ScA>
-        <ScR>1</ScR>
-        <ScG>1</ScG>
-        <ScB>1</ScB>
+        <A>0</A>
+        <R>0</R>
+        <G>0</G>
+        <B>0</B>
+        <ScA>0</ScA>
+        <ScR>0</ScR>
+        <ScG>0</ScG>
+        <ScB>0</ScB>
       </Color>
       <ImagePath />
       <GradientColors>
         <Color>
           <A>255</A>
-          <R>255</R>
-          <G>255</G>
+          <R>240</R>
+          <G>248</G>
           <B>255</B>
           <ScA>1</ScA>
-          <ScR>1</ScR>
-          <ScG>1</ScG>
+          <ScR>0.8713671</ScR>
+          <ScG>0.9386857</ScG>
           <ScB>1</ScB>
+        </Color>
+        <Color>
+          <A>255</A>
+          <R>0</R>
+          <G>0</G>
+          <B>128</B>
+          <ScA>1</ScA>
+          <ScR>0</ScR>
+          <ScG>0</ScG>
+          <ScB>0.21586053</ScB>
         </Color>
       </GradientColors>
       <GradientStops>
         <double>0</double>
+        <double>0.5</double>
       </GradientStops>
-      <GradientPoints />
+      <GradientPoints>
+        <Point>
+          <X>0</X>
+          <Y>0</Y>
+        </Point>
+        <Point>
+          <X>0.5</X>
+          <Y>1</Y>
+        </Point>
+      </GradientPoints>
     </BackgroundColor>
     <ForegroundColor>
       <BrushType>SolidColorBrush</BrushType>
@@ -153,12 +173,12 @@
   <PlacementDataSet>
     <Angle>0</Angle>
     <Position>
-      <X>202</X>
-      <Y>262</Y>
+      <X>366</X>
+      <Y>61</Y>
     </Position>
-    <Z>113</Z>
+    <Z>0</Z>
   </PlacementDataSet>
-  <EID>Element_638709255462137364</EID>
+  <EID>Element_638714466369953312</EID>
   <ElementTypeString>EBoard.Models.ContainerManagement</ElementTypeString>
-  <ElementHeader>Prototype Element</ElementHeader>
+  <ElementHeader />
 </ElementDataSet>

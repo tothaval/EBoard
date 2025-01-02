@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <EboardConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <EBoardCount>2</EBoardCount>
-  <EBoardIndex>1</EBoardIndex>
+  <EBoardCount>3</EBoardCount>
+  <EBoardIndex>0</EBoardIndex>
   <EBoardBrowserSwitch>false</EBoardBrowserSwitch>
   <BorderDataSet>
     <BorderThickness>
-      <Left>12</Left>
+      <Left>2</Left>
       <Top>2</Top>
-      <Right>13</Right>
+      <Right>2</Right>
       <Bottom>2</Bottom>
     </BorderThickness>
     <CornerRadius>
-      <TopLeft>0</TopLeft>
-      <TopRight>25</TopRight>
-      <BottomRight>0</BottomRight>
-      <BottomLeft>4</BottomLeft>
+      <TopLeft>26</TopLeft>
+      <TopRight>26</TopRight>
+      <BottomRight>26</BottomRight>
+      <BottomLeft>26</BottomLeft>
     </CornerRadius>
-    <Height>730</Height>
+    <Height>581</Height>
     <Margin>
-      <Left>22</Left>
-      <Top>10</Top>
-      <Right>0</Right>
-      <Bottom>0</Bottom>
+      <Left>5</Left>
+      <Top>5</Top>
+      <Right>5</Right>
+      <Bottom>5</Bottom>
     </Margin>
     <Padding>
-      <Left>0</Left>
-      <Top>0</Top>
-      <Right>15</Right>
-      <Bottom>3</Bottom>
+      <Left>5</Left>
+      <Top>5</Top>
+      <Right>5</Right>
+      <Bottom>5</Bottom>
     </Padding>
-    <Width>1015</Width>
+    <Width>1373</Width>
   </BorderDataSet>
   <BrushDataSet>
     <BackgroundColor>
@@ -66,25 +66,25 @@
       <BrushType>SolidColorBrush</BrushType>
       <Color>
         <A>255</A>
-        <R>0</R>
-        <G>0</G>
-        <B>0</B>
+        <R>184</R>
+        <G>134</G>
+        <B>11</B>
         <ScA>1</ScA>
-        <ScR>0</ScR>
-        <ScG>0</ScG>
-        <ScB>0</ScB>
+        <ScR>0.4793202</ScR>
+        <ScG>0.2383976</ScG>
+        <ScB>0.0033465358</ScB>
       </Color>
       <ImagePath />
       <GradientColors>
         <Color>
           <A>255</A>
-          <R>0</R>
-          <G>0</G>
-          <B>0</B>
+          <R>184</R>
+          <G>134</G>
+          <B>11</B>
           <ScA>1</ScA>
-          <ScR>0</ScR>
-          <ScG>0</ScG>
-          <ScB>0</ScB>
+          <ScR>0.4793202</ScR>
+          <ScG>0.2383976</ScG>
+          <ScB>0.0033465358</ScB>
         </Color>
       </GradientColors>
       <GradientStops>
@@ -156,8 +156,8 @@
   <PlacementDataSet>
     <Angle>0</Angle>
     <Position>
-      <X>517</X>
-      <Y>153</Y>
+      <X>391</X>
+      <Y>199</Y>
     </Position>
     <Z>0</Z>
   </PlacementDataSet>

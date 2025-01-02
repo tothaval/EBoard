@@ -8,14 +8,19 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
 
-        <Border Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
-                BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
-                BorderThickness="{Binding BorderManager.BorderThickness, NotifyOnSourceUpdated=True}"
-                Padding="5"
-                Width="{Binding BorderManager.Width, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-                Height="{Binding BorderManager.Height, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
+    <Border Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+            BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
+            BorderThickness="{Binding BorderManager.BorderThickness, NotifyOnSourceUpdated=True}"
+            CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"
+            Padding="5"
+            Width="{Binding BorderManager.Width, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+            Height="{Binding BorderManager.Height, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
+
+        <Border.InputBindings>
+            <MouseBinding Gesture="Shift+LeftClick" Command="{Binding SelectCommand}"/>
+        </Border.InputBindings>
         
-            <Grid>
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
@@ -26,8 +31,6 @@
                         <Run Text="{Binding ElementHeaderText, NotifyOnSourceUpdated=True}"
                              Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
                              FontWeight="Bold"/>
-                        <LineBreak/>
-                        <Run Text="{Binding ElementName=Element, Path=Z, NotifyOnSourceUpdated=True}"/>
             </TextBlock>
 
             <ContentPresenter Content="{Binding Control.Element}"
