@@ -10,65 +10,64 @@ using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
 using System.Windows;
 
-namespace EBoard.Models
+namespace EBoard.Models;
+
+public class PlacementManagement : IElementPlacement
 {
-    public class PlacementManagement : IElementPlacement
+    /// <summary>
+    /// the rotation of an element
+    /// </summary>
+    public double Angle { get; set; }
+
+    /// <summary>
+    /// the position of an element
+    /// </summary>
+    public Point Position { get; set; }
+
+    /// <summary>
+    /// the z-index of an element
+    /// </summary>
+    public int Z { get; set; }
+
+
+    public PlacementManagement()
     {
-        /// <summary>
-        /// the rotation of an element
-        /// </summary>
-        public double Angle { get; set; }
+        SetInitialValues();
+    }
 
-        /// <summary>
-        /// the position of an element
-        /// </summary>
-        public Point Position { get; set; }
-
-        /// <summary>
-        /// the z-index of an element
-        /// </summary>
-        public int Z { get; set; }
+    public PlacementManagement(PlacementDataSet placementDataSet)
+    {
+        LoadPlacementDataSet(placementDataSet);
+    }
 
 
-        public PlacementManagement()
+    private async void LoadPlacementDataSet(PlacementDataSet placementDataSet)
+    {
+        if (placementDataSet != null)
         {
-            SetInitialValues();
-        }
-
-        public PlacementManagement(PlacementDataSet placementDataSet)
-        {
-            LoadPlacementDataSet(placementDataSet);
-        }
-
-
-        private async void LoadPlacementDataSet(PlacementDataSet placementDataSet)
-        {
-            if (placementDataSet != null)
-            {
-                Angle = placementDataSet.Angle;
-                Position = placementDataSet.Position;
-                Z = placementDataSet.Z;
-
-                await Task.CompletedTask;
-
-                return;
-            }
-
-            SetInitialValues();
+            Angle = placementDataSet.Angle;
+            Position = placementDataSet.Position;
+            Z = placementDataSet.Z;
 
             await Task.CompletedTask;
+
+            return;
         }
 
+        SetInitialValues();
 
-        private void SetInitialValues()
-        {
-            Angle = 0.0;
-            Position = new Point(25.0,25.0);
-            Z = 0;
-        }
-
-
-
+        await Task.CompletedTask;
     }
+
+
+    private void SetInitialValues()
+    {
+        Angle = 0.0;
+        Position = new Point(25.0,25.0);
+        Z = 0;
+    }
+
+
+
 }
 // EOF

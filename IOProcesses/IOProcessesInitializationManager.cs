@@ -12,92 +12,91 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace EBoard.IOProcesses
+namespace EBoard.IOProcesses;
+
+internal class IOProcessesInitializationManager
 {
-    internal class IOProcessesInitializationManager
+    public string EBoardConfigFolder { get; set; } = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + "\\eboardconfig\\";
+
+    public string EBoardFolder { get; set; } = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + "\\eboards\\";
+
+
+
+    public IOProcessesInitializationManager()
     {
-        public string EBoardConfigFolder { get; set; } = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + "\\eboardconfig\\";
-
-        public string EBoardFolder { get; set; } = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName) + "\\eboards\\";
-
-
-
-        public IOProcessesInitializationManager()
-        {
-            CheckEBoardConfigFolder();
-            CheckEBoardFolder();
-                
-
-        }
-
-
-        // async methods
-        #region async methods
-
-        public Task CleanFolder()
-        {
-            string filter = "*.xml";
-
-            List<string> files = Directory.GetFiles(EBoardFolder, filter, SearchOption.TopDirectoryOnly).ToList();            
-
-            if (files.Count > 0)
-            {
-                foreach (string file in files)
-                {
-                    File.Delete(file);                    
-                }
-            }
-
-            List<string> folders = Directory.GetDirectories(EBoardFolder).ToList();
-
-            if (folders.Count > 0)
-            {
-                foreach (string folder in folders)
-                {
-                    try
-                    {
-                        Directory.Delete(folder, true);
-                    }
-                    catch (Exception)
-                    {
-                        // diese exception mal handlen oder im try block prüfen,
-                        // ob die datei frei oder in verwendung ist, ggf. ein paar
-                        // mal wiederholen bis zum abbruch
-
-                        // mitunter ist die shapedata.xml noch von einem anderen prozess
-                        // blockiert, aktuell keine ahnung weswegen, low prio
-                    }
-                }
-            }
-
-            return Task.CompletedTask;
-        }            
-
-        #endregion async methods
-
-
-        // methods
-        #region methods
-
-        private void CheckEBoardConfigFolder()
-        {
-            if (!Directory.Exists(EBoardConfigFolder))
-            {
-                Directory.CreateDirectory(EBoardConfigFolder);
-            }
-        }
-
-        private void CheckEBoardFolder()
-        {
-            if (!Directory.Exists(EBoardFolder))
-            {
-                Directory.CreateDirectory(EBoardFolder);
-            }
-        } 
-
-        #endregion
-
+        CheckEBoardConfigFolder();
+        CheckEBoardFolder();
+            
 
     }
+
+
+    // async methods
+    #region async methods
+
+    public Task CleanFolder()
+    {
+        string filter = "*.xml";
+
+        List<string> files = Directory.GetFiles(EBoardFolder, filter, SearchOption.TopDirectoryOnly).ToList();            
+
+        if (files.Count > 0)
+        {
+            foreach (string file in files)
+            {
+                File.Delete(file);                    
+            }
+        }
+
+        List<string> folders = Directory.GetDirectories(EBoardFolder).ToList();
+
+        if (folders.Count > 0)
+        {
+            foreach (string folder in folders)
+            {
+                try
+                {
+                    Directory.Delete(folder, true);
+                }
+                catch (Exception)
+                {
+                    // diese exception mal handlen oder im try block prüfen,
+                    // ob die datei frei oder in verwendung ist, ggf. ein paar
+                    // mal wiederholen bis zum abbruch
+
+                    // mitunter ist die shapedata.xml noch von einem anderen prozess
+                    // blockiert, aktuell keine ahnung weswegen, low prio
+                }
+            }
+        }
+
+        return Task.CompletedTask;
+    }            
+
+    #endregion async methods
+
+
+    // methods
+    #region methods
+
+    private void CheckEBoardConfigFolder()
+    {
+        if (!Directory.Exists(EBoardConfigFolder))
+        {
+            Directory.CreateDirectory(EBoardConfigFolder);
+        }
+    }
+
+    private void CheckEBoardFolder()
+    {
+        if (!Directory.Exists(EBoardFolder))
+        {
+            Directory.CreateDirectory(EBoardFolder);
+        }
+    } 
+
+    #endregion
+
+
 }
 // EOF

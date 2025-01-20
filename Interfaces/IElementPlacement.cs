@@ -6,17 +6,16 @@
  */
 using System.Windows;
 
-namespace EBoard.Interfaces
+namespace EBoard.Interfaces;
+
+interface IElementPlacement
 {
-    interface IElementPlacement
-    {
 
-        public double Angle { get; set; }
+    public double Angle { get; set; }
 
-        public Point Position { get; set; }
+    public Point Position { get; set; }
 
-        public int Z { get; set; }
+    public int Z { get; set; }
 
-    }
 }
 // EOF

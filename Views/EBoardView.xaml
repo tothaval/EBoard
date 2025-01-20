@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoard.Views"
              xmlns:vms="clr-namespace:EBoard.ViewModels"
-             
+             d:DataContext="{d:DesignInstance Type=vms:EBoardViewModel}"
              x:Name="EBoard_Board"
              mc:Ignorable="d"
              ClipToBounds="True"
@@ -38,17 +38,17 @@
                     <MenuItem Header="EBoard Switch"
                                Style="{StaticResource SubMenuItemStyle}">
                         <WrapPanel Orientation="Horizontal" Background="Transparent" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <MenuItem Header="First" Command="{Binding SwitchToFirstEBoardCommand}"
+                        <MenuItem Header="First" Command="{Binding SwitchToEboardCommand}" CommandParameter="First"
                                Style="{StaticResource SubMenuItemStyle2}"/>
-                            <MenuItem Header="Last" Command="{Binding SwitchToLastEBoardCommand}"
+                        <MenuItem Header="Last" Command="{Binding SwitchToEboardCommand}" CommandParameter="Last"
                                Style="{StaticResource SubMenuItemStyle2}"/>
 
                         </WrapPanel>
 
                         <WrapPanel Orientation="Horizontal" Background="Transparent" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <MenuItem Header="Prev" Command="{Binding SwitchToPrevEBoardCommand}"
+                        <MenuItem Header="Prev" Command="{Binding SwitchToEboardCommand}" CommandParameter="Prev"
                                Style="{StaticResource SubMenuItemStyle2}"/>
-                            <MenuItem Header="Next" Command="{Binding SwitchToNextEBoardCommand}"
+                        <MenuItem Header="Next" Command="{Binding SwitchToEboardCommand}" CommandParameter="Next"
                                Style="{StaticResource SubMenuItemStyle2}"/>
 
                         </WrapPanel>
@@ -112,9 +112,9 @@
 
                     </WrapPanel>
 
-                    <MenuItem Header="+Image" Command="{Binding EBoardImageCommand}"/>
+                    <MenuItem Header="+Image" Command="{Binding SetImageCommand}"/>
 
-                    <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"/>
+                    <MenuItem Header="Reset" Command="{Binding ResetImageCommand}"/>
                 </MenuItem>
 
                 <MenuItem Header="Delete" Command="{Binding DeleteEBoardCommand}"/>

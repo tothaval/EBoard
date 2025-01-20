@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vms="clr-namespace:EBoard.ViewModels"
         xmlns:views="clr-namespace:EBoard.Views"
+        d:DataContext="{d:DesignInstance Type=vms:MainViewModel}"
+        
         x:Name="EboardMainWindow"
         mc:Ignorable="d"
         Title="EBoard 2024"
@@ -78,9 +80,9 @@
                     </WrapPanel>
 
 
-                    <MenuItem Header="+Image" Command="{Binding MainWindowImageCommand}"/>
+                    <MenuItem Header="+Image" Command="{Binding SetImageCommand}"/>
 
-                    <MenuItem Header="Reset" Command="{Binding ResetBackgroundCommand}"/>
+                    <MenuItem Header="Reset" Command="{Binding ResetImageCommand}"/>
                 </MenuItem>
 
                 <MenuItem Header="{DynamicResource MaximizeContextMenuItemHeader}"
@@ -98,12 +100,10 @@
             </ContextMenu>
         </Border.ContextMenu>
 
-        <!--<Border.InputBindings>
-            <MouseBinding MouseAction="LeftClick" Command="{Binding LeftPressCommand}"
-                      CommandParameter="{Binding ElementName=EboardMainWindow}"/>
+        <Border.InputBindings>            
             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding LeftDoubleClickCommand}"
                       CommandParameter="{Binding ElementName=EboardMainWindow}"/>
-        </Border.InputBindings>-->
+        </Border.InputBindings>
 
         <Grid ClipToBounds="True">
             <Grid.ColumnDefinitions>

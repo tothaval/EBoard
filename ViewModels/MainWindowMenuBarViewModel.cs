@@ -5,6 +5,7 @@
  *  view model for MainWindowMenuBarView, which has prototype element instantiation
  *  button and a prototype shape menu and a button to switch on or off the EBoardBrowserView
  */
+using CommunityToolkit.Mvvm.ComponentModel;
 using EBoard.Commands.ElementCreationCommands;
 using System;
 using System.Collections.Generic;
@@ -14,75 +15,63 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace EBoard.ViewModels
+namespace EBoard.ViewModels;
+
+public partial class MainWindowMenuBarViewModel : ObservableObject
 {
-    public class MainWindowMenuBarViewModel : BaseViewModel
+
+    // Properties & Fields
+    #region Properties & Fields
+
+    [ObservableProperty]
+    private string title;
+
+
+    [ObservableProperty]
+    private bool eBoardBrowserSwitch;
+
+
+    private MainViewModel _MainViewModel;
+    public MainViewModel MainViewModel => _MainViewModel;
+
+    #endregion
+
+
+
+    // Commands
+    #region Commands
+
+    public ICommand InvokeEmptyElementCommand { get; }
+    public ICommand InvokeEmpty2ElementCommand { get; }
+    public ICommand InvokePrototypeElementCommand { get; } 
+
+    public ICommand InvokeEllipseShapeCommand { get; }
+    public ICommand InvokePrototypeShapeElementCommand { get; }
+
+    public ICommand InvokeElementCommand { get; }
+
+    #endregion
+
+
+    public MainWindowMenuBarViewModel(MainViewModel mainViewModel)
     {
-        
-        // Properties & Fields
-        #region Properties & Fields
-        private string title;
-        public string Title
-        {
-            get { return title; }
-            set
-            {
-                title = value;
-                OnPropertyChanged(nameof(Title));
-            }
-        }
+        title = "EBoard";
 
+        _MainViewModel = mainViewModel;
 
-        private bool _EBoardBrowserSwitch;
-        public bool EBoardBrowserSwitch
-        {
-            get { return _EBoardBrowserSwitch; }
-            set
-            {
-                _EBoardBrowserSwitch = value;
-                OnPropertyChanged(nameof(EBoardBrowserSwitch));
-            }
-        }
+        InvokeEmptyElementCommand = new InvokeEmptyElementCommand(mainViewModel);
+        InvokeEmpty2ElementCommand = new InvokeEmpty2ElementCommand(mainViewModel);
 
+        InvokePrototypeElementCommand = new InvokePrototypeElementCommand(mainViewModel);
 
-        private MainViewModel _MainViewModel;
-        public MainViewModel MainViewModel => _MainViewModel;
+        InvokePrototypeShapeElementCommand = new InvokePrototypeShapeElementCommand(mainViewModel);
 
-        #endregion
+        InvokeEllipseShapeCommand = new InvokeEllipseShapeCommand(mainViewModel);
 
-
-
-        // Commands
-        #region Commands
-
-        public ICommand InvokeEmptyElementCommand { get; }
-        public ICommand InvokeEmpty2ElementCommand { get; }
-        public ICommand InvokePrototypeElementCommand { get; } 
-
-        public ICommand InvokeEllipseShapeCommand { get; }
-
-        public ICommand InvokePrototypeShapeElementCommand { get; }
-
-        #endregion
-
-
-        public MainWindowMenuBarViewModel(MainViewModel mainViewModel)
-        {
-            title = "EBoard";
-
-            _MainViewModel = mainViewModel;
-
-            InvokeEmptyElementCommand = new InvokeEmptyElementCommand(mainViewModel);
-            InvokeEmpty2ElementCommand = new InvokeEmpty2ElementCommand(mainViewModel);
-
-            InvokePrototypeElementCommand = new InvokePrototypeElementCommand(mainViewModel);
-
-            InvokePrototypeShapeElementCommand = new InvokePrototypeShapeElementCommand(mainViewModel);
-
-            InvokeEllipseShapeCommand = new InvokeEllipseShapeCommand(mainViewModel);
-        }
-
+        InvokeElementCommand = new InvokeElementCommand(mainViewModel);
 
     }
+
+
 }
 // EOF

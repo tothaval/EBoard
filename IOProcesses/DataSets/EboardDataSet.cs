@@ -25,58 +25,60 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Xml.Serialization;
 
-namespace EBoard.Models
+namespace EBoard.Models;
+
+[Serializable]
+[XmlRoot("EboardConfiguration")]
+public class EboardDataSet
 {
-    [Serializable]
-    [XmlRoot("EboardConfiguration")]
-    public class EboardDataSet
+
+    [XmlIgnore]
+    private EBoardViewModel _EBoardViewModel { get; set; }
+
+    [XmlIgnore]
+    public EBoardViewModel EBoardViewModel => _EBoardViewModel;
+
+    public string EBID { get; set; }
+    public string EBoardName { get; set; }
+    public int EBoardDepth { get; set; }
+
+    public BorderDataSet BorderDataSet { get; set; }
+    public BrushDataSet BrushDataSet { get; set; }
+
+
+    [XmlIgnore]
+    public ObservableCollection<ElementViewModel> Elements { get; set; } = new ObservableCollection<ElementViewModel> { };
+
+
+    public EboardDataSet()
     {
-
-        [XmlIgnore]
-        private EBoardViewModel _EBoardViewModel { get; set; }
-
-        [XmlIgnore]
-        public EBoardViewModel EBoardViewModel => _EBoardViewModel;
-
-        public string EBID { get; set; }
-        public string EBoardName { get; set; }
-        public int EBoardDepth { get; set; }
-
-        public BorderDataSet BorderDataSet { get; set; }
-        public BrushDataSet BrushDataSet { get; set; }
-
-
-
-        public EboardDataSet()
-        {
-            _EBoardViewModel = new EBoardViewModel("new", new BorderManagement() { Width = 1000.0, Height = 500.0}, 100);                            
-        }
-
-        public EboardDataSet(EBoardViewModel eBoardViewModel)
-        {
-            _EBoardViewModel = eBoardViewModel;
-
-            EBID = eBoardViewModel.EBID;
-            EBoardName = eBoardViewModel.EBoardName;
-            EBoardDepth = eBoardViewModel.EBoardDepth;
-
-            BorderDataSet = new BorderDataSet(eBoardViewModel.BorderManager);
-
-            BrushDataSet = new BrushDataSet(eBoardViewModel.BrushManager);
-
-
-            if (BorderDataSet == null)
-            {
-                BorderDataSet = new BorderDataSet(new BorderManagement());
-            }
-
-            if (BrushDataSet == null)
-            {
-                BrushDataSet = new BrushDataSet(new BrushManagement());
-            }
-        }
-
-
+        //_EBoardViewModel = new EBoardViewModel("new", new BorderManagement() { Width = 1000.0, Height = 500.0}, 100);                            
     }
+
+    public EboardDataSet(EBoardViewModel eBoardViewModel)
+    {
+        _EBoardViewModel = eBoardViewModel;
+
+        EBID = eBoardViewModel.EBID;
+        EBoardName = eBoardViewModel.EBoardName;
+        EBoardDepth = eBoardViewModel.EBoardDepth;
+
+        BorderDataSet = new BorderDataSet(eBoardViewModel.BorderManager);
+
+        BrushDataSet = new BrushDataSet(eBoardViewModel.BrushManager);
+
+
+        if (BorderDataSet == null)
+        {
+            BorderDataSet = new BorderDataSet(new BorderManagement());
+        }
+
+        if (BrushDataSet == null)
+        {
+            BrushDataSet = new BrushDataSet(new BrushManagement());
+        }
+    }
+
+
 }
 // EOF

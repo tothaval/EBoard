@@ -6,21 +6,20 @@
  */
 using System.Windows;
 
-namespace EBoard.Interfaces
+namespace EBoard.Interfaces;
+
+public interface IElementBorder
 {
-    public interface IElementBorder
-    {
-        public Thickness BorderThickness { get; set; }
+    public Thickness BorderThickness { get; set; }
 
-        public double Width { get; set; }
+    public double Width { get; set; }
 
-        public double Height { get; set; }
+    public double Height { get; set; }
 
-        public CornerRadius CornerRadius { get; set; }
+    public CornerRadius CornerRadius { get; set; }
 
-        public Thickness Margin { get; set; }
+    public Thickness Margin { get; set; }
 
-        public Thickness Padding { get; set; }
-    }
+    public Thickness Padding { get; set; }
 }
 // EOF
