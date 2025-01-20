@@ -16,159 +16,119 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace EBoard.ViewModels
+using CommunityToolkit.Mvvm;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+namespace EBoard.ViewModels;
+
+public partial class ShapeViewModel : ObservableObject, IElementBackgroundImage, IUIManager
 {
-    public class ShapeViewModel : BaseViewModel, IElementBackgroundImage, IUIManager
+
+    public IElementContent Control { get; }
+
+    
+    public ElementDataSet ElementDataSet { get; }
+
+
+    private ElementViewModel _ElementViewModel;        
+    public ElementViewModel ElementViewModel => _ElementViewModel;
+
+
+    private Brush _FallbackBackgroundBrush;
+    public Brush FallbackBackgroundBrush => _FallbackBackgroundBrush;
+    
+
+    public bool IsSelected { get; set; } = false;
+
+
+    [ObservableProperty]
+    private BorderManagement _BorderManager;
+
+
+    [ObservableProperty]
+    private BrushManagement brushManager;
+
+
+    [ObservableProperty]
+    private string elementHeaderText;
+    
+
+    /// <summary>
+    /// the path to an optional background image for the
+    /// element, if empty, the stored brush or a default
+    /// solidColorBrush will be used for the background
+    /// </summary>
+
+    [ObservableProperty]
+    private string imagePath;
+    
+    partial void OnImagePathChanged(string imagePath)
+        => ChangeElementBackgroundToImage();
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(BorderManager))]        
+    private double height;
+
+    partial void OnHeightChanged(double value)
+    => UpdateDimensions();
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(BorderManager))]
+    private double width;
+
+    partial void OnWidthChanged(double value)
+            => UpdateDimensions();
+
+
+    public ShapeViewModel(ElementDataSet elementDataSet, ElementViewModel elementViewModel)
     {
+        _ElementViewModel = elementViewModel;
+        ElementDataSet = elementDataSet;
+        BorderManager = new BorderManagement(elementDataSet.BorderDataSet);
+        BrushManager = new BrushManagement(elementDataSet.BrushDataSet);
+        Control = elementDataSet.ElementContent;
 
-        private ElementViewModel _ElementViewModel;
-        public ElementViewModel ElementViewModel => _ElementViewModel;
 
-
-        public bool IsSelected { get; set; } = false;
-
-
-        private BorderManagement _BorderManager;
-        public BorderManagement BorderManager
+        if (BorderManager == null)
         {
-            get { return _BorderManager; }
-            set
-            {
-                _BorderManager = value;
-                OnPropertyChanged(nameof(BorderManager));
-            }
+            BorderManager = new BorderManagement();
         }
 
+        width = BorderManager.Width;
+        height = BorderManager.Height;
 
-        private BrushManagement _BrushManager;
-        public BrushManagement BrushManager
+        if (BrushManager == null)
         {
-            get { return _BrushManager; }
-            set
-            {
-                _BrushManager = value;
-                OnPropertyChanged(nameof(BrushManager));
-            }
+            BrushManager = new BrushManagement();
         }
 
+        ((Shape)Control.Element).Fill = BrushManager.Background;
+        ((Shape)Control.Element).Stroke = BrushManager.Border;
+        ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
 
-        private string _ElementHeaderText;
-        public string ElementHeaderText
+        ElementHeaderText = elementDataSet.ElementHeader;
+
+        ImagePath = BrushManager.ImagePath;
+
+        if (ImagePath == null)
         {
-            get { return _ElementHeaderText; }
-            set
-            {
-                _ElementHeaderText = value;
-                OnPropertyChanged(nameof(ElementHeaderText));
-            }
+            ImagePath = string.Empty;
         }
 
-        /// <summary>
-        /// the path to an optional background image for the
-        /// element, if empty, the stored brush or a default
-        /// solidColorBrush will be used for the background
-        /// </summary>
-        private string _ImagePath;
-        public string ImagePath
+        if (ElementHeaderText == null)
         {
-            get { return _ImagePath; }
-            set
-            {
-                _ImagePath = value;
-
-                OnPropertyChanged(nameof(ImagePath));
-
-                ChangeElementBackgroundToImage();
-
-            }
+            ElementHeaderText = "Shape Element";
         }
+    }
 
 
-        private double _Height;
-        public double Height
-        {
-            get { return _Height; }
-            set
-            {
-                _Height = value;
-                BorderManager.Height = value;
-
-                OnPropertyChanged(nameof(Height));
-                OnPropertyChanged(nameof(BorderManager));
-
-                UpdateDimensions();
-            }
-        }
-
-
-        private double _Width;
-        public double Width
-        {
-            get { return _Width; }
-            set
-            {
-                _Width = value;
-                BorderManager.Width = value;
-                OnPropertyChanged(nameof(Width));
-                OnPropertyChanged(nameof(BorderManager));
-
-                UpdateDimensions();
-            }
-        }
-
-
-        public ElementDataSet ElementDataSet { get; }
-
-
-        private Brush _FallbackBackgroundBrush;
-        public Brush FallbackBackgroundBrush => _FallbackBackgroundBrush;
-
-
-        public IElementContent Control { get; }
-
-        public ICommand SelectCommand { get; }
-
-        public ShapeViewModel(ElementDataSet elementDataSet, ElementViewModel elementViewModel)
-        {
-            _ElementViewModel = elementViewModel;
-            ElementDataSet = elementDataSet;
-            BorderManager = new BorderManagement(elementDataSet.BorderDataSet);
-            BrushManager = new BrushManagement(elementDataSet.BrushDataSet);
-            Control = elementDataSet.ElementContent;
-
-            SelectCommand = new RelayCommand((s) => SelectElement(), (s) => true);
-
-            if (BorderManager == null)
-            {
-                BorderManager = new BorderManagement();
-            }
-
-            if (BrushManager == null)
-            {
-                BrushManager = new BrushManagement();
-            }
-
-            ((Shape)Control.Element).Fill = BrushManager.Background;
-            ((Shape)Control.Element).Stroke = BrushManager.Border;
-            ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
-
-            ElementHeaderText = elementDataSet.ElementHeader;
-
-            ImagePath = BrushManager.ImagePath;
-
-            if (ImagePath == null)
-            {
-                ImagePath = string.Empty;
-            }
-
-            if (ElementHeaderText == null)
-            {
-                ElementHeaderText = "Shape Element";
-            }
-        }
-
-
-        public void ApplyBackgroundBrush(Brush brush)
+    public bool ApplyBackgroundBrush(Brush brush)
+    {
+        try
         {
             BrushManager.Background = brush;
 
@@ -177,70 +137,82 @@ namespace EBoard.ViewModels
             OnPropertyChanged(nameof(BrushManager));
 
             OnPropertyChanged(nameof(BrushManager.Background));
-        }
 
-        public void ChangeElementBackgroundToImage()
+            return true;
+        }
+        catch (Exception)
         {
-            if (ImagePath != null && ImagePath != string.Empty)
-            {
-                BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
 
-                ((Shape)Control.Element).Fill = BrushManager.Background;
-                ((Shape)Control.Element).Stroke = BrushManager.Border;
-                ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
-
-                _ElementViewModel.EBoardViewModel.ChangeSelection_BackgroundBrush(_ElementViewModel, BrushManager.Background);
-            }
-
-            OnPropertyChanged(nameof(BrushManager));
-
-            OnPropertyChanged(nameof(BrushManager.Background));
+            return false;
         }
-
-
-        public void DeselectElement()
-        {
-            IsSelected = false;
-
-            BrushManager.SwitchBorderToBorder();
-
-            ((Shape)Control.Element).Stroke = BrushManager.Border;
-
-            OnPropertyChanged(nameof(BrushManager));
-        }
-
-
-        public void SelectElement()
-        {
-            if (IsSelected)
-            {
-                DeselectElement();
-                return;
-            }
-
-            IsSelected = true;
-
-            BrushManager.SwitchBorderToHighlight();
-
-            ((Shape)Control.Element).Stroke = BrushManager.Border;
-
-            OnPropertyChanged(nameof(BrushManager));
-        }
-
-
-        public void UpdateDimensions()
-        {
-            if (BorderManager != null && Control != null)
-            {
-                if (Control.Element != null)
-                {
-                    ((Shape)Control.Element).Width = BorderManager.Width;
-                    ((Shape)Control.Element).Height = BorderManager.Height;
-                }
-            }
-        }
-
-
     }
+
+    public void ChangeElementBackgroundToImage()
+    {
+        if (ImagePath != null && ImagePath != string.Empty)
+        {
+            BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
+
+            ((Shape)Control.Element).Fill = BrushManager.Background;
+            ((Shape)Control.Element).Stroke = BrushManager.Border;
+            ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
+
+            _ElementViewModel.EBoardViewModel.ChangeSelection_BackgroundBrush(_ElementViewModel, BrushManager.Background);
+        }
+
+        OnPropertyChanged(nameof(BrushManager));
+
+        OnPropertyChanged(nameof(BrushManager.Background));
+    }
+
+
+    public void DeselectElement()
+    {
+        IsSelected = false;
+
+        BrushManager.SwitchBorderToBorder();
+
+        ((Shape)Control.Element).Stroke = BrushManager.Border;
+
+        OnPropertyChanged(nameof(BrushManager));
+    }
+
+
+    [RelayCommand]
+    public void Select()
+    {
+        if (IsSelected)
+        {
+            DeselectElement();
+            return;
+        }
+
+        IsSelected = true;
+
+        BrushManager.SwitchBorderToHighlight();
+
+        ((Shape)Control.Element).Stroke = BrushManager.Border;
+
+        OnPropertyChanged(nameof(BrushManager));
+    }
+
+
+    public void UpdateDimensions()
+    {
+        if (BorderManager != null)
+        {
+            BorderManager.Height = Height;
+            BorderManager.Width = Width;
+
+            if (Control != null && Control.Element != null)
+            {
+                ((Shape)Control.Element).Width = Width;
+                ((Shape)Control.Element).Height = Height;
+
+            }
+        }
+    }
+
+
 }
 // EOF

@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vms="clr-namespace:EBoard.ViewModels"
              xmlns:views="clr-namespace:EBoard.Views"
+             d:DataContext="{d:DesignInstance Type=vms:MainWindowMenuBarViewModel}"
              
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -35,7 +36,7 @@
                 
                 <Menu>
                     <MenuItem Header="+Elements">
-                        <MenuItem Header="Text" Command="{Binding InvokePrototypeElementCommand}"/>
+                        <MenuItem Header="Text" Command="{Binding InvokePrototypeElementCommand}"/>                        
                         <MenuItem Header="Empty" Command="{Binding InvokeEmptyElementCommand}"/>
                         <MenuItem Header="Empty2" Command="{Binding InvokeEmpty2ElementCommand}"/>
                     </MenuItem>
@@ -56,7 +57,22 @@
 
                 </Menu>
             </Border>
+            
+            <Border CornerRadius="5" Background="Black"
+                    BorderBrush="Orange"
+                    BorderThickness="3"
+                    MinWidth="50" MaxHeight="50"
+                    >
 
+                <Menu>
+                    <MenuItem Header="+Tools">
+                        <MenuItem Header="Session Uptime Clock"
+                                  Command="{Binding InvokeElementCommand}"
+                                  CommandParameter="Tools.SessionUptimeClock"/>
+                    </MenuItem>
+
+                </Menu>
+            </Border>
 
         </StackPanel>
 

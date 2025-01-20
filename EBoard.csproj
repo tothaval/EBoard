@@ -74,6 +74,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Fonts\CastoroTitling-Regular.ttf" />
     <Resource Include="Fonts\ChakraPetch-Bold.ttf" />
     <Resource Include="Fonts\ChakraPetch-BoldItalic.ttf" />

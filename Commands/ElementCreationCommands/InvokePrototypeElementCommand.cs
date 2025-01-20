@@ -21,6 +21,7 @@ using EBoard.ViewModels;
 using System.Windows.Controls;
 using System.Windows;
 using EBoard.IOProcesses.DataSets;
+using EBoard.Utilities.Factories;
 
 namespace EBoard.Commands.ElementCreationCommands
 {
@@ -40,28 +41,18 @@ namespace EBoard.Commands.ElementCreationCommands
         {
             if (_MainViewModel.EBoardBrowserViewModel.SelectedEBoard != null)
             {
-                ElementDataSet elementDataSet = new ElementDataSet();
-                elementDataSet.EID = "-1";
-
-                elementDataSet.ElementHeader = "Prototype Element";
-
-                elementDataSet.ElementTypeString = "EBoard.Models.ContainerManagement";
-
-                elementDataSet.AddBorderDataSet(new BorderDataSet(new BorderManagement()));
-                elementDataSet.AddBrushDataSet(new BrushDataSet(new BrushManagement()));
-                elementDataSet.AddPlacementDataSet(new PlacementDataSet(new PlacementManagement()));
-
-                elementDataSet.ElementContent = new ContainerManagement(new TextBox()
-                {
-                    Text = $"evm_textbox",
-                    AcceptsReturn = true,
-                    AcceptsTab = true,
-                    TextWrapping = TextWrapping.Wrap
-                });
+                ElementDataSet newElementDataSet = ElementDataSetFactory.GetContentElementDataSet(
+                        elementContent: new ContainerManagement(new TextBox()
+                        {
+                             Text = $"evm_textbox",
+                             AcceptsReturn = true,
+                             AcceptsTab = true,
+                             TextWrapping = TextWrapping.Wrap
+                        }));
 
                 ElementViewModel evm = new ElementViewModel(
                     _MainViewModel.EBoardBrowserViewModel.SelectedEBoard,
-                    elementDataSet
+                    newElementDataSet
                 );
 
                 _MainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(evm);

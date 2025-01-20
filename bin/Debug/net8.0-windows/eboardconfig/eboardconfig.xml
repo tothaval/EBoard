@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <EboardConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <EBoardCount>3</EBoardCount>
-  <EBoardIndex>0</EBoardIndex>
+  <EBoardCount>0</EBoardCount>
+  <EBoardIndex>-1</EBoardIndex>
   <EBoardBrowserSwitch>false</EBoardBrowserSwitch>
   <BorderDataSet>
     <BorderThickness>
@@ -11,12 +11,12 @@
       <Bottom>2</Bottom>
     </BorderThickness>
     <CornerRadius>
-      <TopLeft>26</TopLeft>
-      <TopRight>26</TopRight>
-      <BottomRight>26</BottomRight>
-      <BottomLeft>26</BottomLeft>
+      <TopLeft>14</TopLeft>
+      <TopRight>14</TopRight>
+      <BottomRight>14</BottomRight>
+      <BottomLeft>14</BottomLeft>
     </CornerRadius>
-    <Height>581</Height>
+    <Height>675</Height>
     <Margin>
       <Left>5</Left>
       <Top>5</Top>
@@ -29,7 +29,7 @@
       <Right>5</Right>
       <Bottom>5</Bottom>
     </Padding>
-    <Width>1373</Width>
+    <Width>1155</Width>
   </BorderDataSet>
   <BrushDataSet>
     <BackgroundColor>
@@ -156,8 +156,8 @@
   <PlacementDataSet>
     <Angle>0</Angle>
     <Position>
-      <X>391</X>
-      <Y>199</Y>
+      <X>124</X>
+      <Y>197</Y>
     </Position>
     <Z>0</Z>
   </PlacementDataSet>

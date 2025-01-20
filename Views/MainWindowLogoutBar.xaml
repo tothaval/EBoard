@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoard.Views"
              xmlns:vms="clr-namespace:EBoard.ViewModels"
+             d:DataContext="{d:DesignInstance Type=vms:MainWindowLogoutBarViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.DataContext>
@@ -14,8 +15,6 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2"
                     HorizontalAlignment="Right">
-            <Button Style="{StaticResource DefaultButtonStyle}"
-                    Content="ciao" Command="{Binding CloseCommand}"/>
             
             <Button Style="{StaticResource DefaultButtonStyle}"
                     Content="off" Command="{Binding CloseCommand}"/>

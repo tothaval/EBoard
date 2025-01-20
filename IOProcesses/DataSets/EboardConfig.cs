@@ -36,74 +36,73 @@ using System.Windows;
 using System.Windows.Data;
 using System.Xml.Serialization;
 
-namespace EBoard.IOProcesses.DataSets
+namespace EBoard.IOProcesses.DataSets;
+
+[Serializable]
+[XmlRoot("EboardConfiguration")]
+public class EboardConfig
 {
-    [Serializable]
-    [XmlRoot("EboardConfiguration")]
-    public class EboardConfig
+    [XmlIgnore]
+    private readonly EBoardBrowserViewModel _EBoardBrowserViewModel;
+
+
+    public int EBoardCount { get; set; }
+
+    public int EBoardIndex { get; set; }
+
+    public bool EBoardBrowserSwitch { get; set; }
+
+
+    public BorderDataSet BorderDataSet { get; set; }
+
+
+    public BrushDataSet BrushDataSet { get; set; }
+
+
+    public PlacementDataSet PlacementDataSet { get; set; }
+    
+
+    //public string FlatNotes { get; set; }
+
+
+
+    //[XmlArray("Elements")]
+    //public ObservableCollection<ElementViewModel> Elements { get; set; }
+
+    public EboardConfig()
     {
-        [XmlIgnore]
-        private readonly EBoardBrowserViewModel _EBoardBrowserViewModel;
+        _EBoardBrowserViewModel = new EBoardBrowserViewModel();                
+    }
 
 
-        public int EBoardCount { get; set; }
+    public EboardConfig(MainViewModel mainViewModel)
+    {
+        _EBoardBrowserViewModel = mainViewModel.EBoardBrowserViewModel;
 
-        public int EBoardIndex { get; set; }
+        EBoardCount = _EBoardBrowserViewModel.EBoards.Count;
+        EBoardIndex = _EBoardBrowserViewModel.EBoards.IndexOf(_EBoardBrowserViewModel.SelectedEBoard);
 
-        public bool EBoardBrowserSwitch { get; set; }
+        EBoardBrowserSwitch = mainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch;
 
+        BorderDataSet = new BorderDataSet(mainViewModel.BorderManager);
 
-        public BorderDataSet BorderDataSet { get; set; }
+        BrushDataSet = new BrushDataSet(mainViewModel.BrushManager);
 
+        PlacementDataSet = new PlacementDataSet(mainViewModel.PlacementManager);
 
-        public BrushDataSet BrushDataSet { get; set; }
-
-
-        public PlacementDataSet PlacementDataSet { get; set; }
-        
-
-        //public string FlatNotes { get; set; }
-
-
-
-        //[XmlArray("Elements")]
-        //public ObservableCollection<ElementViewModel> Elements { get; set; }
-
-        public EboardConfig()
+        if (BorderDataSet == null)
         {
-            _EBoardBrowserViewModel = new EBoardBrowserViewModel();                
+            BorderDataSet = new BorderDataSet(new BorderManagement());
         }
 
-
-        public EboardConfig(MainViewModel mainViewModel)
+        if (BrushDataSet == null)
         {
-            _EBoardBrowserViewModel = mainViewModel.EBoardBrowserViewModel;
+            BrushDataSet = new BrushDataSet(new BrushManagement());
+        }
 
-            EBoardCount = _EBoardBrowserViewModel.EBoards.Count;
-            EBoardIndex = _EBoardBrowserViewModel.EBoards.IndexOf(_EBoardBrowserViewModel.SelectedEBoard);
-
-            EBoardBrowserSwitch = mainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch;
-
-            BorderDataSet = new BorderDataSet(mainViewModel.BorderManager);
-
-            BrushDataSet = new BrushDataSet(mainViewModel.BrushManager);
-
-            PlacementDataSet = new PlacementDataSet(mainViewModel.PlacementManager);
-
-            if (BorderDataSet == null)
-            {
-                BorderDataSet = new BorderDataSet(new BorderManagement());
-            }
-
-            if (BrushDataSet == null)
-            {
-                BrushDataSet = new BrushDataSet(new BrushManagement());
-            }
-
-            if (PlacementDataSet == null)
-            {
-                PlacementDataSet = new PlacementDataSet(new PlacementManagement());
-            }
+        if (PlacementDataSet == null)
+        {
+            PlacementDataSet = new PlacementDataSet(new PlacementManagement());
         }
     }
 }

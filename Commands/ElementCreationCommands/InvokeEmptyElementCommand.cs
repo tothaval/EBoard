@@ -27,6 +27,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
+using EBoard.Utilities.Factories;
 
 namespace EBoard.Commands.ElementCreationCommands
 {
@@ -46,45 +47,42 @@ namespace EBoard.Commands.ElementCreationCommands
         {
             if (_MainViewModel.EBoardBrowserViewModel.SelectedEBoard != null)
             {
-                ElementDataSet elementDataSet = new ElementDataSet();
-                elementDataSet.EID = "-1";
+                ElementDataSet newElementDataSet = ElementDataSetFactory.GetContentElementDataSet(
+                        elementHeader: string.Empty,
+                        elementContent: new ContainerManagement(new Label()
+                        {
+                            Content = $"\t\t\t",
+                            Background = new SolidColorBrush(Colors.Transparent)
+                        }));
 
-                elementDataSet.ElementHeader = string.Empty;
+                BrushDataSet emptyElementBrushData = CreateEmptyElementBrushData();
 
-                elementDataSet.ElementTypeString = "EBoard.Models.ContainerManagement";
-
-
-                GradientStopCollection gradientStops = new GradientStopCollection();
-                gradientStops.Add(new GradientStop(Colors.AliceBlue, 0.0));
-                gradientStops.Add(new GradientStop(Colors.Navy, 0.5));
-
-                Point start = new Point(0, 0);
-                Point end = new Point(0.5, 1);
-
-                BrushDataSet brushDataSet = new BrushDataSet(new BrushManagement());
-
-                brushDataSet.BackgroundColor = new ColorDataSet(new LinearGradientBrush(gradientStops, start, end));
-             
-                elementDataSet.AddBorderDataSet(new BorderDataSet(new BorderManagement()));
-                elementDataSet.AddBrushDataSet(brushDataSet);
-                elementDataSet.AddPlacementDataSet(new PlacementDataSet(new PlacementManagement()));
-
-
-                elementDataSet.ElementContent = new ContainerManagement(new Label()
-                {
-                    Content = $"\t\t\t",
-                    Background = new SolidColorBrush(Colors.Transparent)
-                });
-                
+                newElementDataSet.AddBrushDataSet(emptyElementBrushData);
 
                 ElementViewModel evm = new ElementViewModel(
                     _MainViewModel.EBoardBrowserViewModel.SelectedEBoard,
-                    elementDataSet
-                );
+                    newElementDataSet
+                );      
 
                 _MainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(evm);
             }
 
+        }
+
+        private BrushDataSet CreateEmptyElementBrushData()
+        {
+            BrushDataSet brushDataSet = new BrushDataSet(new BrushManagement());
+
+            GradientStopCollection gradientStops = new GradientStopCollection();
+            gradientStops.Add(new GradientStop(Colors.AliceBlue, 0.0));
+            gradientStops.Add(new GradientStop(Colors.Navy, 0.5));
+
+            Point start = new Point(0, 0);
+            Point end = new Point(0.5, 1);
+
+            brushDataSet.BackgroundColor = new ColorDataSet(new LinearGradientBrush(gradientStops, start, end));
+
+            return brushDataSet;
         }
     }
 }

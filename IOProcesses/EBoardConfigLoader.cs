@@ -9,61 +9,60 @@ using EBoard.IOProcesses.DataSets;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace EBoard.IOProcesses
+namespace EBoard.IOProcesses;
+
+class EBoardConfigLoader
 {
-    class EBoardConfigLoader
+    private readonly IOProcessesInitializationManager _IOProcessesInitializationManager;
+
+
+    private EboardConfig _EBoardConfig;
+    public EboardConfig EBoardConfig => _EBoardConfig;
+
+
+    public EBoardConfigLoader(IOProcessesInitializationManager iOProcesses)
     {
-        private readonly IOProcessesInitializationManager _IOProcessesInitializationManager;
+        _IOProcessesInitializationManager = iOProcesses;
+    }
 
+    private async Task DeserializeEBoardConfig(string folderPath)
+    {
+        string filter = "*.xml";
 
-        private EboardConfig _EBoardConfig;
-        public EboardConfig EBoardConfig => _EBoardConfig;
+        List<string> files = Directory.GetFiles(folderPath, filter, SearchOption.TopDirectoryOnly).ToList();
 
-
-        public EBoardConfigLoader(IOProcessesInitializationManager iOProcesses)
+        foreach (string file in files)
         {
-            _IOProcessesInitializationManager = iOProcesses;
-        }
-
-        private async Task DeserializeEBoardConfig(string folderPath)
-        {
-            string filter = "*.xml";
-
-            List<string> files = Directory.GetFiles(folderPath, filter, SearchOption.TopDirectoryOnly).ToList();
-
-            foreach (string file in files)
+            if (file.EndsWith("eboardconfig.xml"))
             {
-                if (file.EndsWith("eboardconfig.xml"))
+                var xmlSerializer = new XmlSerializer(typeof(EboardConfig));
+
+                using (var writer = new StreamReader(file))
                 {
-                    var xmlSerializer = new XmlSerializer(typeof(EboardConfig));
-
-                    using (var writer = new StreamReader(file))
+                    try
                     {
-                        try
-                        {
-                            var member = (EboardConfig)xmlSerializer.Deserialize(writer);
+                        var member = (EboardConfig)xmlSerializer.Deserialize(writer);
 
-                            if (member != null)
-                            {
-                                _EBoardConfig = member;
-                            }
-
-                        }
-                        catch (Exception)
+                        if (member != null)
                         {
+                            _EBoardConfig = member;
                         }
+
+                    }
+                    catch (Exception)
+                    {
                     }
                 }
             }
         }
-
-        public async Task<EboardConfig> LoadEBoardConfig()
-        {
-            await DeserializeEBoardConfig(_IOProcessesInitializationManager.EBoardConfigFolder);
-
-            return EBoardConfig;
-        }
-
     }
+
+    public async Task<EboardConfig> LoadEBoardConfig()
+    {
+        await DeserializeEBoardConfig(_IOProcessesInitializationManager.EBoardConfigFolder);
+
+        return EBoardConfig;
+    }
+
 }
 // EOF

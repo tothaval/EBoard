@@ -7,17 +7,16 @@
 using EBoard.Models;
 using System.Windows;
 
-namespace EBoard.Interfaces
+namespace EBoard.Interfaces;
+
+public interface IElementContent
 {
-    public interface IElementContent
-    {
-        public bool ContentIsUserControlAndNotShape { get; }
+    public bool ContentIsUserControlAndNotShape { get; }
 
-        public FrameworkElement Element { get; }
+    public FrameworkElement Element { get; }
 
-        public Task Load(string path, ElementDataSet elementDataSet);
+    public Task Load(string path, ElementDataSet elementDataSet);
 
-        public Task Save(string path, ElementDataSet elementDataSet);
-    }
+    public Task Save(string path, ElementDataSet elementDataSet);
 }
 // EOF
