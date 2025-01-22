@@ -19,6 +19,7 @@ using EBoard.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoard.Utilities.SharedMethods;
+using System.CodeDom;
 
 namespace EBoard.ViewModels;
 
@@ -30,6 +31,8 @@ public partial class ElementViewModel : ObservableObject
 
     private ElementView _ElementView;
     public ElementView ElementView => _ElementView;
+
+    public bool IsSender { get; set; } = false;
 
 
     private EBoardViewModel _EBoardViewModel;
@@ -52,10 +55,14 @@ public partial class ElementViewModel : ObservableObject
     [ObservableProperty]
     private int rotationAngleValue;
 
-    partial void OnRotationAngleValueChanged(int value)
+    partial void OnRotationAngleValueChanging(int oldValue, int newValue)
     {
-        UpdateRotation(value);
-        ChangeSelection_RotationAngleValue(value);
+        if (oldValue != newValue)
+        {
+            ChangeSelection_RotationAngleValue(newValue);
+
+            UpdateRotation(newValue);
+        }
     }
 
 
@@ -250,7 +257,7 @@ public partial class ElementViewModel : ObservableObject
 
     // Methods
     #region Methods
-     
+
 
     internal void ApplyBackgroundBrush(Brush brush)
     {
@@ -265,14 +272,6 @@ public partial class ElementViewModel : ObservableObject
         CornerRadiusValue = cornerRadius;
 
         UpdateCornerRadius(cornerRadius);
-
-        //OnPropertyChanged(nameof(CornerRadiusValue));
-    }        
-
-
-    private void ChangeSelection_CornerRadiusValue(int cornerRadius)
-    {
-        _EBoardViewModel?.ChangeSelection_CornerRadius(this, cornerRadius);
     }
 
 
@@ -281,46 +280,63 @@ public partial class ElementViewModel : ObservableObject
         HeightValue = heightValue;
 
         UpdateContentHeight(heightValue);
-
-        //OnPropertyChanged(nameof(HeightValue));
     }
 
-
-    private void ChangeSelection_HeightValue(int heightValue)
+    public int ApplyRotationAngleValue(int rotationAngleValue)
     {
-        _EBoardViewModel?.ChangeSelection_Height(this, heightValue);
-    }
-
-
-    public void ApplyRotationAngleValue(int rotationAngleValue)
-    {
-        RotationAngleValue = rotationAngleValue;
-
         UpdateRotation(rotationAngleValue);
 
-        //OnPropertyChanged(nameof(RotationAngleValue));
+        this.rotationAngleValue = rotationAngleValue;
+
+        OnPropertyChanged(nameof(RotationAngleValue));
+
+        return RotationAngleValue;
     }
 
-
-    private void ChangeSelection_RotationAngleValue(int rotationAngleValue)
+    public int ApplyRotationAngleValueByMouseWheel(int delta)
     {
-        _EBoardViewModel?.ChangeSelection_RotationAngle(this, rotationAngleValue);
-    }
+        if (delta < 0 && RotationAngleValue > -180)
+        {
+            RotationAngleValue--;
+        }
 
+        if (delta > 0 && RotationAngleValue < 180)
+        {
+            RotationAngleValue++;
+        }
+
+        UpdateRotation(RotationAngleValue);
+
+        OnPropertyChanged(nameof(RotationAngleValue));
+
+        return RotationAngleValue;
+    }
 
     public void ApplyWidthValue(int widthValue)
     {
         WidthValue = widthValue;
 
         UpdateContentWidth(widthValue);
-
-        //OnPropertyChanged(nameof(WidthValue));
     }
 
 
-    private void ChangeSelection_WidthValue(int widthValue)
+    public int ApplyZIndexValueByMouseWheel(int delta)
     {
-        _EBoardViewModel?.ChangeSelection_WidthValue(this, widthValue);
+        if (delta < 0 && ZMinimumValue < ZIndexValue)
+        {
+            ZIndexValue--;
+        }
+
+        if (delta > 0 && ZMaximumValue > ZIndexValue)
+        {
+            ZIndexValue++;
+        }
+
+        PlacementManager.Z = ZIndexValue;
+
+        OnPropertyChanged(nameof(PlacementManager.Z));
+
+        return ZIndexValue;
     }
 
 
@@ -330,35 +346,16 @@ public partial class ElementViewModel : ObservableObject
 
         PlacementManager.Z = zIndexValue;
 
-        //OnPropertyChanged(nameof(ZIndexValue));
         OnPropertyChanged(nameof(PlacementManager.Z));
     }
 
 
     internal void BeginMovement(ElementViewModel elementViewModel)
     {
+        XPosition = ElementView.X;
+        YPosition = ElementView.Y;
 
-        XPosition = Canvas.GetLeft(ElementView.VisualParent); // - elementViewModel.ElementView.Position.X;
-        YPosition = Canvas.GetTop(ElementView.VisualParent); // - elementViewModel.ElementView.Position.Y;
-
-        //prevZ = PlacementManager.Z;
-
-        //ZIndexValue = 1000;
-
-        OnPropertyChanged(nameof(PlacementManager.Z));
-
-        double xdiff, ydiff;
-
-        xdiff = XPosition - elementViewModel.ElementView.Position.X;
-        ydiff = YPosition - elementViewModel.ElementView.Position.Y;
-
-        MoveDiff = new Point(xdiff, ydiff);
-    }
-
-
-    private void ChangeSelection_ZIndexValue(int zIndexValue)
-    {
-        _EBoardViewModel.ChangeSelection_ZIndex(this, zIndexValue);
+        PlacementManager.Position = new Point(XPosition, YPosition);
     }
 
 
@@ -385,47 +382,56 @@ public partial class ElementViewModel : ObservableObject
     }
 
 
-    public void MoveXY(ElementViewModel elementViewModel, Point newPosition)
+    private void ChangeSelection_CornerRadiusValue(int cornerRadius)
     {
-        
-        if (_ElementView != null)
-        {
-            //XPosition = Canvas.GetLeft(_ElementView.VisualParent);
-            //YPosition = Canvas.GetTop(_ElementView.VisualParent);
-            //PlacementManager.Position = new Point(XPosition, YPosition);
-
-            //OnPropertyChanged(nameof(PlacementManager));
-
-            double x, y;
-
-            x = newPosition.X - MoveDiff.X;
-            y = newPosition.Y - MoveDiff.Y;
-
-
-            Canvas.SetLeft(ElementView.VisualParent, x);
-            Canvas.SetTop(ElementView.VisualParent, y);
-
-            //MoveDiff = new Point(x, y);
-        }
-
+        _EBoardViewModel?.ChangeSelection_CornerRadius(this, cornerRadius);
     }
 
 
-    internal void StopMovement()
+    private void ChangeSelection_HeightValue(int heightValue)
     {
-        //XPosition = Canvas.GetLeft(_ElementView);
-        //YPosition = Canvas.GetTop(_ElementView);
+        _EBoardViewModel?.ChangeSelection_Height(this, heightValue);
+    }
 
-        //PlacementManager.Position = new Point(XPosition, YPosition);
 
-        //ZIndexValue = prevZ;
+    private void ChangeSelection_RotationAngleValue(int rotationAngleValue)
+    {
+        _EBoardViewModel?.ChangeSelection_RotationAngle(this, rotationAngleValue);
+    }
 
-        //OnPropertyChanged(nameof(PlacementManager));
+
+    private void ChangeSelection_WidthValue(int widthValue)
+    {
+        _EBoardViewModel?.ChangeSelection_WidthValue(this, widthValue);
+    }
+
+
+    private void ChangeSelection_ZIndexValue(int zIndexValue)
+    {
+        _EBoardViewModel.ChangeSelection_ZIndex(this, zIndexValue);
+    }
+
+
+    public void MoveXY(ElementViewModel elementViewModel, Point deltaPosition)
+    {
+
+        if (_ElementView != null)
+        {
+            double x, y;
+
+            x = XPosition - deltaPosition.X;
+            y = YPosition - deltaPosition.Y;
+
+            PlacementManager.Position = new Point(x, y);
+
+            Canvas.SetLeft(ElementView.VisualParent, x);
+            Canvas.SetTop(ElementView.VisualParent, y);
+        }
     }
 
 
     [RelayCommand]
-    private void RemoveElement(object s)
+    private void DeleteElement(object s)
     {
         _EBoardViewModel?.RemoveElement(this);
     }
@@ -466,10 +472,18 @@ public partial class ElementViewModel : ObservableObject
     }
 
 
-
     public void SetView(ElementView elementView)
     {
         _ElementView = elementView;
+    }
+
+
+    internal void StopMovement()
+    {
+        XPosition = Canvas.GetLeft(_ElementView.VisualParent);
+        YPosition = Canvas.GetTop(_ElementView.VisualParent);
+
+        PlacementManager.Position = new Point(XPosition, YPosition);
     }
 
 

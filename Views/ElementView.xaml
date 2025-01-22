@@ -25,6 +25,7 @@
     <Border MouseLeftButtonDown="Border_MouseLeftButtonDown"
             MouseLeftButtonUp="Border_MouseLeftButtonUp"
             MouseMove="Border_MouseMove"
+            MouseWheel="Border_MouseWheel"
             RenderTransformOrigin="{Binding TransformOriginPoint, NotifyOnSourceUpdated=True}"
             RenderTransform="{Binding RotateTransformValue, NotifyOnSourceUpdated=True}">
 
@@ -141,7 +142,7 @@
 
                 </MenuItem>
 
-                <MenuItem Header="Delete" Command="{Binding RightClickCommand}"/>
+                <MenuItem Header="Delete" Command="{Binding DeleteElementCommand}"/>
 
             </ContextMenu>
 
@@ -153,7 +154,11 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <TextBlock Text="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"/>
+            <TextBlock Text="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"
+                       HorizontalAlignment="Left"/>
+            <TextBlock Text="{Binding RotationAngleValue, NotifyOnSourceUpdated=True}"
+                       HorizontalAlignment="Right"/>
+
 
             <Grid Background="Transparent" Grid.Row="1">
                 <Border Visibility="{Binding IsContent, Converter={StaticResource VisibilityToCollapsed}}">

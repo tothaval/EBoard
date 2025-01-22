@@ -98,16 +98,6 @@ public partial class ContentViewModel : ObservableObject, IElementBackgroundImag
         BrushManager = new BrushManagement(elementDataSet.BrushDataSet);
         Control = elementDataSet.ElementContent;
 
-        if (BorderManager == null)
-        {
-            BorderManager = new BorderManagement();
-        }
-
-        if (BrushManager == null)
-        {
-            BrushManager = new BrushManagement();
-        }
-
         ElementHeaderText = elementDataSet.ElementHeader;
 
         ImagePath = BrushManager.ImagePath;

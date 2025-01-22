@@ -7,7 +7,16 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Plugins\Tools\Views\SessionUptimeClockView.xaml.cs">
+    <Compile Update="Plugins\Elements\StandardText\StandardTextView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Tools\EmptyLinear\EmptyLinearView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Tools\EmptyRadial\EmptyRadialView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Tools\SessionUptimeClock\SessionUptimeClockView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\ContentView.xaml.cs">
@@ -36,7 +45,16 @@
     <Page Update="MainWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Plugins\Tools\Views\SessionUptimeClockView.xaml">
+    <Page Update="Plugins\Elements\StandardText\StandardTextView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Plugins\Tools\EmptyLinear\EmptyLinearView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Plugins\Tools\EmptyRadial\EmptyRadialView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Plugins\Tools\SessionUptimeClock\SessionUptimeClockView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Styles\Button.xaml">

@@ -26,6 +26,14 @@ public class ContainerDataSet
 
 
 
+    /// <summary>
+    /// irgendwie überlegen, wie es noch getrennt werden kann zwischen
+    /// tools und plugins, die nichts weiter speichern und laden müssen,
+    /// sowie elementen mit content. diesen per interface mittels ioc
+    /// laden, das element regelt die details per interface methode
+    /// </summary>
+    //public bool IsImplementingIElementContent { get; set; }
+
 
     public ObservableCollection<string> ContentDataStrings { get; set; }
 

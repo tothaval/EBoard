@@ -4,21 +4,13 @@
  * 
  *  viewmodel for shape content elements
  */
-using EBoard.Commands;
 using EBoard.Interfaces;
 using EBoard.Models;
 using EBoard.Utilities.SharedMethods;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Policy;
-using System.Security.RightsManagement;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace EBoard.ViewModels;
@@ -92,23 +84,8 @@ public partial class ShapeViewModel : ObservableObject, IElementBackgroundImage,
         BrushManager = new BrushManagement(elementDataSet.BrushDataSet);
         Control = elementDataSet.ElementContent;
 
-
-        if (BorderManager == null)
-        {
-            BorderManager = new BorderManagement();
-        }
-
         width = BorderManager.Width;
-        height = BorderManager.Height;
-
-        if (BrushManager == null)
-        {
-            BrushManager = new BrushManagement();
-        }
-
-        ((Shape)Control.Element).Fill = BrushManager.Background;
-        ((Shape)Control.Element).Stroke = BrushManager.Border;
-        ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
+        height = BorderManager.Height;               
 
         ElementHeaderText = elementDataSet.ElementHeader;
 
@@ -123,6 +100,8 @@ public partial class ShapeViewModel : ObservableObject, IElementBackgroundImage,
         {
             ElementHeaderText = "Shape Element";
         }
+
+        ApplyFillAndStrokeValues();
     }
 
 
@@ -147,15 +126,32 @@ public partial class ShapeViewModel : ObservableObject, IElementBackgroundImage,
         }
     }
 
+    public bool ApplyFillAndStrokeValues(bool isSelectionChange = false)
+    {
+        if (BrushManager is null || BorderManager is null)
+        {
+            return false;
+        }
+
+        if (isSelectionChange)
+        {
+        ((Shape)Control.Element).Stroke = BrushManager.Border;
+        ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
+        }
+            ((Shape)Control.Element).Fill = BrushManager.Background;
+        
+
+        return true;
+    }
+
+
     public void ChangeElementBackgroundToImage()
     {
         if (ImagePath != null && ImagePath != string.Empty)
         {
             BrushManager.Background = new SharedMethod_UI().ChangeBackgroundToImage(BrushManager.Background, ImagePath);
 
-            ((Shape)Control.Element).Fill = BrushManager.Background;
-            ((Shape)Control.Element).Stroke = BrushManager.Border;
-            ((Shape)Control.Element).StrokeThickness = BorderManager.BorderThickness.Left;
+            ApplyFillAndStrokeValues();
 
             _ElementViewModel.EBoardViewModel.ChangeSelection_BackgroundBrush(_ElementViewModel, BrushManager.Background);
         }
@@ -172,7 +168,7 @@ public partial class ShapeViewModel : ObservableObject, IElementBackgroundImage,
 
         BrushManager.SwitchBorderToBorder();
 
-        ((Shape)Control.Element).Stroke = BrushManager.Border;
+        ApplyFillAndStrokeValues(true);
 
         OnPropertyChanged(nameof(BrushManager));
     }
@@ -191,7 +187,7 @@ public partial class ShapeViewModel : ObservableObject, IElementBackgroundImage,
 
         BrushManager.SwitchBorderToHighlight();
 
-        ((Shape)Control.Element).Stroke = BrushManager.Border;
+        ApplyFillAndStrokeValues(true);
 
         OnPropertyChanged(nameof(BrushManager));
     }
