@@ -40,13 +40,10 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
 
     // Commands
     #region Commands
-
-    public ICommand InvokeEmptyElementCommand { get; }
-    public ICommand InvokeEmpty2ElementCommand { get; }
-    public ICommand InvokePrototypeElementCommand { get; } 
-
+    
     public ICommand InvokeEllipseShapeCommand { get; }
     public ICommand InvokePrototypeShapeElementCommand { get; }
+
 
     public ICommand InvokeElementCommand { get; }
 
@@ -59,17 +56,11 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
 
         _MainViewModel = mainViewModel;
 
-        InvokeEmptyElementCommand = new InvokeEmptyElementCommand(mainViewModel);
-        InvokeEmpty2ElementCommand = new InvokeEmpty2ElementCommand(mainViewModel);
-
-        InvokePrototypeElementCommand = new InvokePrototypeElementCommand(mainViewModel);
-
         InvokePrototypeShapeElementCommand = new InvokePrototypeShapeElementCommand(mainViewModel);
 
         InvokeEllipseShapeCommand = new InvokeEllipseShapeCommand(mainViewModel);
 
         InvokeElementCommand = new InvokeElementCommand(mainViewModel);
-
     }
 
 

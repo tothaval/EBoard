@@ -8,9 +8,11 @@
 
 using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
-using EBoard.Plugins.Tools.Views;
+using EBoard.Plugins.Elements;
+using EBoard.Plugins.Tools;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -69,47 +71,40 @@ internal class ContainerManagement : IElementContent
             // diese Elemente dann mit Activator.CreateInstance arbeiten und per Interfacemethode
             // dann containerData übergeben
 
-            if (containerData.UserControlType.Equals("System.Windows.Controls.TextBox"))
+
+            Type? type = Type.GetType(containerData.UserControlType);
+
+            UserControl userControl = (UserControl)Activator.CreateInstance(type);
+
+            if (userControl is null)
             {
-                if (containerData.ContentDataStrings.Count > 0)
+                _Element = new TextBlock()
                 {
-                    _Element = new TextBox()
-                    {
-                        Text = containerData.ContentDataStrings[0],
-                        AcceptsReturn = true,
-                        AcceptsTab = true,
-                        TextWrapping = TextWrapping.Wrap
-                    };
-                }
-            }
-            else if(containerData.UserControlType.Equals("System.Windows.Controls.Label"))
-            {
-                _Element = new Label()
-                {
-                    Content = "\t\t\t",
-                    Background = new SolidColorBrush(Colors.Transparent)
+                    Text = "Error: element type loading failed",
+                    Background = new SolidColorBrush(Colors.Black),
+                    Foreground = new SolidColorBrush(Colors.White)
+
                 };
             }
             else
             {
-                Type? type = Type.GetType(containerData.UserControlType);
+                string viewmodelName = string.Concat(containerData.UserControlType, "Model");
 
-                UserControl userControl = (UserControl)Activator.CreateInstance(type);                                        
+                Type? viewModelType = Type.GetType(viewmodelName);
 
-                if (userControl is null)
+                if (viewModelType is not null)
                 {
-                    _Element = new TextBlock()
+                    var viewModel = Activator.CreateInstance(viewModelType);
+
+                    userControl.DataContext = viewModel;
+
+                    if (viewModel.GetType().GetInterfaces().Contains(typeof(IElementContentSaveAndLoad)))
                     {
-                        Text = "Error: element type loading failed",
-                        Background = new SolidColorBrush(Colors.Black),
-                        Foreground= new SolidColorBrush(Colors.White)
-
-                    };
+                        await ((IElementContentSaveAndLoad)viewModel).Load(path, elementDataSet);
+                    }
                 }
-                else
-                {
-                    _Element = userControl;
-                }                    
+
+                _Element = userControl;
             }
 
         }
@@ -146,6 +141,16 @@ internal class ContainerManagement : IElementContent
             xmlSerializer_ContainerDataSet.Serialize(writer, containerDataSet);
         }
 
+
+        var viewModel = elementDataSet.ElementContent.Element.DataContext;
+
+        var interfaces = viewModel.GetType().GetInterfaces();
+
+        if (interfaces.Contains(typeof(IElementContentSaveAndLoad)))
+        {
+            await ((IElementContentSaveAndLoad)viewModel).Save(path, elementDataSet);            
+        }
+        
         await Task.CompletedTask;
     }
 

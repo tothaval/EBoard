@@ -9,14 +9,8 @@ using System.Windows;
 
 namespace EBoard.Interfaces;
 
-public interface IElementContent
+public interface IElementContent : IElementContentSaveAndLoad, IElementContentDefinition
 {
-    public bool ContentIsUserControlAndNotShape { get; }
 
-    public FrameworkElement Element { get; }
-
-    public Task Load(string path, ElementDataSet elementDataSet);
-
-    public Task Save(string path, ElementDataSet elementDataSet);
 }
 // EOF

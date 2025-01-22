@@ -2,7 +2,7 @@
 <EboardConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <EBoardCount>0</EBoardCount>
   <EBoardIndex>-1</EBoardIndex>
-  <EBoardBrowserSwitch>false</EBoardBrowserSwitch>
+  <EBoardBrowserSwitch>true</EBoardBrowserSwitch>
   <BorderDataSet>
     <BorderThickness>
       <Left>2</Left>
@@ -16,7 +16,7 @@
       <BottomRight>14</BottomRight>
       <BottomLeft>14</BottomLeft>
     </CornerRadius>
-    <Height>675</Height>
+    <Height>810</Height>
     <Margin>
       <Left>5</Left>
       <Top>5</Top>
@@ -29,7 +29,7 @@
       <Right>5</Right>
       <Bottom>5</Bottom>
     </Padding>
-    <Width>1155</Width>
+    <Width>1428</Width>
   </BorderDataSet>
   <BrushDataSet>
     <BackgroundColor>
@@ -156,8 +156,8 @@
   <PlacementDataSet>
     <Angle>0</Angle>
     <Position>
-      <X>124</X>
-      <Y>197</Y>
+      <X>413</X>
+      <Y>148</Y>
     </Position>
     <Z>0</Z>
   </PlacementDataSet>

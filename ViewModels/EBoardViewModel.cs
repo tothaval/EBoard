@@ -13,6 +13,7 @@ using EBoard.Interfaces;
 using EBoard.Models;
 using EBoard.Utilities.SharedMethods;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Media;
 
@@ -176,12 +177,11 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     {
         foreach (ElementViewModel item in Elements)
         {
-            if (item.EID.Equals(elementViewModel.EID))
+            if (!item.Equals(elementViewModel))
             {
-                continue;
+                item.BeginMovement(elementViewModel);            
             }
 
-            item.BeginMovement(elementViewModel);
         }
     }
 
@@ -250,12 +250,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     {
         foreach (ElementViewModel item in Elements)
         {
-            if (item.Equals(elementViewModel))
-            {
-                continue;
-            }
-
-            if (item.ContentContainer.IsSelected)
+            if (!item.Equals(elementViewModel) && item.ContentContainer.IsSelected)
             {
                 item.ApplyRotationAngleValue(rotationAngleValue);
             }
@@ -440,19 +435,13 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     {
         foreach (ElementViewModel item in Elements)
         {
-            if (item.EID.Equals(elementViewModel.EID))
-            {
-                continue;
-            }
-
-
-            if (item.ContentContainer.IsSelected)
+            if (!item.EID.Equals(elementViewModel.EID) && item.ContentContainer.IsSelected)
             {
                 item.StopMovement();
             }
-
         }
-        OnPropertyChanged(nameof(Elements));
+        
+        //OnPropertyChanged(nameof(Elements));
     }
 
 

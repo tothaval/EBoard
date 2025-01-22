@@ -13,8 +13,8 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Shapes;
 using System.CodeDom;
-using EBoard.Plugins.Tools.Views;
-using EBoard.Plugins.Tools.ViewModels;
+using EBoard.Plugins.Tools.SessionUptimeClock;
+using EBoard.Plugins.Elements.StandardText;
 
 namespace EBoard.Utilities.Factories;
 
@@ -33,7 +33,7 @@ public static class ElementDataSetFactory
             IsContentNotShape = true
         };
 
-        if (elementContent != null)
+        if (elementContent is not null)
         {
             elementDataSet.ElementContent = elementContent;
         }
@@ -46,7 +46,7 @@ public static class ElementDataSetFactory
     }
 
     public static ElementDataSet GetElementDataSet(string elementId,
-        string elementHeader, bool isContentNotShape,  IElementContent? elementContent = null)
+        string elementHeader, bool isContentNotShape, IElementContent? elementContent = null)
     {
         ElementDataSet elementDataSet = new ElementDataSet
         {
@@ -91,33 +91,38 @@ public static class ElementDataSetFactory
         return elementDataSet;
     }
 
+
     internal static ElementDataSet GetElementDataSetByCommandParameter(string commandParameter)
     {
         string[] shards = commandParameter.Split('.');
 
-        switch (shards[0])
+        string pluginView = string.Concat($"EBoard.Plugins.{shards[0]}.{shards[1]}.{shards[1]}View");
+        string pluginViewModel = string.Concat($"EBoard.Plugins.{shards[0]}.{shards[1]}.{shards[1]}ViewModel");
+
+        Type? type_PluginView = Type.GetType(pluginView);
+        Type? type_PluginViewModel = Type.GetType(pluginViewModel);
+
+        UserControl? pluginViewInstance = (UserControl)Activator.CreateInstance(type_PluginView);
+
+        if (pluginViewInstance is not null)
         {
-            //case "Elements":
+            pluginViewInstance.DataContext = Activator.CreateInstance(type_PluginViewModel);
 
-            //    break;
+            ElementDataSet elementDataSet = GetContentElementDataSet(
+                        elementHeader: shards[2],
+                        elementContent: new ContainerManagement(pluginViewInstance));
 
-            //case "Shapes":                    
-
-            //    //Shape shape = FactoryPattern<shards[0], >
-
-            //    //return GetShapeElementDataSet()
-            //    break;
-
-            case "Tools":
-
-                return GetContentElementDataSet(
-                    elementHeader: "Session Uptime Clock",
-                    elementContent: new ContainerManagement(new SessionUptimeClockView() { DataContext = new SessionUptimeClockViewModel()}));
-
-            default:
-                return GetContentElementDataSet();
+            return elementDataSet;
         }
 
+        return ElementDataSetFactory.GetContentElementDataSet(
+                        elementContent: new ContainerManagement(new TextBox()
+                        {
+                            Text = $"Plugin Instantiation Error",
+                            AcceptsReturn = true,
+                            AcceptsTab = true,
+                            TextWrapping = TextWrapping.Wrap
+                        }));
 
     }
 

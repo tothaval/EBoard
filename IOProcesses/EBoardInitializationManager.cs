@@ -89,7 +89,7 @@ internal class EBoardInitializationManager
             }
             catch (Exception ex)
             {
-                throw new FileLoadException(ex.Message);
+                //throw new FileLoadException(ex.Message);
             }
 
             return eBoardViewModel;            

@@ -9,51 +9,64 @@ Current Features:<br>
 <br>
 top Buttons
 <br>
-'!', instantiates a prototype container element with a textbox onto the selected eboard, content save and load not yet implemented
-<br><br>
-'?', opens a menu that offers the ability to instantiate an ellipse shape element or a rectangle shape element onto the
-selected eboard
-<br><br>
-'...' shows or hides the eboard browser, where eboards can be created, edited, browsed and deleted.
-<br><br>
-'Ciao' and 'Off' buttons close the application, there is no warning!
-<br><br>
-a right click anywhere except on an element opens either the eboard contextmenu, the eboardbrowser contextmenu or
-the eboard context menu
-<br><br>
-mainwindow context menu supports:
-+image, minimizing, maximizing, normalizing and quitting the application
-<br><br>
-eboard context menu supports: +image 
-+image, switch to (first, previous, next or last) eboard, delete eboard,
-<br><br>
-eboardbrowser context menu supports:
-+image, reset to default brush
-<br><br>
-<br><br>
-left click and hold anywhere except buttons and elements will drag move the entire window.
+'Off' button on top closes the application, there is no warning!
 <br>
 <br>
-within the window below the top buttons is the eboard selection and below that the currently
-selected eboard instance, which is basically a WPF canvas. 
+'Eboard Browser' shows or hides eboardbrowser view, which is an overview over all existing eboard instances and
+it allows to create, edit or delete eboard instances
 <br>
 <br>
-leftclick 
+the currently selected eboard instance is basically a WPF canvas. any number of eboards with any size, depth and
+name can be instantiated, to instantiate a new eboard, use 'AddEBoard' button in eboard browser, eboards can be
+switched clicking on the small eboard representation within the eboard browser. 
+the background in the selection field is that of the eboard instance.
+<br>
+<br>
+'+Elements' opens a menu to instantiate container elements
+<br>
+<br>
+'+Shapes' opens a menu to instantiate shape elements
+<br>
+<br>
+'+Tools' opens a menu to instantiate container elements, that do not save and load any content
+<br>
+<br>
+a right click anywhere opens a context menu
 <br><br>
+mainwindow context menu supports:<br>
++image,image reset(to white background), minimizing, maximizing, normalizing and quitting the application
+<br><br>
+eboard context menu supports:<br> +image 
++image, image reset(to white background), switch to (first, previous, next or last) eboard, delete eboard,
+<br><br>
+eboardbrowser context menu supports:<br>
++image, image reset(to white background)
+<br><br>
+element context menu supports:<br>
+change width, height, z and rotation of element and every selected element, rotation will unify every
+rotation value, +image, image reset(to white background), delete element and every selected element
+<br>
+<br>
+<br>
+<br>
+leftclick <br>
 each element within an eboard can be drag moved via leftclick and hold, while dragging, the element gets a z-index of 1000,
 after that, z-index is reset to initial value, which is 0 atm.
+<br>
+<br>
+shift+leftclick <br>
+select or deselect elements
 <br><br>
-right click on an element opens a context menu, where the element can be deleted or an image can be assigned to the background.
-<br><br>
-within the window below the top buttons is the eboard selection (if visible) and below that the currently selected eboard
-instance, which is basically a WPF canvas. 
-<br><br>
-atm there are 2 eboards to prove save and load of eboard configuration, eboards and elements. shape elements can store
-one content information atm, container elements do not have storage of content or type implemented, this is WIP.
-<br><br>
-any number of eboards with any size, depth and name can be instantiated, to instantiate a new eboard, use 'AddEBoard' button
-in eboard browser, eboards can be switched clicking on the small eboard representation within the eboard browser.
-the background color in the selection field is that of the eboard instance itself.
+<br>
+<br>
+MouseWheel on Element
+change z-index of element (!! currently there is a conflict with scroll events if eboard window height is smaller than
+eboard instance height)
+<br>
+<br>
+Ctrl+MouseWheel
+change rotation angle of element (!! currently there is a conflict with scroll events if eboard window height is smaller than
+eboard instance height)
 <br>
 <br>
 <br>
