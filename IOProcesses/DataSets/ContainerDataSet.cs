@@ -50,11 +50,11 @@ public class ContainerDataSet
     {
         ElementDataSet = elementDataSet;
 
-        AssemblyString = elementDataSet.ElementContent.Element.GetType().AssemblyQualifiedName;
+        AssemblyString = elementDataSet.Plugin.Plugin.GetType().AssemblyQualifiedName;
 
-        UserControlType = elementDataSet.ElementContent.Element.GetType().FullName;
+        UserControlType = elementDataSet.Plugin.Plugin.GetType().FullName;
 
-        ContentDataStrings = ((ContainerManagement)elementDataSet.ElementContent).GetStringValues();
+        ContentDataStrings = ((ContainerManagement)elementDataSet.Plugin).GetStringValues();
 
         //ContentDataValues = ((ContainerManagement)elementDataSet.ElementContent).ContentDataValues;
 

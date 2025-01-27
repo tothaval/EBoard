@@ -9,9 +9,9 @@ namespace EBoard.Interfaces
 {
     public interface IElementContentDefinition
     {
-        public bool ContentIsUserControlAndNotShape { get; }
+        //public bool ContentIsUserControlAndNotShape { get; }
 
-        public FrameworkElement Element { get; }
+        public FrameworkElement Plugin { get; }
 
     }
 }

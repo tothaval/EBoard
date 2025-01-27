@@ -1,71 +1,72 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using EBoard.Interfaces;
-using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
-using EBoard.Utilities.Factories;
-using EBoard.ViewModels;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Xml.Serialization;
-using static System.Net.WebRequestMethods;
 
 namespace EBoard.Plugins.Elements.StandardText
 {
-    public partial class StandardTextViewModel : ObservableObject, IElementContentSaveAndLoad
+    public partial class StandardTextViewModel : PluginViewModel
     {
-
         [ObservableProperty]
         private string text;
 
 
-        public Task Load(string path, ElementDataSet elementDataSet)
+        public StandardTextViewModel()
         {
-            string contentDataPath = $"{path}content.xml";
-
-            var xmlSerializer = new XmlSerializer(typeof(StandardTextModel));
-
-            using (var reader = new StreamReader(contentDataPath))
+            if (PluginHeader.Equals(string.Empty))
             {
-                try
-                {
-                    var member = (StandardTextModel)xmlSerializer.Deserialize(reader);
-
-                    if (member != null)
-                    {
-                        Text = member.Text;
-                    }
-
-                    return Task.FromResult(member);
-                }
-                catch (Exception ex)
-                {
-                    throw new FileLoadException(ex.Message);
-                }
+                PluginHeader = "Standard Text";
             }
+        }
+               
+
+        public override Task<bool> Load(string path, IPluginDataSet pluginDataSet)
+        {
+            PluginDataSet = pluginDataSet;
+
+            PluginData pluginDataText = PluginDataSet.PluginDataStorage.Find(x => x.Key.Equals("Text"));
+
+            Text = pluginDataText.Value;
+
+            PluginData pluginDataPath = PluginDataSet.PluginDataStorage.Find(x => x.Key.Equals("Path"));
+
+            BorderManagement = new BorderManagement(pluginDataSet.BorderDataSet);
+            BrushManagement = new BrushManagement(pluginDataSet.BrushDataSet);
+
+            PluginHeader = PluginDataSet.PluginHeader;
+            PluginName = PluginDataSet.PluginName;            
+
+            // just for demo purposes, more complex data could be stored in the content folder for
+            // the element or it could store the path to the storage and retrieve it this way.
+            // in case of this yet still simple plugin, it is not necessary, although it would be
+            // better, if content was saved elsewhere. in case element folders got deleted, the
+            // plugin content could still exist. 
+            string contentFolderPath = pluginDataPath.Value;
+
+
+            return Task.FromResult(true);
 
         }
 
-        public async Task Save(string path, ElementDataSet elementDataSet)
-        {           
 
-            string contentDataPath = $"{path}content.xml";
+        public override async Task<bool> OnEboardShutdown(string path)
+        {
+            PluginDataSet = new PluginDataSet(this);
+            
+            PluginDataSet.AddPluginData(new PluginData(){ Key = "Path", Value = path});
+       
+            PluginDataSet.AddPluginData(new PluginData() { Key = "Text", Value = Text });
 
-            // serialize content
-            var xmlSerializer = new XmlSerializer(typeof(StandardTextModel));
+            await Task.CompletedTask;
 
-            StandardTextModel standardTextModel = new StandardTextModel(this);
-
-            await using (var writer = new StreamWriter(contentDataPath))
-            {
-                xmlSerializer.Serialize(writer, standardTextModel);
-            }
-
-            return;
+            return true;
         }
+
+
     }
 }
+// EOF

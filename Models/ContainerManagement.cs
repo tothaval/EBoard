@@ -10,6 +10,7 @@ using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
 using EBoard.Plugins.Elements;
 using EBoard.Plugins.Tools;
+using EBoard.ViewModels;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -25,17 +26,17 @@ internal class ContainerManagement : IElementContent
 {
     public bool ContentIsUserControlAndNotShape => true;
 
-    private FrameworkElement _Element;
-    public FrameworkElement Element => _Element;
+    private FrameworkElement _Plugin;
+    public FrameworkElement Plugin => _Plugin;
 
     public ObservableCollection<string> ContentDataStrings { get; set; } = new ObservableCollection<string>();
 
     public ObservableCollection<double> ContentDataValues { get; set; } = new ObservableCollection<double>();
 
 
-    public ContainerManagement(FrameworkElement element)
+    public ContainerManagement(FrameworkElement plugin)
     {
-        _Element = element;
+        _Plugin = plugin;
     }
 
     public ContainerManagement()
@@ -78,7 +79,7 @@ internal class ContainerManagement : IElementContent
 
             if (userControl is null)
             {
-                _Element = new TextBlock()
+                _Plugin = new TextBlock()
                 {
                     Text = "Error: element type loading failed",
                     Background = new SolidColorBrush(Colors.Black),
@@ -102,9 +103,10 @@ internal class ContainerManagement : IElementContent
                     {
                         await ((IElementContentSaveAndLoad)viewModel).Load(path, elementDataSet);
                     }
+
                 }
 
-                _Element = userControl;
+                _Plugin = userControl;
             }
 
         }
@@ -118,9 +120,9 @@ internal class ContainerManagement : IElementContent
     public ObservableCollection<string> GetStringValues()
     {
         //intermediate solution
-        if (Element.GetType().Name.Equals("TextBox"))
+        if (Plugin.GetType().Name.Equals("TextBox"))
         {
-            ContentDataStrings.Add(((TextBox)Element).Text);
+            ContentDataStrings.Add(((TextBox)Plugin).Text);
         }
 
         return ContentDataStrings;
@@ -142,7 +144,7 @@ internal class ContainerManagement : IElementContent
         }
 
 
-        var viewModel = elementDataSet.ElementContent.Element.DataContext;
+        var viewModel = elementDataSet.Plugin.Plugin.DataContext;
 
         var interfaces = viewModel.GetType().GetInterfaces();
 

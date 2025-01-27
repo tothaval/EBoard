@@ -62,8 +62,11 @@ public class EboardConfig
     public PlacementDataSet PlacementDataSet { get; set; }
     
 
-    //public string FlatNotes { get; set; }
+    public List<string> PluginsCategoryElements { get; set; }
+    public List<string> PluginsCategoryShapes { get; set; }
+    public List<string> PluginsCategoryTools { get; set; }
 
+    //public string FlatNotes { get; set; }
 
 
     //[XmlArray("Elements")]

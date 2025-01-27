@@ -69,10 +69,10 @@ public class BorderManagement : IElementBorder
     {
         BorderThickness = new Thickness(2, 2, 2, 2);
         CornerRadius = new CornerRadius(5);
-        Height = 100.0;
+        Height = 120;
         Margin = new Thickness(5);
         Padding = new Thickness(5);
-        Width = 200.0;
+        Width = 240;
     }
 
 

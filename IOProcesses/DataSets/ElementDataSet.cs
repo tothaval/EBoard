@@ -17,6 +17,7 @@
 using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
 using EBoard.IOProcesses.DataSets.Interfaces;
+using EBoard.Plugins;
 using EBoard.ViewModels;
 using System.Xml.Serialization;
 
@@ -26,32 +27,9 @@ namespace EBoard.Models;
 [XmlRoot("ElementDataSet")]
 public class ElementDataSet : IElementDataSet
 {
+
     [XmlIgnore]
     private readonly EBoardViewModel _EBoardViewModel;
-
-    [XmlIgnore]
-    private ElementViewModel _ElementViewModel { get; set; }
-
-    [XmlIgnore]
-    public ElementViewModel ElementViewModel => _ElementViewModel;
-
-
-    public BorderDataSet BorderDataSet { get; set; }
-    public BrushDataSet BrushDataSet { get; set; }
-    public PlacementDataSet PlacementDataSet { get; set; }
-
-
-
-    [XmlIgnore]
-    public IElementContent ElementContent { get; set; }
-
-
-    /// <summary>
-    /// determines if ElementContent is
-    /// of type ShapeManagement(false)
-    /// or ContentManagement(true)
-    /// </summary>
-    public bool IsContentNotShape {  get; set; }
 
 
     /// <summary>
@@ -61,31 +39,28 @@ public class ElementDataSet : IElementDataSet
     public string EID { get; set; }
 
 
-    /// <summary>
-    /// a string representation of an assembly, where the element type can be found
-    /// </summary>
-    public string ElementAssemblyString { get; set; }
-    
-
-    /// <summary>
-    /// a string representation of an element type
-    /// </summary>
-    public string ElementTypeString { get; set; }
+    [XmlIgnore]
+    private ElementViewModel _ElementViewModel { get; set; }
 
 
-    /// <summary>
-    /// the header text of an ElementView
-    /// </summary>
-    public string ElementHeader { get; set; }
+    [XmlIgnore]
+    public ElementViewModel ElementViewModel => _ElementViewModel;
 
 
+    public PlacementDataSet PlacementDataSet { get; set; } = new PlacementDataSet();
+
+
+    [XmlIgnore]
+    public IPlugin Plugin { get; set; }
+
+
+    //[XmlIgnore]
+    //public IPluginDataSet PluginDataSet { get; set; }
 
 
     public ElementDataSet()
     {
-        //_EBoardViewModel = new EBoardViewModel("new", new BorderManagement() { Width = 1000.0, Height = 500.0}, 100);
 
-        //_ElementViewModel = new ElementViewModel(_EBoardViewModel);
     }
 
 
@@ -93,127 +68,26 @@ public class ElementDataSet : IElementDataSet
     {
         _EBoardViewModel = eBoardViewModel;
         _ElementViewModel = elementViewModel;
-                   
-
-        if (elementViewModel.IsShape)
-        {
-            BorderDataSet = new BorderDataSet(elementViewModel.ShapeViewModel.BorderManager);
-            BrushDataSet = new BrushDataSet(elementViewModel.ShapeViewModel.BrushManager);
-        }
-
-        if (elementViewModel.IsContent)
-        {
-            BorderDataSet = new BorderDataSet(elementViewModel.ContentViewModel.BorderManager);
-            BrushDataSet = new BrushDataSet(elementViewModel.ContentViewModel.BrushManager);
-        }
-
-
+                
         PlacementDataSet = new PlacementDataSet(elementViewModel.PlacementManager);
-
-        if (BorderDataSet == null)
-        {
-            BorderDataSet = new BorderDataSet();
-        }
-
-        if (BrushDataSet == null)
-        {                
-            BrushDataSet = new BrushDataSet();
-        }
 
         if (PlacementDataSet == null)
         {
             PlacementDataSet = new PlacementDataSet();
         }
-
-
-
-    }
-    public void AddBorderDataSet(BorderDataSet borderDataSet)
-    {
-        BorderDataSet = borderDataSet;
-
-        if (BorderDataSet == null)
-        {
-            BorderDataSet = new BorderDataSet(new BorderManagement());
-        }
     }
 
-    public void AddBrushDataSet(BrushDataSet brushDataSet)
-    {
-        BrushDataSet = brushDataSet;
-
-        if (BrushDataSet == null)
-        {
-            BrushDataSet = new BrushDataSet(new BrushManagement());
-        }
-    }
-    public void AddPlacementDataSet(PlacementDataSet placementDataSet)
-    {
-        PlacementDataSet = placementDataSet;
-
-        if (PlacementDataSet == null)
-        {
-            PlacementDataSet = new PlacementDataSet(new PlacementManagement());
-        }
-    }
 
     public async Task ConvertData()
     {
         EID = ElementViewModel.EID;
 
-        IsContentNotShape = ElementViewModel.IsContent;
-
-        if (ElementViewModel.IsContent)
-        {
-            ElementContent = ElementViewModel.ContentViewModel.Control;
-            ElementHeader = ElementViewModel.ContentViewModel.ElementHeaderText;
-
-            ElementTypeString = ElementContent.GetType().FullName;
-
-            BorderDataSet = new BorderDataSet(ElementViewModel.ContentViewModel.BorderManager);
-
-            BrushDataSet = new BrushDataSet(ElementViewModel.ContentViewModel.BrushManager);
-        }
-
-        if (ElementViewModel.IsShape)
-        {
-            ElementContent = ElementViewModel.ShapeViewModel.Control;
-            ElementHeader = ElementViewModel.ShapeViewModel.ElementHeaderText;
-
-            ElementTypeString = ElementContent.GetType().FullName;
-
-            BorderDataSet = new BorderDataSet(ElementViewModel.ShapeViewModel.BorderManager);
-
-            BrushDataSet = new BrushDataSet(ElementViewModel.ShapeViewModel.BrushManager);
-        }
+        Plugin = ElementViewModel.Plugin;
 
         PlacementDataSet = new PlacementDataSet(ElementViewModel.PlacementManager);
 
         await Task.CompletedTask;
     }
 
-    public async Task Initialize(string elementDataFileString)
-    {
-        if (IsContentNotShape)
-        {
-            ElementContent = new ContainerManagement();
-
-        }
-        else
-        {
-            ElementContent = new ShapeManagement();
-        }
-
-
-        if (ElementContent != null)
-        {
-            string element_folder = elementDataFileString.Replace(".xml", "\\");
-
-            await ElementContent.Load($"{element_folder}", this);
-        }
-
-        await Task.CompletedTask;
-
-    }
 }
 // EOF

@@ -10,16 +10,22 @@
     <Compile Update="Plugins\Elements\StandardText\StandardTextView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Plugins\Shapes\Ellipse\EllipseView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Shapes\Rectangle\RectangleView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Plugins\Tools\EmptyLinear\EmptyLinearView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Plugins\Tools\EmptyRadial\EmptyRadialView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Plugins\Tools\SessionUptimeClock\SessionUptimeClockView.xaml.cs">
+    <Compile Update="Plugins\Tools\Summoner\SummonerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\ContentView.xaml.cs">
+    <Compile Update="Plugins\Tools\UptimeTimer\UptimeTimerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\EBoardBrowserView.xaml.cs">
@@ -37,9 +43,6 @@
     <Compile Update="Views\MainWindowMenuBar.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\ShapeView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="MainWindow.xaml">
@@ -48,13 +51,22 @@
     <Page Update="Plugins\Elements\StandardText\StandardTextView.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Plugins\Shapes\Ellipse\EllipseView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Plugins\Shapes\Rectangle\RectangleView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Update="Plugins\Tools\EmptyLinear\EmptyLinearView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Plugins\Tools\EmptyRadial\EmptyRadialView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Plugins\Tools\SessionUptimeClock\SessionUptimeClockView.xaml">
+    <Page Update="Plugins\Tools\Summoner\SummonerView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Plugins\Tools\UptimeTimer\UptimeTimerView.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Styles\Button.xaml">
@@ -66,7 +78,7 @@
     <Page Update="Utilities\DataTemplate.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Views\ContentView.xaml">
+    <Page Update="Utilities\PluginManifest.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\EBoardBrowserView.xaml">
@@ -82,9 +94,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Views\MainWindowMenuBar.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\ShapeView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

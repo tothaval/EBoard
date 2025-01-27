@@ -13,80 +13,20 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Shapes;
 using System.CodeDom;
-using EBoard.Plugins.Tools.SessionUptimeClock;
 using EBoard.Plugins.Elements.StandardText;
 
 namespace EBoard.Utilities.Factories;
 
 public static class ElementDataSetFactory
-{
-    public static ElementDataSet GetContentElementDataSet(
-        string elementId = "-1",
-        string elementHeader = "Prototype Element ",
-        IElementContent? elementContent = null)
+{    
+    public static ElementDataSet GetElementDataSet(IPlugin? plugin = null)
     {
+        ElementDataSet elementDataSet = new ElementDataSet();
 
-        ElementDataSet elementDataSet = new ElementDataSet
+        if (plugin is not null)
         {
-            EID = elementId,
-            ElementHeader = elementHeader,
-            IsContentNotShape = true
-        };
-
-        if (elementContent is not null)
-        {
-            elementDataSet.ElementContent = elementContent;
+            elementDataSet.Plugin = plugin;
         }
-
-        elementDataSet.AddBorderDataSet(new BorderDataSet(new BorderManagement()));
-        elementDataSet.AddBrushDataSet(new BrushDataSet(new BrushManagement()));
-        elementDataSet.AddPlacementDataSet(new PlacementDataSet(new PlacementManagement()));
-
-        return elementDataSet;
-    }
-
-    public static ElementDataSet GetElementDataSet(string elementId,
-        string elementHeader, bool isContentNotShape, IElementContent? elementContent = null)
-    {
-        ElementDataSet elementDataSet = new ElementDataSet
-        {
-            EID = elementId,
-            ElementHeader = elementHeader,
-            IsContentNotShape = isContentNotShape
-        };
-
-        if (elementContent != null)
-        {
-            elementDataSet.ElementContent = elementContent;
-        }
-
-        elementDataSet.AddBorderDataSet(new BorderDataSet(new BorderManagement()));
-        elementDataSet.AddBrushDataSet(new BrushDataSet(new BrushManagement()));
-        elementDataSet.AddPlacementDataSet(new PlacementDataSet(new PlacementManagement()));
-
-        return elementDataSet;
-    }
-
-    public static ElementDataSet GetShapeElementDataSet(
-        string elementId = "-1",
-        string elementHeader = "Shape Element ",
-        Shape? shape = null)
-    {
-        ElementDataSet elementDataSet = new ElementDataSet
-        {
-            EID = elementId,
-            ElementHeader = elementHeader,
-            IsContentNotShape = false
-        };
-
-        if (shape != null)
-        {
-            elementDataSet.ElementContent = new ShapeManagement(shape);
-        }
-
-        elementDataSet.AddBorderDataSet(new BorderDataSet(new BorderManagement()));
-        elementDataSet.AddBrushDataSet(new BrushDataSet(new BrushManagement()));
-        elementDataSet.AddPlacementDataSet(new PlacementDataSet(new PlacementManagement()));
 
         return elementDataSet;
     }
@@ -101,28 +41,25 @@ public static class ElementDataSetFactory
 
         Type? type_PluginView = Type.GetType(pluginView);
         Type? type_PluginViewModel = Type.GetType(pluginViewModel);
-
+    
         UserControl? pluginViewInstance = (UserControl)Activator.CreateInstance(type_PluginView);
+        IPlugin? plugin = Activator.CreateInstance(type_PluginViewModel) as IPlugin;
 
-        if (pluginViewInstance is not null)
+        if (pluginViewInstance is not null && plugin is not null)
         {
-            pluginViewInstance.DataContext = Activator.CreateInstance(type_PluginViewModel);
+            pluginViewInstance.DataContext = plugin;
 
-            ElementDataSet elementDataSet = GetContentElementDataSet(
-                        elementHeader: shards[2],
-                        elementContent: new ContainerManagement(pluginViewInstance));
+            plugin.PluginHeader = shards[2];
+            
+            ElementDataSet elementDataSet = GetElementDataSet(plugin);
 
             return elementDataSet;
         }
 
-        return ElementDataSetFactory.GetContentElementDataSet(
-                        elementContent: new ContainerManagement(new TextBox()
-                        {
-                            Text = $"Plugin Instantiation Error",
-                            AcceptsReturn = true,
-                            AcceptsTab = true,
-                            TextWrapping = TextWrapping.Wrap
-                        }));
+        return ElementDataSetFactory.GetElementDataSet(plugin: new StandardTextViewModel()
+        {
+            Text = "Plugin Instantiation Error"
+        });
 
     }
 

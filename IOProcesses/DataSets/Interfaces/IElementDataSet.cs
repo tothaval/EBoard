@@ -1,4 +1,6 @@
-﻿using EBoard.Models;
+﻿using EBoard.Interfaces;
+using EBoard.Models;
+using EBoard.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,7 @@ namespace EBoard.IOProcesses.DataSets.Interfaces;
 
 public interface IElementDataSet
 {
-    public bool IsContentNotShape { get; set; }
+    //public bool IsContentNotShape { get; set; }
 
     /// <summary>
     /// Element ID, built using $"Element_{DateTime().Ticks} on first
@@ -21,22 +23,11 @@ public interface IElementDataSet
     /// <summary>
     /// a string representation of an assembly, where the element type can be found
     /// </summary>
-    public string ElementAssemblyString { get; set; }
 
 
-    /// <summary>
-    /// the header text of an ElementView
-    /// </summary>
-    public string ElementHeader { get; set; }
+    public IPlugin Plugin { get; set; }
 
 
-    public BorderDataSet BorderDataSet { get; set; }
-    public BrushDataSet BrushDataSet { get; set; }
     public PlacementDataSet PlacementDataSet { get; set; }
 
-    public void AddBorderDataSet(BorderDataSet borderDataSet);
-
-    public void AddBrushDataSet(BrushDataSet brushDataSet);
-
-    public void AddPlacementDataSet(PlacementDataSet placementDataSet);
 }

@@ -6,24 +6,19 @@
  *  element placement properties within EBoardView canvas and basic content management
  */
 
-using EBoard.Commands;
 using EBoard.Models;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using System.Windows;
 using EBoard.Interfaces;
 using EBoard.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoard.Utilities.SharedMethods;
-using System.CodeDom;
 
 namespace EBoard.ViewModels;
 
-public partial class ElementViewModel : ObservableObject
+public partial class ElementViewModel : ObservableObject, IElementSelection, IElementBackgroundImage
 {
 
     // Properties & Fields
@@ -32,20 +27,25 @@ public partial class ElementViewModel : ObservableObject
     private ElementView _ElementView;
     public ElementView ElementView => _ElementView;
 
-    public bool IsSender { get; set; } = false;
-
 
     private EBoardViewModel _EBoardViewModel;
     public EBoardViewModel EBoardViewModel => _EBoardViewModel;
 
-    private IUIManager _ContentContainer;
-    public IUIManager ContentContainer => _ContentContainer;
 
-    private ContentViewModel _ContentViewModel;
-    public ContentViewModel ContentViewModel => _ContentViewModel;
+    [ObservableProperty]
+    private string imagePath;
+    partial void OnImagePathChanged(string value)
+    {
+        ChangeElementBackgroundToImage();
+    }
 
-    private ShapeViewModel _ShapeViewModel;
-    public ShapeViewModel ShapeViewModel => _ShapeViewModel;
+
+    [ObservableProperty]
+    private bool isSelected;
+
+
+    private IPlugin plugin;
+    public IPlugin Plugin => plugin;
 
 
     [ObservableProperty]
@@ -98,17 +98,12 @@ public partial class ElementViewModel : ObservableObject
     {
         TransformOriginPoint = new Point(0, 0);
 
-        if (IsContent && ContentViewModel != null)
+        if (Plugin is not null)
         {
-            ContentViewModel.Height = value;
-            OnPropertyChanged(nameof(ContentViewModel));
+            Plugin.Height = value;
         }
 
-        if (IsShape && ShapeViewModel != null)
-        {
-            ShapeViewModel.Height = value;
-            OnPropertyChanged(nameof(ShapeViewModel));
-        }
+        OnPropertyChanged(nameof(Plugin));
 
         ChangeSelection_HeightValue(value);
     }
@@ -120,6 +115,11 @@ public partial class ElementViewModel : ObservableObject
     partial void OnWidthValueChanged(int value)
     {
         TransformOriginPoint = new Point(0, 0);
+
+        if (Plugin is not null)
+        {
+            Plugin.Width = value; 
+        }
 
         UpdateContentWidth(value);
 
@@ -133,14 +133,6 @@ public partial class ElementViewModel : ObservableObject
     /// built using $"Element_{DateTime().Ticks}"        
     /// </summary>
     public string EID => _EID;
-
-
-    [ObservableProperty]
-    private bool isShape = false;
-
-
-    [ObservableProperty]
-    private bool isContent = false;
 
 
     [ObservableProperty]
@@ -170,7 +162,6 @@ public partial class ElementViewModel : ObservableObject
     [ObservableProperty]
     private double yPosition;
 
-    public Point MoveDiff { get; set; }
 
     #endregion
 
@@ -191,9 +182,6 @@ public partial class ElementViewModel : ObservableObject
         )
     {
 
-        IsContent = false;
-        IsShape = false;
-
         PlacementManager = new PlacementManagement();
 
         _EBoardViewModel = eBoardViewModel;
@@ -203,8 +191,7 @@ public partial class ElementViewModel : ObservableObject
         // need to look into string format again. on implementation, i failed to apply a no digit value to the label stringformat,
         // tried {}{0:F0} and some others, since it didn't work for whatever reason, i made them ints to circumvent the issue for now.
         // better solution for permanent use would be to use doubles and limit the digits on output. gonna try this again sometime, but it has no priority
-        HeightValue = (int)elementDataSet.BorderDataSet.Height;
-        WidthValue = (int)elementDataSet.BorderDataSet.Width;
+
 
 
         if (elementDataSet.PlacementDataSet != null)
@@ -227,29 +214,16 @@ public partial class ElementViewModel : ObservableObject
         }
 
 
-        if (elementDataSet.ElementContent != null)
+        if (elementDataSet.Plugin != null)
         {
-            if (elementDataSet.ElementContent.ContentIsUserControlAndNotShape)
-            {
-                _ContentViewModel = new ContentViewModel(elementDataSet, this);
-                IsContent = true;
+            plugin = elementDataSet.Plugin;
 
-                _ContentContainer = _ContentViewModel;
+            CornerRadiusValue = (int)elementDataSet.Plugin.BorderManagement.CornerRadius.TopLeft;
 
-                CornerRadiusValue = (int)elementDataSet.BorderDataSet.CornerRadius.TopLeft;
+            HeightValue = (int)elementDataSet.Plugin.BorderManagement.Height;
+            WidthValue = (int)elementDataSet.Plugin.BorderManagement.Width;
 
-                OnPropertyChanged(nameof(ContentViewModel));
-            }
-            else
-            {
-                _ShapeViewModel = new ShapeViewModel(elementDataSet, this);
-                IsShape = true;
-
-                _ContentContainer = _ShapeViewModel;
-
-                OnPropertyChanged(nameof(ShapeViewModel));
-            }
-
+            OnPropertyChanged(nameof(Plugin));
 
             CalibrateZSliderValues(_EBoardViewModel.EBoardDepth);
         }
@@ -261,7 +235,7 @@ public partial class ElementViewModel : ObservableObject
 
     internal void ApplyBackgroundBrush(Brush brush)
     {
-        ContentContainer.ApplyBackgroundBrush(brush);
+        Plugin.ApplyBackgroundBrush(brush);
     }
 
 
@@ -382,6 +356,15 @@ public partial class ElementViewModel : ObservableObject
     }
 
 
+    public void ChangeElementBackgroundToImage()
+    {
+        if (ImagePath != null && ImagePath != string.Empty)
+        {
+            Plugin?.ApplyBackgroundBrush(new SharedMethod_UI().ChangeBackgroundToImage(Plugin.BrushManagement.Background, ImagePath));
+        }
+    }
+
+
     private void ChangeSelection_CornerRadiusValue(int cornerRadius)
     {
         _EBoardViewModel?.ChangeSelection_CornerRadius(this, cornerRadius);
@@ -440,35 +423,25 @@ public partial class ElementViewModel : ObservableObject
     [RelayCommand]
     private void ResetImage()
     {
-        if (IsContent)
-        {
-            ContentViewModel.ImagePath = string.Empty;
-            ContentViewModel.ApplyBackgroundBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush);
-        }
+        ImagePath = string.Empty;
+        
+        Plugin.ApplyBackgroundBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush);
+    }
 
-        if (IsShape)
-        {
-            ShapeViewModel.ImagePath = string.Empty;
-            ShapeViewModel.ApplyBackgroundBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush);
 
-            OnPropertyChanged(nameof(ShapeViewModel.BrushManager.Background));
-            OnPropertyChanged(nameof(ContentViewModel.BrushManager));
-        }
+    [RelayCommand]
+    public void Select()
+    {
+        IsSelected = !IsSelected;
+        
+        Plugin?.SelectionChange(IsSelected);
     }
 
 
     [RelayCommand]
     private void SetImage()
     {
-        if (IsContent)
-        {
-            ContentViewModel.ImagePath = new SharedMethod_UI().SetBackgroundImage(ContentViewModel.ImagePath);
-        }
-
-        if (IsShape)
-        {
-            ShapeViewModel.ImagePath = new SharedMethod_UI().SetBackgroundImage(ShapeViewModel.ImagePath);
-        }
+        ImagePath = new SharedMethod_UI().SetBackgroundImage(ImagePath);
     }
 
 
@@ -489,43 +462,27 @@ public partial class ElementViewModel : ObservableObject
 
     private void UpdateContentHeight(int height)
     {
-        if (IsContent && ContentViewModel != null)
+        if (Plugin is not null)
         {
-            ContentViewModel.Height = height;
-
-            OnPropertyChanged(nameof(ContentViewModel));
-        }
-
-        if (IsShape && ShapeViewModel != null)
-        {
-            ShapeViewModel.Height = height;
-            OnPropertyChanged(nameof(ShapeViewModel));
+            Plugin.Height = height;
         }
     }
 
 
     private void UpdateContentWidth(int width)
     {
-        if (IsContent && ContentViewModel != null)
+        if (Plugin is not null)
         {
-            ContentViewModel.Width = width;
-
-            OnPropertyChanged(nameof(ContentViewModel));
-        }
-
-        if (IsShape && ShapeViewModel != null)
-        {
-            ShapeViewModel.Width = width;
-            OnPropertyChanged(nameof(ShapeViewModel));
+            Plugin.Width = width;
         }
     }
 
 
     private void UpdateCornerRadius(int value)
     {
-        if (IsContent && ContentViewModel != null)
+        if (Plugin is not null)
         {
-            ContentViewModel.CornerRadiusValue = value;
+            Plugin.CornerRadiusValue = value;
         }
     }
 

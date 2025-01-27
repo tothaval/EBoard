@@ -1,4 +1,5 @@
 ﻿using EBoard.Models;
+using EBoard.Plugins.Elements.StandardText;
 using EBoard.Utilities.Factories;
 using EBoard.ViewModels;
 using System;
@@ -33,10 +34,10 @@ namespace EBoard.Commands.ElementCreationCommands
 
                 if (commandParameter is null || commandParameter.Equals(string.Empty))
                 {
-                    newElementDataSet = ElementDataSetFactory.GetContentElementDataSet(
-                        elementContent: new ContainerManagement(new TextBlock()
+                    newElementDataSet = ElementDataSetFactory.GetElementDataSet(
+                        plugin: new StandardTextViewModel()
                         { Text = "Error: parameter string invalid or null" }
-                        ));
+                        );
                 }
                 else
                 {
