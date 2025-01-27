@@ -2,7 +2,7 @@
 <EboardConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <EBoardCount>0</EBoardCount>
   <EBoardIndex>-1</EBoardIndex>
-  <EBoardBrowserSwitch>true</EBoardBrowserSwitch>
+  <EBoardBrowserSwitch>false</EBoardBrowserSwitch>
   <BorderDataSet>
     <BorderThickness>
       <Left>2</Left>
@@ -11,10 +11,10 @@
       <Bottom>2</Bottom>
     </BorderThickness>
     <CornerRadius>
-      <TopLeft>14</TopLeft>
-      <TopRight>14</TopRight>
-      <BottomRight>14</BottomRight>
-      <BottomLeft>14</BottomLeft>
+      <TopLeft>5</TopLeft>
+      <TopRight>5</TopRight>
+      <BottomRight>5</BottomRight>
+      <BottomLeft>5</BottomLeft>
     </CornerRadius>
     <Height>810</Height>
     <Margin>
@@ -29,7 +29,7 @@
       <Right>5</Right>
       <Bottom>5</Bottom>
     </Padding>
-    <Width>1428</Width>
+    <Width>1176</Width>
   </BorderDataSet>
   <BrushDataSet>
     <BackgroundColor>
@@ -96,25 +96,25 @@
       <BrushType>SolidColorBrush</BrushType>
       <Color>
         <A>255</A>
-        <R>0</R>
-        <G>0</G>
-        <B>0</B>
+        <R>138</R>
+        <G>43</G>
+        <B>226</B>
         <ScA>1</ScA>
-        <ScR>0</ScR>
-        <ScG>0</ScG>
-        <ScB>0</ScB>
+        <ScR>0.25415212</ScR>
+        <ScG>0.024157634</ScG>
+        <ScB>0.7605245</ScB>
       </Color>
       <ImagePath />
       <GradientColors>
         <Color>
           <A>255</A>
-          <R>0</R>
-          <G>0</G>
-          <B>0</B>
+          <R>138</R>
+          <G>43</G>
+          <B>226</B>
           <ScA>1</ScA>
-          <ScR>0</ScR>
-          <ScG>0</ScG>
-          <ScB>0</ScB>
+          <ScR>0.25415212</ScR>
+          <ScG>0.024157634</ScG>
+          <ScB>0.7605245</ScB>
         </Color>
       </GradientColors>
       <GradientStops>
@@ -156,8 +156,8 @@
   <PlacementDataSet>
     <Angle>0</Angle>
     <Position>
-      <X>413</X>
-      <Y>148</Y>
+      <X>317</X>
+      <Y>136</Y>
     </Position>
     <Z>0</Z>
   </PlacementDataSet>

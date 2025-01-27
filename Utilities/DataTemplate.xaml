@@ -24,13 +24,6 @@
         <views:EBoardView/>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type vms:ContentViewModel}">
-        <views:ContentView/>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type vms:ShapeViewModel}">
-        <views:ShapeView/>
-    </DataTemplate>
 
     <!--<DataTemplate DataType="{x:Type cp_vms:EButtonViewModel}">
         <cp_views:EButton/>

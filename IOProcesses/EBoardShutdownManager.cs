@@ -11,11 +11,14 @@
  *  3. for each EBoardDataSet save ElementDataSet(s)
  */
 
+using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
+using EBoard.Plugins;
 using EBoard.ViewModels;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows.Shapes;
 using System.Xml.Serialization;
 
 namespace EBoard.IOProcesses;
@@ -95,14 +98,6 @@ internal class EBoardShutdownManager
     }
 
 
-    private async Task ElementContentDataSetSerialization(string saveFolderPath, ElementDataSet elementDataSet)
-    {        
-        await elementDataSet.ElementContent.Save(saveFolderPath, elementDataSet);
-
-        await Task.CompletedTask;
-    }
-
-
     private async Task ElementDataSetSerialization(string saveFolderPath, ObservableCollection<EBoardViewModel> eBoardViewModels, int i)
     {
         string elementFolderPath = $"{saveFolderPath}eboard_{i}\\";
@@ -113,19 +108,19 @@ internal class EBoardShutdownManager
 
         for (int ii = 0; ii < eBoardViewModels[i].Elements.Count; ii++)
         {
+
             ElementDataSet elementDataSet = new ElementDataSet(eBoardViewModels[i], eBoardViewModels[i].Elements[ii]);
 
             await elementDataSet.ConvertData();
-
-            string elementFilePath = $"{elementFolderPath}element_{ii}.xml";
-
 
             /// file is sometimes used by another process which leads to crashs, don't know if it is an visual studio issue
             /// on debugging or not, does not happen everytime.
             /// 
             /// maybe it is the loading process, that hasn't finished, gonna have to implement some sort of check if process
             /// is available or if it can be freed/closed to free the file.
-            
+
+            string elementFilePath = $"{elementFolderPath}element_{ii}.xml";
+                        
             await using (var writer = new StreamWriter(elementFilePath))
             {
                 xmlSerializer_ElementDataSet.Serialize(writer, elementDataSet);
@@ -135,7 +130,39 @@ internal class EBoardShutdownManager
 
             await CreateFolder(elementContentFolderPath);
 
-            await ElementContentDataSetSerialization(elementContentFolderPath, elementDataSet);
+
+            await eBoardViewModels[i].Elements[ii].Plugin.OnEboardShutdown(elementContentFolderPath);
+
+
+            await SerializePluginDataSet(elementContentFolderPath, eBoardViewModels[i].Elements[ii].Plugin);
+
+
+
+            await Task.CompletedTask;
+        }
+
+
+    }
+
+    private async Task SerializePluginDataSet(string elementContentFolderPath, IPlugin plugin)
+    {
+        try
+        {
+
+            string pluginDataSetFile = string.Concat(elementContentFolderPath, "plugindata.xml");
+
+            var xmlSerializer = new XmlSerializer(typeof(PluginDataSet));
+
+            await using (var writer = new StreamWriter(pluginDataSetFile))
+            {
+                xmlSerializer.Serialize(writer, plugin.PluginDataSet);
+            }
+
+
+        }
+        catch (Exception)
+        {
+
         }
 
 

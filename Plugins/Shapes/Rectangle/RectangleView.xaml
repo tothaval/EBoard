@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="EBoard.Plugins.Shapes.Rectangle.RectangleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EBoard.Plugins.Shapes.Rectangle"
+             d:DataContext="{d:DesignInstance Type=local:RectangleView}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+
+    <Rectangle
+        Fill="{Binding BrushManagement.Background}"
+        StrokeThickness="{Binding BorderManagement.BorderThickness}"
+        Stroke="{Binding BrushManagement.Border}"
+        
+        MinWidth="10"
+        MinHeight="10"
+        
+        Width="{Binding BorderManagement.Width}"
+        Height="{Binding BorderManagement.Height}"
+        >
+
+    </Rectangle>
+</UserControl>

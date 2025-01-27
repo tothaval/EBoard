@@ -10,11 +10,19 @@
  *  2. for each EBoardDataSet load ElementDataSet(s)
  */
 
+using EBoard.Interfaces;
+using EBoard.IOProcesses.DataSets.Interfaces;
 using EBoard.Models;
+using EBoard.Plugins;
 using EBoard.Utilities.Factories;
 using EBoard.ViewModels;
 using System.IO;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
+using System.Xml.Linq;
 using System.Xml.Serialization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace EBoard.IOProcesses;
 
@@ -64,35 +72,64 @@ internal class EBoardInitializationManager
 
     private async Task<EBoardViewModel> LoadElementDataSetFromFile(EBoardViewModel eBoardViewModel, string elementFileName, XmlSerializer elementDataSetSerializer)
     {
-            try
+        try
+        {
+            if (elementFileName.Contains("element_") && elementFileName.EndsWith($".xml"))
             {
-                if (elementFileName.Contains("element_") && elementFileName.EndsWith($".xml"))
+                var reader_elements = new StreamReader(elementFileName);
+
+                var elementData = (ElementDataSet)elementDataSetSerializer.Deserialize(reader_elements);
+
+                if (elementData != null)
                 {
-                    var reader_elements = new StreamReader(elementFileName);
+                    string element_folder = elementFileName.Replace(".xml", "\\");
 
-                    var elementData = (ElementDataSet)elementDataSetSerializer.Deserialize(reader_elements);
 
-                    if (elementData != null)
+                    var xmlSerializer_ElementDataSet = new XmlSerializer(typeof(ElementDataSet));
+
+                    string contentDataPath = $"{element_folder}plugindata.xml";
+
+                    var xmlSerializer = new XmlSerializer(typeof(PluginDataSet));
+
+                    using (var reader = new StreamReader(contentDataPath))
                     {
-                        await elementData.Initialize(elementFileName);
+                        var member = (PluginDataSet)xmlSerializer.Deserialize(reader);
 
-                        eBoardViewModel.Elements.Add(
-                            new ElementViewModel(
-                                eBoardViewModel,
-                                elementData
-                                )
-                            );
+                        if (member != null)
+                        {
+                            Type? type_PluginViewModel = Type.GetType(member.PluginType);
 
+                            IPlugin? plugin = Activator.CreateInstance(type_PluginViewModel) as IPlugin;
+
+                            if (plugin is not null)
+                            {
+                                member.Plugin = plugin;                                
+
+                                await plugin.Load(contentDataPath, member);
+
+                                elementData.Plugin = plugin;
+
+                                eBoardViewModel.Elements.Add(
+                                new ElementViewModel(
+                                    eBoardViewModel,
+                                    elementData
+                                    )
+                                );
+                            };
+
+                        }
                     }
+
                 }
-
-            }
-            catch (Exception ex)
-            {
-                //throw new FileLoadException(ex.Message);
             }
 
-            return eBoardViewModel;            
+        }
+        catch (Exception ex)
+        {
+            //throw new FileLoadException(ex.Message);
+        }
+
+        return eBoardViewModel;
     }
 
 
@@ -100,6 +137,9 @@ internal class EBoardInitializationManager
     {
 
         List<string> elements = Directory.GetFiles($"{eboard_folder}", filter, SearchOption.TopDirectoryOnly).ToList();
+
+        if (elements.Count < 1)
+            return eBoardViewModel;
 
         var xmlSerializer_ElementDataSet = new XmlSerializer(typeof(ElementDataSet));
 
@@ -109,7 +149,7 @@ internal class EBoardInitializationManager
         }
 
         return eBoardViewModel;
-    
+
     }
 
 

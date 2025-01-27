@@ -41,10 +41,6 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
     // Commands
     #region Commands
     
-    public ICommand InvokeEllipseShapeCommand { get; }
-    public ICommand InvokePrototypeShapeElementCommand { get; }
-
-
     public ICommand InvokeElementCommand { get; }
 
     #endregion
@@ -55,10 +51,6 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
         title = "EBoard";
 
         _MainViewModel = mainViewModel;
-
-        InvokePrototypeShapeElementCommand = new InvokePrototypeShapeElementCommand(mainViewModel);
-
-        InvokeEllipseShapeCommand = new InvokeEllipseShapeCommand(mainViewModel);
 
         InvokeElementCommand = new InvokeElementCommand(mainViewModel);
     }

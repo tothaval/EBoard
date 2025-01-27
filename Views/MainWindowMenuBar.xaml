@@ -58,8 +58,14 @@
                     >
                 <Menu>
                     <MenuItem Header="+Shapes">
-                        <MenuItem Header="Rec" Command="{Binding InvokePrototypeShapeElementCommand}"/>
-                        <MenuItem Header="Ell" Command="{Binding InvokeEllipseShapeCommand}"/>
+                        <MenuItem Header="Rectangle"
+                                  Command="{Binding InvokeElementCommand}"
+                                  CommandParameter="Shapes.Rectangle.Rectangle"/>
+                        <MenuItem Header="Ellipse"
+                                  Command="{Binding InvokeElementCommand}"
+                                  CommandParameter="Shapes.Ellipse.Ellipse"/>
+                 
+                    
                     </MenuItem>
 
                 </Menu>
@@ -73,15 +79,22 @@
 
                 <Menu>
                     <MenuItem Header="+Tools">
-                        <MenuItem Header="Session Uptime Clock"
-                                  Command="{Binding InvokeElementCommand}"
-                                  CommandParameter="Tools.SessionUptimeClock.Session Uptime Clock"/>
                         
-                        <MenuItem Header="Empty Linear" Command="{Binding InvokeElementCommand}"
+                        <MenuItem Header="Empty Linear"
+                                  Command="{Binding InvokeElementCommand}"
                                   CommandParameter="Tools.EmptyLinear.Empty Linear"/>
                         
-                        <MenuItem Header="Empty Radial" Command="{Binding InvokeElementCommand}"
+                        <MenuItem Header="Empty Radial"
+                                  Command="{Binding InvokeElementCommand}"
                                   CommandParameter="Tools.EmptyRadial.Empty Radial"/>
+                       
+                        <MenuItem Header="Summoner"
+                                  Command="{Binding InvokeElementCommand}"
+                                  CommandParameter="Tools.Summoner.Summoner"/>
+
+                        <MenuItem Header="Uptime"
+                                  Command="{Binding InvokeElementCommand}"
+                                  CommandParameter="Tools.Uptime.Uptime"/>
 
                     </MenuItem>
 

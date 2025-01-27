@@ -1,0 +1,54 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:StandardText="clr-namespace:EBoard.Plugins.Elements.StandardText"
+                    
+                    
+                    
+                    xmlns:Ellipse="clr-namespace:EBoard.Plugins.Shapes.Ellipse"
+                    xmlns:Rectangle="clr-namespace:EBoard.Plugins.Shapes.Rectangle"
+                    
+                    
+                    xmlns:EmptyLinear="clr-namespace:EBoard.Plugins.Tools.EmptyLinear"                    
+                    xmlns:EmptyRadial="clr-namespace:EBoard.Plugins.Tools.EmptyRadial"
+                    xmlns:Summoner="clr-namespace:EBoard.Plugins.Tools.Summoner"  
+                    xmlns:Uptime="clr-namespace:EBoard.Plugins.Tools.Uptime">
+    <!--#region Elements -->
+    <DataTemplate DataType="{x:Type StandardText:StandardTextViewModel}">
+        <StandardText:StandardTextView/>
+    </DataTemplate>
+    <!--#endregion-->
+
+    
+    
+    <!--#region Shapes -->
+    <DataTemplate DataType="{x:Type Ellipse:EllipseViewModel}">
+        <Ellipse:EllipseView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type Rectangle:RectangleViewModel}">
+        <Rectangle:RectangleView/>
+    </DataTemplate>
+    <!--#endregion-->
+
+
+    <!--#region Tools -->
+    
+    <DataTemplate DataType="{x:Type EmptyLinear:EmptyLinearViewModel}">
+        <EmptyLinear:EmptyLinearView/>
+    </DataTemplate>
+
+
+    <DataTemplate DataType="{x:Type EmptyRadial:EmptyRadialViewModel}">
+        <EmptyRadial:EmptyRadialView/>
+    </DataTemplate>
+    
+    
+    <DataTemplate DataType="{x:Type Summoner:SummonerViewModel}">
+        <Summoner:SummonerView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type Uptime:UptimeViewModel}">
+        <Uptime:UptimeView/>
+    </DataTemplate>
+    <!--#endregion-->
+</ResourceDictionary>

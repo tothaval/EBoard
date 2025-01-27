@@ -205,7 +205,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
                 continue;
             }
 
-            if (item.ContentContainer.IsSelected)
+            if (item.IsSelected)
             {
                 item.Apply_CornerRadiusValue(cornerRadius);
             }
@@ -222,7 +222,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
                 continue;
             }
 
-            if (item.ContentContainer.IsSelected)
+            if (item.IsSelected)
             {
                 item.ApplyBackgroundBrush(brush);
             }
@@ -239,7 +239,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
                 continue;
             }
 
-            if (item.ContentContainer.IsSelected)
+            if (item.IsSelected)
             {
                 item.Apply_HeightValue(heightValue);
             }
@@ -250,7 +250,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     {
         foreach (ElementViewModel item in Elements)
         {
-            if (!item.Equals(elementViewModel) && item.ContentContainer.IsSelected)
+            if (!item.Equals(elementViewModel) && item.IsSelected)
             {
                 item.ApplyRotationAngleValue(rotationAngleValue);
             }
@@ -265,7 +265,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
                 continue;
             }
 
-            if (item.ContentContainer.IsSelected)
+            if (item.IsSelected)
             {
                 item.ApplyWidthValue(widthValue);
             }
@@ -280,7 +280,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
                 continue;
             }
 
-            if (item.ContentContainer.IsSelected)
+            if (item.IsSelected)
             {
                 item.ApplyZIndexValue(zIndexValue);
             }
@@ -304,49 +304,53 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     {
         foreach (ElementViewModel item in Elements)
         {
-            if (item.ContentContainer.IsSelected)
-            {
-                item.ContentContainer.DeselectElement();
+            if (item.IsSelected)
+            {      
+                item.Select();
             }
         }
     }
 
+
+    // simplify to element count
+    // later implement a statistic or live logging to show all instance types
     public int GetContainerCount()
     {
-        int containerCount = 0;
+        //int containerCount = 0;
 
-        foreach (ElementViewModel item in Elements)
-        {
-            if (item.IsContent)
-            {
-                containerCount++;
-            }
-        }
+        //foreach (ElementViewModel item in Elements)
+        //{
+        //    containerCount++;            
+        //}
 
-
-        return containerCount;
+        return Elements.Count;
     }
 
 
+    // simplify to element count
+    // later implement a statistic or live logging to show all instance types
     public int GetElementCount()
     {
         return Elements.Count;
     }
 
 
+    // simplify to element count
+    // later implement a statistic or live logging to show all instance types
     public int GetShapeCount()
     {
-        int containerCount = 0;
+        //int containerCount = 0;
 
-        foreach (ElementViewModel item in Elements)
-        {
-            if (item.IsShape)
-            {
-                containerCount++;
-            }
-        }
+        //foreach (ElementViewModel item in Elements)
+        //{
+        //    if (item.IsShape)
+        //    {
+        //        containerCount++;
+        //    }
+        //}
 
-        return containerCount;
+
+        return Elements.Count;
     }
 
 
@@ -372,7 +376,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
             }
 
 
-            if (item.ContentContainer.IsSelected)
+            if (item.IsSelected)
             {
                 item.MoveXY(elementViewModel, newPosition);
             }
@@ -398,7 +402,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
 
         foreach (ElementViewModel item in Elements)
         {
-            if (item.ContentContainer.IsSelected)
+            if (item.IsSelected)
             {
                 selectedElements.Add(item);
             }
@@ -435,7 +439,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     {
         foreach (ElementViewModel item in Elements)
         {
-            if (!item.EID.Equals(elementViewModel.EID) && item.ContentContainer.IsSelected)
+            if (!item.EID.Equals(elementViewModel.EID) && item.IsSelected)
             {
                 item.StopMovement();
             }

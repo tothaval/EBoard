@@ -11,6 +11,8 @@
                 <ResourceDictionary Source="Styles/Menu.xaml"/>
 
                 <ResourceDictionary Source="Utilities/DataTemplate.xaml"/>
+                
+                <ResourceDictionary Source="Utilities/PluginManifest.xaml"/>
 
             </ResourceDictionary.MergedDictionaries>
             

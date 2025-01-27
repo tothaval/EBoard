@@ -14,7 +14,8 @@
     <Grid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2"
-                    HorizontalAlignment="Right">
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom">
             
             <Button Style="{StaticResource DefaultButtonStyle}"
                     Content="off" Command="{Binding CloseCommand}"/>

@@ -77,36 +77,17 @@ namespace EBoard.InnerComponents
         private void Thumb1_DragDelta(object sender, DragDeltaEventArgs e)
         {
             ElementViewModel elementViewModel = (ElementViewModel)_ElementView.DataContext;
-
-            if (elementViewModel.IsContent)
-            {
-                elementViewModel.ContentViewModel.Height = height - e.VerticalChange < 0 ? 0 : height - e.VerticalChange;
-                elementViewModel.ContentViewModel.Width = width - e.HorizontalChange < 0 ? 0 : width - e.HorizontalChange;
-            }
-
-            if (elementViewModel.IsShape)
-            {
-                elementViewModel.ShapeViewModel.Height = height - e.VerticalChange < 0 ? 0 : height - e.VerticalChange;
-                elementViewModel.ShapeViewModel.Width = width - e.HorizontalChange < 0 ? 0 : width - e.HorizontalChange;
-            }
-
+            
+            elementViewModel.Plugin.Height = height - e.VerticalChange < 0 ? 0 : height - e.VerticalChange;
+            elementViewModel.Plugin.Width = width - e.HorizontalChange < 0 ? 0 : width - e.HorizontalChange;
         }
 
         private void Thumb2_DragDelta(object sender, DragDeltaEventArgs e)
         {
             ElementViewModel elementViewModel = (ElementViewModel)_ElementView.DataContext;
-
-            if (elementViewModel.IsContent)
-            {
-                elementViewModel.ContentViewModel.Height = height + e.VerticalChange < 0 ? 0 : height + e.VerticalChange;
-                elementViewModel.ContentViewModel.Width = width + e.HorizontalChange < 0 ? 0 : width + e.HorizontalChange;
-            }
-
-            if (elementViewModel.IsShape)
-            {
-                elementViewModel.ShapeViewModel.Height = height + e.VerticalChange < 0 ? 0 : height + e.VerticalChange;
-                elementViewModel.ShapeViewModel.Width = width + e.HorizontalChange < 0 ? 0 : width + e.HorizontalChange;
-            }
+            
+            elementViewModel.Plugin.Height = height + e.VerticalChange < 0 ? 0 : height + e.VerticalChange;
+            elementViewModel.Plugin.Width = width + e.HorizontalChange < 0 ? 0 : width + e.HorizontalChange;            
         }
 
         protected override Visual GetVisualChild(int index)
