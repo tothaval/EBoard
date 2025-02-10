@@ -1,10 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using EBoard.Interfaces;
+using EBoard.IOProcesses.DataSets;
+using EBoard.Models;
+using EBoard.Plugins.Elements.StandardText;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace EBoard.Plugins.Tools.EmptyRadial;
 
-public partial class EmptyRadialViewModel : PluginViewModel
+public partial class EmptyRadialViewModel : ObservableObject, IPlugin
 {
 
     [ObservableProperty]
@@ -20,8 +30,126 @@ public partial class EmptyRadialViewModel : PluginViewModel
     };
 
 
-    public EmptyRadialViewModel()
+    #region IPlugin properties
+
+    public BorderManagement BorderManagement { get; set; }
+
+
+    public BrushManagement BrushManagement { get; set; }
+
+
+    // später ggf. per Factory oder via Singleton, falls nötig
+    // ist für die option, im load des programms den view typ sauber
+    // instanzieren zu können.
+    private StandardTextView plugin = new StandardTextView();
+    public UserControl Plugin => plugin;
+
+
+    [ObservableProperty]
+    private CornerRadius cornerRadius;
+    [ObservableProperty]
+    private int cornerRadiusValue;
+
+    partial void OnCornerRadiusValueChanged(int value)
     {
+        BorderManagement.CornerRadius = new CornerRadius(value);
+
+        OnPropertyChanged(nameof(BorderManagement));
+    }
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(BorderManagement))]
+    private double height;
+
+    partial void OnHeightChanged(double value)
+    {
+        BorderManagement.Height = value;
+    }
+
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(BorderManagement))]
+    private double width;
+
+    partial void OnWidthChanged(double value)
+    {
+        BorderManagement.Width = value;
+    }
+
+
+    public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
+
+
+    [ObservableProperty]
+    private string pluginHeader = "Empty Radial";
+
+
+    [ObservableProperty]
+    private string pluginName = "EmptyRadial";
+
+    #endregion
+
+
+    public EmptyRadialViewModel() => InstantiateProperties();
+
+
+    public bool ApplyBackgroundBrush(Brush brush)
+    {
+        try
+        {
+            BrushManagement.Background = brush;
+
+            OnPropertyChanged(nameof(BrushManagement));
+
+            OnPropertyChanged(nameof(BrushManagement.Background));
+
+            return true;
+        }
+        catch (Exception)
+        {
+
+            return false;
+        }
+    }
+
+
+    private void InstantiateProperties()
+    {
+        BorderManagement = new BorderManagement();
+        BrushManagement = new BrushManagement();
+    }
+
+
+    public Task Load(string path, ElementDataSet elementDataSet)
+    {
+        return Task.CompletedTask;
+    }
+
+
+    public Task Save(string path, ElementDataSet elementDataSet)
+    {
+        return Task.CompletedTask;
+    }
+
+
+    public bool SelectionChange(bool isSelected)
+    {
+
+        if (isSelected)
+        {
+            BrushManagement.SwitchBorderToHighlight();
+
+            OnPropertyChanged(nameof(BrushManagement));
+
+            return true;
+        }
+
+        BrushManagement.SwitchBorderToBorder();
+
+        OnPropertyChanged(nameof(BrushManagement));
+
+        return false;
     }
 
 

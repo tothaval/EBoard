@@ -130,7 +130,6 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
 
     public MainViewModel(NavigationStore navigationStore, EboardConfig? eboardConfig)
     {
-
         _navigationStore = navigationStore;
 
         _navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;

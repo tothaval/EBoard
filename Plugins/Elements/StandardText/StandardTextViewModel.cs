@@ -1,7 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using EBoard.Interfaces;
+using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
+using EBoard.Utilities.Factories;
+using EBoard.Utilities.SharedMethods;
+using EBoard.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,61 +19,168 @@ using System.Xml.Serialization;
 
 namespace EBoard.Plugins.Elements.StandardText
 {
-    public partial class StandardTextViewModel : PluginViewModel
+    public partial class StandardTextViewModel : ObservableObject, IPlugin, IPluginData
     {
         [ObservableProperty]
         private string text;
 
 
-        public StandardTextViewModel()
+        public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
+
+
+
+        public BorderManagement BorderManagement { get; set; }
+
+
+        public BrushManagement BrushManagement { get; set; } 
+        
+        
+        // später ggf. per Factory oder via Singleton, falls nötig
+        // ist für die option, im load des programms den view typ sauber
+        // instanzieren zu können.
+        private StandardTextView plugin = new StandardTextView();
+        public UserControl Plugin => plugin;
+
+
+        [ObservableProperty]
+        private CornerRadius cornerRadius;
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(BorderManagement))]
+        private int cornerRadiusValue;
+
+
+        partial void OnCornerRadiusValueChanged(int value)
         {
+            BorderManagement.CornerRadius = new CornerRadius(value);
+        }
+
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(BorderManagement))]
+        private double height;
+
+        partial void OnHeightChanged(double value)
+        {
+            BorderManagement.Height = value;
+        }
+
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(BorderManagement))]
+        private double width;
+
+        partial void OnWidthChanged(double value)
+        {
+            BorderManagement.Width = value;
+        }
+
+        [ObservableProperty]
+        private string pluginHeader = "Standard Text";
+
+
+        [ObservableProperty]
+        private string pluginName = "StandardText";
+
+
+        public StandardTextViewModel() => InstantiateProperties();
+
+
+        public bool ApplyBackgroundBrush(Brush brush)
+        {
+            try
+            {
+                BrushManagement.Background = brush;
+
+                OnPropertyChanged(nameof(BrushManagement));
+
+                OnPropertyChanged(nameof(BrushManagement.Background));
+
+                return true;
+            }
+            catch (Exception)
+            {
+
+                return false;
+            }
+        }
+
+
+        private void InstantiateProperties()
+        {
+            BorderManagement = new BorderManagement();
+            BrushManagement = new BrushManagement();
+            
             if (PluginHeader.Equals(string.Empty))
             {
                 PluginHeader = "Standard Text";
             }
         }
-               
 
-        public override Task<bool> Load(string path, IPluginDataSet pluginDataSet)
+
+        public Task Load(string path, ElementDataSet elementDataSet)
         {
-            PluginDataSet = pluginDataSet;
+            string contentDataPath = $"{path}content.xml";
 
-            PluginData pluginDataText = PluginDataSet.PluginDataStorage.Find(x => x.Key.Equals("Text"));
+            var xmlSerializer = new XmlSerializer(typeof(StandardTextModel));
 
-            Text = pluginDataText.Value;
+            using (var reader = new StreamReader(contentDataPath))
+            {
+                try
+                {
+                    var member = (StandardTextModel)xmlSerializer.Deserialize(reader);
 
-            PluginData pluginDataPath = PluginDataSet.PluginDataStorage.Find(x => x.Key.Equals("Path"));
+                    if (member != null)
+                    {
+                        Text = member.Text;
+                    }
 
-            BorderManagement = new BorderManagement(pluginDataSet.BorderDataSet);
-            BrushManagement = new BrushManagement(pluginDataSet.BrushDataSet);
-
-            PluginHeader = PluginDataSet.PluginHeader;
-            PluginName = PluginDataSet.PluginName;            
-
-            // just for demo purposes, more complex data could be stored in the content folder for
-            // the element or it could store the path to the storage and retrieve it this way.
-            // in case of this yet still simple plugin, it is not necessary, although it would be
-            // better, if content was saved elsewhere. in case element folders got deleted, the
-            // plugin content could still exist. 
-            string contentFolderPath = pluginDataPath.Value;
-
-
-            return Task.FromResult(true);
+                    return Task.FromResult(member);
+                }
+                catch (Exception ex)
+                {
+                    throw new FileLoadException(ex.Message);
+                }
+            }
 
         }
 
 
-        public override async Task<bool> OnEboardShutdown(string path)
+        public async Task Save(string path, ElementDataSet elementDataSet)
+        {           
+
+            string contentDataPath = $"{path}content.xml";
+
+            // serialize content
+            var xmlSerializer = new XmlSerializer(typeof(StandardTextModel));
+
+            StandardTextModel standardTextModel = new StandardTextModel(this);
+
+            await using (var writer = new StreamWriter(contentDataPath))
+            {
+                xmlSerializer.Serialize(writer, standardTextModel);
+            }
+
+            return;
+        }
+
+
+        public bool SelectionChange(bool isSelected)
         {
-            PluginDataSet = new PluginDataSet(this);
-            
-            PluginDataSet.AddPluginData(new PluginData(){ Key = "Path", Value = path});
-       
-            PluginDataSet.AddPluginData(new PluginData() { Key = "Text", Value = Text });
 
-            await Task.CompletedTask;
+            if (isSelected)
+            {
+                BrushManagement.SwitchBorderToHighlight();
 
-            return true;
+                OnPropertyChanged(nameof(BrushManagement));
+
+                return true;
+            }
+
+            BrushManagement.SwitchBorderToBorder();
+
+            OnPropertyChanged(nameof(BrushManagement));
+
+            return false;
         }
 
 

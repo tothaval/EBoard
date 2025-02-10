@@ -22,6 +22,10 @@ public static class ElementDataSetFactory
     public static ElementDataSet GetElementDataSet(IPlugin? plugin = null)
     {
         ElementDataSet elementDataSet = new ElementDataSet();
+     
+        elementDataSet.AddBorderDataSet(new BorderDataSet(new BorderManagement()));
+        elementDataSet.AddBrushDataSet(new BrushDataSet(new BrushManagement()));
+        elementDataSet.AddPlacementDataSet(new PlacementDataSet(new PlacementManagement()));
 
         if (plugin is not null)
         {

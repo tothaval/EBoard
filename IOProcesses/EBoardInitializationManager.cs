@@ -13,16 +13,13 @@
 using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets.Interfaces;
 using EBoard.Models;
-using EBoard.Plugins;
 using EBoard.Utilities.Factories;
 using EBoard.ViewModels;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Xml.Linq;
 using System.Xml.Serialization;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace EBoard.IOProcesses;
 
@@ -82,45 +79,28 @@ internal class EBoardInitializationManager
 
                 if (elementData != null)
                 {
-                    string element_folder = elementFileName.Replace(".xml", "\\");
+                    Type? type_PluginViewModel = Type.GetType(elementData.PluginType);
 
+                    IPlugin? plugin = Activator.CreateInstance(type_PluginViewModel) as IPlugin;
 
-                    var xmlSerializer_ElementDataSet = new XmlSerializer(typeof(ElementDataSet));
-
-                    string contentDataPath = $"{element_folder}plugindata.xml";
-
-                    var xmlSerializer = new XmlSerializer(typeof(PluginDataSet));
-
-                    using (var reader = new StreamReader(contentDataPath))
+                    if (plugin is not null)
                     {
-                        var member = (PluginDataSet)xmlSerializer.Deserialize(reader);
-
-                        if (member != null)
-                        {
-                            Type? type_PluginViewModel = Type.GetType(member.PluginType);
-
-                            IPlugin? plugin = Activator.CreateInstance(type_PluginViewModel) as IPlugin;
-
-                            if (plugin is not null)
-                            {
-                                member.Plugin = plugin;                                
-
-                                await plugin.Load(contentDataPath, member);
-
-                                elementData.Plugin = plugin;
-
-                                eBoardViewModel.Elements.Add(
-                                new ElementViewModel(
-                                    eBoardViewModel,
-                                    elementData
-                                    )
-                                );
-                            };
-
-                        }
-                    }
-
+                        elementData.Plugin = plugin;
+                        // datasets umbauen
+                        plugin.PluginHeader = elementData.PluginHeader;
+                    };
                 }
+
+                await elementData.Initialize(elementFileName);
+
+                eBoardViewModel.Elements.Add(
+                    new ElementViewModel(
+                        eBoardViewModel,
+                        elementData
+                        )
+                    );
+
+
             }
 
         }
@@ -137,9 +117,6 @@ internal class EBoardInitializationManager
     {
 
         List<string> elements = Directory.GetFiles($"{eboard_folder}", filter, SearchOption.TopDirectoryOnly).ToList();
-
-        if (elements.Count < 1)
-            return eBoardViewModel;
 
         var xmlSerializer_ElementDataSet = new XmlSerializer(typeof(ElementDataSet));
 

@@ -34,14 +34,11 @@ internal class ContainerManagement : IElementContent
     public ObservableCollection<double> ContentDataValues { get; set; } = new ObservableCollection<double>();
 
 
-    public ContainerManagement(FrameworkElement plugin)
-    {
-        _Plugin = plugin;
-    }
+    public ContainerManagement() { } 
 
-    public ContainerManagement()
-    {
-    }
+
+    public ContainerManagement(FrameworkElement plugin) => _Plugin = plugin;
+
 
 
     public async Task Load(string path, ElementDataSet elementDataSet)
