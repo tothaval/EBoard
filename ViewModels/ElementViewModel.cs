@@ -6,15 +6,22 @@
  *  element placement properties within EBoardView canvas and basic content management
  */
 
+using EBoard.Commands;
 using EBoard.Models;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows;
 using EBoard.Interfaces;
 using EBoard.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoard.Utilities.SharedMethods;
+using System.CodeDom;
+using System.Windows.Media.Media3D;
+using EBoard.IOProcesses.DataSets.Interfaces;
 
 namespace EBoard.ViewModels;
 
@@ -118,7 +125,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
         if (Plugin is not null)
         {
-            Plugin.Width = value; 
+            Plugin.Width = value;
         }
 
         UpdateContentWidth(value);
@@ -165,73 +172,16 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
     #endregion
 
-
     /// <summary>
     /// 
     /// </summary>
     /// <param name="eBoardViewModel"></param>
-    /// <param name="x">x axis</param>
-    /// <param name="y">y axis</param>
-    /// <param name="z">depth</param>
-    /// <param name="elementHeaderText">element header</param>
-    /// <param name="brush">background brush</param>
-    /// <param name="control">element content</param>
-    public ElementViewModel(
-        EBoardViewModel eBoardViewModel,
-        ElementDataSet elementDataSet
-        )
-    {
+    /// <param name="elementDataSet"></param>
+    public ElementViewModel(EBoardViewModel eBoardViewModel, ElementDataSet elementDataSet) => InstantiateProperties(eBoardViewModel, elementDataSet);
 
-        PlacementManager = new PlacementManagement();
-
-        _EBoardViewModel = eBoardViewModel;
-
-        _EID = elementDataSet.EID;
-
-        // need to look into string format again. on implementation, i failed to apply a no digit value to the label stringformat,
-        // tried {}{0:F0} and some others, since it didn't work for whatever reason, i made them ints to circumvent the issue for now.
-        // better solution for permanent use would be to use doubles and limit the digits on output. gonna try this again sometime, but it has no priority
-
-
-
-        if (elementDataSet.PlacementDataSet != null)
-        {
-            RotationAngleValue = (int)elementDataSet.PlacementDataSet.Angle;
-            PlacementManager.Position = elementDataSet.PlacementDataSet.Position;
-            PlacementManager.Z = elementDataSet.PlacementDataSet.Z;
-
-            XPosition = PlacementManager.Position.X;
-            YPosition = PlacementManager.Position.Y;
-
-            ZIndexValue = PlacementManager.Z;
-        }
-
-        if (_EID == null || _EID.Equals("-1"))
-        {
-            DateTime dateTime = DateTime.Now;
-
-            _EID = $"Element_{dateTime.Ticks}";
-        }
-
-
-        if (elementDataSet.Plugin != null)
-        {
-            plugin = elementDataSet.Plugin;
-
-            CornerRadiusValue = (int)elementDataSet.Plugin.BorderManagement.CornerRadius.TopLeft;
-
-            HeightValue = (int)elementDataSet.Plugin.BorderManagement.Height;
-            WidthValue = (int)elementDataSet.Plugin.BorderManagement.Width;
-
-            OnPropertyChanged(nameof(Plugin));
-
-            CalibrateZSliderValues(_EBoardViewModel.EBoardDepth);
-        }
-    }
 
     // Methods
     #region Methods
-
 
     internal void ApplyBackgroundBrush(Brush brush)
     {
@@ -395,6 +345,57 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     }
 
 
+    private void InstantiateProperties(EBoardViewModel eBoardViewModel, ElementDataSet elementDataSet)
+    {
+
+        PlacementManager = new PlacementManagement();
+
+        _EBoardViewModel = eBoardViewModel;
+
+        _EID = elementDataSet.EID;
+
+        // need to look into string format again. on implementation, i failed to apply a no digit value to the label stringformat,
+        // tried {}{0:F0} and some others, since it didn't work for whatever reason, i made them ints to circumvent the issue for now.
+        // better solution for permanent use would be to use doubles and limit the digits on output. gonna try this again sometime, but it has no priority
+        HeightValue = (int)elementDataSet.BorderDataSet.Height;
+        WidthValue = (int)elementDataSet.BorderDataSet.Width;
+
+
+        if (elementDataSet.PlacementDataSet != null)
+        {
+            RotationAngleValue = (int)elementDataSet.PlacementDataSet.Angle;
+            PlacementManager.Position = elementDataSet.PlacementDataSet.Position;
+            PlacementManager.Z = elementDataSet.PlacementDataSet.Z;
+
+            XPosition = PlacementManager.Position.X;
+            YPosition = PlacementManager.Position.Y;
+
+            ZIndexValue = PlacementManager.Z;
+        }
+
+        if (_EID == null || _EID.Equals("-1"))
+        {
+            DateTime dateTime = DateTime.Now;
+
+            _EID = $"Element_{dateTime.Ticks}";
+        }
+
+
+        if (elementDataSet.Plugin != null)
+        {
+            plugin = elementDataSet.Plugin;
+
+            CornerRadiusValue = (int)elementDataSet.BorderDataSet.CornerRadius.TopLeft;
+
+            OnPropertyChanged(nameof(Plugin));
+
+            CalibrateZSliderValues(_EBoardViewModel.EBoardDepth);
+        }
+
+    }
+
+
+
     public void MoveXY(ElementViewModel elementViewModel, Point deltaPosition)
     {
 
@@ -424,7 +425,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     private void ResetImage()
     {
         ImagePath = string.Empty;
-        
+
         Plugin.ApplyBackgroundBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush);
     }
 
@@ -433,7 +434,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     public void Select()
     {
         IsSelected = !IsSelected;
-        
+
         Plugin?.SelectionChange(IsSelected);
     }
 

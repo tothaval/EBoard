@@ -31,16 +31,10 @@ public class BorderManagement : IElementBorder
     public double Width { get; set; }
 
 
-    public BorderManagement()
-    {
-        SetInitialValues();
-    }
+    public BorderManagement() => SetInitialValues();
 
 
-    public BorderManagement(BorderDataSet borderDataSet)
-    {
-        LoadBorderDataSet(borderDataSet);
-    }
+    public BorderManagement(BorderDataSet borderDataSet) => LoadBorderDataSet(borderDataSet);
 
 
     private async void LoadBorderDataSet(BorderDataSet borderDataSet)

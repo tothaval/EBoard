@@ -2,10 +2,12 @@
  *  
  *  App 
  */
+using CommunityToolkit.Mvvm.DependencyInjection;
 using EBoard.IOProcesses;
 using EBoard.IOProcesses.DataSets;
 using EBoard.Navigation;
 using EBoard.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
 namespace EBoard;
@@ -21,12 +23,7 @@ public partial class App : Application
 
 
 
-    public App()
-    {
-        _navigationStore = new NavigationStore();
-
-
-    }
+    public App() => _navigationStore = new NavigationStore();
 
 
     private async Task<EboardConfig?> EBoardConfigInitialization(EboardConfig eboardConfig)
@@ -63,8 +60,16 @@ public partial class App : Application
 
     protected async override void OnStartup(StartupEventArgs e)
     {
-        IOProcessesInitializationManager ioProxIM = new IOProcessesInitializationManager();
-        EBoardConfigLoader eBoardConfigLoader = new EBoardConfigLoader(ioProxIM);
+        CommunityToolkit.Mvvm.DependencyInjection.Ioc.Default.ConfigureServices(
+            new ServiceCollection()
+                .AddTransient<IOProcessesInitializationManager>()
+                .AddTransient<EBoardConfigLoader>()
+                .BuildServiceProvider()
+                );
+
+
+        EBoardConfigLoader eBoardConfigLoader = Ioc.Default.GetRequiredService<EBoardConfigLoader>();
+
         EboardConfig eboardConfig = await eBoardConfigLoader.LoadEBoardConfig();
 
         _MainViewModel = new MainViewModel(_navigationStore, eboardConfig);
@@ -74,7 +79,7 @@ public partial class App : Application
             DataContext = _MainViewModel
         };
 
-        EBoardInitializationManager initializationManager = new EBoardInitializationManager(ioProxIM, _MainViewModel);
+        EBoardInitializationManager initializationManager = new EBoardInitializationManager(Ioc.Default.GetRequiredService<IOProcessesInitializationManager>(), _MainViewModel);
 
         await initializationManager.LoadEBoardDataSets();
 

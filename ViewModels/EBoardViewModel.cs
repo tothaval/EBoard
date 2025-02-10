@@ -132,30 +132,8 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     // Constructors
     #region Constructors
 
-    public EBoardViewModel(EboardDataSet eboardDataSet)
-    {
-        BorderManager = new BorderManagement(eboardDataSet.BorderDataSet);
-        BrushManager = new BrushManagement(eboardDataSet.BrushDataSet);
+    public EBoardViewModel(EboardDataSet eboardDataSet) => InstantiateProperties(eboardDataSet);
 
-        elements = eboardDataSet.Elements;
-
-        EBoardName = eboardDataSet.EBoardName;
-        EBoardDepth = eboardDataSet.EBoardDepth;
-        
-        _EBID = eboardDataSet.EBID;
-
-        CornerRadiusValue = (int)BorderManager.CornerRadius.TopLeft;
-        Height = (int)BorderManager.Height;
-        Width = (int)BorderManager.Width;
-
-
-        if (_EBID == null || _EBID.Equals("-1"))
-        {
-            DateTime dateTime = DateTime.Now;
-
-            _EBID = $"EBoard_{dateTime.Ticks}";
-        }
-    }
     #endregion
 
 
@@ -363,6 +341,32 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         DateTime dateTime = new DateTime(ticks);
 
         return dateTime;
+    }
+
+
+    private void InstantiateProperties(EboardDataSet eboardDataSet)
+    {
+        BorderManager = new BorderManagement(eboardDataSet.BorderDataSet);
+        BrushManager = new BrushManagement(eboardDataSet.BrushDataSet);
+
+        elements = eboardDataSet.Elements;
+
+        EBoardName = eboardDataSet.EBoardName;
+        EBoardDepth = eboardDataSet.EBoardDepth;
+
+        _EBID = eboardDataSet.EBID;
+
+        CornerRadiusValue = (int)BorderManager.CornerRadius.TopLeft;
+        Height = (int)BorderManager.Height;
+        Width = (int)BorderManager.Width;
+
+
+        if (_EBID == null || _EBID.Equals("-1"))
+        {
+            DateTime dateTime = DateTime.Now;
+
+            _EBID = $"EBoard_{dateTime.Ticks}";
+        }
     }
 
 

@@ -72,10 +72,7 @@ public class EboardConfig
     //[XmlArray("Elements")]
     //public ObservableCollection<ElementViewModel> Elements { get; set; }
 
-    public EboardConfig()
-    {
-        _EBoardBrowserViewModel = new EBoardBrowserViewModel();                
-    }
+    public EboardConfig() => _EBoardBrowserViewModel = new EBoardBrowserViewModel();
 
 
     public EboardConfig(MainViewModel mainViewModel)

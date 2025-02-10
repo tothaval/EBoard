@@ -135,7 +135,7 @@
                           CanContentScroll="True"
                           Margin="25">
 
-            <ContentControl Content="{Binding CurrentViewModel}"                            
+                <ContentControl Content="{Binding EBoardBrowserViewModel.SelectedEBoard}"
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch"
                             HorizontalAlignment="Center"

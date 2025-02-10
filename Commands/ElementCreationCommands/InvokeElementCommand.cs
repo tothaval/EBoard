@@ -19,10 +19,8 @@ namespace EBoard.Commands.ElementCreationCommands
         private MainViewModel _MainViewModel;
 
 
-        public InvokeElementCommand(MainViewModel mainViewModel)
-        {
-            _MainViewModel = mainViewModel;
-        }
+        public InvokeElementCommand(MainViewModel mainViewModel) => _MainViewModel = mainViewModel;
+
 
         public override void Execute(object? parameter)
         {

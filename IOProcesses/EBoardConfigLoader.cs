@@ -20,10 +20,8 @@ class EBoardConfigLoader
     public EboardConfig EBoardConfig => _EBoardConfig;
 
 
-    public EBoardConfigLoader(IOProcessesInitializationManager iOProcesses)
-    {
-        _IOProcessesInitializationManager = iOProcesses;
-    }
+    public EBoardConfigLoader(IOProcessesInitializationManager iOProcesses) => _IOProcessesInitializationManager = iOProcesses;
+
 
     private async Task DeserializeEBoardConfig(string folderPath)
     {

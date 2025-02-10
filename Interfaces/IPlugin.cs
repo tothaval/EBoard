@@ -1,6 +1,5 @@
 ﻿using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
-using EBoard.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,9 +23,6 @@ namespace EBoard.Interfaces
         public UserControl Plugin { get; }
 
 
-        public IPluginDataSet PluginDataSet { get; set; }
-
-
         public string PluginHeader { get; set; }
 
 
@@ -34,11 +30,11 @@ namespace EBoard.Interfaces
 
         public bool ApplyBackgroundBrush(Brush brush);
 
+        
+        public Task Load(string path, ElementDataSet elementDataSet);
 
-        public Task<bool> Load(string path, IPluginDataSet pluginDataSet);
 
-
-        public Task<bool> OnEboardShutdown(string path);
+        public Task Save(string path, ElementDataSet elementDataSet);
 
 
         public bool SelectionChange(bool isSelected);

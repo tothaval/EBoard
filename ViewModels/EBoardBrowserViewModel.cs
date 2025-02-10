@@ -140,42 +140,10 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
     // Constructors
     #region Constructors
 
-    public EBoardBrowserViewModel()
-    {
-
-        BorderManager = new BorderManagement();
-
-        BrushManager = new BrushManagement();
-        BrushManager.Background = new SolidColorBrush(Colors.White);
-        BrushManager.Foreground = new SolidColorBrush(Colors.Orange);
-        BrushManager.Border = new SolidColorBrush(Colors.Blue);
-        BrushManager.Highlight = new SolidColorBrush(Colors.Red);
-
-        EBoards = new ObservableCollection<EBoardViewModel>(); 
-    }
+    public EBoardBrowserViewModel() => InstantiateProperties();
 
 
-    public EBoardBrowserViewModel(NavigationStore navigationStore)
-    {
-
-        _NavigationStore = navigationStore;
-
-        BorderManager = new BorderManagement();
-
-        BrushManager = new BrushManagement();
-        BrushManager.Background = new SolidColorBrush(Colors.White);
-        BrushManager.Foreground = new SolidColorBrush(Colors.Black);
-        BrushManager.Border = new SolidColorBrush(Colors.Blue);
-        BrushManager.Highlight = new SolidColorBrush(Colors.Red);
-
-        EBoards = new ObservableCollection<EBoardViewModel>();
-
-        if (EBoards.Count > 0)
-        {
-            navigationStore.CurrentViewModel = EBoards[0];
-        }
-
-    }
+    public EBoardBrowserViewModel(NavigationStore navigationStore) => InstantiateProperties(navigationStore);
 
     #endregion
 
@@ -261,6 +229,34 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
             SelectedEBoard.Height = (int)NewEBoardHeight;
         }
     }
+
+
+    private void InstantiateProperties()
+    {
+        BorderManager = new BorderManagement();
+
+        BrushManager = new BrushManagement();
+        BrushManager.Background = new SolidColorBrush(Colors.White);
+        BrushManager.Foreground = new SolidColorBrush(Colors.Orange);
+        BrushManager.Border = new SolidColorBrush(Colors.Blue);
+        BrushManager.Highlight = new SolidColorBrush(Colors.Red);
+
+        EBoards = new ObservableCollection<EBoardViewModel>();
+    }
+
+
+    private void InstantiateProperties(NavigationStore navigationStore)
+    {
+        _NavigationStore = navigationStore;
+
+        InstantiateProperties();
+
+        if (EBoards.Count > 0)
+        {
+            navigationStore.CurrentViewModel = EBoards[0];
+        }
+    }
+
 
     private void RefreshEBoardParameters()
     {

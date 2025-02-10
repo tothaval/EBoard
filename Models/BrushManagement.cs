@@ -6,13 +6,6 @@
  */
 using EBoard.Interfaces;
 using EBoard.IOProcesses.DataSets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.RightsManagement;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 
 namespace EBoard.Models;
@@ -43,16 +36,10 @@ public class BrushManagement : IElementBrushes
     public Brush Highlight { get; set; }
 
 
-    public BrushManagement()
-    {
-        SetInitialValues();
-    }
+    public BrushManagement() => SetInitialValues();
 
 
-    public BrushManagement(BrushDataSet brushDataSet)
-    {
-        LoadBrushDataSet(brushDataSet);
-    }
+    public BrushManagement(BrushDataSet brushDataSet) => LoadBrushDataSet(brushDataSet);
 
 
     private async void LoadBrushDataSet(BrushDataSet brushDataSet)

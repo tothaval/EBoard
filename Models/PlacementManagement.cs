@@ -30,15 +30,9 @@ public class PlacementManagement : IElementPlacement
     public int Z { get; set; }
 
 
-    public PlacementManagement()
-    {
-        SetInitialValues();
-    }
+    public PlacementManagement() => SetInitialValues();
 
-    public PlacementManagement(PlacementDataSet placementDataSet)
-    {
-        LoadPlacementDataSet(placementDataSet);
-    }
+    public PlacementManagement(PlacementDataSet placementDataSet) => LoadPlacementDataSet(placementDataSet);
 
 
     private async void LoadPlacementDataSet(PlacementDataSet placementDataSet)

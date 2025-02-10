@@ -7,6 +7,7 @@
  */
 using CommunityToolkit.Mvvm.ComponentModel;
 using EBoard.Commands.ElementCreationCommands;
+using EBoard.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

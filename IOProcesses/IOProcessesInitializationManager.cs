@@ -25,9 +25,7 @@ internal class IOProcessesInitializationManager
     public IOProcessesInitializationManager()
     {
         CheckEBoardConfigFolder();
-        CheckEBoardFolder();
-            
-
+        CheckEBoardFolder();           
     }
 
 
