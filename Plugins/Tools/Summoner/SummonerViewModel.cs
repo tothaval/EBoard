@@ -33,7 +33,7 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
 
     }
 
-    private double Angle {  get; set; }
+    private double Angle { get; set; }
 
 
     [ObservableProperty]
@@ -131,10 +131,12 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
     public BrushManagement BrushManagement { get; set; }
 
 
+    // !!!! prüfen ob sinnvoll und relevant, ggf. ersetzen
     // später ggf. per Factory oder via Singleton, falls nötig
     // ist für die option, im load des programms den view typ sauber
     // instanzieren zu können.
     private StandardTextView plugin = new StandardTextView();
+
     public UserControl Plugin => plugin;
 
 
@@ -185,6 +187,32 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
     [ObservableProperty]
     private string pluginName = "Summoner";
 
+
+
+
+    /// <summary>
+    /// until a real plugin architecture is implemented, this serves as a mockup solution
+    /// 
+    /// a real plugin architecture should check a folder for certain files or a file, in which
+    /// data on plugins is stored, then all that data needs to be loaded and instanciated if
+    /// necessary during app start
+    /// 
+    /// the ui should build menuitems dynamically from that data
+    /// </summary>
+    public List<string> PluginsCategoryElements { get; set; } = ["StandardText"];
+
+
+    /// <summary>
+    /// until a real plugin architecture is implemented, this serves as a mockup solution
+    /// </summary>
+    public List<string> PluginsCategoryShapes { get; set; } = ["Ellipse", "Rectangle"];
+
+
+    /// <summary>
+    /// until a real plugin architecture is implemented, this serves as a mockup solution
+    /// </summary>
+    public List<string> PluginsCategoryTools { get; set; } = [
+        "SessionUptimeClock", "EmptyLinear", "EmptyRadial", "Summoner", "Uptime"];
     #endregion
 
 
@@ -241,31 +269,27 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
             return false;
         }
 
-        MainViewModel? mainViewModel = Application.Current.MainWindow.DataContext as MainViewModel;
-
-        if (mainViewModel is not null)
+        if (PluginsCategoryElements.Contains(commandString))
         {
-            if (mainViewModel.PluginsCategoryElements.Contains(commandString))
-            {
-                category = "Elements";
+            category = "Elements";
 
-                return true;
-            }
-
-            if (mainViewModel.PluginsCategoryShapes.Contains(commandString))
-            {
-                category = "Shapes";
-
-                return true;
-            }
-
-            if (mainViewModel.PluginsCategoryTools.Contains(commandString))
-            {
-                category = "Tools";
-
-                return true;
-            }
+            return true;
         }
+
+        if (PluginsCategoryShapes.Contains(commandString))
+        {
+            category = "Shapes";
+
+            return true;
+        }
+
+        if (PluginsCategoryTools.Contains(commandString))
+        {
+            category = "Tools";
+
+            return true;
+        }
+
 
         category = string.Empty;
 
@@ -312,11 +336,11 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
                 }
             }
 
-            Summonee = new StandardTextViewModel() { Text = $"unknown plugin '{command}' called"};
+            Summonee = new StandardTextViewModel() { Text = $"unknown plugin '{command}' called" };
             return;
         }
 
-        Summonee = new StandardTextViewModel() { Text = $"unrecognized command"};
+        Summonee = new StandardTextViewModel() { Text = $"unrecognized command" };
 
     }
 

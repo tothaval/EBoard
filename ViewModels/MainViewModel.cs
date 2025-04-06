@@ -99,32 +99,6 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
 
     [ObservableProperty]
     private MainWindowMenuBarViewModel mainWindowMenuBarVM;
-
-      
-    /// <summary>
-    /// until a real plugin architecture is implemented, this serves as a mockup solution
-    /// 
-    /// a real plugin architecture should check a folder for certain files or a file, in which
-    /// data on plugins is stored, then all that data needs to be loaded and instanciated if
-    /// necessary during app start
-    /// 
-    /// the ui should build menuitems dynamically from that data
-    /// </summary>
-    public List<string> PluginsCategoryElements { get; set; } = [ "StandardText"];
-
-
-    /// <summary>
-    /// until a real plugin architecture is implemented, this serves as a mockup solution
-    /// </summary>
-    public List<string> PluginsCategoryShapes { get; set; } = ["Ellipse", "Rectangle"];
-
-
-    /// <summary>
-    /// until a real plugin architecture is implemented, this serves as a mockup solution
-    /// </summary>
-    public List<string> PluginsCategoryTools { get; set; } = [
-        "SessionUptimeClock", "EmptyLinear", "EmptyRadial", "Summoner", "Uptime"];
-
     #endregion
 
 

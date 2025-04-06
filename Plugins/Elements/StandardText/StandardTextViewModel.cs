@@ -32,9 +32,10 @@ namespace EBoard.Plugins.Elements.StandardText
         public BorderManagement BorderManagement { get; set; }
 
 
-        public BrushManagement BrushManagement { get; set; } 
-        
-        
+        public BrushManagement BrushManagement { get; set; }
+
+
+        // !!!! prüfen ob sinnvoll und relevant, ggf. ersetzen
         // später ggf. per Factory oder via Singleton, falls nötig
         // ist für die option, im load des programms den view typ sauber
         // instanzieren zu können.

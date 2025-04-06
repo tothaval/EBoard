@@ -18,9 +18,11 @@ namespace EBoard
     public partial class MainWindow : Window
     {
 
-        public MainWindow()
+        public MainWindow(MainViewModel mainViewModel)
         {
             InitializeComponent();
+
+            this.DataContext = mainViewModel;
         }
 
 
