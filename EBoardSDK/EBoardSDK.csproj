@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EBoardConfigManager\EBoardConfigManager.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Plugins\Elements\StandardText\StandardTextView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Shapes\Ellipse\EllipseView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Shapes\Rectangle\RectangleView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Tools\EmptyLinear\EmptyLinearView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Tools\EmptyRadial\EmptyRadialView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Tools\Summoner\SummonerView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Tools\UptimeTimer\UptimeTimerView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+</Project>
