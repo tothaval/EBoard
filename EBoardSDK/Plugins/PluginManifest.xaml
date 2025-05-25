@@ -1,5 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+                    xmlns:Controls="clr-namespace:EBoardSDK.Controls"
+                    
                     xmlns:StandardText="clr-namespace:EBoardSDK.Plugins.Elements.StandardText"
 
                     xmlns:Ellipse="clr-namespace:EBoardSDK.Plugins.Shapes.Ellipse"
@@ -9,6 +12,7 @@
                     xmlns:EmptyRadial="clr-namespace:EBoardSDK.Plugins.Tools.EmptyRadial"
                     xmlns:Summoner="clr-namespace:EBoardSDK.Plugins.Tools.Summoner"  
                     xmlns:Uptime="clr-namespace:EBoardSDK.Plugins.Tools.Uptime">
+
     <!--#region Elements -->
     <DataTemplate DataType="{x:Type StandardText:StandardTextViewModel}">
         <StandardText:StandardTextView/>

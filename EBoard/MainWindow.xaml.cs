@@ -1,6 +1,7 @@
 ﻿using EBoard.ViewModels;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace EBoard
 {
@@ -55,7 +56,27 @@ namespace EBoard
             e.Handled = true;
         }
 
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Normal)
+            {
+                WindowState = WindowState.Maximized;
+                Background = (SolidColorBrush)Application.Current.Resources["BackgroundBrush"];
+                Application.Current.Resources["MaximizeContextMenuItemHeader"] = "Normalize";
+            }
+            else
+            {
+                WindowState = WindowState.Normal;
+                Background = new SolidColorBrush(Colors.Transparent);
+                Application.Current.Resources["MaximizeContextMenuItemHeader"] = "Maximize";
+            }
 
+        }
+
+        private void Minimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = System.Windows.WindowState.Minimized;
+        }
     }
 }
 // EOF

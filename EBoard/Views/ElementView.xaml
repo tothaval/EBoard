@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoard.Views"
              xmlns:vms="clr-namespace:EBoard.ViewModels"
-             xmlns:ic="clr-namespace:EBoard.InnerComponents"
              xmlns:ut="clr-namespace:EBoard.Utilities"
+             xmlns:esdkCtrl="clr-namespace:EBoardSDK.Controls;assembly=EBoardSDK"
              d:DataContext="{d:DesignInstance Type=vms:ElementViewModel}"
              x:Name="Element"
              mc:Ignorable="d" 
@@ -18,6 +18,13 @@
     <UserControl.Resources>
 
         <ut:VisibilityConverterToCollapsed x:Key="VisibilityToCollapsed"/>
+        <SolidColorBrush x:Key="fgbrush" Color="#77CCEE"/>
+        <SolidColorBrush x:Key="bgbrush" Color="#000000"/>
+
+        <Style TargetType="Label" >
+            <Setter Property="Foreground" Value="{StaticResource fgbrush}"/>
+            <Setter Property="Background" Value="{StaticResource bgbrush}"/>
+        </Style>
 
     </UserControl.Resources>
 
@@ -37,17 +44,49 @@
 
             <ContextMenu Name="ElementContextMenu">
 
-                <Label Content="Element" Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
+                <Label Content="Element"/>
 
                 <MenuItem Header="Placement">
                     <WrapPanel Orientation="Horizontal">
-                    <Label Content="Z"
-                               Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
+                        <Label Content="X"
                            MinWidth="50"/>
-                    <Label Content="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
+                        <Label Content="{Binding XPosition, NotifyOnSourceUpdated=True}"
                            MinWidth="30"/>
-                    <Slider Value="{Binding ZIndexValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                        <Label Content="{Binding XMaximumValue, NotifyOnSourceUpdated=True, Mode=OneWay}"
+                           MinWidth="30"/>
+                        <Slider Value="{Binding XSliderValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            Maximum="{Binding XMaximumValue, NotifyOnSourceUpdated=True}"
+                            Width="330"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                    </WrapPanel>
+
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="Y"
+                           MinWidth="50"/>
+                        <Label Content="{Binding YPosition, NotifyOnSourceUpdated=True}"
+                               MinWidth="30"/>
+                        <Label Content="{Binding YMaximumValue, NotifyOnSourceUpdated=True, Mode=OneWay}"
+                               MinWidth="30"/>
+                        <Slider Value="{Binding YSliderValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            Maximum="{Binding YMaximumValue, UpdateSourceTrigger=PropertyChanged, Delay=20}"
+                            Width="330"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                    </WrapPanel>
+
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="Z"
+                               MinWidth="50"/>
+                        <Label Content="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"
+                               MinWidth="30"/>
+                        <Slider Value="{Binding ZIndexValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="{Binding ZMinimumValue, NotifyOnSourceUpdated=True}"
                             Maximum="{Binding ZMaximumValue, NotifyOnSourceUpdated=True}"
                             Width="360"
@@ -55,16 +94,14 @@
                             LargeChange="5"
                             Interval="1"
                             Orientation="Horizontal"/>
-                </WrapPanel>
+                    </WrapPanel>
 
-                <WrapPanel Orientation="Horizontal">
-                <Label Content="R"
-                               Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="R"
                            MinWidth="50"/>
-                    <Label Content="{Binding RotationAngleValue, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="30"/>
-                    <Slider Value="{Binding RotationAngleValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                        <Label Content="{Binding RotationAngleValue, NotifyOnSourceUpdated=True}"
+                               MinWidth="30"/>
+                        <Slider Value="{Binding RotationAngleValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="-180"
                             Maximum="180"
                             Width="361"
@@ -73,21 +110,19 @@
                             Interval="1"
                             Orientation="Horizontal"/>
 
-                </WrapPanel>
+                    </WrapPanel>
 
                 </MenuItem>
-                
-                
+
+
                 <MenuItem Header="Design">
 
 
                     <WrapPanel Orientation="Horizontal">
                         <Label Content="Width"
-                               Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="50"/>
+                               MinWidth="50"/>
                         <Label Content="{Binding WidthValue, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="35"/>
+                               MinWidth="35"/>
                         <Slider Value="{Binding WidthValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="60"
                             Maximum="1024"
@@ -102,11 +137,9 @@
 
                     <WrapPanel Orientation="Horizontal">
                         <Label Content="Height"
-                               Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="50"/>
+                               MinWidth="50"/>
                         <Label Content="{Binding HeightValue, StringFormat=d0, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="35"/>
+                               MinWidth="35"/>
                         <Slider Value="{Binding HeightValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="60"
                             Maximum="1024"
@@ -117,15 +150,13 @@
                             Orientation="Horizontal"/>
 
                     </WrapPanel>
-                    
+
                     <WrapPanel Orientation="Horizontal">
-                            <Label Content="Corners"
-                               Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="50"/>
-                            <Label Content="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding Plugin.BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="30"/>
-                            <Slider Value="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                        <Label Content="Corners"
+                               MinWidth="50"/>
+                        <Label Content="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True}"
+                               MinWidth="30"/>
+                        <Slider Value="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="0"
                             Maximum="90"
                             MinWidth="100"
@@ -134,7 +165,25 @@
                             Interval="1"
                             Orientation="Horizontal"/>
 
-                        </WrapPanel>
+                    </WrapPanel>
+
+                    <MenuItem Header="Colors">
+                        <MenuItem Header="Background">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BackgroundBrushSetup}"/>
+                        </MenuItem>
+
+                        <MenuItem Header="Foreground">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding ForegroundBrushSetup}"/>
+                        </MenuItem>
+
+                        <MenuItem Header="Border">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BorderBrushSetup}"/>
+                        </MenuItem>
+
+                        <MenuItem Header="Highlight">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding HighlightBrushSetup}"/>
+                        </MenuItem>
+                    </MenuItem>
 
                     <MenuItem Header="+Image" Command="{Binding SetImageCommand}"/>
 
@@ -148,36 +197,59 @@
 
         </Border.ContextMenu>
 
-            <Grid Background="Transparent" Grid.Row="1">
-                
-            <!-- Z und Rotation über Element ausgeben, später per option oder custom control
+
+        <!-- Z und Rotation über Element ausgeben, später per option oder custom control
                 schick machen
                 
                 Foreground="{Binding Plugin.BrushManagement.Foreground}"
-                geht irgendwie nicht, obwohl es für das kontextmenu geht...
-                -->
+                geht irgendwie nicht, obwohl es für das kontextmenu geht...        
+        -->
 
-            <ContentPresenter Content="{Binding Plugin}"
-                              Grid.Row="1"/>
+        <Grid Background="Transparent">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Border Background="{Binding Plugin.BrushManagement.Background, NotifyOnSourceUpdated=True}"
+                    BorderBrush="{Binding Plugin.BrushManagement.Border, NotifyOnSourceUpdated=True}"
+                    BorderThickness="{Binding Plugin.BorderManagement.BorderThickness, NotifyOnSourceUpdated=True}"
+                    CornerRadius="{Binding Plugin.BorderManagement.CornerRadius, NotifyOnSourceUpdated=True}"
+                    
+                    MouseLeftButtonDown="Border_MouseLeftButtonDown_1"
+                    MouseLeftButtonUp="Border_MouseLeftButtonUp_1"
+                    MouseMove="Border_MouseMove_1"
+                    
+                    Padding="{Binding Plugin.BorderManagement.Padding}"
+                    MinHeight="60"
+                    MinWidth="60"
+                    Width="{Binding Plugin.BorderManagement.Width, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                    Height="{Binding Plugin.BorderManagement.Height, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
+                    Grid.Row="0"
+                    Grid.RowSpan="2">
+
+
+                <ContentPresenter Content="{Binding Plugin}"/>
+
+            </Border>
 
             <TextBlock Foreground="{Binding Plugin.BrushManagement.Highlight}"
-                       MinWidth="30"
-                       Text="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"
+                           MinWidth="30"
+                           Text="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"
                            TextWrapping="Wrap"
-                Margin="10 5 0 0"
-                       HorizontalAlignment="Left"
-                VerticalAlignment="Top"/>
-
+                           Margin="5 0 0 0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Top"
+                           Grid.Row="0"/>
 
             <TextBlock Foreground="{Binding Plugin.BrushManagement.Highlight}"
                        Text="{Binding RotationAngleValue, NotifyOnSourceUpdated=True}"
                        TextWrapping="Wrap"
-                       Margin="0 5 10 0"
+                       Margin="0 0 5 0"
                        HorizontalAlignment="Right"
-                       VerticalAlignment="Top"/>
-
-                
-            </Grid>
+                       VerticalAlignment="Top"
+                           Grid.Row="0"/>
+        </Grid>
 
     </Border>
 

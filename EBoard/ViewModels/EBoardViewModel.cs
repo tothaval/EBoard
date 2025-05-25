@@ -9,12 +9,15 @@
  */
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
-
-using EBoardSDK.SharedMethods;
+using EBoardSDK.Controls;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
-
+using EBoardSDK.Models.DataSets;
+using EBoardSDK.Plugins;
+using EBoardSDK.SharedMethods;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
@@ -23,6 +26,8 @@ namespace EBoard.ViewModels;
 
 public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
 {
+
+    private readonly MainViewModel mainViewModel;
 
     // Properties & Fields
     #region Properties & Fields
@@ -126,15 +131,29 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     /// maybe via ref keyword. this would have been my next approaches to solve the issue.
     /// </summary>
     [ObservableProperty]
-    private ObservableCollection<ElementViewModel> elements;
+    private ObservableCollection<ElementViewModel> elements = new ObservableCollection<ElementViewModel>();
 
     #endregion
 
-
+    public SolidColorBrushSetupViewModel BackgroundBrushSetup { get; set; }
+    public SolidColorBrushSetupViewModel ForegroundBrushSetup { get; set; }
+    public SolidColorBrushSetupViewModel BorderBrushSetup { get; set; }
+    public SolidColorBrushSetupViewModel HighlightBrushSetup { get; set; }
     // Constructors
     #region Constructors
 
-    public EBoardViewModel(EboardDataSet eboardDataSet) => InstantiateProperties(eboardDataSet);
+    public EBoardViewModel(MainViewModel mainViewModel)
+    {
+        this.mainViewModel = mainViewModel;
+    }
+
+    public EBoardViewModel(EboardDataSet eboardDataSet, MainViewModel mainViewModel)
+    {
+        this.mainViewModel = mainViewModel;
+
+        ApplyData(eboardDataSet);
+    }
+
 
     #endregion
 
@@ -345,8 +364,45 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         return dateTime;
     }
 
+    public bool ApplyBrush(Brush brush, BrushTargets brushTargets)
+    {
+        try
+        {
+            switch (brushTargets)
+            {
+                case BrushTargets.Background:
+                    BrushManager.Background = brush;
+                    OnPropertyChanged(nameof(BrushManager.Background));
+                    break;
+                case BrushTargets.Border:
+                    BrushManager.Border = brush;
+                    OnPropertyChanged(nameof(BrushManager.Border));
+                    break;
+                case BrushTargets.Foreground:
+                    BrushManager.Foreground = brush;
+                    OnPropertyChanged(nameof(BrushManager.Foreground));
+                    break;
+                case BrushTargets.Highlight:
+                    BrushManager.Highlight = brush;
+                    OnPropertyChanged(nameof(BrushManager.Highlight));
+                    break;
+                default:
+                    break;
+            }
 
-    private void InstantiateProperties(EboardDataSet eboardDataSet)
+            OnPropertyChanged(nameof(BrushManager));
+
+            return true;
+        }
+        catch (Exception)
+        {
+
+            return false;
+        }
+    }
+
+
+    public void ApplyData(EboardDataSet eboardDataSet)
     {
         BorderManager = new BorderManagement(eboardDataSet.BorderDataSet);
         BrushManager = new BrushManagement(eboardDataSet.BrushDataSet);
@@ -369,6 +425,61 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
 
             _EBID = $"EBoard_{dateTime.Ticks}";
         }
+
+        ApplyBrush(BrushManager.Background, BrushTargets.Background);
+        ApplyBrush(BrushManager.Foreground, BrushTargets.Foreground);
+        ApplyBrush(BrushManager.Border, BrushTargets.Border);
+        ApplyBrush(BrushManager.Highlight, BrushTargets.Highlight);
+
+
+        if (BrushManager.Background.GetType().Equals(typeof(SolidColorBrush)))
+        {
+            BackgroundBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)BrushManager.Background, SetColorValueAsBackground);
+        }
+
+        if (BrushManager.Foreground.GetType().Equals(typeof(SolidColorBrush)))
+        {
+            ForegroundBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)BrushManager.Foreground, SetColorValueAsForeground);
+        }
+
+        if (BrushManager.Border.GetType().Equals(typeof(SolidColorBrush)))
+        {
+            BorderBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)BrushManager.Border, SetColorValueAsBorder);
+        }
+
+        if (BrushManager.Highlight.GetType().Equals(typeof(SolidColorBrush)))
+        {
+            HighlightBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)BrushManager.Highlight, SetColorValueAsHighlight);
+        }
+
+        if (BackgroundBrushSetup == null)
+        {
+            BackgroundBrushSetup = new SolidColorBrushSetupViewModel(new SolidColorBrush() { Color = Color.FromArgb(255, 0, 0, 0) }, SetColorValueAsBackground);
+        }
+    }
+
+    [RelayCommand]
+    private void SetColorValueAsBackground()
+    {
+        ApplyBrush(BackgroundBrushSetup.ColorBrush, BrushTargets.Background);
+    }
+
+    [RelayCommand]
+    private void SetColorValueAsForeground()
+    {
+        ApplyBrush(ForegroundBrushSetup.ColorBrush, BrushTargets.Foreground);
+    }
+
+    [RelayCommand]
+    private void SetColorValueAsBorder()
+    {
+        ApplyBrush(BorderBrushSetup.ColorBrush, BrushTargets.Border);
+    }
+
+    [RelayCommand]
+    private void SetColorValueAsHighlight()
+    {
+        ApplyBrush(HighlightBrushSetup.ColorBrush, BrushTargets.Highlight);
     }
 
 
@@ -458,28 +569,26 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     [RelayCommand]
     private void SwitchToEboard(object? parameter)
     {
-        MainViewModel mainViewModel = Application.Current.MainWindow.DataContext as MainViewModel;
-
         string commandParameter = parameter as string;
 
-        if (mainViewModel != null && mainViewModel.EBoardBrowserViewModel.EBoards.Count > 1)
+        if (this.mainViewModel != null && this.mainViewModel.EBoardBrowserViewModel.EBoards.Count > 1)
         {
 
             switch (commandParameter)
             {
                 case "First":
-                    mainViewModel.EBoardBrowserViewModel.SelectedEBoard = mainViewModel.EBoardBrowserViewModel.EBoards.First();
+                    this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard = this.mainViewModel.EBoardBrowserViewModel.EBoards.First();
                     break;
                 case "Prev":
-                    SwitchToPrevEboard(mainViewModel);
+                    SwitchToPrevEboard();
                     break;
 
                 case "Next":
-                    SwitchToNextEboard(mainViewModel);
+                    SwitchToNextEboard();
                     break;
 
                 case "Last":
-                    mainViewModel.EBoardBrowserViewModel.SelectedEBoard = mainViewModel.EBoardBrowserViewModel.EBoards.Last();
+                    this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard = this.mainViewModel.EBoardBrowserViewModel.EBoards.Last();
                     break;
 
                 default:
@@ -488,41 +597,38 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         }
     }
 
-
-    private void SwitchToNextEboard(MainViewModel mainViewModel)
+    private void SwitchToNextEboard()
     {
-        for (int i = 0; i < mainViewModel.EBoardBrowserViewModel.EBoards.Count; i++)
+        for (int i = 0; i < this.mainViewModel.EBoardBrowserViewModel.EBoards.Count; i++)
         {
-            if (mainViewModel.EBoardBrowserViewModel.EBoards[i] == mainViewModel.EBoardBrowserViewModel.SelectedEBoard)
+            if (this.mainViewModel.EBoardBrowserViewModel.EBoards[i] == this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard)
             {
-                if (i + 1 < mainViewModel.EBoardBrowserViewModel.EBoards.Count)
+                if (i + 1 < this.mainViewModel.EBoardBrowserViewModel.EBoards.Count)
                 {
 
-                    mainViewModel.EBoardBrowserViewModel.SelectedEBoard = mainViewModel.EBoardBrowserViewModel.EBoards[i + 1];
+                    this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard = this.mainViewModel.EBoardBrowserViewModel.EBoards[i + 1];
 
                     break;
                 }
-
             }
         }
     }
 
-    private void SwitchToPrevEboard(MainViewModel mainViewModel)
+    private void SwitchToPrevEboard()
     {
-        for (int i = 0; i < mainViewModel.EBoardBrowserViewModel.EBoards.Count; i++)
+        for (int i = 0; i < this.mainViewModel.EBoardBrowserViewModel.EBoards.Count; i++)
         {
-            if (mainViewModel.EBoardBrowserViewModel.EBoards[i] == mainViewModel.EBoardBrowserViewModel.SelectedEBoard)
+            if (this.mainViewModel.EBoardBrowserViewModel.EBoards[i] == this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard)
             {
                 if (i - 1 >= 0)
                 {
-                    mainViewModel.EBoardBrowserViewModel.SelectedEBoard = mainViewModel.EBoardBrowserViewModel.EBoards[i - 1];
+                    this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard = this.mainViewModel.EBoardBrowserViewModel.EBoards[i - 1];
 
                     break;
                 }
             }
         }
     }
-
 
     private void UpdateElementsZIndexProperties(int newEBoardDepth)
     {
@@ -534,6 +640,32 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
             }
         }
     }
+
+    //[RelayCommand]
+    //private void CollectiveClick()
+    //{
+    //    /// TODO rethink
+    //    //foreach (ElementViewModel item in Elements)
+    //    //{
+    //    //    var it = item.Plugin.Plugin.DataContext;
+
+    //    //    if (it != null)
+    //    //    {
+    //    //    if (item.Plugin.Plugin.DataContext.GetType().IsAssignableFrom(typeof(ICollectiveClickableObject)))
+    //    //        {
+    //    //            var doofdunuss = item.Plugin.Plugin.DataContext as ICollectiveClickableObject;
+
+    //    //        //if (item.GetType().IsAssignableFrom(typeof(ICollectiveClickableObject)))
+    //    //        //{
+    //    //        //    var collectiveClicker = item.
+    //    //        //}
+
+    //    //    }
+
+    //    //    }
+
+    //    //}
+    //}
 
     #endregion
 

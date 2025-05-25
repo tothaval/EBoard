@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:EBoardSDK.Plugins.Elements.StandardText"
              d:DataContext="{d:DesignInstance Type=local:StandardTextViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             >
 
     <!-- no effect
     
@@ -17,21 +18,10 @@
         </DataTemplate>
     </UserControl.Resources>-->
 
-
-    <Border Background="{Binding BrushManagement.Background, NotifyOnSourceUpdated=True}"
-            BorderBrush="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"
-            BorderThickness="{Binding BorderManagement.BorderThickness, NotifyOnSourceUpdated=True}"
-            CornerRadius="{Binding BorderManagement.CornerRadius, NotifyOnSourceUpdated=True}"
-
-                     Padding="{Binding BorderManagement.Padding}"
-            MinHeight="60"
-            MinWidth="60"
-            Width="{Binding BorderManagement.Width, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-            Height="{Binding BorderManagement.Height, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
-
-        <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch"
-                     Margin="{Binding BorderManagement.Margin}">
+     <Grid HorizontalAlignment="Stretch"
+           VerticalAlignment="Stretch"
+           
+           Margin="{Binding BorderManagement.Margin}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
@@ -82,7 +72,5 @@
             </TextBox>
 
         </Grid>
-
-    </Border>
-
+    
 </UserControl>

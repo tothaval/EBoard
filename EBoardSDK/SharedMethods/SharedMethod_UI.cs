@@ -1,9 +1,11 @@
 ﻿
 namespace EBoardSDK.SharedMethods;
 
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
 
 public class SharedMethod_UI
 {
@@ -52,14 +54,6 @@ public class SharedMethod_UI
             Application.Current.Resources["MaximizeContextMenuItemHeader"] = "Maximize";
         }
     }
-
-    public void MinimizeApplication(Window mainWindow)
-    {
-        //MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
-
-        mainWindow.WindowState = System.Windows.WindowState.Minimized;
-    }
-
 
     public string SetBackgroundImage(string imagePathProperty)
     {

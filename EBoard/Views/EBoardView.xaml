@@ -6,14 +6,26 @@
              xmlns:local="clr-namespace:EBoard.Views"
              xmlns:vms="clr-namespace:EBoard.ViewModels"
              d:DataContext="{d:DesignInstance Type=vms:EBoardViewModel}"
+             xmlns:esdkCtrl="clr-namespace:EBoardSDK.Controls;assembly=EBoardSDK"
              x:Name="EBoard_Board"
              mc:Ignorable="d"
-             ClipToBounds="True"
+             ClipToBounds="True"            
                                                                 
              d:DesignHeight="450" d:DesignWidth="800">
 
+    <UserControl.Resources>
+
+        <SolidColorBrush x:Key="fgbrush" Color="#77CCEE"/>
+        <SolidColorBrush x:Key="bgbrush" Color="#000000"/>
+
+        <Style TargetType="Label" >
+            <Setter Property="Foreground" Value="{StaticResource fgbrush}"/>
+            <Setter Property="Background" Value="{StaticResource bgbrush}"/>
+        </Style>
+
+    </UserControl.Resources>
     <Border Margin="5"
-            Padding="5"          
+            Padding="5"
                                                            
             Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"            
             BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
@@ -32,8 +44,7 @@
 
             <ContextMenu>
 
-                <Label Content="EBoard"
-                       Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"/>
+                <Label Content="EBoard"/>
                 
                     <MenuItem Header="EBoard Switch"
                                Style="{StaticResource SubMenuItemStyle}">
@@ -59,10 +70,8 @@
 
                         <WrapPanel Orientation="Horizontal">
                             <Label Content="Width" 
-                                   Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
                                    MinWidth="50"/>
                             <Label Content="{Binding Width, NotifyOnSourceUpdated=True}"
-                                   Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
                                    MinWidth="30"/>
                             <Slider Value="{Binding Width, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="150"
@@ -78,10 +87,8 @@
                     
                     <WrapPanel Orientation="Horizontal">
                         <Label Content="Height"
-                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
                            MinWidth="50"/>
                         <Label Content="{Binding Height, StringFormat=d0, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
                            MinWidth="30"/>
                         <Slider Value="{Binding Height, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="50"
@@ -96,10 +103,8 @@
 
                     <WrapPanel Orientation="Horizontal">
                         <Label Content="Corners"
-                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
                            MinWidth="50"/>
                         <Label Content="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
                            MinWidth="30"/>
                         <Slider Value="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="0"
@@ -112,6 +117,24 @@
 
                     </WrapPanel>
 
+                    <MenuItem Header="Colors">
+                        <MenuItem Header="Background">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BackgroundBrushSetup}"/>
+                        </MenuItem>
+
+                        <!--<MenuItem Header="Foreground">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding ForegroundBrushSetup}"/>
+                        </MenuItem>-->
+
+                        <MenuItem Header="Border">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BorderBrushSetup}"/>
+                        </MenuItem>
+
+                        <!--<MenuItem Header="Highlight">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding HighlightBrushSetup}"/>
+                        </MenuItem>-->
+                    </MenuItem>
+                    
                     <MenuItem Header="+Image" Command="{Binding SetImageCommand}"/>
 
                     <MenuItem Header="Reset" Command="{Binding ResetImageCommand}"/>
@@ -123,8 +146,7 @@
 
         </Border.ContextMenu>
 
-
-        <ItemsControl ItemsSource="{Binding Elements}"
+            <ItemsControl ItemsSource="{Binding Elements}"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch"                      
                       ClipToBounds="True"
@@ -133,21 +155,23 @@
                       AllowDrop="True"
                       >
 
-            <ItemsControl.ItemsPanel>
+                <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <Canvas AllowDrop="True"/>
-                </ItemsPanelTemplate>
+                        <Canvas AllowDrop="True">
+
+                        </Canvas>
+                    </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemContainerStyle>
                     <Style>
                         <Setter Property="Canvas.Left"
                                 Value="{Binding XPosition, Mode=TwoWay,
                             NotifyOnSourceUpdated=True}"/>
-                                                
+
                         <Setter Property="Canvas.Top"
                                 Value="{Binding YPosition, Mode=TwoWay,
                             NotifyOnSourceUpdated=True}"/>
-                        
+
                         <Setter Property="Panel.ZIndex"
                                 Value="{Binding PlacementManager.Z, Mode=TwoWay,
                             NotifyOnSourceUpdated=True}"/>
@@ -156,7 +180,7 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <local:ElementView/>
-                </DataTemplate>
+                    </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
 

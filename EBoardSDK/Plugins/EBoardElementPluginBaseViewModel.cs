@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
 using EBoardSDK.Models.DataSets;
@@ -14,7 +15,7 @@ using System.Windows.Media;
 
 namespace EBoardSDK.Plugins
 {
-    public abstract partial class EBoardElementPluginBaseViewModel : ObservableObject, IEBoardElement
+    public abstract partial class EBoardElementPluginBaseViewModel : ObservableObject, IEBoardElement, IPluginData
     {
         public PluginDataSet PluginDataSet { get; set; } = new ();
 
@@ -25,6 +26,7 @@ namespace EBoardSDK.Plugins
         public abstract UserControl Plugin { get; }
 
         public abstract string PluginHeader { get; set; }
+
         public abstract string PluginName { get; set; }
 
         public abstract string ElementPluginName { get; }
@@ -71,15 +73,33 @@ namespace EBoardSDK.Plugins
             BorderManagement.Width = value;
         }
 
-        public bool ApplyBackgroundBrush(Brush brush)
+        public bool ApplyBrush(Brush brush, BrushTargets brushTargets)
         {
             try
             {
-                BrushManagement.Background = brush;
+                switch (brushTargets)
+                {
+                    case BrushTargets.Background:
+                        BrushManagement.Background = brush;
+                        OnPropertyChanged(nameof(BrushManagement.Background));
+                        break;
+                    case BrushTargets.Border:
+                        BrushManagement.Border = brush;
+                        OnPropertyChanged(nameof(BrushManagement.Border));
+                        break;
+                    case BrushTargets.Foreground:
+                        BrushManagement.Foreground = brush;
+                        OnPropertyChanged(nameof(BrushManagement.Foreground));
+                        break;
+                    case BrushTargets.Highlight:
+                        BrushManagement.Highlight = brush;
+                        OnPropertyChanged(nameof(BrushManagement.Highlight));
+                        break;
+                    default:
+                        break;
+                }
 
                 OnPropertyChanged(nameof(BrushManagement));
-
-                OnPropertyChanged(nameof(BrushManagement.Background));
 
                 return true;
             }
@@ -90,9 +110,9 @@ namespace EBoardSDK.Plugins
             }
         }
 
-        public abstract Task Load(string path, IElementDataSet elementDataSet);
+        public abstract Task<EBoardFeedbackMessage> Load(string path);
 
-        public abstract Task Save(string path, IElementDataSet elementDataSet);
+        public abstract Task<EBoardFeedbackMessage> Save(string path);
 
         public bool SelectionChange(bool isSelected)
         {

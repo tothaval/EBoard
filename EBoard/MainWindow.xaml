@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vms="clr-namespace:EBoard.ViewModels"
+             xmlns:esdkCtrl="clr-namespace:EBoardSDK.Controls;assembly=EBoardSDK"
         xmlns:views="clr-namespace:EBoard.Views"
         d:DataContext="{d:DesignInstance Type=vms:MainViewModel}"
         
@@ -20,7 +21,7 @@
         Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
         MouseLeftButtonDown="EboardMainWindow_MouseLeftButtonDown"
         MouseLeftButtonUp="EboardMainWindow_MouseLeftButtonUp"
-        
+        Width="{Binding BorderManager.Width, NotifyOnSourceUpdated=True}" Height="{Binding BorderManager.Height, NotifyOnSourceUpdated=True}"
         SizeChanged="EboardMainWindow_SizeChanged"
         >
 
@@ -31,6 +32,13 @@
             <views:MainWindowMenuBar/>
         </DataTemplate>
 
+        <SolidColorBrush x:Key="fgbrush" Color="#77CCEE"/>
+            <SolidColorBrush x:Key="bgbrush" Color="#000000"/>
+        
+            <Style TargetType="Label" >
+                <Setter Property="Foreground" Value="{StaticResource fgbrush}"/>
+                <Setter Property="Background" Value="{StaticResource bgbrush}"/>
+            </Style>
 
     </Window.Resources>
     
@@ -53,12 +61,11 @@
             Padding="{Binding BorderManager.Padding, NotifyOnSourceUpdated=True}"
             x:Name="Border_MainWindow"
             ClipToBounds="True">
-
+        
         <Border.ContextMenu >
             <ContextMenu>
                 
-                <Label Content="MainWindow"
-                       Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"/>
+                <Label Content="MainWindow"/>
                 <MenuItem Header="UI">
                
                     <WrapPanel Orientation="Horizontal">
@@ -78,7 +85,23 @@
                             Orientation="Horizontal"/>
 
                     </WrapPanel>
+                    <MenuItem Header="Colors">
+                        <MenuItem Header="Background">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BackgroundBrushSetup}"/>
+                        </MenuItem>
 
+                        <MenuItem Header="Foreground">
+              <esdkCtrl:SolidColorBrushSetup DataContext="{Binding ForegroundBrushSetup}"/>
+          </MenuItem>
+
+                        <MenuItem Header="Border">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BorderBrushSetup}"/>
+                        </MenuItem>
+
+                        <!--<MenuItem Header="Highlight">
+              <esdkCtrl:SolidColorBrushSetup DataContext="{Binding HighlightBrushSetup}"/>
+          </MenuItem>-->                        
+                    </MenuItem>
 
                     <MenuItem Header="+Image" Command="{Binding SetImageCommand}"/>
 
@@ -86,14 +109,10 @@
                 </MenuItem>
 
                 <MenuItem Header="{DynamicResource MaximizeContextMenuItemHeader}"
-                      Command="{Binding MaximizeCommand}"
-                      CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
-                                Path=PlacementTarget}"/>
+                          Click="MenuItem_Click"/>
 
                 <MenuItem Header="Minimize"
-                      Command="{Binding MinimizeCommand}"
-                      CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}},
-                                Path=PlacementTarget}"/>
+                          Click="Minimize_Click"/>
 
                 <MenuItem Header="Close" Command="{Binding CloseCommand}"/>
 

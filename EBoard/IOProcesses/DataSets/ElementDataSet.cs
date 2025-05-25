@@ -178,14 +178,11 @@ public class ElementDataSet : IElementDataSet
 
     public async Task Initialize(string elementDataFileString)
     {
-
-
-
         if (Plugin != null)
         {
             string element_folder = elementDataFileString.Replace(".xml", "\\");
 
-            await Plugin.Load($"{element_folder}", this);
+            await Plugin.Load($"{element_folder}");
         }
 
         await Task.CompletedTask;

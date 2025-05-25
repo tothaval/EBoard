@@ -1,4 +1,5 @@
-﻿using EBoard.IOProcesses.DataSets;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using EBoard.IOProcesses.DataSets;
 
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
@@ -66,6 +67,7 @@ public static class ElementDataSetFactory
 
         if (pluginViewInstance is not null && plugin is not null)
         {
+            // TODO rethink, plugin is not the viewmodel, and would not have any effect either way probably, because no.
             pluginViewInstance.DataContext = plugin;
 
             plugin.PluginHeader = shards[2];

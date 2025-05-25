@@ -9,14 +9,16 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using EBoardSDK.SharedMethods;
-using EBoardSDK.Models;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
+using EBoardSDK.Models;
+using EBoardSDK.SharedMethods;
 
 using EBoard.Views;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using EBoardSDK.Controls;
 
 namespace EBoard.ViewModels;
 
@@ -27,32 +29,29 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     #region Properties & Fields
 
     private ElementView _ElementView;
-    public ElementView ElementView => _ElementView;
-
-
+    
     private EBoardViewModel _EBoardViewModel;
-    public EBoardViewModel EBoardViewModel => _EBoardViewModel;
-
 
     [ObservableProperty]
     private string imagePath;
+
+    public ElementView ElementView => _ElementView;
+
+    public EBoardViewModel EBoardViewModel => _EBoardViewModel;
+
     partial void OnImagePathChanged(string value)
     {
         ChangeElementBackgroundToImage();
     }
 
-
     [ObservableProperty]
     private bool isSelected;
-
 
     private IPlugin plugin;
     public IPlugin Plugin => plugin;
 
-
     [ObservableProperty]
     private PlacementManagement placementManager;
-
 
     [ObservableProperty]
     private int rotationAngleValue;
@@ -66,7 +65,6 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
             UpdateRotation(newValue);
         }
     }
-
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(PlacementManager))]
@@ -156,23 +154,79 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     [ObservableProperty]
     private int zMaximumValue;
 
+    [ObservableProperty]
+    private int xSliderValue;
+    partial void OnXSliderValueChanged(int value)
+    {
+        XPosition = value;
+    }
 
     [ObservableProperty]
     private double xPosition;
+    partial void OnXPositionChanged(double value)
+    {
+        XSliderValue = (int)value;
+    }
 
+    [ObservableProperty]
+    private int xMaximumValue;
+
+    [ObservableProperty]
+    private int ySliderValue;
+    partial void OnYSliderValueChanged(int value)
+    {
+        YPosition = value;
+    }
 
     [ObservableProperty]
     private double yPosition;
+    partial void OnYPositionChanged(double value)
+    {
+        YSliderValue = (int)value;
+    }
 
+
+    [ObservableProperty]
+    private int yMaximumValue;
+
+
+    [ObservableProperty]
+    private SolidColorBrush backgroundColorBrush;
+    partial void OnBackgroundColorBrushChanged(SolidColorBrush value)
+    {
+
+    }
+
+    [ObservableProperty]
+    private SolidColorBrush foregroundColorBrush;
+
+
+    [ObservableProperty]
+    private SolidColorBrush borderColorBrush = new SolidColorBrush(Colors.Black);
+
+
+    [ObservableProperty]
+    private SolidColorBrush highlightColorBrush = new SolidColorBrush(Colors.Orange);
 
     #endregion
+
+
+    public SolidColorBrushSetupViewModel BackgroundBrushSetup { get; set; }
+    public SolidColorBrushSetupViewModel ForegroundBrushSetup { get; set; }
+    public SolidColorBrushSetupViewModel BorderBrushSetup { get; set; }
+    public SolidColorBrushSetupViewModel HighlightBrushSetup { get; set; } 
+
+    public ElementViewModel()
+    {
+
+    }
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="eBoardViewModel"></param>
     /// <param name="elementDataSet"></param>
-    public ElementViewModel(EBoardViewModel eBoardViewModel, IElementDataSet elementDataSet) => InstantiateProperties(eBoardViewModel, elementDataSet);
+    public ElementViewModel(EBoardViewModel eBoardViewModel, IElementDataSet elementDataSet) => ApplyData(eBoardViewModel, elementDataSet);
 
 
     // Methods
@@ -180,7 +234,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
     internal void ApplyBackgroundBrush(Brush brush)
     {
-        Plugin.ApplyBackgroundBrush(brush);
+        Plugin.ApplyBrush(brush, BrushTargets.Background);
     }
 
 
@@ -205,7 +259,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     {
         UpdateRotation(rotationAngleValue);
 
-        this.rotationAngleValue = rotationAngleValue;
+        this.RotationAngleValue = rotationAngleValue;
 
         OnPropertyChanged(nameof(RotationAngleValue));
 
@@ -298,6 +352,9 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
         OnPropertyChanged(nameof(ZMinimumValue));
         OnPropertyChanged(nameof(ZMaximumValue));
+
+        OnPropertyChanged(nameof(XMaximumValue));
+        OnPropertyChanged(nameof(YMaximumValue));
     }
 
 
@@ -305,7 +362,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     {
         if (ImagePath != null && ImagePath != string.Empty)
         {
-            Plugin?.ApplyBackgroundBrush(new SharedMethod_UI().ChangeBackgroundToImage(Plugin.BrushManagement.Background, ImagePath));
+            Plugin?.ApplyBrush(new SharedMethod_UI().ChangeBackgroundToImage(Plugin.BrushManagement.Background, ImagePath), BrushTargets.Background);
         }
     }
 
@@ -340,7 +397,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     }
 
 
-    private void InstantiateProperties(EBoardViewModel eBoardViewModel, IElementDataSet elementDataSet)
+    public void ApplyData(EBoardViewModel eBoardViewModel, IElementDataSet elementDataSet)
     {
 
         PlacementManager = new PlacementManagement();
@@ -357,12 +414,16 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
         if (elementDataSet.PlacementDataSet != null)
         {
+            PlacementManager = new PlacementManagement(elementDataSet.PlacementDataSet);
+
             RotationAngleValue = (int)elementDataSet.PlacementDataSet.Angle;
-            PlacementManager.Position = elementDataSet.PlacementDataSet.Position;
-            PlacementManager.Z = elementDataSet.PlacementDataSet.Z;
+            //PlacementManager.Position = elementDataSet.PlacementDataSet.Position;
+            //PlacementManager.Z = elementDataSet.PlacementDataSet.Z;
 
             XPosition = PlacementManager.Position.X;
             YPosition = PlacementManager.Position.Y;
+            XMaximumValue = eBoardViewModel.Width;
+            YMaximumValue = eBoardViewModel.Height;
 
             ZIndexValue = PlacementManager.Z;
         }
@@ -378,12 +439,50 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         {
             plugin = elementDataSet.Plugin;
 
+            Plugin.Height = HeightValue;
+            Plugin.Width = WidthValue;
+
+            var brushdataset = new BrushManagement(elementDataSet.BrushDataSet);
+
+            Plugin.ApplyBrush(brushdataset.Background, BrushTargets.Background);
+            Plugin.ApplyBrush(brushdataset.Foreground, BrushTargets.Foreground);
+            Plugin.ApplyBrush(brushdataset.Border, BrushTargets.Border);
+            Plugin.ApplyBrush(brushdataset.Highlight, BrushTargets.Highlight);
+
             CornerRadiusValue = (int)elementDataSet.BorderDataSet.CornerRadius.TopLeft;
+
+
+            if (Plugin.BrushManagement.Background.GetType().Equals(typeof(SolidColorBrush)))
+            {
+                BackgroundBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)Plugin.BrushManagement.Background, SetColorValueAsBackground);
+            }
+
+            if (Plugin.BrushManagement.Foreground.GetType().Equals(typeof(SolidColorBrush)))
+            {
+                ForegroundBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)Plugin.BrushManagement.Foreground, SetColorValueAsForeground);
+            }
+
+            if (Plugin.BrushManagement.Border.GetType().Equals(typeof(SolidColorBrush)))
+            {
+                BorderBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)Plugin.BrushManagement.Border, SetColorValueAsBorder);
+            }
+
+            if (Plugin.BrushManagement.Highlight.GetType().Equals(typeof(SolidColorBrush)))
+            {
+                HighlightBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)Plugin.BrushManagement.Highlight, SetColorValueAsHighlight);
+            }
+
+            if (BackgroundBrushSetup == null)
+            {
+                BackgroundBrushSetup = new SolidColorBrushSetupViewModel(new SolidColorBrush() { Color=Color.FromArgb(255,0,0,0)}, SetColorValueAsBackground);
+            }
 
             OnPropertyChanged(nameof(Plugin));
 
             CalibrateZSliderValues(_EBoardViewModel.EBoardDepth);
         }
+
+        ApplyRotationAngleValue(RotationAngleValue);
     }
 
     public void MoveXY(ElementViewModel elementViewModel, Point deltaPosition)
@@ -405,6 +504,31 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
 
     [RelayCommand]
+    private void SetColorValueAsBackground()
+    {
+        Plugin.ApplyBrush(BackgroundBrushSetup.ColorBrush, BrushTargets.Background);
+    }
+
+    [RelayCommand]    
+    private void SetColorValueAsForeground()
+    {
+        Plugin.ApplyBrush(ForegroundBrushSetup.ColorBrush, BrushTargets.Foreground);
+    }
+
+    [RelayCommand]
+    private void SetColorValueAsBorder()
+    {
+        Plugin.ApplyBrush(BorderBrushSetup.ColorBrush, BrushTargets.Border);
+    }
+
+    [RelayCommand]
+    private void SetColorValueAsHighlight()
+    {
+        Plugin.ApplyBrush(HighlightBrushSetup.ColorBrush, BrushTargets.Highlight);
+    }
+
+
+    [RelayCommand]
     private void DeleteElement(object s)
     {
         _EBoardViewModel?.RemoveElement(this);
@@ -416,7 +540,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     {
         ImagePath = string.Empty;
 
-        Plugin.ApplyBackgroundBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush);
+        Plugin.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, BrushTargets.Background);
     }
 
 

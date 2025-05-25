@@ -9,14 +9,17 @@ internal static class PluginFactory
 {
     internal static IPlugin? GetPluginByCommand(string pluginCategory, string command)
     {
-        string pluginView = string.Concat($"EBoard.Plugins.{pluginCategory}.{command}.{command}View");
-        string pluginViewModel = string.Concat($"EBoard.Plugins.{pluginCategory}.{command}.{command}ViewModel");
+        string pluginView = string.Concat($"EBoardSDK.Plugins.{pluginCategory}.{command}.{command}View");
+        string pluginViewModel = string.Concat($"EBoardSDK.Plugins.{pluginCategory}.{command}.{command}ViewModel");
 
         Type? type_PluginView = Type.GetType(pluginView);
         Type? type_PluginViewModel = Type.GetType(pluginViewModel);
 
         if (type_PluginView is null || type_PluginViewModel is null)
-        {
+        {                   
+
+
+
             return null;
         }
 
@@ -25,6 +28,7 @@ internal static class PluginFactory
 
         if (pluginViewInstance is not null && plugin is not null)
         {
+            // TODO plugin is not the viewmodel
             pluginViewInstance.DataContext = plugin;
 
             return plugin;

@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:eboard="clr-namespace:EBoard"
                     xmlns:vms="clr-namespace:EBoard.ViewModels"
-                    xmlns:views="clr-namespace:EBoard.Views">
+                    xmlns:views="clr-namespace:EBoard.Views"
+                    xmlns:esdkctrl ="clr-namespace:EBoardSDK.Controls;assembly=EBoardSDK">
 
     <DataTemplate DataType="{x:Type vms:MainViewModel}">
         <eboard:MainWindow/>
@@ -22,6 +23,10 @@
 
     <DataTemplate DataType="{x:Type vms:EBoardViewModel}">
         <views:EBoardView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type esdkctrl:SolidColorBrushSetupViewModel}">
+        <esdkctrl:SolidColorBrushSetup/>
     </DataTemplate>
 
 

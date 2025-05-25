@@ -7,8 +7,7 @@
              d:DataContext="{d:DesignInstance Type=local:EllipseViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
-    
+        
     <Ellipse
         Fill="{Binding BrushManagement.Background}"
         StrokeThickness="{Binding BorderManagement.BorderThickness}"

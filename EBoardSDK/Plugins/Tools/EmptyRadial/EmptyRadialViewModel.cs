@@ -9,10 +9,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using EBoardSDK.Plugins.Tools.Uptime;
+using System.Reflection;
 
 namespace EBoardSDK.Plugins.Tools.EmptyRadial;
 
-public partial class EmptyRadialViewModel : ObservableObject, IPlugin
+public partial class EmptyRadialViewModel : EBoardElementPluginBaseViewModel
 {
 
     [ObservableProperty]
@@ -27,91 +29,29 @@ public partial class EmptyRadialViewModel : ObservableObject, IPlugin
         GradientOrigin = new Point(0.25, 0.5)
     };
 
+    public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
 
-    #region IPlugin properties
+    private string pluginHeader = "Empty Radial Element";
 
-    public BorderManagement BorderManagement { get; set; }
+    public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
 
-
-    public BrushManagement BrushManagement { get; set; }
-
-
-    // !!!! prüfen ob sinnvoll und relevant, ggf. ersetzen
-    // später ggf. per Factory oder via Singleton, falls nötig
-    // ist für die option, im load des programms den view typ sauber
-    // instanzieren zu können.
-    private StandardTextView plugin = new StandardTextView();
-    public UserControl Plugin => plugin;
-
-
-    [ObservableProperty]
-    private CornerRadius cornerRadius;
-    [ObservableProperty]
-    private int cornerRadiusValue;
-
-    partial void OnCornerRadiusValueChanged(int value)
-    {
-        BorderManagement.CornerRadius = new CornerRadius(value);
-
-        OnPropertyChanged(nameof(BorderManagement));
-    }
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private double height;
-
-    partial void OnHeightChanged(double value)
-    {
-        BorderManagement.Height = value;
-    }
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private double width;
-
-    partial void OnWidthChanged(double value)
-    {
-        BorderManagement.Width = value;
-    }
-
-
-    public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
-
-
-    [ObservableProperty]
-    private string pluginHeader = "Empty Radial";
-
-
-    [ObservableProperty]
     private string pluginName = "EmptyRadial";
 
-    #endregion
+    public override string PluginName { get { return pluginName; } set { pluginName = value; } }
 
+    public override string ElementPluginName => "Radial";
+
+    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
+
+    public override ResourceDictionary ResourceDictionary => new();
+
+    public override Type? ElementPluginModel => null;
+
+    public override Type ElementPluginView => typeof(EmptyRadialView);
+
+    public override Type ElementPluginViewModel => typeof(EmptyRadialViewModel);
 
     public EmptyRadialViewModel() => InstantiateProperties();
-
-
-    public bool ApplyBackgroundBrush(Brush brush)
-    {
-        try
-        {
-            BrushManagement.Background = brush;
-
-            OnPropertyChanged(nameof(BrushManagement));
-
-            OnPropertyChanged(nameof(BrushManagement.Background));
-
-            return true;
-        }
-        catch (Exception)
-        {
-
-            return false;
-        }
-    }
-
 
     private void InstantiateProperties()
     {
@@ -119,37 +59,15 @@ public partial class EmptyRadialViewModel : ObservableObject, IPlugin
         BrushManagement = new BrushManagement();
     }
 
-
-    public Task Load(string path, IElementDataSet elementDataSet)
+    public override Task<EBoardFeedbackMessage> Load(string path)
     {
-        return Task.CompletedTask;
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
     }
 
 
-    public Task Save(string path, IElementDataSet elementDataSet)
+    public override Task<EBoardFeedbackMessage> Save(string path)
     {
-        return Task.CompletedTask;
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
     }
-
-
-    public bool SelectionChange(bool isSelected)
-    {
-
-        if (isSelected)
-        {
-            BrushManagement.SwitchBorderToHighlight();
-
-            OnPropertyChanged(nameof(BrushManagement));
-
-            return true;
-        }
-
-        BrushManagement.SwitchBorderToBorder();
-
-        OnPropertyChanged(nameof(BrushManagement));
-
-        return false;
-    }
-
 
 }// EOF

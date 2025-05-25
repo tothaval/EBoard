@@ -2,11 +2,11 @@
  *  
  *  App 
  */
-using CommunityToolkit.Mvvm.DependencyInjection;
 using EBoard.IOProcesses;
-using EBoard.IOProcesses.DataSets;
 using EBoard.Navigation;
 using EBoard.ViewModels;
+using EBoardSDK;
+using EBoardSDK.Models;
 using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
@@ -25,37 +25,41 @@ public partial class App : Application
     private static string _ApplicationKey =
         @"EBoard .shOd:(1>tDOa!qI^`kl0s}[]sU,m$(?v6(p5$s?H?rP1Fb,zQ$PlUW'60tWE^~";// online generated uuid "cf645c2c-b646-4c2e-be76-6b15f1a4f6d3"
 
-
     public App() => _navigationStore = new NavigationStore();
 
-
-    private async Task<EboardConfig?> EBoardConfigInitialization(EboardConfig eboardConfig)
+    private Task<EboardConfig?> EBoardConfigInitialization(MainWindow mainWindow, EboardConfig eboardConfig)
     {
         if (eboardConfig != null)
         {
-            if (eboardConfig.EBoardIndex > -1 && eboardConfig.EBoardIndex < _MainViewModel.EBoardBrowserViewModel.EBoards.Count)
+            if (eboardConfig.EBoardIndex > 0 && eboardConfig.EBoardIndex <= _MainViewModel.EBoardBrowserViewModel.EBoards.Count)
             {
-                _MainViewModel.EBoardBrowserViewModel.SelectedEBoard = _MainViewModel.EBoardBrowserViewModel.EBoards[eboardConfig.EBoardIndex];
+                _MainViewModel.EBoardBrowserViewModel.SelectedEBoard = _MainViewModel.EBoardBrowserViewModel.EBoards[eboardConfig.EBoardIndex-1];
             }
 
             _MainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch = eboardConfig.EBoardBrowserSwitch;
 
-            Current.MainWindow.Left = eboardConfig.PlacementDataSet.Position.X;
-            Current.MainWindow.Top = eboardConfig.PlacementDataSet.Position.Y;
-
-            Current.MainWindow.Width = eboardConfig.BorderDataSet.Width;
-            Current.MainWindow.Height = eboardConfig.BorderDataSet.Height;
+            mainWindow.Left = eboardConfig.PlacementDataSet.Position.X;
+            mainWindow.Top = eboardConfig.PlacementDataSet.Position.Y;
+            
+            mainWindow.Width = eboardConfig.BorderDataSet.Width;
+            mainWindow.Height = eboardConfig.BorderDataSet.Height;
         }
 
-        return eboardConfig;
+        return Task.FromResult(eboardConfig);
     }
-
 
     protected async override void OnExit(ExitEventArgs e)
     {
-        EBoardShutdownManager eBoardShutdownManager = new EBoardShutdownManager(_MainViewModel);
+        var runner = new Runner();
 
-        await eBoardShutdownManager.Save();
+        var saveConfigResult = await runner.SaveConfig(_MainViewModel.GetEboardConfig());
+
+        if (!saveConfigResult.TaskResult.Equals(EBoardTaskResult.Success))
+        {
+            // TODO do stuff like logging, exception throwing etc.
+        }
+
+        var saveScreensResult = await runner.SaveScreens(_MainViewModel.GetScreenData());
 
         base.OnExit(e);
 
@@ -68,7 +72,6 @@ public partial class App : Application
         SplashScreen splashScreen = new SplashScreen();
         splashScreen.Show();
 
-
         if (StartInstance())
         {
             Application.Current.Shutdown(1);
@@ -76,24 +79,27 @@ public partial class App : Application
 
         CommunityToolkit.Mvvm.DependencyInjection.Ioc.Default.ConfigureServices(
             new ServiceCollection()
-                .AddTransient<IOProcessesInitializationManager>()
-                .AddTransient<EBoardConfigLoader>()
+                .AddSingleton<Runner>()
                 .BuildServiceProvider()
                 );
 
-        EBoardConfigLoader eBoardConfigLoader = Ioc.Default.GetRequiredService<EBoardConfigLoader>();
+        var eboardSdk = new Runner();
 
-        EboardConfig eboardConfig = await eBoardConfigLoader.LoadEBoardConfig();
+        var setup = await eboardSdk.Run();
 
-        _MainViewModel = new MainViewModel(_navigationStore, eboardConfig);
+        var config = await eboardSdk.GetConfigAsync(true);
+
+        config = await eboardSdk.GetPlugins(config);
+
+        var screens = await eboardSdk.GetScreensAsync();
+
+        _MainViewModel = new MainViewModel(_navigationStore, config);
+
+        _MainViewModel.SetScreenData(screens);
 
         MainWindow mainWindow = new MainWindow(_MainViewModel);
 
-        EBoardInitializationManager initializationManager = new EBoardInitializationManager(Ioc.Default.GetRequiredService<IOProcessesInitializationManager>(), _MainViewModel);
-
-        await initializationManager.LoadEBoardDataSets();
-
-        await EBoardConfigInitialization(eboardConfig);
+        await EBoardConfigInitialization(mainWindow, config);
 
         splashScreen.Close();
         mainWindow.Show();

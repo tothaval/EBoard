@@ -1,5 +1,6 @@
 ﻿namespace EBoardSDK.Interfaces;
 
+using EBoardSDK.Enums;
 using EBoardSDK.Models;
 using EBoardSDK.Plugins;
 using System.Windows.Controls;
@@ -17,12 +18,12 @@ public interface IPlugin : IElementTransform
 
     public abstract string PluginName { get; set; }
 
-    public bool ApplyBackgroundBrush(Brush brush);
+    public bool ApplyBrush(Brush brush, BrushTargets brushTargets);
 
-    public Task Load(string path, IElementDataSet elementDataSet);
+    public Task<EBoardFeedbackMessage> Load(string path);
 
 
-    public Task Save(string path, IElementDataSet elementDataSet);
+    public Task<EBoardFeedbackMessage> Save(string path);
 
 
     public bool SelectionChange(bool isSelected);

@@ -13,8 +13,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.Input;
+using EBoardSDK.Plugins.Tools.EmptyRadial;
+using System.Reflection;
 
-public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSelection, IElementBackgroundImage, IPluginData
+public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElementSelection, IElementBackgroundImage
 {
 
     [ObservableProperty]
@@ -22,17 +24,17 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
 
     partial void OnUserCommandStringChanged(string value)
     {
-
-
-
     }
+
+    [ObservableProperty]
+    private bool isSelected;
 
     private double Angle { get; set; }
 
     [ObservableProperty]
     private IPlugin summonee;
 
-    public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
+   //public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
 
     [ObservableProperty]
     private string imagePath;
@@ -40,7 +42,6 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
     {
         ChangeElementBackgroundToImage();
     }
-
 
     [ObservableProperty]
     private int rotationAngleValue;
@@ -53,7 +54,6 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
         }
     }
 
-
     [ObservableProperty]
     private RotateTransform rotateTransformValue;
 
@@ -62,10 +62,8 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
         Angle = RotationAngleValue;
     }
 
-
     [ObservableProperty]
     private Point transformOriginPoint;
-
 
     [ObservableProperty]
     private int cornerRadiusValueSummonee;
@@ -74,7 +72,6 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
     {
         UpdateCornerRadius(value);
     }
-
 
     [ObservableProperty]
     private int heightValue;
@@ -91,7 +88,6 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
         UpdateContentHeight(value);
     }
 
-
     [ObservableProperty]
     private int widthValue;
 
@@ -107,76 +103,6 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
         UpdateContentWidth(value);
     }
 
-
-
-
-    #region IPlugin properties
-
-    public BorderManagement BorderManagement { get; set; }
-
-
-    public BrushManagement BrushManagement { get; set; }
-
-
-    // !!!! prüfen ob sinnvoll und relevant, ggf. ersetzen
-    // später ggf. per Factory oder via Singleton, falls nötig
-    // ist für die option, im load des programms den view typ sauber
-    // instanzieren zu können.
-    private StandardTextView plugin = new StandardTextView();
-
-    public UserControl Plugin => plugin;
-
-
-    [ObservableProperty]
-    private CornerRadius cornerRadius;
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private int cornerRadiusValue;
-
-
-    partial void OnCornerRadiusValueChanged(int value)
-    {
-        BorderManagement.CornerRadius = new CornerRadius(value);
-    }
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private double height;
-
-    partial void OnHeightChanged(double value)
-    {
-        BorderManagement.Height = value;
-    }
-
-
-    [ObservableProperty]
-    private bool isSelected;
-
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private double width;
-
-    partial void OnWidthChanged(double value)
-    {
-        BorderManagement.Width = value;
-    }
-
-
-    [ObservableProperty]
-    private string pluginHeader = "Summoner";
-
-
-    [ObservableProperty]
-    private string pluginName = "Summoner";
-
-
-
-
     /// <summary>
     /// until a real plugin architecture is implemented, this serves as a mockup solution
     /// 
@@ -188,53 +114,48 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
     /// </summary>
     public List<string> PluginsCategoryElements { get; set; } = ["StandardText"];
 
-
     /// <summary>
     /// until a real plugin architecture is implemented, this serves as a mockup solution
     /// </summary>
     public List<string> PluginsCategoryShapes { get; set; } = ["Ellipse", "Rectangle"];
-
 
     /// <summary>
     /// until a real plugin architecture is implemented, this serves as a mockup solution
     /// </summary>
     public List<string> PluginsCategoryTools { get; set; } = [
         "SessionUptimeClock", "EmptyLinear", "EmptyRadial", "Summoner", "Uptime"];
-    #endregion
+    
+    public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
 
+    private string pluginHeader = "Summoner Element";
+
+    public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
+
+    private string pluginName = "Summoner";
+
+    public override string PluginName { get { return pluginName; } set { pluginName = value; } }
+
+    public override string ElementPluginName => "Summoner";
+
+    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
+
+    public override ResourceDictionary ResourceDictionary => new();
+
+    public override Type? ElementPluginModel => null;
+
+    public override Type ElementPluginView => typeof(SummonerView);
+
+    public override Type ElementPluginViewModel => typeof(SummonerViewModel);
 
     public SummonerViewModel() => InstantiateProperties();
-
-
-    public bool ApplyBackgroundBrush(Brush brush)
-    {
-        try
-        {
-            BrushManagement.Background = brush;
-
-            OnPropertyChanged(nameof(BrushManagement));
-
-            OnPropertyChanged(nameof(BrushManagement.Background));
-
-            return true;
-        }
-        catch (Exception)
-        {
-
-            return false;
-        }
-    }
-
 
     public void ChangeElementBackgroundToImage()
     {
         if (ImagePath != null && ImagePath != string.Empty)
         {
-            Summonee?.ApplyBackgroundBrush(new SharedMethod_UI().ChangeBackgroundToImage(Summonee.BrushManagement.Background, ImagePath));
+            Summonee?.ApplyBrush(new SharedMethod_UI().ChangeBackgroundToImage(Summonee.BrushManagement.Background, ImagePath), Enums.BrushTargets.Background);
         }
     }
-
-
 
     /// <summary>
     /// until a real command architecture is implemented, this serves as a mockup solution
@@ -283,14 +204,11 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
         return false;
     }
 
-
-
     [RelayCommand]
     private void DeleteElement(object s)
     {
         Summonee = null;
     }
-
 
     /// <summary>
     /// until a real command architecture is implemented, this serves as a mockup solution
@@ -331,38 +249,47 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
 
     }
 
-
     private void InstantiateProperties()
     {
         BorderManagement = new BorderManagement();
         BrushManagement = new BrushManagement();
     }
 
-
-    public Task Load(string path, IElementDataSet elementDataSet)
+    public override Task<EBoardFeedbackMessage> Load(string path)
     {
-        return Task.CompletedTask;
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
     }
 
+
+    public override Task<EBoardFeedbackMessage> Save(string path)
+    {
+        PluginDataSet.References.Add(new("Type", Summonee?.Plugin?.GetType().FullName));
+        PluginDataSet.References.Add(new("Name", Summonee?.PluginName));
+        PluginDataSet.References.Add(new("Header", Summonee?.PluginHeader));
+
+        //string contentDataPath = Path.Combine(path, linkDataFileName);
+
+        //var model = new LinkModel() { LinkTargetName = this.LinkTargetName, LinkTargetPath = this.LinkTargetPath };
+
+        //var serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, contentDataPath);
+
+        //if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        //{
+        //    // TODO do stuff
+        //}
+
+        //return serializationResult;
+
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
+    }
 
     [RelayCommand]
     private void ResetImage()
     {
         ImagePath = string.Empty;
 
-        Summonee.ApplyBackgroundBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush);
+        Summonee.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, Enums.BrushTargets.Background);
     }
-
-
-    public Task Save(string path, IElementDataSet elementDataSet)
-    {
-        PluginDataSet.References.Add(new("Type", Summonee?.Plugin?.GetType().FullName));
-        PluginDataSet.References.Add(new("Name", Summonee?.PluginName));
-        PluginDataSet.References.Add(new("Header", Summonee?.PluginHeader));
-
-        return Task.CompletedTask;
-    }
-
 
     [RelayCommand]
     public void Select()
@@ -372,33 +299,11 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
         Summonee?.SelectionChange(IsSelected);
     }
 
-
-    public bool SelectionChange(bool isSelected)
-    {
-
-        if (isSelected)
-        {
-            BrushManagement.SwitchBorderToHighlight();
-
-            OnPropertyChanged(nameof(BrushManagement));
-
-            return true;
-        }
-
-        BrushManagement.SwitchBorderToBorder();
-
-        OnPropertyChanged(nameof(BrushManagement));
-
-        return false;
-    }
-
-
     [RelayCommand]
     private void SetImage()
     {
         ImagePath = new SharedMethod_UI().SetBackgroundImage(ImagePath);
     }
-
 
     private void UpdateContentHeight(int height)
     {
@@ -408,7 +313,6 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
         }
     }
 
-
     private void UpdateContentWidth(int width)
     {
         if (Summonee is not null)
@@ -416,7 +320,6 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
             Summonee.Width = width;
         }
     }
-
 
     private void UpdateCornerRadius(int value)
     {
@@ -426,7 +329,6 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
         }
     }
 
-
     private void UpdateRotation(int rotationAngle)
     {
         RotateTransformValue = new RotateTransform(rotationAngle * -1);
@@ -435,6 +337,5 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
 
         Width = double.NaN;
     }
-
 
 }// EOF

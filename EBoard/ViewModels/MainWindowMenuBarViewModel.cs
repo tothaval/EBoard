@@ -8,7 +8,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoard.Commands.ElementCreationCommands;
-using EBoard.IOProcesses.DataSets;
 using EBoard.Utilities.Factories;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins.Elements.StandardText;
@@ -18,6 +17,8 @@ using System.Windows.Media.Media3D;
 using EBoardElementPluginLinker;
 using System.Collections.ObjectModel;
 using EBoardSDK.Plugins;
+using EBoardSDK.Models;
+using EBoard.IOProcesses.DataSets;
 
 namespace EBoard.ViewModels;
 
@@ -49,15 +50,15 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
     #endregion
 
     [ObservableProperty]
-    private ObservableCollection<EBoardElementPluginBaseViewModel> plugins;
+    private IList<EBoardElementPluginBaseViewModel> plugins;
 
-    public MainWindowMenuBarViewModel(MainViewModel mainViewModel, EboardConfig eboardConfig)
+    public MainWindowMenuBarViewModel(MainViewModel mainViewModel, EBoardSDK.Models.EboardConfig eboardConfig)
     {
         title = "EBoard";
 
         _MainViewModel = mainViewModel;
 
-        Plugins = eboardConfig.Plugins;
+        Plugins = eboardConfig.InstalledPlugins;
 
         InvokeElementCommand = new InvokeElementCommand(mainViewModel);
     }

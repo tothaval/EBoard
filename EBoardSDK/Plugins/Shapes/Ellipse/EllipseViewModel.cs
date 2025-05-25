@@ -10,67 +10,34 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using EBoardSDK.Plugins.Tools.Uptime;
+using System.Reflection;
 
-public partial class EllipseViewModel : ObservableObject, IPlugin
+public partial class EllipseViewModel : EBoardElementPluginBaseViewModel
 {
+    public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
 
-    #region IPlugin properties
+    private string pluginHeader = "Ellipse Shape Element";
 
-    public BorderManagement BorderManagement { get; set; }
+    public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
 
+    private string pluginName = "EllipseShape";
 
-    public BrushManagement BrushManagement { get; set; }
+    public override string PluginName { get { return pluginName; } set { pluginName = value; } }
 
+    public override string ElementPluginName => "Ellipse";
 
-    // !!!! prüfen ob sinnvoll und relevant, ggf. ersetzen
-    // später ggf. per Factory oder via Singleton, falls nötig
-    // ist für die option, im load des programms den view typ sauber
-    // instanzieren zu können.
-    private StandardTextView plugin = new StandardTextView();
-    public UserControl Plugin => plugin;
+    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
+    public override ResourceDictionary ResourceDictionary => new();
 
-    [ObservableProperty]
-    private CornerRadius cornerRadius;
-    [ObservableProperty]
-    private int cornerRadiusValue;
-    partial void OnCornerRadiusValueChanged(int value)
-    {
-        BorderManagement.CornerRadius = new CornerRadius(value);
-    }
+    public override Type? ElementPluginModel => null;
 
+    public override Type ElementPluginView => typeof(EllipseView);
 
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private double height;
-
-    partial void OnHeightChanged(double value)
-    {
-        BorderManagement.Height = value;
-    }
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private double width;
-
-    partial void OnWidthChanged(double value)
-    {
-        BorderManagement.Width = value;
-    }
-
-    [ObservableProperty]
-    private string pluginHeader = "Ellipse";
-
-
-    [ObservableProperty]
-    private string pluginName = "Ellipse";
-
-    #endregion
-
+    public override Type ElementPluginViewModel => typeof(EllipseViewModel);
 
     public EllipseViewModel() => InstantiateProperties();
-
 
     public bool ApplyBackgroundBrush(Brush brush)
     {
@@ -91,44 +58,20 @@ public partial class EllipseViewModel : ObservableObject, IPlugin
         }
     }
 
-
     private void InstantiateProperties()
     {
         BorderManagement = new BorderManagement();
         BrushManagement = new BrushManagement();
     }
 
-
-    public Task Load(string path, IElementDataSet elementDataSet)
+    public override Task<EBoardFeedbackMessage> Load(string path)
     {
-        return Task.CompletedTask;
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
     }
 
-
-    public Task Save(string path, IElementDataSet elementDataSet)
+    public override Task<EBoardFeedbackMessage> Save(string path)
     {
-        return Task.CompletedTask;
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
     }
-
-
-    public bool SelectionChange(bool isSelected)
-    {
-
-        if (isSelected)
-        {
-            BrushManagement.SwitchBorderToHighlight();
-
-            OnPropertyChanged(nameof(BrushManagement));
-
-            return true;
-        }
-
-        BrushManagement.SwitchBorderToBorder();
-
-        OnPropertyChanged(nameof(BrushManagement));
-
-        return false;
-    }
-
 
 }// EOF
