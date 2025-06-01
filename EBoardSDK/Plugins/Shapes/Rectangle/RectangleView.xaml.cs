@@ -9,7 +9,7 @@ namespace EBoardSDK.Plugins.Shapes.Rectangle
     {
         public RectangleView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

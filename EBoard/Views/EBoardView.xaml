@@ -6,75 +6,92 @@
              xmlns:local="clr-namespace:EBoard.Views"
              xmlns:vms="clr-namespace:EBoard.ViewModels"
              d:DataContext="{d:DesignInstance Type=vms:EBoardViewModel}"
+             xmlns:ut="clr-namespace:EBoard.Utilities"
              xmlns:esdkCtrl="clr-namespace:EBoardSDK.Controls;assembly=EBoardSDK"
+             xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup;assembly=EBoardSDK"
              x:Name="EBoard_Board"
              mc:Ignorable="d"
              ClipToBounds="True"            
+             Background="Transparent"
                                                                 
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
 
-        <SolidColorBrush x:Key="fgbrush" Color="#77CCEE"/>
-        <SolidColorBrush x:Key="bgbrush" Color="#000000"/>
-
         <Style TargetType="Label" >
-            <Setter Property="Foreground" Value="{StaticResource fgbrush}"/>
-            <Setter Property="Background" Value="{StaticResource bgbrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource EBoardEboardBrowserBrushForeground}"/>
+            <Setter Property="Background" Value="Transparent"/>
         </Style>
 
     </UserControl.Resources>
-    <Border Margin="5"
-            Padding="5"
-                                                           
-            Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"            
+
+        <Grid Background="Transparent">
+
+        <Border Margin="{Binding BorderManager.Margin}"
+            Padding="{Binding BorderManager.Padding}"
+            x:Name="ScreenBorder"
+                                                                
+            Background="{Binding BrushManager.Background}"
             BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
             BorderThickness="{Binding BorderManager.BorderThickness, NotifyOnSourceUpdated=True}"
             CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"
-            Width="{Binding BorderManager.Width,
-        NotifyOnSourceUpdated=True}"
-            Height="{Binding BorderManager.Height,
-        NotifyOnSourceUpdated=True}"
-            MouseLeftButtonDown="Border_MouseLeftButtonDown"
-            MouseLeftButtonUp="Border_MouseLeftButtonUp"
             >
+            <Border.InputBindings>
+                <MouseBinding Command="{Binding LeftClickCommand}" Gesture="LeftClick" />
+
+            </Border.InputBindings>
 
 
-        <Border.ContextMenu>
+            <Border.ContextMenu>
 
-            <ContextMenu>
+                <ContextMenu>
 
-                <Label Content="EBoard"/>
-                
-                    <MenuItem Header="EBoard Switch"
-                               Style="{StaticResource SubMenuItemStyle}">
+                    <Label Content="{Binding EBoardName}" Background="Transparent" Foreground="{DynamicResource EBoardEboardBrowserBrushForeground}"/>
+
+                    <MenuItem Header="EBoard Switch">
                         <WrapPanel Orientation="Horizontal" Background="Transparent" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <MenuItem Header="First" Command="{Binding SwitchToEboardCommand}" CommandParameter="First"
+                            <MenuItem Header="First" Command="{Binding SwitchToEboardCommand}" CommandParameter="First"
                                Style="{StaticResource SubMenuItemStyle2}"/>
-                        <MenuItem Header="Last" Command="{Binding SwitchToEboardCommand}" CommandParameter="Last"
+                            <MenuItem Header="Last" Command="{Binding SwitchToEboardCommand}" CommandParameter="Last"
                                Style="{StaticResource SubMenuItemStyle2}"/>
 
                         </WrapPanel>
 
                         <WrapPanel Orientation="Horizontal" Background="Transparent" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <MenuItem Header="Prev" Command="{Binding SwitchToEboardCommand}" CommandParameter="Prev"
+                            <MenuItem Header="Prev" Command="{Binding SwitchToEboardCommand}" CommandParameter="Prev"
                                Style="{StaticResource SubMenuItemStyle2}"/>
-                        <MenuItem Header="Next" Command="{Binding SwitchToEboardCommand}" CommandParameter="Next"
+                            <MenuItem Header="Next" Command="{Binding SwitchToEboardCommand}" CommandParameter="Next"
                                Style="{StaticResource SubMenuItemStyle2}"/>
 
                         </WrapPanel>
                     </MenuItem>
 
+                    <MenuItem Header="Size">
+                        <MenuItem Header="Dimensions">
+                            <MenuItem Header="Area">
 
-                <MenuItem Header="Design">
+                                <WrapPanel Orientation="Horizontal">
+                                    <Label Content="Width"
+                                           MinWidth="50"/>
+                                    <Label Content="{Binding WidthValue, NotifyOnSourceUpdated=True}"
+                               MinWidth="35"/>
+                                    <Slider Value="{Binding WidthValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="255"
+                            Maximum="4096"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                                </WrapPanel>
 
-                        <WrapPanel Orientation="Horizontal">
-                            <Label Content="Width" 
-                                   MinWidth="50"/>
-                            <Label Content="{Binding Width, NotifyOnSourceUpdated=True}"
-                                   MinWidth="30"/>
-                            <Slider Value="{Binding Width, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="150"
+                                <WrapPanel Orientation="Horizontal">
+                                    <Label Content="Height"
+                                           MinWidth="50"/>
+                                    <Label Content="{Binding HeightValue, StringFormat=d0, NotifyOnSourceUpdated=True}"
+                               MinWidth="35"/>
+                                    <Slider Value="{Binding HeightValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="255"
                             Maximum="2048"
                             MinWidth="100"
                             SmallChange="1"
@@ -82,107 +99,169 @@
                             Interval="1"
                             Orientation="Horizontal"/>
 
-                        </WrapPanel>
-                    
-                    
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="Height"
-                           MinWidth="50"/>
-                        <Label Content="{Binding Height, StringFormat=d0, NotifyOnSourceUpdated=True}"
-                           MinWidth="30"/>
-                        <Slider Value="{Binding Height, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="50"
-                            Maximum="1024"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
+                                </WrapPanel>
 
-                    </WrapPanel>
+                                <MenuItem Header="Reset Size"
+                              Command="{Binding ResetSizeCommand}"
+                              />
 
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="Corners"
-                           MinWidth="50"/>
-                        <Label Content="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True}"
-                           MinWidth="30"/>
-                        <Slider Value="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="0"
-                            Maximum="90"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
+                            </MenuItem>
 
-                    </WrapPanel>
+                            <MenuItem Header="Margin">
+                                <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding MarginQuadSetup}"
+                                                                  
+                                                                  Maximum="25"
+                                                                  Value1="Left"
+                                                                  Value2="Top"
+                                                                  Value3="Right"
+                                                                  Value4="Bottom"
+                                                                  OKCommand="{Binding ResetMarginCommand}"/>
+                            </MenuItem>
 
-                    <MenuItem Header="Colors">
-                        <MenuItem Header="Background">
-                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BackgroundBrushSetup}"/>
+                            <MenuItem Header="Padding">
+                                <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding PaddingQuadSetup}"
+                                                                  
+                                                                  Maximum="25"
+                                                                  Value1="Left"
+                                                                  Value2="Top"
+                                                                  Value3="Right"
+                                                                  Value4="Bottom"
+                                                                  OKCommand="{Binding ResetPaddingCommand}"/>
+                            </MenuItem>
+
+                            <MenuItem Header="Thickness">
+                                <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding ThicknessQuadSetup}"
+                                                                  
+                                                                  Maximum="100"
+                                                                  Value1="Left"
+                                                                  Value2="Top"
+                                                                  Value3="Right"
+                                                                  Value4="Bottom"
+                                                                  OKCommand="{Binding ResetThicknessCommand}"/>
+                            </MenuItem>
+
                         </MenuItem>
 
-                        <!--<MenuItem Header="Foreground">
-                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding ForegroundBrushSetup}"/>
-                        </MenuItem>-->
-
-                        <MenuItem Header="Border">
-                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BorderBrushSetup}"/>
+                        <MenuItem Header="Corners">
+                            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding CornerRadiusQuadSetup}"
+                                                                  
+                                                                  Maximum="100"
+                                                                  Value1="TopLeft"
+                                                                  Value2="TopRight"
+                                                                  Value3="BottomRight"
+                                                                  Value4="BottomLeft"
+                                                                  OKCommand="{Binding ResetCornersCommand}"/>
                         </MenuItem>
-
-                        <!--<MenuItem Header="Highlight">
-                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding HighlightBrushSetup}"/>
-                        </MenuItem>-->
                     </MenuItem>
+
+                    <MenuItem Header="Design">
+                        <MenuItem Header="Colors">
+                            <MenuItem Header="Background">
+                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BackgroundBrushSetup}"/>
+                            </MenuItem>
+
+                            <MenuItem Header="Foreground">
+                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding ForegroundBrushSetup}"/>
+                            </MenuItem>
+
+                            <MenuItem Header="Border">
+                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BorderBrushSetup}"/>
+                            </MenuItem>
+
+                            <MenuItem Header="Highlight">
+                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding HighlightBrushSetup}"/>
+                            </MenuItem>
+                        </MenuItem>
+
+                        <MenuItem Header="Image">
+                            <MenuItem Header="Background" Command="{Binding SetImageCommand}"/>
+                            <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
+                            <MenuItem Header="Border" Command="{Binding SetImageBorderCommand}"/>
+                            <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
+
+                        </MenuItem>
+
+                        <MenuItem Header="Reset">
+                            <MenuItem Header="Background" Command="{Binding ResetImageCommand}"/>
+                        </MenuItem>
+
+                    </MenuItem>
+
+                    <MenuItem Header="Delete" Command="{Binding DeleteEBoardCommand}"/>
+
+                </ContextMenu>
+
+            </Border.ContextMenu>
+
+            <Grid>
+          
+
+                <!--<Border Name="mask"
+                    Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+                    CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"      
+                    />-->
+
+                <Grid
+                    Width="{Binding BorderManager.Width, NotifyOnSourceUpdated=True}"
+                    Height="{Binding BorderManager.Height, NotifyOnSourceUpdated=True}">
                     
-                    <MenuItem Header="+Image" Command="{Binding SetImageCommand}"/>
+                    
+                    
+                    <!--<Grid.OpacityMask>
+                        <VisualBrush Visual="{Binding ElementName=mask}"/>
+                    </Grid.OpacityMask>-->
 
-                    <MenuItem Header="Reset" Command="{Binding ResetImageCommand}"/>
-                </MenuItem>
-
-                <MenuItem Header="Delete" Command="{Binding DeleteEBoardCommand}"/>
-
-            </ContextMenu>
-
-        </Border.ContextMenu>
-
-            <ItemsControl ItemsSource="{Binding Elements}"
+                    <ItemsControl ItemsSource="{Binding Elements}"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch"                      
                       ClipToBounds="True"
                       MinWidth="200"
                       MinHeight="200"
                       AllowDrop="True"
-                      >
+                              Background="Transparent"
+                          
+                          x:Name="ScreenControl">
+                        
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
 
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <Canvas AllowDrop="True">
+                                    <Canvas AllowDrop="True"
+                                    ClipToBounds="True"
+                                    SnapsToDevicePixels="True"
+                                    Width="{Binding BorderManager.Width, NotifyOnSourceUpdated=True}"
+                                    Height="{Binding BorderManager.Height, NotifyOnSourceUpdated=True}"/>
 
-                        </Canvas>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemContainerStyle>
-                    <Style>
-                        <Setter Property="Canvas.Left"
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style>
+                            <Setter Property="Canvas.Left"
                                 Value="{Binding XPosition, Mode=TwoWay,
                             NotifyOnSourceUpdated=True}"/>
 
-                        <Setter Property="Canvas.Top"
+                            <Setter Property="Canvas.Top"
                                 Value="{Binding YPosition, Mode=TwoWay,
                             NotifyOnSourceUpdated=True}"/>
 
-                        <Setter Property="Panel.ZIndex"
+                            <Setter Property="Panel.ZIndex"
                                 Value="{Binding PlacementManager.Z, Mode=TwoWay,
                             NotifyOnSourceUpdated=True}"/>
-                    </Style>
-                </ItemsControl.ItemContainerStyle>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <local:ElementView/>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
 
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="vms:ElementViewModel">
+                            <local:ElementView/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+                </Grid>
+
+            </Grid>
+            
     </Border>
+        </Grid>
+
 </UserControl>

@@ -9,7 +9,7 @@ namespace EBoardSDK.Plugins.Shapes.Ellipse
     {
         public EllipseView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

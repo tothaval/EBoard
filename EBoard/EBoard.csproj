@@ -70,18 +70,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\" />
     <Folder Include="Resources\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EBoardElementLinkPlugin\EBoardElementPluginLinker.csproj" />
+    <ProjectReference Include="..\EBoardElementPluginBudgeteer\EBoardElementPluginBudgeteer\EBoardElementPluginBudgeteer.csproj" />
+    <ProjectReference Include="..\EBoardElementPluginCommand\EBoardElementPluginCommand\EBoardElementPluginCommand.csproj" />
+    <ProjectReference Include="..\EboardElementPluginCountDownTimer\EboardElementPluginCountDownTimer\EboardElementPluginCountDownTimer.csproj" />
+    <ProjectReference Include="..\EBoardElementPluginMyNote\EBoardElementPluginMyNote\EBoardElementPluginMyNote.csproj" />
     <ProjectReference Include="..\EBoardSDK\EBoardSDK.csproj" />
+    <ProjectReference Include="..\__EboardElementPlugins\EEP_BudgetWatcher\EEP_BudgetWatcher\EEP_BudgetWatcher.csproj" />
+    <ProjectReference Include="..\__EboardElementPlugins\EEP_ResistorCalculator\EEP_ResistorCalculator\EEP_ResistorCalculator.csproj" />
   </ItemGroup>
 
   <ItemGroup>

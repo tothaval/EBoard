@@ -5,11 +5,9 @@ using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardConfigManager.Models;
 using EBoardSDK.Models;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
-using System.Windows.Input;
+using System.Reflection;
 
 public class Runner
 {
@@ -17,7 +15,6 @@ public class Runner
 
     public Runner()
     {
-
     }
 
     public async Task<EBoardFeedbackMessage> Run()
@@ -47,11 +44,11 @@ public class Runner
     {
         if (loadFromDefault)
         {
-            var configPaths = await GetConfigPathsAsync();
+            var configPaths = await this.GetConfigPathsAsync();
 
             if (configPaths != null)
             {
-                var defaultPath = Path.Combine(configPaths.ConfigFolder, PresetFilenames.ConfigFilename);
+                var defaultPath = Path.Combine(configPaths.ConfigFolder, this.PresetFilenames.ConfigFilename);
 
                 return await Loader.LoadJsonFile<EboardConfig>(defaultPath);
             }
@@ -64,7 +61,7 @@ public class Runner
     {
         IList<EboardScreen> eboardScreens = [];
 
-        var configPaths = await GetConfigPathsAsync();
+        var configPaths = await this.GetConfigPathsAsync();
 
         if (configPaths != null)
         {
@@ -88,8 +85,8 @@ public class Runner
                         escreen.Elements.Add(elementConfig);
                     }
                     );
-               
-                eboardScreens.Add(escreen);                
+
+                eboardScreens.Add(escreen);
             });
         }
 
@@ -98,11 +95,11 @@ public class Runner
 
     private async Task<string> GetDefaultPathAsync()
     {
-        var configPaths = await GetConfigPathsAsync();
+        var configPaths = await this.GetConfigPathsAsync();
 
         if (configPaths != null)
         {
-            var defaultPath = Path.Combine(configPaths.ConfigFolder, PresetFilenames.ConfigFilename);
+            var defaultPath = Path.Combine(configPaths.ConfigFolder, this.PresetFilenames.ConfigFilename);
 
             return defaultPath;
         }
@@ -110,14 +107,25 @@ public class Runner
         return string.Empty;
     }
 
-
     public async Task<EboardConfig> GetPlugins(EboardConfig eboardConfig)
     {
-        var configPaths = await GetConfigPathsAsync();
+        var configPaths = await this.GetConfigPathsAsync();
 
         if (configPaths != null)
         {
-            eboardConfig.InstalledPlugins = await PluginLoader.LoadPlugins(configPaths.PluginFolder);
+#if DEBUG
+            try
+            {
+                var assembly = Assembly.GetEntryAssembly().Location;
+                var localFolder = new FileInfo(assembly);
+                eboardConfig.CurrentDevelopmentPlugins = await PluginLoader.LoadPlugins(localFolder.DirectoryName);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+#endif
+            eboardConfig.ElementPlugins = await PluginLoader.LoadPlugins(configPaths.PluginFolder);
         }
 
         return eboardConfig;
@@ -125,7 +133,7 @@ public class Runner
 
     public async Task<EBoardFeedbackMessage> SaveConfig(EboardConfig eboardConfig)
     {
-        var configFilePath = await GetDefaultPathAsync();
+        var configFilePath = await this.GetDefaultPathAsync();
 
         if (!string.IsNullOrWhiteSpace(configFilePath))
         {
@@ -133,15 +141,15 @@ public class Runner
 
             return new EBoardFeedbackMessage()
             {
-                ResultMessage = result.ToString(),
-                TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown
+                ResultMessage = $"{configFilePath} :: saving eboard config: {result}",
+                TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
             };
         }
 
         return new EBoardFeedbackMessage()
         {
             ResultMessage = "file string corrupted or operation unsuccessful",
-            TaskResult = EBoardTaskResult.Failure
+            TaskResult = EBoardTaskResult.Failure,
         };
     }
 
@@ -155,7 +163,7 @@ public class Runner
            async element =>
            {
                //eboard.screen
-               var filename = string.Join("", PresetFilenames.ElementFilename.Replace("element", element.EID));
+               var filename = string.Join("", this.PresetFilenames.ElementFilename.Replace("element", element.EID));
 
                var path = Path.Combine(screenfolderpath, filename);
 
@@ -167,8 +175,8 @@ public class Runner
 
                feedbackMessages.Add(new EBoardFeedbackMessage()
                {
-                   ResultMessage = $"{result}",
-                   TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown
+                   ResultMessage = $"{datafilepath} :: saving element {element.ID}: {result}",
+                   TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
                });
            });
 
@@ -178,13 +186,13 @@ public class Runner
     public Task<IList<EBoardFeedbackMessage>> SaveScreens(IList<EboardScreen> eboardScreens)
     {
         IList<EBoardFeedbackMessage> feedbackMessages = [];
-        var screensPath = GetConfigPathsAsync().Result.ScreensFolder;
+        var screensPath = this.GetConfigPathsAsync().Result.ScreensFolder;
 
         eboardScreens.AsParallel().ForAll(
            async escreen =>
            {
                //eboard.screen
-               var filename = string.Join("", PresetFilenames.ScreensFilename.Replace("eboard", escreen.EBID));
+               var filename = string.Join("", this.PresetFilenames.ScreensFilename.Replace("eboard", escreen.EBID));
 
                var path = Path.Combine(screensPath, filename);
 
@@ -202,19 +210,18 @@ public class Runner
 
                if (Loader.DirExists(elementfolderpath))
                {
-                   var escreenElementSaveResult = await SaveScreenElements(escreen.Elements, elementfolderpath);
+                   var escreenElementSaveResult = await this.SaveScreenElements(escreen.Elements, elementfolderpath);
 
                    // TODO: find a solution for logging or processing the resultmessage list of the element save function if need be.
                }
 
                feedbackMessages.Add(new EBoardFeedbackMessage()
                {
-                   ResultMessage = $"{result}",
-                   TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown
+                   ResultMessage = $"{path} :: saving eboard {escreen.ID}: {result}",
+                   TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
                });
            });
 
         return Task.FromResult(feedbackMessages);
     }
-
 }

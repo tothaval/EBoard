@@ -1,9 +1,6 @@
 ﻿using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardConfigManager.Models;
-using System.Reflection.Metadata;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 
 namespace EBoardConfigManager
 {
@@ -15,7 +12,6 @@ namespace EBoardConfigManager
 
         public ConfigurationSetup()
         {
-
         }
 
         public bool CleanFolderAsync(string folder)
@@ -28,7 +24,7 @@ namespace EBoardConfigManager
             {
                 foreach (string file in files)
                 {
-                   File.Delete(file);
+                    File.Delete(file);
                 }
             }
 
@@ -59,21 +55,20 @@ namespace EBoardConfigManager
 
         public async Task<bool> Run<T>()
         {
-            var pathsearch = SearchForConfiguration().Result;
-            var foldersearch = SearchForDefaultConfiguration().Result;
-            
+            var pathsearch = this.SearchForConfiguration().Result;
+            var foldersearch = this.SearchForDefaultConfiguration().Result;
+
             if (foldersearch.Equals(Result.Success) && pathsearch.Equals(Result.Success))
             {
                 return true;
             }
 
-            _ = await SetupPresets<T>();
+            _ = await this.SetupPresets<T>();
 
-            var search = SearchForDefaultConfiguration().Result;
+            var search = this.SearchForDefaultConfiguration().Result;
 
             return search.Equals(Result.Success);
         }
-
 
         private Task<Result> SearchForConfiguration()
         {
@@ -103,7 +98,7 @@ namespace EBoardConfigManager
             {
                 ConfigFolder = PresetDirectories.DefaultConfigFolder,
                 PluginFolder = PresetDirectories.DefaultPluginsFolder,
-                ScreensFolder = PresetDirectories.DefaultScreensFolder
+                ScreensFolder = PresetDirectories.DefaultScreensFolder,
             };
 
             var result = Saver.SaveJsonFile(PresetFilenames.PathsFilename, configPaths);

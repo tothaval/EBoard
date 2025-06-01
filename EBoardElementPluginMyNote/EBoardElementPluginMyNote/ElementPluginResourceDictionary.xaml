@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    x:Name="ElementPluginResources"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:elementPlugin ="clr-namespace:EBoardElementPluginMyNote"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    
+    <DataTemplate DataType="{x:Type elementPlugin:MyNoteViewModel}">
+        <elementPlugin:MyNoteView/>
+    </DataTemplate>
+
+    
+</ResourceDictionary>

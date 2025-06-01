@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:EEP_ResistorCalculator">
+
+    <DataTemplate DataType="{x:Type local:ResistorCalculatorViewModel}">
+        <local:ResistorCalculatorView/>
+    </DataTemplate>
+
+    <ImageBrush ImageSource="/EEP_ResistorCalculator;component/icon.png"                
+                x:Key="ResistorCalculator_Logo"/>
+
+</ResourceDictionary>

@@ -7,6 +7,7 @@
              xmlns:vms="clr-namespace:EBoard.ViewModels"
              xmlns:ut="clr-namespace:EBoard.Utilities"
              xmlns:esdkCtrl="clr-namespace:EBoardSDK.Controls;assembly=EBoardSDK"
+             xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup;assembly=EBoardSDK"
              d:DataContext="{d:DesignInstance Type=vms:ElementViewModel}"
              x:Name="Element"
              mc:Ignorable="d" 
@@ -18,12 +19,10 @@
     <UserControl.Resources>
 
         <ut:VisibilityConverterToCollapsed x:Key="VisibilityToCollapsed"/>
-        <SolidColorBrush x:Key="fgbrush" Color="#77CCEE"/>
-        <SolidColorBrush x:Key="bgbrush" Color="#000000"/>
 
         <Style TargetType="Label" >
-            <Setter Property="Foreground" Value="{StaticResource fgbrush}"/>
-            <Setter Property="Background" Value="{StaticResource bgbrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource EBoardEboardBrowserBrushForeground}"/>
+            <Setter Property="Background" Value="Transparent"/>
         </Style>
 
     </UserControl.Resources>
@@ -33,8 +32,10 @@
             MouseLeftButtonUp="Border_MouseLeftButtonUp"
             MouseMove="Border_MouseMove"
             MouseWheel="Border_MouseWheel"
+            x:Name="ElementBorder"
             RenderTransformOrigin="{Binding TransformOriginPoint, NotifyOnSourceUpdated=True}"
-            RenderTransform="{Binding RotateTransformValue, NotifyOnSourceUpdated=True}">
+            RenderTransform="{Binding RotateTransformValue, NotifyOnSourceUpdated=True}"
+            ClipToBounds="True">
 
         <Border.InputBindings>
             <MouseBinding Gesture="Shift+LeftClick" Command="{Binding SelectCommand}"/>
@@ -44,7 +45,7 @@
 
             <ContextMenu Name="ElementContextMenu">
 
-                <Label Content="Element"/>
+                <Label Content="{Binding Plugin.PluginHeader}" Background="Transparent" Foreground="{DynamicResource EBoardEboardBrowserBrushForeground}"/>
 
                 <MenuItem Header="Placement">
                     <WrapPanel Orientation="Horizontal">
@@ -114,58 +115,106 @@
 
                 </MenuItem>
 
+                <MenuItem Header="Size">
+
+
+                    <MenuItem Header="Dimensions">
+
+                        <MenuItem Header="Area">
+                            
+                                <WrapPanel Orientation="Horizontal">
+                                    <Label Content="Width"
+                                           MinWidth="50"/>
+                                    <Label Content="{Binding WidthValue, NotifyOnSourceUpdated=True}"
+                               MinWidth="35"/>
+                                    <Slider Value="{Binding WidthValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="60"
+                            Maximum="1024"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                                </WrapPanel>
+
+                                <WrapPanel Orientation="Horizontal">
+                                    <Label Content="Height"
+                                           MinWidth="50"/>
+                                    <Label Content="{Binding HeightValue, StringFormat=d0, NotifyOnSourceUpdated=True}"
+                               MinWidth="35"/>
+                                    <Slider Value="{Binding HeightValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="60"
+                            Maximum="1024"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+
+                                </WrapPanel>
+
+
+
+                                <MenuItem Header="Reset Size"
+                              Command="{Binding ResetSizeCommand}"
+                              />
+
+                        </MenuItem>
+
+
+                        <MenuItem Header="Margin">
+                            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding MarginQuadSetup}"
+                                                                  
+                                                                  Maximum="25"
+                                                                  Value1="Left"
+                                                                  Value2="Top"
+                                                                  Value3="Right"
+                                                                  Value4="Bottom"
+                                                                  OKCommand="{Binding ResetMarginCommand}"/>
+                        </MenuItem>
+
+                        <MenuItem Header="Padding"
+                                  Visibility="{Binding PluginNoDefaultBordersSet, Converter={StaticResource VisibilityToCollapsed}}">
+                            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding PaddingQuadSetup}"
+                                                                  
+                                                                  Maximum="25"
+                                                                  Value1="Left"
+                                                                  Value2="Top"
+                                                                  Value3="Right"
+                                                                  Value4="Bottom"
+                                                                  OKCommand="{Binding ResetPaddingCommand}"/>
+                        </MenuItem>
+
+                        <MenuItem Header="Thickness">
+                            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding ThicknessQuadSetup}"
+                                                                  
+                                                                  Maximum="200"
+                                                                  Value1="Left"
+                                                                  Value2="Top"
+                                                                  Value3="Right"
+                                                                  Value4="Bottom"
+                                                                  OKCommand="{Binding ResetThicknessCommand}"/>
+                        </MenuItem>
+
+                    </MenuItem>
+
+                    <MenuItem Header="Corners"
+                              Visibility="{Binding PluginNoDefaultBordersSet, Converter={StaticResource VisibilityToCollapsed}}">                        
+                            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding CornerRadiusQuadSetup}"
+                                                                  
+                                                                  Maximum="100"
+                                                                  Value1="TopLeft"
+                                                                  Value2="TopRight"
+                                                                  Value3="BottomRight"
+                                                                  Value4="BottomLeft"
+                                                                  OKCommand="{Binding ResetCornersCommand}"/>
+                    </MenuItem>                      
+                 
+                    
+                    
+                </MenuItem>
 
                 <MenuItem Header="Design">
-
-
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="Width"
-                               MinWidth="50"/>
-                        <Label Content="{Binding WidthValue, NotifyOnSourceUpdated=True}"
-                               MinWidth="35"/>
-                        <Slider Value="{Binding WidthValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="60"
-                            Maximum="1024"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-
-                    </WrapPanel>
-
-
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="Height"
-                               MinWidth="50"/>
-                        <Label Content="{Binding HeightValue, StringFormat=d0, NotifyOnSourceUpdated=True}"
-                               MinWidth="35"/>
-                        <Slider Value="{Binding HeightValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="60"
-                            Maximum="1024"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-
-                    </WrapPanel>
-
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="Corners"
-                               MinWidth="50"/>
-                        <Label Content="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True}"
-                               MinWidth="30"/>
-                        <Slider Value="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="0"
-                            Maximum="90"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-
-                    </WrapPanel>
 
                     <MenuItem Header="Colors">
                         <MenuItem Header="Background">
@@ -185,9 +234,17 @@
                         </MenuItem>
                     </MenuItem>
 
-                    <MenuItem Header="+Image" Command="{Binding SetImageCommand}"/>
+                    <MenuItem Header="Image">
+                        <MenuItem Header="Background" Command="{Binding SetImageCommand}"/>
+                        <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
+                        <MenuItem Header="Border" Command="{Binding SetImageBorderCommand}"/>
+                        <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
 
-                    <MenuItem Header="Reset" Command="{Binding ResetImageCommand}"/>
+                    </MenuItem>
+
+                    <MenuItem Header="Reset">
+                        <MenuItem Header="Background" Command="{Binding ResetImageCommand}"/>
+                    </MenuItem>
 
                 </MenuItem>
 
@@ -197,40 +254,53 @@
 
         </Border.ContextMenu>
 
-
-        <!-- Z und Rotation über Element ausgeben, später per option oder custom control
-                schick machen
-                
-                Foreground="{Binding Plugin.BrushManagement.Foreground}"
-                geht irgendwie nicht, obwohl es für das kontextmenu geht...        
-        -->
-
-        <Grid Background="Transparent">
+        <Grid Background="Transparent" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
+            <Border
+                Background="{Binding BBackground, NotifyOnSourceUpdated=True}"
+                BorderBrush="{Binding Plugin.BrushManagement.Border,NotifyOnSourceUpdated=True}"
+                BorderThickness="{Binding Plugin.BorderManagement.BorderThickness, NotifyOnSourceUpdated=True}"
+                CornerRadius="{Binding Plugin.BorderManagement.CornerRadius, NotifyOnSourceUpdated=True}"
+                
+            
+                Margin="{Binding Plugin.BorderManagement.Margin, NotifyOnSourceUpdated=True}"
+                Padding="{Binding Plugin.BorderManagement.Padding, NotifyOnSourceUpdated=True}"
+            
+                MouseLeftButtonDown="Border_MouseLeftButtonDown_1"
+                MouseLeftButtonUp="Border_MouseLeftButtonUp_1"
+                MouseMove="Border_MouseMove_1"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                IsHitTestVisible="True"
+                
+                
+                MinHeight="60"
+                MinWidth="60">
+                <Grid>
 
-            <Border Background="{Binding Plugin.BrushManagement.Background, NotifyOnSourceUpdated=True}"
-                    BorderBrush="{Binding Plugin.BrushManagement.Border, NotifyOnSourceUpdated=True}"
-                    BorderThickness="{Binding Plugin.BorderManagement.BorderThickness, NotifyOnSourceUpdated=True}"
+                    <!--<Border Name="mask"
+                    Background="{Binding Plugin.BrushManagement.Background, NotifyOnSourceUpdated=True}"
                     CornerRadius="{Binding Plugin.BorderManagement.CornerRadius, NotifyOnSourceUpdated=True}"
-                    
-                    MouseLeftButtonDown="Border_MouseLeftButtonDown_1"
-                    MouseLeftButtonUp="Border_MouseLeftButtonUp_1"
-                    MouseMove="Border_MouseMove_1"
-                    
-                    Padding="{Binding Plugin.BorderManagement.Padding}"
-                    MinHeight="60"
-                    MinWidth="60"
-                    Width="{Binding Plugin.BorderManagement.Width, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-                    Height="{Binding Plugin.BorderManagement.Height, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-                    Grid.Row="0"
-                    Grid.RowSpan="2">
+      
+                    />-->
 
+                    <Grid 
+                Width="{Binding Plugin.BorderManagement.Width, NotifyOnSourceUpdated=True}"
+                Height="{Binding Plugin.BorderManagement.Height, NotifyOnSourceUpdated=True}">
 
-                <ContentPresenter Content="{Binding Plugin}"/>
+                        <!--<Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=mask}"/>
+                        </Grid.OpacityMask>-->
 
+                        <ContentPresenter Content="{Binding Plugin}" />
+
+                    </Grid>
+
+                </Grid>
             </Border>
 
             <TextBlock Foreground="{Binding Plugin.BrushManagement.Highlight}"

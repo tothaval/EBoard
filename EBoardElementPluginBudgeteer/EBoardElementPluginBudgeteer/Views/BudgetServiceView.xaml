@@ -1,0 +1,115 @@
+﻿<UserControl x:Class="EBoardElementPluginBudgeteer.Views.BudgetServiceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EBoardElementPluginBudgeteer.Views"
+             xmlns:vm="clr-namespace:EBoardElementPluginBudgeteer.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <TabItem Header="Overview">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+
+                </Grid.RowDefinitions>
+
+                <Border>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Button Content="+ Budget"
+                                Command="{Binding AddBudgetCommand}"
+                                HorizontalAlignment="Left"
+                                HorizontalContentAlignment="Left"
+                                Padding="5 2"
+                                Grid.Column="0"/>
+
+                        <Button Content="- Budget"
+                                Command="{Binding RemoveBudgetCommand}"
+                                HorizontalAlignment="Right"
+                                HorizontalContentAlignment="Left"
+                                Padding="5 2"
+                                Grid.Column="2"/>
+
+                        <local:BudgetDefinitionView DataContext="{Binding SelectedBudget}"                                                
+                                                Grid.Row="1"
+                                                Grid.Column="0"
+                                                Grid.ColumnSpan="3"/>
+                    </Grid>
+
+
+                </Border>
+
+
+                <ListBox ItemsSource="{Binding Budgets}"
+                     SelectionMode="Single"
+                     SelectedItem="{Binding SelectedBudget}"
+                     Grid.Row="1">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+
+                            <StackPanel Orientation="Vertical">
+
+                                <TextBlock Text="{Binding BudgetName}"
+                                           FontSize="14"
+                                           FontWeight="SemiBold">
+                                                                               
+                                    <TextBlock.ToolTip>
+                                        <TextBlock 
+                                            FontSize="14"
+                                            FontWeight="SemiBold">
+                                            <Run Text="(changes:"/>
+                                            <Run Text="{Binding BudgetChanges.Count, Mode=OneWay}"/>
+                                            
+                                            <Run Text=")"/>
+                                        </TextBlock>
+                                    </TextBlock.ToolTip>
+                                </TextBlock>
+
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding InitialBudget, StringFormat=c}"
+                                               FontSize="12" Margin="0 0 10 0"
+                                               FontWeight="Normal"
+                                               Foreground="Blue"
+                                               VerticalAlignment="Bottom"
+                                               MinWidth="70"
+                                               />
+                                    <TextBlock VerticalAlignment="Bottom" FontSize="10" Text="{Binding BudgetPeriodStart,StringFormat=d}"/>
+                                    <TextBlock VerticalAlignment="Bottom" FontSize="10" Text=" - "/>
+                                    <TextBlock VerticalAlignment="Bottom" FontSize="10" Text="{Binding BudgetPeriodEnd, StringFormat=d}"/>
+                                    <TextBlock VerticalAlignment="Bottom" FontSize="10" Text=" - "/>
+                                    <TextBlock VerticalAlignment="Bottom" FontSize="10" Text="{Binding BudgetChanges.Count}"/>
+                                    <TextBlock VerticalAlignment="Bottom" FontSize="10" Text=" change(s)"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+
+            </Grid>
+        </TabItem>
+
+        <TabItem Header="Current Budget">
+            <Border>
+                <local:BudgetAdministrationView BudgetVM="{Binding SelectedBudget,UpdateSourceTrigger=PropertyChanged}"/>
+            </Border>
+        </TabItem>
+    </TabControl>
+
+
+</UserControl>

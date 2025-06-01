@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vms="clr-namespace:EBoard.ViewModels"
+             xmlns:ut="clr-namespace:EBoard.Utilities"
              xmlns:esdkCtrl="clr-namespace:EBoardSDK.Controls;assembly=EBoardSDK"
+             xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup;assembly=EBoardSDK"
         xmlns:views="clr-namespace:EBoard.Views"
         d:DataContext="{d:DesignInstance Type=vms:MainViewModel}"
         
@@ -14,18 +16,20 @@
         AllowsTransparency="True"
         WindowStyle="None"
         WindowStartupLocation="Manual"
-        Background="Transparent"
         ResizeMode="CanResizeWithGrip"
         SizeToContent="Manual"
         
-        Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+        Background="Transparent"
+        
+        Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"        
+                
         MouseLeftButtonDown="EboardMainWindow_MouseLeftButtonDown"
         MouseLeftButtonUp="EboardMainWindow_MouseLeftButtonUp"
-        Width="{Binding BorderManager.Width, NotifyOnSourceUpdated=True}" Height="{Binding BorderManager.Height, NotifyOnSourceUpdated=True}"
         SizeChanged="EboardMainWindow_SizeChanged"
         >
 
     <Window.Resources>
+
         <BooleanToVisibilityConverter x:Key="btvc"/>
 
         <DataTemplate DataType="{x:Type vms:MainWindowMenuBarViewModel}">
@@ -33,15 +37,15 @@
         </DataTemplate>
 
         <SolidColorBrush x:Key="fgbrush" Color="#77CCEE"/>
-            <SolidColorBrush x:Key="bgbrush" Color="#000000"/>
-        
-            <Style TargetType="Label" >
-                <Setter Property="Foreground" Value="{StaticResource fgbrush}"/>
-                <Setter Property="Background" Value="{StaticResource bgbrush}"/>
-            </Style>
+        <SolidColorBrush x:Key="bgbrush" Color="#000000"/>
+
+        <Style TargetType="Label" >
+            <Setter Property="Foreground" Value="{StaticResource fgbrush}"/>
+            <Setter Property="Background" Value="{StaticResource bgbrush}"/>
+        </Style>
 
     </Window.Resources>
-    
+
     <WindowChrome.WindowChrome>
         <WindowChrome
             CaptionHeight="1"  
@@ -52,101 +56,190 @@
         </WindowChrome>
     </WindowChrome.WindowChrome>
 
-
-    <Border Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+    <Grid ClipToBounds="True">
+        <Border 
+            Background="{Binding BrushManager.Background}"
             BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
             BorderThickness="{Binding BorderManager.BorderThickness, NotifyOnSourceUpdated=True}"
             CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"
             Margin="{Binding BorderManager.Margin, NotifyOnSourceUpdated=True}"
             Padding="{Binding BorderManager.Padding, NotifyOnSourceUpdated=True}"
             x:Name="Border_MainWindow"
-            ClipToBounds="True">
-        
-        <Border.ContextMenu >
-            <ContextMenu>
-                
-                <Label Content="MainWindow"/>
-                <MenuItem Header="UI">
-               
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="Corners"
-                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="50"/>
-                        <Label Content="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="30"/>
-                        <Slider Value="{Binding CornerRadiusValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="0"
-                            Maximum="50"
-                            MinWidth="50"
+            ClipToBounds="True"
+            
+                Width="{Binding BorderManager.Width, NotifyOnSourceUpdated=True}"
+                Height="{Binding BorderManager.Height, NotifyOnSourceUpdated=True}" >
+
+            <Border.ContextMenu >
+                <ContextMenu>
+
+                    <Label Content="MainWindow" Background="Transparent" Foreground="{DynamicResource EBoardEboardBrowserBrushForeground}"/>
+
+                    <MenuItem Header="Size">
+                        <MenuItem Header="Dimensions">
+                            <MenuItem Header="Area">
+                                <WrapPanel Orientation="Horizontal">
+                                    <Label Content="Width"
+                                           MinWidth="50"/>
+                                    <Label Content="{Binding WidthValue, NotifyOnSourceUpdated=True}"
+                               MinWidth="35"/>
+                                    <Slider Value="{Binding WidthValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="120"
+                            Maximum="2048"
+                            MinWidth="100"
                             SmallChange="1"
                             LargeChange="5"
                             Interval="1"
                             Orientation="Horizontal"/>
+                                </WrapPanel>
 
-                    </WrapPanel>
-                    <MenuItem Header="Colors">
-                        <MenuItem Header="Background">
-                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BackgroundBrushSetup}"/>
+                                <WrapPanel Orientation="Horizontal">
+                                    <Label Content="Height"
+                                           MinWidth="50"/>
+                                    <Label Content="{Binding HeightValue, StringFormat=d0, NotifyOnSourceUpdated=True}"
+                               MinWidth="35"/>
+                                    <Slider Value="{Binding HeightValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="120"
+                            Maximum="1024"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                                </WrapPanel>
+
+                                <MenuItem Header="Reset Size"
+                              Command="{Binding ResetSizeCommand}"
+                              />
+                            </MenuItem>
+
+                            <MenuItem Header="Margin">
+                                <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding MarginQuadSetup}"
+                                                                  
+                                                                  Maximum="25"
+                                                                  Value1="Left"
+                                                                  Value2="Top"
+                                                                  Value3="Right"
+                                                                  Value4="Bottom"
+                                                                  OKCommand="{Binding ResetMarginCommand}"/>
+                            </MenuItem>
+
+                            <MenuItem Header="Padding">
+                                <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding PaddingQuadSetup}"
+                                                                  
+                                                                  Maximum="25"
+                                                                  Value1="Left"
+                                                                  Value2="Top"
+                                                                  Value3="Right"
+                                                                  Value4="Bottom"
+                                                                  OKCommand="{Binding ResetPaddingCommand}"/>
+                            </MenuItem>
+
+                            <MenuItem Header="Thickness">
+                                <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding ThicknessQuadSetup}"
+                                                                  
+                                                                  Maximum="100"
+                                                                  Value1="Left"
+                                                                  Value2="Top"
+                                                                  Value3="Right"
+                                                                  Value4="Bottom"
+                                                                  OKCommand="{Binding ResetThicknessCommand}"/>
+                            </MenuItem>
+
                         </MenuItem>
 
-                        <MenuItem Header="Foreground">
-              <esdkCtrl:SolidColorBrushSetup DataContext="{Binding ForegroundBrushSetup}"/>
-          </MenuItem>
-
-                        <MenuItem Header="Border">
-                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BorderBrushSetup}"/>
+                        <MenuItem Header="Corners">
+                            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding CornerRadiusQuadSetup}"
+                                                                  
+                                                                  Maximum="100"
+                                                                  Value1="TopLeft"
+                                                                  Value2="TopRight"
+                                                                  Value3="BottomRight"
+                                                                  Value4="BottomLeft"
+                                                                  OKCommand="{Binding ResetCornersCommand}"/>
                         </MenuItem>
-
-                        <!--<MenuItem Header="Highlight">
-              <esdkCtrl:SolidColorBrushSetup DataContext="{Binding HighlightBrushSetup}"/>
-          </MenuItem>-->                        
                     </MenuItem>
 
-                    <MenuItem Header="+Image" Command="{Binding SetImageCommand}"/>
+                    <MenuItem Header="Design">
 
-                    <MenuItem Header="Reset" Command="{Binding ResetImageCommand}"/>
-                </MenuItem>
+                        <MenuItem Header="Colors">
+                            <MenuItem Header="Background">
+                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BackgroundBrushSetup}"/>
+                            </MenuItem>
 
-                <MenuItem Header="{DynamicResource MaximizeContextMenuItemHeader}"
+                            <MenuItem Header="Foreground">
+                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding ForegroundBrushSetup}"/>
+                            </MenuItem>
+
+                            <MenuItem Header="Border">
+                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BorderBrushSetup}"/>
+                            </MenuItem>
+
+                            <MenuItem Header="Highlight">
+                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding HighlightBrushSetup}"/>
+                            </MenuItem>
+                        </MenuItem>
+
+                        <MenuItem Header="Image">
+                            <MenuItem Header="Background" Command="{Binding SetImageCommand}"/>
+                            <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
+                            <MenuItem Header="Border" Command="{Binding SetImageBorderCommand}"/>
+                            <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
+
+                        </MenuItem>
+
+                        <MenuItem Header="Reset">
+                            <MenuItem Header="Background" Command="{Binding ResetImageCommand}"/>
+                        </MenuItem>
+
+                    </MenuItem>
+
+                    <MenuItem Header="{DynamicResource EboardMainWindowMaximizeContextMenuHeader}"
                           Click="MenuItem_Click"/>
 
-                <MenuItem Header="Minimize"
+                    <MenuItem Header="Minimize"
                           Click="Minimize_Click"/>
 
-                <MenuItem Header="Close" Command="{Binding CloseCommand}"/>
+                    <MenuItem Header="Close" Command="{Binding CloseCommand}"/>
 
-            </ContextMenu>
-        </Border.ContextMenu>
+                </ContextMenu>
+            </Border.ContextMenu>
 
-        <Border.InputBindings>            
-            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding LeftDoubleClickCommand}"
-                      CommandParameter="{Binding ElementName=EboardMainWindow}"/>
-        </Border.InputBindings>
 
-        <Grid ClipToBounds="True">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto" />
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto" />
+            <Grid >
+                <!--<Grid.OpacityMask>
+                    <VisualBrush Visual="{Binding ElementName=mask}"/>
+                </Grid.OpacityMask>-->
 
-            </Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto" />
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+                </Grid.ColumnDefinitions>
 
-            <views:MainWindowMenuBar Grid.Row="0"
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+
+                <!--<Border Name="mask"
+                        Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+                        CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"
+                        Grid.ColumnSpan="3"
+                        Grid.RowSpan="4"
+         />-->
+
+                <views:MainWindowMenuBar Grid.Row="0"
                                      Grid.Column="0"
                                      DataContext="{Binding MainWindowMenuBarVM}" Margin="10 0 0 0"/>
 
-            <views:MainWindowLogoutBar Grid.Row="0" Grid.Column="2" Margin="0 0 10 0"/>
+                <views:MainWindowLogoutBar Grid.Row="0" Grid.Column="2" Margin="0 0 10 0"/>
 
-
-            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   VerticalScrollBarVisibility="Auto"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Top"
@@ -154,26 +247,28 @@
                           CanContentScroll="True"
                           Margin="25">
 
-                <ContentControl Content="{Binding EBoardBrowserViewModel.SelectedEBoard}"
+
+                    <ContentControl Content="{Binding EBoardBrowserViewModel.SelectedEBoard}"
                             HorizontalContentAlignment="Stretch"
                             VerticalContentAlignment="Stretch"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Top"
                             />
-                
-            </ScrollViewer>
+                </ScrollViewer>
 
-            <Border Grid.Row="1"
+                <Border Grid.Row="1"
                 Grid.Column="0"
                 Grid.ColumnSpan="1"
                 Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
             Converter={StaticResource btvc},
             NotifyOnSourceUpdated=True,
             NotifyOnTargetUpdated=True}">
-                <views:EBoardBrowserView DataContext="{Binding EBoardBrowserViewModel}"
-                                     />
-            </Border>
 
-        </Grid>
-    </Border>
+                    <views:EBoardBrowserView DataContext="{Binding EBoardBrowserViewModel}"
+                                     />
+                </Border>
+            </Grid>
+        </Border>
+
+    </Grid>
 </Window>

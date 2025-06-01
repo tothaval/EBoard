@@ -9,6 +9,5 @@ namespace EBoardSDK.Interfaces;
 
 public interface IElementContent : IElementContentSaveAndLoad, IElementContentDefinition
 {
-
 }
 // EOF

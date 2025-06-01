@@ -18,82 +18,73 @@ namespace EBoardSDK.Models.DataSets;
 public class ColorDataSet
 {
     /// <summary>
-    /// can be used to store the brushtype, this is used to rebuild the
+    /// Gets or sets can be used to store the brushtype, this is used to rebuild the
     /// brush data on load
     /// </summary>
     public string BrushType { get; set; }
 
-
     /// <summary>
-    /// GradientColor[0]
+    /// Gets or sets gradientColor[0]
     /// </summary>
     public Color Color { get; set; }
 
-
     /// <summary>
-    /// in case the brush is an image, the path to the image can be stored here
+    /// Gets or sets in case the brush is an image, the path to the image can be stored here
     /// </summary>
     public string ImagePath { get; set; }
 
-
     /// <summary>
-    /// can be used to store gradient color strings, they will
+    /// Gets or sets can be used to store gradient color strings, they will
     /// be matched with GradientStops list
     /// </summary>
     public ObservableCollection<Color> GradientColors { get; set; }
 
-
     /// <summary>
-    /// can be used to store gradient stop points, they will
+    /// Gets or sets can be used to store gradient stop points, they will
     /// be matched with GradientColors list
     /// </summary>
     public ObservableCollection<double> GradientStops { get; set; }
 
-
     /// <summary>
-    /// can be used to store gradient points for radialgradientbrush and lineargradientbrush
+    /// Gets or sets can be used to store gradient points for radialgradientbrush and lineargradientbrush
     /// </summary>
     public ObservableCollection<Point> GradientPoints { get; set; }
 
-
     public ColorDataSet()
     {
-
     }
-
 
     public ColorDataSet(Brush brush)
     {
-        ImagePath = string.Empty;
+        this.ImagePath = string.Empty;
 
-        GradientColors = new ObservableCollection<Color>();
+        this.GradientColors = new ObservableCollection<Color>();
 
-        GradientStops = new ObservableCollection<double>();
+        this.GradientStops = new ObservableCollection<double>();
 
-        GradientPoints = new ObservableCollection<Point>();
+        this.GradientPoints = new ObservableCollection<Point>();
 
-        ProcessBrush(brush);
+        this.ProcessBrush(brush);
     }
-
 
     private LinearGradientBrush BuildLinearGradientBrush()
     {
         LinearGradientBrush linearGradientBrush = new LinearGradientBrush();
 
-        if (GradientPoints.Count == 2)
+        if (this.GradientPoints.Count == 2)
         {
-            linearGradientBrush.StartPoint = GradientPoints[0];
-            linearGradientBrush.EndPoint = GradientPoints[1];
+            linearGradientBrush.StartPoint = this.GradientPoints[0];
+            linearGradientBrush.EndPoint = this.GradientPoints[1];
         }
 
-        if (GradientColors.Count == GradientStops.Count)
+        if (this.GradientColors.Count == this.GradientStops.Count)
         {
-            for (int i = 0; i < GradientColors.Count; i++)
+            for (int i = 0; i < this.GradientColors.Count; i++)
             {
                 linearGradientBrush.GradientStops.Add(
                     new GradientStop(
-                        GradientColors[i],
-                        GradientStops[i])
+                        this.GradientColors[i],
+                        this.GradientStops[i])
                     );
             }
         }
@@ -101,25 +92,24 @@ public class ColorDataSet
         return linearGradientBrush;
     }
 
-
     private RadialGradientBrush BuildRadialGradientBrush()
     {
         RadialGradientBrush radialGradientBrush = new RadialGradientBrush();
 
-        if (GradientPoints.Count == 2)
+        if (this.GradientPoints.Count == 2)
         {
-            radialGradientBrush.Center = GradientPoints[0];
-            radialGradientBrush.GradientOrigin = GradientPoints[1];
+            radialGradientBrush.Center = this.GradientPoints[0];
+            radialGradientBrush.GradientOrigin = this.GradientPoints[1];
         }
 
-        if (GradientColors.Count == GradientStops.Count)
+        if (this.GradientColors.Count == this.GradientStops.Count)
         {
-            for (int i = 0; i < GradientColors.Count; i++)
+            for (int i = 0; i < this.GradientColors.Count; i++)
             {
                 radialGradientBrush.GradientStops.Add(
                     new GradientStop(
-                        GradientColors[i],
-                        GradientStops[i])
+                        this.GradientColors[i],
+                        this.GradientStops[i])
                     );
             }
         }
@@ -127,52 +117,50 @@ public class ColorDataSet
         return radialGradientBrush;
     }
 
-
     public async Task<Brush> GetBrush()
     {
-        if (BrushType.Equals("SolidColorBrush"))
+        if (this.BrushType.Equals("SolidColorBrush"))
         {
-
-            SolidColorBrush solidColorBrush = new SolidColorBrush(GradientColors[0]);
+            SolidColorBrush solidColorBrush = new SolidColorBrush(this.GradientColors[0]);
 
             await Task.CompletedTask;
 
             return solidColorBrush;
         }
 
-        if (BrushType.Equals("LinearGradientBrush"))
+        if (this.BrushType.Equals("LinearGradientBrush"))
         {
-            LinearGradientBrush linearGradientBrush = BuildLinearGradientBrush();
+            LinearGradientBrush linearGradientBrush = this.BuildLinearGradientBrush();
 
             await Task.CompletedTask;
 
             return linearGradientBrush;
         }
 
-        if (BrushType.Equals("RadialGradientBrush"))
+        if (this.BrushType.Equals("RadialGradientBrush"))
         {
-            RadialGradientBrush radialGradientBrush = BuildRadialGradientBrush();
+            RadialGradientBrush radialGradientBrush = this.BuildRadialGradientBrush();
 
             await Task.CompletedTask;
 
             return radialGradientBrush;
         }
 
-        if (BrushType.Equals("ImageBrush"))
+        if (this.BrushType.Equals("ImageBrush"))
         {
             Brush brush = new ImageBrush();
 
-            brush = new SharedMethod_UI().ChangeBackgroundToImage(brush, ImagePath);
+            brush = new SharedMethod_UI().ChangeBackgroundToImage(brush, this.ImagePath);
 
             if (brush.GetType().Name.Equals("SolidColorBrush"))
             {
-                BrushType = "SolidColorBrush";
+                this.BrushType = "SolidColorBrush";
 
-                Color = ((SolidColorBrush)brush).Color;
+                this.Color = ((SolidColorBrush)brush).Color;
 
-                GradientColors.Clear();
+                this.GradientColors.Clear();
 
-                GradientColors.Add(Color);
+                this.GradientColors.Add(this.Color);
 
                 await Task.CompletedTask;
 
@@ -182,92 +170,83 @@ public class ColorDataSet
             await Task.CompletedTask;
 
             return brush as ImageBrush;
-
         }
 
-        if (BrushType.Equals("VisualBrush"))
+        if (this.BrushType.Equals("VisualBrush"))
         {
-
             return new VisualBrush();
         }
 
         return new SolidColorBrush();
     }
 
-
     private void ProcessBrush(Brush brush)
     {
-        BrushType = brush.GetType().Name;
+        this.BrushType = brush.GetType().Name;
 
-        GradientColors.Clear();
-        GradientPoints.Clear();
-        GradientStops.Clear();
+        this.GradientColors.Clear();
+        this.GradientPoints.Clear();
+        this.GradientStops.Clear();
 
-        if (BrushType.Equals("SolidColorBrush"))
+        if (this.BrushType.Equals("SolidColorBrush"))
         {
-            ProcessSolidColorBrush((SolidColorBrush)brush);
+            this.ProcessSolidColorBrush((SolidColorBrush)brush);
         }
 
-        if (BrushType.Equals("LinearGradientBrush"))
+        if (this.BrushType.Equals("LinearGradientBrush"))
         {
-            ProcessLinearGradientBrush((LinearGradientBrush)brush);
+            this.ProcessLinearGradientBrush((LinearGradientBrush)brush);
         }
 
-        if (BrushType.Equals("RadialGradientBrush"))
+        if (this.BrushType.Equals("RadialGradientBrush"))
         {
-            ProcessRadialGradientBrush((RadialGradientBrush)brush);
+            this.ProcessRadialGradientBrush((RadialGradientBrush)brush);
         }
 
-        if (BrushType.Equals("ImageBrush"))
+        if (this.BrushType.Equals("ImageBrush"))
         {
-            ProcessImageBrush((ImageBrush)brush);
+            this.ProcessImageBrush((ImageBrush)brush);
         }
 
-        if (BrushType.Equals("VisualBrush"))
+        if (this.BrushType.Equals("VisualBrush"))
         {
-
         }
     }
-
 
     private void ProcessImageBrush(ImageBrush brush)
     {
-        ImagePath = ((BitmapImage)brush.ImageSource).UriSource.AbsoluteUri;
+        this.ImagePath = ((BitmapImage)brush.ImageSource).UriSource.AbsoluteUri;
     }
-
 
     private void ProcessLinearGradientBrush(LinearGradientBrush brush)
     {
-        GradientPoints.Add(brush.StartPoint);
-        GradientPoints.Add(brush.EndPoint);
+        this.GradientPoints.Add(brush.StartPoint);
+        this.GradientPoints.Add(brush.EndPoint);
 
         foreach (GradientStop item in brush.GradientStops)
         {
-            GradientStops.Add(item.Offset);
-            GradientColors.Add(item.Color);
+            this.GradientStops.Add(item.Offset);
+            this.GradientColors.Add(item.Color);
         }
     }
-
 
     private void ProcessRadialGradientBrush(RadialGradientBrush brush)
     {
-        GradientPoints.Add(brush.Center);
-        GradientPoints.Add(brush.GradientOrigin);
+        this.GradientPoints.Add(brush.Center);
+        this.GradientPoints.Add(brush.GradientOrigin);
 
         foreach (GradientStop item in brush.GradientStops)
         {
-            GradientStops.Add(item.Offset);
-            GradientColors.Add(item.Color);
+            this.GradientStops.Add(item.Offset);
+            this.GradientColors.Add(item.Color);
         }
     }
 
-
     private void ProcessSolidColorBrush(SolidColorBrush brush)
     {
-        Color = brush.Color;
-        GradientColors.Add(brush.Color);
-        GradientStops.Add(0.0);
+        this.Color = brush.Color;
+        this.GradientColors.Add(brush.Color);
+        this.GradientStops.Add(0.0);
     }
-
 }
 // EOF

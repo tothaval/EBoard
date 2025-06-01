@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EBoardConfigManager.Enums
+﻿namespace EBoardConfigManager.Enums
 {
     public enum Result
     {
@@ -12,6 +6,6 @@ namespace EBoardConfigManager.Enums
         Success,
         Processing,
         Error,
-        Unkown
+        Unkown,
     }
 }

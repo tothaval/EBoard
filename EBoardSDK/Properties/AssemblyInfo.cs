@@ -8,7 +8,6 @@ using System.Runtime.InteropServices;
 // Projekteigenschaften definiert sind. Informationen dazu, welche Attribute einbezogen
 // werden und wie dieser Prozess angepasst werden kann, finden Sie unter https://aka.ms/assembly-info-properties.
 
-
 // Wenn "ComVisible" auf FALSE festgelegt wird, sind die Typen in dieser Assembly
 // für COM-Komponenten nicht sichtbar. Wenn Sie von COM aus auf einen Typ in dieser
 // Assembly zugreifen müssen, legen Sie das ComVisible-Attribut für den betreffenden

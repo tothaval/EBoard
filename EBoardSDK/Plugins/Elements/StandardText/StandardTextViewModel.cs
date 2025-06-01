@@ -1,36 +1,59 @@
-﻿using EBoardSDK.Interfaces;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using EBoardSDK.Enums;
 using EBoardSDK.Models;
-using EBoardSDK.Models.DataSets;
-using EBoardSDK.Plugins.Elements.StandardText;
-
-using CommunityToolkit.Mvvm;
-using CommunityToolkit.Mvvm.ComponentModel;
-
+using EBoardSDK.SharedMethods;
 using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Xml.Serialization;
-using EBoardSDK.SharedMethods;
-using static System.Net.Mime.MediaTypeNames;
-using EBoardSDK.Plugins.Tools.EmptyRadial;
-using System.Reflection;
 
 namespace EBoardSDK.Plugins.Elements.StandardText
 {
     public partial class StandardTextViewModel : EBoardElementPluginBaseViewModel
     {
         [ObservableProperty]
+        private int fontSize;
+
+        [ObservableProperty]
+        private int fontSizeTitle;
+
+        [ObservableProperty]
+        private bool isTitleSet;
+
+        [ObservableProperty]
         private string text;
 
-        public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
+        [ObservableProperty]
+        private string title;
+
+        [ObservableProperty]
+        private Brush titleTextBoxBorderBrush;
+
+        [ObservableProperty]
+        private int titleTextBoxBorderThickness;
+
+        [ObservableProperty]
+        private Brush titleTextBoxBrush;
+
+        public override bool NoDefaultBorders { get; } = false;
+
+        public override PluginCategories PluginCategory => PluginCategories.Element;
+
+        public override ImageBrush PluginLogo { get; set; }
+
+        public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
 
         private string pluginHeader = "Standard Text Element";
-        public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
+
+        public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
 
         private string pluginName = "StandardText";
 
-        public override string PluginName { get { return pluginName; } set { pluginName = value; } }
+        public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
 
         public override string ElementPluginName => "StandardText";
 
@@ -40,20 +63,29 @@ namespace EBoardSDK.Plugins.Elements.StandardText
 
         public override Type? ElementPluginModel => null;
 
-        public override Type ElementPluginView => typeof(EmptyRadialView);
+        public override Type ElementPluginView => typeof(StandardTextView);
 
-        public override Type ElementPluginViewModel => typeof(EmptyRadialViewModel);
+        public override Type ElementPluginViewModel => typeof(StandardTextViewModel);
 
-        public StandardTextViewModel() => InstantiateProperties();
+        public bool IsTitleTextboxEditing => !this.IsTitleSet;
+
+        public StandardTextViewModel() => this.InstantiateProperties();
 
         private void InstantiateProperties()
         {
-            BorderManagement = new BorderManagement();
-            BrushManagement = new BrushManagement();
+            this.IsTitleSet = true;
+
+            this.BorderManagement = new BorderManagement();
+            this.BrushManagement = new BrushManagement();
 
             if (this.PluginHeader.Equals(string.Empty))
             {
-                PluginHeader = "Standard Text";
+                this.PluginHeader = "Standard Text";
+            }
+
+            if (string.IsNullOrWhiteSpace(this.Title))
+            {
+                this.Title = this.PluginHeader;
             }
         }
 
@@ -72,7 +104,10 @@ namespace EBoardSDK.Plugins.Elements.StandardText
 
                 if (data != null)
                 {
-                    Text = data.Text;
+                    this.FontSize = data.FontSize;
+                    this.FontSizeTitle = data.FontSizeTitle;
+                    this.Text = data.Text;
+                    this.Title = data.Title;
 
                     return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
                 }
@@ -84,7 +119,6 @@ namespace EBoardSDK.Plugins.Elements.StandardText
 
             return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = "" };
         }
-
 
         public override async Task<EBoardFeedbackMessage> Save(string path)
         {
@@ -108,6 +142,29 @@ namespace EBoardSDK.Plugins.Elements.StandardText
             return serializationResult!;
         }
 
+        [RelayCommand]
+        private void ConfirmTitle()
+        {
+            this.IsTitleSet = true;
+
+            this.TitleTextBoxBorderBrush = new SolidColorBrush(Colors.Transparent);
+
+            this.TitleTextBoxBrush = new SolidColorBrush(Colors.Transparent);
+
+            this.TitleTextBoxBorderThickness = 0;
+        }
+
+        [RelayCommand]
+        private void SetTitle()
+        {
+            this.IsTitleSet = false;
+
+            this.TitleTextBoxBorderBrush = this.BrushManagement.Foreground;
+            this.TitleTextBoxBrush = this.BrushManagement.Highlight;
+
+            this.TitleTextBoxBorderThickness = 2;
+        }
     }
 }
+
 // EOF

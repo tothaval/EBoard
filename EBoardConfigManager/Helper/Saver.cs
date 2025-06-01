@@ -1,5 +1,5 @@
 ﻿using EBoardConfigManager.Enums;
-using EBoardConfigManager.Models;
+using Serilog;
 using System.Text.Json;
 
 namespace EBoardConfigManager.Helper;
@@ -17,18 +17,26 @@ public static class Saver
     }
 
     public static Result SaveJsonFile<T>(string filename, T model)
-	{
-		try
-		{
-			using (FileStream createStream = File.Create(filename))
-			{
-				JsonSerializer.Serialize(createStream, model);
-			}
+    {
+        try
+        {
+            using (FileStream createStream = File.Create(filename))
+            {
+                JsonSerializer.Serialize(createStream, model, ConfigOptions.JsonSerializerOptions);
+            }
         }
-		catch (Exception)
-		{
-			throw;
-		}
+        catch (ArgumentException ex)
+        {
+            var s = $"filename: {filename}, type {typeof(T)}, model {model}";
+
+            Log.Error(ex, s);
+
+            File.Delete(filename);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
 
         return Result.Success;
     }

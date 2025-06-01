@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace EBoardSDK
+﻿namespace EBoardSDK
 {
     public class EBoardFeedbackMessage
     {
@@ -13,5 +7,12 @@ namespace EBoardSDK
         public required string ResultMessage { get; set; }
 
         public Exception? Exception { get; set; }
+
+        public override string ToString()
+        {
+            var s = this.Exception?.ToString() ?? string.Empty;
+
+            return $"task result: {this.TaskResult} _ details: {this.ResultMessage} _ {s}";
+        }
     }
 }

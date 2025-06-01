@@ -7,6 +7,5 @@ namespace EBoardSDK.Interfaces
         //public bool ContentIsUserControlAndNotShape { get; }
 
         public FrameworkElement Plugin { get; }
-
     }
 }

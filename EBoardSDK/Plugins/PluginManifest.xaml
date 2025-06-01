@@ -3,17 +3,38 @@
 
                     xmlns:Controls="clr-namespace:EBoardSDK.Controls"
                     
+                    xmlns:SoundMix="clr-namespace:EBoardSDK.Plugins.Addons.SoundMix"
+                    
+                    xmlns:EmptyLinear="clr-namespace:EBoardSDK.Plugins.Elements.EmptyLinear"                    
+                    xmlns:EmptyRadial="clr-namespace:EBoardSDK.Plugins.Elements.EmptyRadial"
+                    xmlns:Image="clr-namespace:EBoardSDK.Plugins.Elements.Image"
                     xmlns:StandardText="clr-namespace:EBoardSDK.Plugins.Elements.StandardText"
 
                     xmlns:Ellipse="clr-namespace:EBoardSDK.Plugins.Shapes.Ellipse"
-                    xmlns:Rectangle="clr-namespace:EBoardSDK.Plugins.Shapes.Rectangle"                    
+                    xmlns:Rectangle="clr-namespace:EBoardSDK.Plugins.Shapes.Rectangle"           
                     
-                    xmlns:EmptyLinear="clr-namespace:EBoardSDK.Plugins.Tools.EmptyLinear"                    
-                    xmlns:EmptyRadial="clr-namespace:EBoardSDK.Plugins.Tools.EmptyRadial"
                     xmlns:Summoner="clr-namespace:EBoardSDK.Plugins.Tools.Summoner"  
                     xmlns:Uptime="clr-namespace:EBoardSDK.Plugins.Tools.Uptime">
 
+
+    <DataTemplate DataType="{x:Type SoundMix:SoundMixMainViewModel}">
+        <SoundMix:SoundMixMainView/>
+    </DataTemplate>
+
     <!--#region Elements -->
+
+    <DataTemplate DataType="{x:Type EmptyLinear:EmptyLinearViewModel}">
+        <EmptyLinear:EmptyLinearView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type EmptyRadial:EmptyRadialViewModel}">
+        <EmptyRadial:EmptyRadialView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type Image:ImageViewModel}">
+        <Image:ImageView/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type StandardText:StandardTextViewModel}">
         <StandardText:StandardTextView/>
     </DataTemplate>
@@ -31,13 +52,6 @@
 
     <!--#region Tools -->
     
-    <DataTemplate DataType="{x:Type EmptyLinear:EmptyLinearViewModel}">
-        <EmptyLinear:EmptyLinearView/>
-    </DataTemplate>
-
-    <DataTemplate DataType="{x:Type EmptyRadial:EmptyRadialViewModel}">
-        <EmptyRadial:EmptyRadialView/>
-    </DataTemplate>    
     
     <DataTemplate DataType="{x:Type Summoner:SummonerViewModel}">
         <Summoner:SummonerView/>

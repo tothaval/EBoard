@@ -1,11 +1,6 @@
 ﻿using EBoardSDK.Interfaces;
 using EBoardSDK.Models.DataSets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace EBoardSDK.Models
@@ -13,7 +8,7 @@ namespace EBoardSDK.Models
     public class ElementConfig
     {
         /// <summary>
-        /// Element ID, built using $"Element_{DateTime().Ticks} on first
+        /// Gets or sets element ID, built using $"Element_{DateTime().Ticks} on first
         /// creation of an element.
         /// </summary>
         public string EID { get; set; } = string.Empty;
@@ -31,7 +26,7 @@ namespace EBoardSDK.Models
         public IPlugin Plugin { get; set; }
 
         /// <summary>
-        /// determines if ElementContent is
+        /// Gets or sets determines if ElementContent is
         /// of type ShapeManagement(false)
         /// or ContentManagement(true)
         /// </summary>

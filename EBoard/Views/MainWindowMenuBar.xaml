@@ -5,12 +5,51 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vms="clr-namespace:EBoard.ViewModels"
              xmlns:views="clr-namespace:EBoard.Views"
-             d:DataContext="{d:DesignInstance Type=vms:MainWindowMenuBarViewModel}"
-             
+             d:DataContext="{d:DesignInstance Type=vms:MainWindowMenuBarViewModel}"             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Grid>        
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="bool2vis"/>
+
+        <Style TargetType="MenuItem" x:Key="PluginLogoMenuItem">
+            
+            <Setter Property="Command" Value="{Binding DataContext.InvokePluginCommand, RelativeSource={RelativeSource AncestorType=Menu}}"/>
+            <Setter Property="CommandParameter" Value="{Binding ElementPluginViewModel}" />
+
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Rectangle Fill="{Binding PluginLogo}"
+                                  Width="25"
+                                  Height="25"
+                                  Grid.Column="0"/>
+                            <TextBlock Text="{Binding PluginName}"
+                                  Grid.Column="1"/>
+                        </Grid>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+
+        <Style TargetType="Border" x:Key="MenuBarBorder">
+            <Setter Property="CornerRadius" Value="{Binding EBoardBrowserViewModel.BorderManager.CornerRadius}"/>
+            <Setter Property="Background" Value="{Binding EBoardBrowserViewModel.BrushManager.Background, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding EBoardBrowserViewModel.BrushManager.Border }"/>
+            <Setter Property="BorderThickness" Value="5"/>
+            <Setter Property="MaxHeight" Value="50"/>
+            <Setter Property="MinWidth" Value="50"/>                
+        </Style>
+               
+    </UserControl.Resources>
+        
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -27,95 +66,112 @@
                           IsChecked="{Binding EBoardBrowserSwitch,
                 NotifyOnSourceUpdated=True,
                 UpdateSourceTrigger=PropertyChanged}"/>
-            
-            <Border CornerRadius="5" Background="Black"
-                    BorderBrush="Orange"
-                    BorderThickness="3"
-                    MinWidth="50" MaxHeight="50"
-                    >
-                
-                <Menu>
-                    <MenuItem Header="+Elements">
 
-                        <!-- MenuItems sollten später aus einer Liste der
-                        verfügbaren Plugins dynamisch ermittelt und erzeugt werden,
-                        jedem ist dann der nötige Headerwert und CommandParameter
-                        (x:string oder so)
-                        aus dem ViewModel zuzuweisen dass müsste das Interface mit
-                        regeln, fürs erste erstmal so-->
-                        <MenuItem Header="Standard Text"
-                                  Command="{Binding InvokeElementCommand}"
-                                  CommandParameter="Elements.StandardText.Standard Text"/>
-                    </MenuItem>
+            <Border Style="{StaticResource MenuBarBorder}">
 
-                </Menu>
-            </Border>
+                <Grid Background="Transparent">
 
-            <Border CornerRadius="5" Background="Black"
-                    BorderBrush="Orange"
-                    BorderThickness="3"
-                    MinWidth="50" MaxHeight="50"
-                    >
-                <Menu>
-                    <MenuItem Header="+Shapes">
-                        <MenuItem Header="Rectangle"
-                                  Command="{Binding InvokeElementCommand}"
-                                  CommandParameter="Shapes.Rectangle.Rectangle"/>
-                        <MenuItem Header="Ellipse"
-                                  Command="{Binding InvokeElementCommand}"
-                                  CommandParameter="Shapes.Ellipse.Ellipse"/>
-                            <MenuItem Header="EpicText"
-                            Command="{Binding InvokeEpicCommand}"
-                            CommandParameter="Epic"/>
+                    <Border Name="mask"
+                    Background="{Binding EBoardBrowserViewModel.BrushManager.Background, NotifyOnSourceUpdated=True}"
+                    CornerRadius="{Binding EBoardBrowserViewModel.BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"      
+                    />
+                    <Grid Background="Transparent">
 
-                        <MenuItem ItemsSource="{Binding Plugins}" Header="Plugins">
-                            <MenuItem.ItemContainerStyle>
-                                
-                                <Style TargetType="MenuItem">
-                                    <Setter Property="Header" Value="{Binding PluginName}"/>
-                                    <Setter Property="Command" Value="{Binding DataContext.InvokePluginCommand, RelativeSource={RelativeSource AncestorType=Menu}}"/>
-                                    <Setter Property="CommandParameter" Value="{Binding ElementPluginViewModel}" />
-                                </Style>
-                            </MenuItem.ItemContainerStyle>
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=mask}"/>
+                        </Grid.OpacityMask>
+
+                        <Menu>
+                        <MenuItem Header="Addons" ItemsSource="{Binding PluginCategoryAddons}"
+                              ItemContainerStyle="{StaticResource PluginLogoMenuItem}">
 
                         </MenuItem>
+                        </Menu>
+                    </Grid>
+                </Grid>
+            </Border>
 
-                    </MenuItem>
+            <Border Style="{StaticResource MenuBarBorder}">
+                <Grid Background="Transparent">
+                    <Grid Background="Transparent">
 
-                </Menu>
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=mask}"/>
+                        </Grid.OpacityMask>
+
+                        <Menu>
+                    <MenuItem Header="Elements" 
+                              ItemsSource="{Binding PluginCategoryElements}"
+                              ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
+                        </Menu>
+                    </Grid>
+                </Grid>
             </Border>
             
-            <Border CornerRadius="5" Background="Black"
-                    BorderBrush="Orange"
-                    BorderThickness="3"
-                    MinWidth="50" MaxHeight="50"
-                    >
+            <Border Style="{StaticResource MenuBarBorder}"
+                    Visibility="{Binding IsDebug, Converter={StaticResource bool2vis}}">
+                <Grid Background="Transparent">
+                    <Border Name="mask2"
+                    Background="{Binding EBoardBrowserViewModel.BrushManager.Background, NotifyOnSourceUpdated=True}"
+                    CornerRadius="{Binding EBoardBrowserViewModel.BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"      
+                    />
+                    <Grid Background="Transparent">
 
-                <Menu>
-                    <MenuItem Header="+Tools">
-                        
-                        <MenuItem Header="Empty Linear"
-                                  Command="{Binding InvokeElementCommand}"
-                                  CommandParameter="Tools.EmptyLinear.Empty Linear"/>
-                        
-                        <MenuItem Header="Empty Radial"
-                                  Command="{Binding InvokeElementCommand}"
-                                  CommandParameter="Tools.EmptyRadial.Empty Radial"/>
-                       
-                        <MenuItem Header="Summoner"
-                                  Command="{Binding InvokeElementCommand}"
-                                  CommandParameter="Tools.Summoner.Summoner"/>
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=mask}"/>
+                        </Grid.OpacityMask>
 
-                        <MenuItem Header="Uptime"
-                                  Command="{Binding InvokeElementCommand}"
-                                  CommandParameter="Tools.Uptime.Uptime"/>
-
-                    </MenuItem>
-
-                </Menu>
+                        <Menu>
+                    <MenuItem ItemsSource="{Binding PluginProjects}" Header="Development"
+                              ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
+                        </Menu>
+                    </Grid>
+                </Grid>
             </Border>
 
-        </StackPanel>
+            <Border Style="{StaticResource MenuBarBorder}" >
+                <Grid Background="Transparent">
+                    <Border Name="mask3"
+                    Background="{Binding EBoardBrowserViewModel.BrushManager.Background, NotifyOnSourceUpdated=True}"
+                    CornerRadius="{Binding EBoardBrowserViewModel.BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"      
+                    />
+                    <Grid Background="Transparent">
 
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=mask}"/>
+                        </Grid.OpacityMask>
+
+                        <Menu>
+                    <MenuItem Header="Shapes" ItemsSource="{Binding PluginCategoryShapes}"
+                              ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
+                        </Menu>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource MenuBarBorder}">
+                <Grid Background="Transparent">
+                    <Border Name="mask4"
+                    Background="{Binding EBoardBrowserViewModel.BrushManager.Background, NotifyOnSourceUpdated=True}"
+                    CornerRadius="{Binding EBoardBrowserViewModel.BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"      
+                    />
+                    <Grid Background="Transparent">
+
+                        <Grid.OpacityMask>
+                            <VisualBrush Visual="{Binding ElementName=mask}"/>
+                        </Grid.OpacityMask>
+
+                        <Menu>
+                    <MenuItem Header="Tools" ItemsSource="{Binding PluginCategoryTools}"
+                              ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
+                        </Menu>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <Button Content="Clear"
+                    Command="{Binding ClearElementsCommand}"
+                    Style="{StaticResource DefaultButtonStyle}"/>
+        </StackPanel>
     </Grid>
 </UserControl>

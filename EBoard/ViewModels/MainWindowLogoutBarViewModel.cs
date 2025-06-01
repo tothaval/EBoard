@@ -12,12 +12,10 @@ namespace EBoard.ViewModels;
 
 public partial class MainWindowLogoutBarViewModel : ObservableObject
 {
-
     [RelayCommand]
     private void Close()
     {
         new SharedMethod_UI().CloseApplication();
     }
-
 }
 // EOF

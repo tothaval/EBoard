@@ -9,7 +9,7 @@ namespace EBoardSDK.Plugins.Tools.Uptime
     {
         public UptimeView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

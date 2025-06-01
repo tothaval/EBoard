@@ -7,41 +7,34 @@
  */
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoard.Commands.ElementCreationCommands;
+using EBoard.IOProcesses.DataSets;
 using EBoard.Utilities.Factories;
 using EBoardSDK.Interfaces;
-using EBoardSDK.Plugins.Elements.StandardText;
-using System.Windows.Input;
-using System.Windows.Media.Media3D;
-
-using EBoardElementPluginLinker;
-using System.Collections.ObjectModel;
 using EBoardSDK.Plugins;
-using EBoardSDK.Models;
-using EBoard.IOProcesses.DataSets;
+using Serilog;
+using System.IO;
+using System.Windows.Input;
 
 namespace EBoard.ViewModels;
 
 public partial class MainWindowMenuBarViewModel : ObservableObject
 {
-
     // Properties & Fields
     #region Properties & Fields
 
     [ObservableProperty]
     private string title;
 
-
     [ObservableProperty]
     private bool eBoardBrowserSwitch;
 
-
     private MainViewModel _MainViewModel;
-    public MainViewModel MainViewModel => _MainViewModel;
+
+    public MainViewModel MainViewModel => this._MainViewModel;
+
+    public EBoardBrowserViewModel EBoardBrowserViewModel => this.MainViewModel.EBoardBrowserViewModel;
 
     #endregion
-
-
 
     // Commands
     #region Commands
@@ -50,17 +43,90 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
     #endregion
 
     [ObservableProperty]
-    private IList<EBoardElementPluginBaseViewModel> plugins;
+    private IList<EBoardElementPluginBaseViewModel> pluginCategoryAddons = [];
+
+    [ObservableProperty]
+    private IList<EBoardElementPluginBaseViewModel> pluginCategoryElements = [];
+
+    [ObservableProperty]
+    private IList<EBoardElementPluginBaseViewModel> pluginCategoryShapes = [];
+
+    [ObservableProperty]
+    private IList<EBoardElementPluginBaseViewModel> pluginCategoryTools = [];
+
+#if RELEASE
+
+    [ObservableProperty]
+    private bool isDebug = false;
+
+#endif
+
+#if DEBUG
+
+    [ObservableProperty]
+    private bool isDebug = true;
+
+    [ObservableProperty]
+    private IList<EBoardElementPluginBaseViewModel> pluginProjects;
+#endif
 
     public MainWindowMenuBarViewModel(MainViewModel mainViewModel, EBoardSDK.Models.EboardConfig eboardConfig)
     {
-        title = "EBoard";
+        this.title = "EBoard";
 
-        _MainViewModel = mainViewModel;
+        this._MainViewModel = mainViewModel;
 
-        Plugins = eboardConfig.InstalledPlugins;
+        this.InstallEboardPlugins(SDKPluginManager.SDKPlugins);
 
-        InvokeElementCommand = new InvokeElementCommand(mainViewModel);
+        this.InstallEboardPlugins(eboardConfig.ElementPlugins);
+
+#if DEBUG
+        this.PluginProjects = eboardConfig.CurrentDevelopmentPlugins;
+#endif
+    }
+
+    private void InstallEboardPlugins(IList<EBoardElementPluginBaseViewModel> elements)
+    {
+        elements.ToList().ForEach(
+            sdkplugin =>
+            {
+                try
+                {
+                    sdkplugin.Initialize();
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "plugin initialization error");
+                }
+
+                var category = sdkplugin.PluginCategory;
+
+                switch (category)
+                {
+                    case EBoardSDK.Enums.PluginCategories.Addon:
+                        this.PluginCategoryAddons.Add(sdkplugin);
+                        break;
+                    case EBoardSDK.Enums.PluginCategories.Element:
+                        this.PluginCategoryElements.Add(sdkplugin);
+                        break;
+                    case EBoardSDK.Enums.PluginCategories.Shape:
+                        this.PluginCategoryShapes.Add(sdkplugin);
+                        break;
+                    case EBoardSDK.Enums.PluginCategories.Tool:
+                        this.PluginCategoryTools.Add(sdkplugin);
+                        break;
+                    case EBoardSDK.Enums.PluginCategories.Unkown:
+                        break;
+                    default:
+                        break;
+                }
+            });
+    }
+
+    [RelayCommand]
+    private void ClearElements()
+    {
+        this._MainViewModel?.EBoardBrowserViewModel?.DeleteAllElements();
     }
 
     [RelayCommand]
@@ -71,14 +137,13 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
             var p = s as Type;
             var plugin = Activator.CreateInstance(p) as EBoardElementPluginBaseViewModel;
 
-                var interfaces = plugin?.GetType().GetInterfaces();
+            var interfaces = plugin?.GetType().GetInterfaces();
 
-            if (_MainViewModel.EBoardBrowserViewModel.SelectedEBoard != null &&
+            if (this._MainViewModel.EBoardBrowserViewModel.SelectedEBoard != null &&
                 plugin != null &&
                 interfaces != null &&
                 interfaces.Any(x => x.Name.Equals(nameof(IPlugin))))
-                {               
-
+            {
                 IElementDataSet newElementDataSet = new ElementDataSet();
 
                 newElementDataSet = ElementDataSetFactory.GetElementDataSet(
@@ -86,39 +151,35 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
                     );
 
                 ElementViewModel evm = new ElementViewModel(
-                    _MainViewModel.EBoardBrowserViewModel.SelectedEBoard,
+                    this._MainViewModel.EBoardBrowserViewModel.SelectedEBoard,
                     newElementDataSet
                 );
 
-                if (!App.Current.Resources.MergedDictionaries.Contains(plugin.ResourceDictionary))
+                ElementViewModel element = new ElementViewModel(this._MainViewModel.EBoardBrowserViewModel.SelectedEBoard, newElementDataSet);
+
+                try
                 {
-                    App.Current.Resources.MergedDictionaries.Add(plugin.ResourceDictionary);
+                    if (!App.Current.Resources.MergedDictionaries.Contains(plugin.ResourceDictionary))
+                    {
+                        App.Current.Resources.MergedDictionaries.Add(plugin.ResourceDictionary);
+                    }
+                }
+                catch (IOException ioex)
+                {
+                    var ioexAdditionalMessage = string.Join(
+                        $"\n__{p}\t",
+                        $"plugin load error: {element.Plugin.PluginName}",
+                        "ResourceDictionary path or file is corrupt");
+                    Log.Error(ioex, ioexAdditionalMessage);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "unhandled exception");
+                    throw;
                 }
 
-                _MainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(evm);
+                this._MainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(element);
             }
-        }
-    }
-
-    [RelayCommand]
-    private void InvokeEpic()
-    {
-        if (_MainViewModel.EBoardBrowserViewModel.SelectedEBoard != null)
-        {
-            IElementDataSet newElementDataSet = new ElementDataSet();
-
-            newElementDataSet = ElementDataSetFactory.GetElementDataSet(
-                plugin: new EBoardElementPluginLinker.LinkViewModel()
-                );
-
-            ElementViewModel evm = new ElementViewModel(
-                _MainViewModel.EBoardBrowserViewModel.SelectedEBoard,
-                newElementDataSet
-            );
-
-            App.Current.Resources.MergedDictionaries.Add(new EBoardElementPluginLinker.LinkViewModel().ResourceDictionary);
-
-            _MainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(evm);
         }
     }
 }

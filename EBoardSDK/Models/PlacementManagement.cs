@@ -15,53 +15,47 @@ namespace EBoardSDK.Models;
 public class PlacementManagement : IElementPlacement
 {
     /// <summary>
-    /// the rotation of an element
+    /// Gets or sets the rotation of an element
     /// </summary>
     public double Angle { get; set; }
 
     /// <summary>
-    /// the position of an element
+    /// Gets or sets the position of an element
     /// </summary>
     public Point Position { get; set; }
 
     /// <summary>
-    /// the z-index of an element
+    /// Gets or sets the z-index of an element
     /// </summary>
     public int Z { get; set; }
 
+    public PlacementManagement() => this.SetInitialValues();
 
-    public PlacementManagement() => SetInitialValues();
-
-    public PlacementManagement(PlacementDataSet placementDataSet) => LoadPlacementDataSet(placementDataSet);
-
+    public PlacementManagement(PlacementDataSet placementDataSet) => this.LoadPlacementDataSet(placementDataSet);
 
     private async void LoadPlacementDataSet(PlacementDataSet placementDataSet)
     {
         if (placementDataSet != null)
         {
-            Angle = placementDataSet.Angle;
-            Position = placementDataSet.Position;
-            Z = placementDataSet.Z;
+            this.Angle = placementDataSet.Angle;
+            this.Position = placementDataSet.Position;
+            this.Z = placementDataSet.Z;
 
             await Task.CompletedTask;
 
             return;
         }
 
-        SetInitialValues();
+        this.SetInitialValues();
 
         await Task.CompletedTask;
     }
 
-
     private void SetInitialValues()
     {
-        Angle = 0.0;
-        Position = new Point(25.0, 25.0);
-        Z = 0;
+        this.Angle = 0.0;
+        this.Position = new Point(25.0, 25.0);
+        this.Z = 0;
     }
-
-
-
 }
 // EOF
