@@ -1,7 +1,4 @@
 ﻿using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Input;
-
 
 namespace EBoardSDK.Plugins.Elements.StandardText
 {
@@ -12,7 +9,7 @@ namespace EBoardSDK.Plugins.Elements.StandardText
     {
         public StandardTextView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

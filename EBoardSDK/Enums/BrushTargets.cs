@@ -5,5 +5,5 @@ public enum BrushTargets
     Background,
     Border,
     Foreground,
-    Highlight
+    Highlight,
 }

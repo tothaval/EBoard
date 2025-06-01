@@ -1,0 +1,111 @@
+﻿<UserControl x:Class="EBoardSDK.Controls.QuadValueSetup.QuadValueSetupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="QVS">
+
+    <UserControl.Resources>
+
+        <Style TargetType="Label">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource EBoardEboardBrowserBrushForeground}"/>
+        </Style>
+        
+        <Style TargetType="Slider" >
+            <Setter Property="Maximum" Value="{Binding ElementName=QVS, Path=Maximum}"/>
+        </Style>
+        
+    </UserControl.Resources>
+    
+    <WrapPanel Orientation="Vertical">
+
+        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+            <Label Content="Values"
+                       MinWidth="50"/>
+            <Label Content="{Binding QuadValueString}"
+                       MinWidth="50"/>
+            <Button Content="Reset" Command="{Binding OkCommand}" MinWidth="50"/>
+        </WrapPanel>
+
+        <WrapPanel Orientation="Horizontal">
+                <Label Content="All"
+                               MinWidth="50"/>
+                <Label Content="{Binding All, NotifyOnSourceUpdated=True}"
+                               MinWidth="30"/>
+                <Slider Value="{Binding All, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+            </WrapPanel>
+
+            <WrapPanel Orientation="Horizontal">
+                <Label Content="{Binding ElementName=QVS, Path=Value1}"
+                               MinWidth="50"/>
+                <Label Content="{Binding TopLeft, NotifyOnSourceUpdated=True}"
+                               MinWidth="30"/>
+                <Slider Value="{Binding TopLeft, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+            </WrapPanel>
+        <WrapPanel Orientation="Horizontal">
+            <Label Content="{Binding ElementName=QVS, Path=Value2}"
+                    MinWidth="50"/>
+                <Label Content="{Binding TopRight, NotifyOnSourceUpdated=True}"
+                    MinWidth="30"/>
+            <Slider Value="{Binding TopRight, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                 Minimum="0"
+                 MinWidth="100"
+                 SmallChange="1"
+                 LargeChange="5"
+                 Interval="1"
+                 Orientation="Horizontal"/>
+            </WrapPanel>
+
+        <WrapPanel Orientation="Horizontal">
+            <Label Content="{Binding ElementName=QVS, Path=Value3}"
+                               MinWidth="50"/>
+                <Label Content="{Binding BottomRight, NotifyOnSourceUpdated=True}"
+                               MinWidth="30"/>
+            <Slider Value="{Binding BottomRight, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+            </WrapPanel>
+
+
+        <WrapPanel Orientation="Horizontal">
+            <Label Content="{Binding ElementName=QVS, Path=Value4}"
+                               MinWidth="50"/>
+                <Label Content="{Binding BottomLeft, NotifyOnSourceUpdated=True}"
+                               MinWidth="30"/>
+                <Slider Value="{Binding BottomLeft, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="0"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+            </WrapPanel>
+
+
+            <!--<MenuItem Header="Reset Corners"
+                              Command="{Binding ResetCornersCommand}"
+                              Visibility="{Binding PluginNoDefaultBordersSet, Converter={StaticResource VisibilityToCollapsed}}"
+                              />-->
+
+    </WrapPanel>
+</UserControl>

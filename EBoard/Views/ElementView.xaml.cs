@@ -13,44 +13,43 @@ namespace EBoard.Views;
 /// </summary>
 public partial class ElementView : UserControl
 {
-
     private ElementViewModel _ElementViewModel;
 
     private bool _IsDragging;
 
-
     private Point _Position;
-    public Point Position => _Position;
 
+    public Point Position => this._Position;
 
     private UIElement _VisualParent;
-    public UIElement VisualParent => _VisualParent;
 
+    public UIElement VisualParent => this._VisualParent;
 
     private Canvas _Canvas;
 
-
     private double _X;
+
     public double X
     {
-        get { return _X; }
+        get { return this._X; }
+
         set
         {
-            _X = value;
+            this._X = value;
         }
     }
-
 
     private double _Y;
+
     public double Y
     {
-        get { return _Y; }
+        get { return this._Y; }
+
         set
         {
-            _Y = value;
+            this._Y = value;
         }
     }
-
 
     private int fallbackZ = 0;
 
@@ -59,63 +58,60 @@ public partial class ElementView : UserControl
 
     public int Z
     {
-        get { return _Z; }
+        get { return this._Z; }
+
         set
         {
-            _Z = value;
+            this._Z = value;
         }
     }
 
-
     public ElementView()
     {
-        InitializeComponent();
-
+        this.InitializeComponent();
     }
-
 
     private void _ElementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        UpdatePlacement();
+        this.UpdatePlacement();
     }
-
-
 
     private void UpdatePlacement()
     {
-        X = Canvas.GetLeft(_VisualParent);
+        this.X = Canvas.GetLeft(this._VisualParent);
 
-        Y = Canvas.GetTop(_VisualParent);
+        this.Y = Canvas.GetTop(this._VisualParent);
 
-        Panel.SetZIndex(_VisualParent, _ElementViewModel.ZIndexValue);
+        if (Panel.GetZIndex(this._VisualParent) != this._ElementViewModel.ZIndexValue)
+        {
+            Panel.SetZIndex(this._VisualParent, this._ElementViewModel.ZIndexValue);
+        }
 
-        _ElementViewModel.XMaximumValue = (int)_Canvas.ActualWidth;
-        _ElementViewModel.YMaximumValue = (int)_Canvas.ActualHeight;
+        this._ElementViewModel.XMaximumValue = (int)this._Canvas.ActualWidth;
+        this._ElementViewModel.YMaximumValue = (int)this._Canvas.ActualHeight;
     }
-
 
     private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (!Keyboard.IsKeyDown(Key.LeftCtrl) || !Keyboard.IsKeyDown(Key.RightCtrl))
         {
+            this.Z = this._ElementViewModel.ZIndexValue;
 
-            Z = _ElementViewModel.ZIndexValue;
-
-            if (Z < _ElementViewModel.ZMaximumValue && Z != fallbackZ)
+            if (this.Z < this._ElementViewModel.ZMaximumValue && this.Z != this.fallbackZ)
             {
-                fallbackZ = Z;
+                this.fallbackZ = this.Z;
             }
 
-            _IsDragging = true;
-            _IsResizing = false;
+            this._IsDragging = true;
+            this._IsResizing = false;
 
-            _Position = e.GetPosition(_VisualParent);
+            this._Position = e.GetPosition(this._VisualParent);
 
-            _ElementViewModel.EBoardViewModel.BeginElementSelectionMovement(_ElementViewModel);
+            this._ElementViewModel.EBoardViewModel.BeginElementSelectionMovement(this._ElementViewModel);
 
-            oldMousePosition = e.GetPosition(_Canvas);
+            this.oldMousePosition = e.GetPosition(this._Canvas);
 
-            e.Handled = true; 
+            e.Handled = true;
         }
     }
 
@@ -123,166 +119,164 @@ public partial class ElementView : UserControl
 
     private void Border_MouseMove(object sender, MouseEventArgs e)
     {
-        if (!_IsDragging)
+        if (!this._IsDragging)
             return;
 
-        if (_IsResizing)
+        if (this._IsResizing)
         {
             return;
         }
 
         if (e.LeftButton == MouseButtonState.Pressed)
         {
-            Point canvasRelativePosition = e.GetPosition(_Canvas);
+            Point canvasRelativePosition = e.GetPosition(this._Canvas);
 
             double x, y;
 
-            x = canvasRelativePosition.X - _Position.X;
+            x = canvasRelativePosition.X - this._Position.X;
 
-            y = canvasRelativePosition.Y - _Position.Y;
+            y = canvasRelativePosition.Y - this._Position.Y;
 
-            Canvas.SetLeft(_VisualParent, x);
-            Canvas.SetTop(_VisualParent, y);
+            Canvas.SetLeft(this._VisualParent, x);
+            Canvas.SetTop(this._VisualParent, y);
 
-            Panel.SetZIndex(_VisualParent, 1000);
-            _ElementViewModel.ZIndexValue = 1000;
+            Panel.SetZIndex(this._VisualParent, 1000);
+            this._ElementViewModel.ZIndexValue = 1000;
 
-            Point delta = (Point)(oldMousePosition - canvasRelativePosition);
+            Point delta = (Point)(this.oldMousePosition - canvasRelativePosition);
 
-            _ElementViewModel.EBoardViewModel.MoveElementSelection(_ElementViewModel, delta);
+            this._ElementViewModel.EBoardViewModel.MoveElementSelection(this._ElementViewModel, delta);
 
-            oldMousePosition = canvasRelativePosition;
+            this.oldMousePosition = canvasRelativePosition;
         }
     }
-
 
     private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
         //if (!_IsDragging)
         //    return;
 
-        if (_IsDragging)
+        if (this._IsDragging)
         {
-            _IsDragging = false;
+            this._IsDragging = false;
 
-            X = Canvas.GetLeft(_VisualParent);
+            this.X = Canvas.GetLeft(this._VisualParent);
 
-            Y = Canvas.GetTop(_VisualParent);
+            this.Y = Canvas.GetTop(this._VisualParent);
 
-            _Position = new Point(X, Y);
+            this._Position = new Point(this.X, this.Y);
 
-            _ElementViewModel.PlacementManager.Position = new Point(X, Y);
+            this._ElementViewModel.PlacementManager.Position = new Point(this.X, this.Y);
 
-            if (Z > _ElementViewModel.ZMaximumValue)
+            if (this.Z > this._ElementViewModel.ZMaximumValue)
             {
-                Z = fallbackZ;
-                _ElementViewModel.ZIndexValue = fallbackZ;
+                this.Z = this.fallbackZ;
+                this._ElementViewModel.ZIndexValue = this.fallbackZ;
             }
             else
             {
-                _ElementViewModel.ZIndexValue = Z;
+                this._ElementViewModel.ZIndexValue = this.Z;
             }
 
-            Panel.SetZIndex(_VisualParent, Z);
+            Panel.SetZIndex(this._VisualParent, this.Z);
 
-            _ElementViewModel.EBoardViewModel.StopElementSelectionMovement(_ElementViewModel);
+            this._ElementViewModel.EBoardViewModel.StopElementSelectionMovement(this._ElementViewModel);
         }
 
-        _ElementViewModel.WasLastActive();
+        this._ElementViewModel.WasLastActive();
 
         e.Handled = true;
     }
 
     private void Element_Loaded(object sender, RoutedEventArgs e)
     {
-        _VisualParent = VisualTreeHelper.GetParent(this) as UIElement;
+        this._VisualParent = VisualTreeHelper.GetParent(this) as UIElement;
 
-        if (_VisualParent != null)
+        if (this._VisualParent != null)
         {
-            _Canvas = VisualTreeHelper.GetParent(_VisualParent) as Canvas;
+            this._Canvas = VisualTreeHelper.GetParent(this._VisualParent) as Canvas;
         }
 
-        _ElementViewModel = (ElementViewModel)DataContext;
+        this._ElementViewModel = (ElementViewModel)this.DataContext;
 
-        _ElementViewModel.PropertyChanged += _ElementViewModel_PropertyChanged;
+        this._ElementViewModel.PropertyChanged += this._ElementViewModel_PropertyChanged;
 
-        _ElementViewModel.SetView(Element);
+        this._ElementViewModel.SetView(this);
 
-        UpdatePlacement();
+        this.UpdatePlacement();
     }
 
     private void Element_Unloaded(object sender, RoutedEventArgs e)
     {
-
     }
 
     private void Border_MouseWheel(object sender, MouseWheelEventArgs e)
     {
         if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
         {
-            _ElementViewModel.ApplyRotationAngleValueByMouseWheel(e.Delta);
+            this._ElementViewModel.ApplyRotationAngleValueByMouseWheel(e.Delta);
 
             return;
         }
 
-        _ElementViewModel.ApplyZIndexValueByMouseWheel(e.Delta);
+        this._ElementViewModel.ApplyZIndexValueByMouseWheel(e.Delta);
     }
 
     private void Border_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
     {
         if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
         {
-            _IsResizing = true; _IsDragging = false;
+            this._IsResizing = true; this._IsDragging = false;
 
-            _Position = e.GetPosition(_VisualParent);
+            this._Position = e.GetPosition(this._VisualParent);
 
             //_ElementViewModel.EBoardViewModel.BeginElementSelectionMovement(_ElementViewModel);
 
-            X = Canvas.GetLeft(_VisualParent);
+            this.X = Canvas.GetLeft(this._VisualParent);
 
-            Y = Canvas.GetTop(_VisualParent);
+            this.Y = Canvas.GetTop(this._VisualParent);
 
-            oldMousePosition = e.GetPosition(_Canvas);
+            this.oldMousePosition = e.GetPosition(this._Canvas);
 
-            e.Handled = true; 
+            e.Handled = true;
         }
     }
 
     private void Border_MouseLeftButtonUp_1(object sender, MouseButtonEventArgs e)
     {
-        if (!_IsResizing)
+        if (!this._IsResizing)
             return;
 
-        if (_IsResizing)
+        if (this._IsResizing)
         {
-            _IsResizing = false;
+            this._IsResizing = false;
 
-            X = Canvas.GetLeft(_VisualParent);
+            this.X = Canvas.GetLeft(this._VisualParent);
 
-            Y = Canvas.GetTop(_VisualParent);         
+            this.Y = Canvas.GetTop(this._VisualParent);
         }
 
-        _ElementViewModel.WasLastActive();
+        this._ElementViewModel.WasLastActive();
 
         e.Handled = true;
     }
 
     private void Border_MouseMove_1(object sender, MouseEventArgs e)
     {
-        if (e.LeftButton == MouseButtonState.Pressed && _IsResizing)
+        if (e.LeftButton == MouseButtonState.Pressed && this._IsResizing)
         {
-            Point canvasRelativePosition = e.GetPosition(_Canvas);
+            Point canvasRelativePosition = e.GetPosition(this._Canvas);
 
             double x, y;
 
-            x = canvasRelativePosition.X - _Position.X;
+            x = canvasRelativePosition.X - this._Position.X;
 
-            y = canvasRelativePosition.Y - _Position.Y;
+            y = canvasRelativePosition.Y - this._Position.Y;
 
-            _ElementViewModel.WidthValue = (int)x;
-            _ElementViewModel.HeightValue = (int)y;
+            this._ElementViewModel.WidthValue = (int)x;
+            this._ElementViewModel.HeightValue = (int)y;
 
-            oldMousePosition = canvasRelativePosition;
+            this.oldMousePosition = canvasRelativePosition;
         }
     }
 }

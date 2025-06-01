@@ -9,7 +9,7 @@ namespace EBoard.Views
     {
         public MainWindowMenuBar()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

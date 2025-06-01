@@ -16,10 +16,7 @@ internal static class PluginFactory
         Type? type_PluginViewModel = Type.GetType(pluginViewModel);
 
         if (type_PluginView is null || type_PluginViewModel is null)
-        {                   
-
-
-
+        {
             return null;
         }
 
@@ -36,7 +33,7 @@ internal static class PluginFactory
 
         return new StandardTextViewModel()
         {
-            Text = "Plugin Instantiation Error"
+            Text = "Plugin Instantiation Error",
         };
     }
 }

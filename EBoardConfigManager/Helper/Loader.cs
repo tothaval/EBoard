@@ -1,5 +1,6 @@
 ﻿namespace EBoardConfigManager.Helper;
 
+using Serilog;
 using System.Text.Json;
 
 public static class Loader
@@ -14,7 +15,6 @@ public static class Loader
         }
         catch (Exception)
         {
-
             throw;
         }
     }
@@ -29,7 +29,6 @@ public static class Loader
         }
         catch (Exception)
         {
-
             throw;
         }
     }
@@ -56,7 +55,6 @@ public static class Loader
         }
         catch (Exception)
         {
-
             throw;
         }
     }
@@ -66,6 +64,11 @@ public static class Loader
         IList<FileInfo> fileInfos = [];
 
         if (string.IsNullOrWhiteSpace(directory) && string.IsNullOrWhiteSpace(filter))
+        {
+            return fileInfos;
+        }
+
+        if (!Directory.Exists(directory))
         {
             return fileInfos;
         }
@@ -83,7 +86,6 @@ public static class Loader
         }
         catch (Exception)
         {
-
             throw;
         }
     }
@@ -99,52 +101,30 @@ public static class Loader
         {
             using (FileStream openStream = File.OpenRead(file))
             {
-                var instance = JsonSerializer.Deserialize<T>(openStream);
-            
+                var instance = JsonSerializer.Deserialize<T>(openStream, ConfigOptions.JsonSerializerOptions);
+
                 return instance;
             }
         }
+        catch (ArgumentException ex)
+        {
+            var s = $"filename: {file}, type {typeof(T)}";
+
+            Log.Error(ex, s);
+
+            throw new ArgumentException(string.Join("__ ", s, ex.Message));
+        }
+        catch (System.Text.Json.JsonException jsonEx)
+        {
+            var s = $"filename: {file}, type {typeof(T)}";
+
+            Log.Error(jsonEx, s);
+
+            throw new System.Text.Json.JsonException(string.Join("__ ", s, jsonEx.Message));
+        }
         catch (Exception)
         {
-
             throw;
         }
     }
-
-    //public static async Task<T?> LoadXmlFile<T>(string file)
-    //{
-    //    if (string.IsNullOrWhiteSpace(file) && !File.Exists(file))
-    //    {
-    //        return (T)Activator.CreateInstance(typeof(T))!;
-    //    }
-
-    //    try
-    //    {
-    //        using FileStream openStream = File.OpenRead(file);
-
-    //        var instance = await JsonSerializer.DeserializeAsync<T>(openStream);
-
-    //        return instance;
-    //    }
-    //    catch (Exception)
-    //    {
-
-    //        throw;
-    //    }
-    //}
-
-    //        string filter = "*.xml";
-
-    //        List<string> files = Directory.GetFiles(folderPath, filter, SearchOption.TopDirectoryOnly).ToList();
-
-    //        if (files != null && files.Count > 0)
-    //        {
-    //            foreach (string file in files)
-    //            {
-    //                if (file.Contains("eboard_") && file.EndsWith($".xml"))
-    //                {
-    //                    await LoadEboardDataSetFromFile(file, filter);
-    //    }
-    //}
-    //        }
 }

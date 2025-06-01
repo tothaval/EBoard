@@ -11,7 +11,7 @@
     <Ellipse
         Fill="{Binding BrushManagement.Background}"
         StrokeThickness="{Binding BorderManagement.BorderThickness}"
-        Stroke="{Binding BrushManagement.Border}"
+        Stroke="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"
         
         MinWidth="10"
         MinHeight="10"

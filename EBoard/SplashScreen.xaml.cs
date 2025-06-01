@@ -9,7 +9,7 @@ namespace EBoard
     {
         public SplashScreen()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

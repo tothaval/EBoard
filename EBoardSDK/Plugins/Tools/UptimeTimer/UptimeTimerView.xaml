@@ -8,8 +8,30 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
+    <UserControl.Resources>
+        <Style TargetType="ToolTip">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                        <Border Background="{Binding  BrushManagement.Background}"
+                                BorderBrush="{Binding BrushManagement.Border}"
+                                BorderThickness="{Binding BorderManagement.BorderThickness}">
+                            <TextBlock Text="{Binding ToolTipMessage}"
+                                       Foreground="{Binding  BrushManagement.Foreground}"
+                                       Margin="5"/>
+                        </Border>
+                        </Grid>
+                    </ControlTemplate>
+                    
+                </Setter.Value>
+            </Setter>
+
+        </Style>
+    </UserControl.Resources>
+    
         <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch"
+          VerticalAlignment="Stretch"          
                      Margin="{Binding BorderManagement.Margin}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -54,12 +76,13 @@
                        Grid.Column="0"        
                        Background="Transparent"
                        Padding="0 10 0 0"
-                     Foreground="{Binding BrushManagement.Foreground}"
+                     Foreground="{Binding BrushManagement.Foreground}"     
                          Text="uptime"/>
 
             <TextBlock Grid.Row="2"                      
                        Grid.Column="1"
                        Text="{Binding Uptime, UpdateSourceTrigger=PropertyChanged}"
+                       ToolTip="{Binding ToolTipMessage}"
                        Background="Transparent"     
                        TextAlignment="Right"         
                        VerticalAlignment="Center"         

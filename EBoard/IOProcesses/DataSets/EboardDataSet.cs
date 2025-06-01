@@ -1,81 +1,75 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  EboardDataSet 
- * 
+ *
+ *  EboardDataSet
+ *
  *  serializable helper class to store and retrieve EBoardViewModel(s) data to
  *  or from hard drive storage.
- *  
+ *
  *  Each Eboard has to store its own properties, as well as a list of all child
  *  elements - for now. Once Elements are getting more complex, it is probably
  *  better to trigger a separate serialization process/method for the elements and their data.
- *  
+ *
  *  It is vital to further development efforts, to be able to save and load Eboard contents
- *  asap, because it reduces time needed to setup the ui and test a specific or recently added 
+ *  asap, because it reduces time needed to setup the ui and test a specific or recently added
  *  feature.
  */
-using EBoardSDK.SharedMethods;
-using EBoardSDK.Interfaces;
-using EBoardSDK.Models;
+namespace EBoard.Models;
 
 using EBoard.ViewModels;
+using EBoardSDK.Models;
+using EBoardSDK.Models.DataSets;
 using System.Collections.ObjectModel;
 using System.Xml.Serialization;
-using EBoardSDK.Models.DataSets;
-
-namespace EBoard.Models;
 
 [Serializable]
 [XmlRoot("EboardConfiguration")]
 public class EboardDataSet
 {
-
     [XmlIgnore]
-    private EBoardViewModel _EBoardViewModel { get; set; }
-
-    [XmlIgnore]
-    public EBoardViewModel EBoardViewModel => _EBoardViewModel;
-
-    public string EBID { get; set; }
-    public string EBoardName { get; set; }
-    public int EBoardDepth { get; set; }
-
-    public BorderDataSet BorderDataSet { get; set; }
-    public BrushDataSet BrushDataSet { get; set; }
-
-
-    [XmlIgnore]
-    public ObservableCollection<ElementViewModel> Elements { get; set; } = new ObservableCollection<ElementViewModel> { };
-
+    private EBoardViewModel eBoardViewModel;
 
     public EboardDataSet()
     {
-        //_EBoardViewModel = new EBoardViewModel("new", new BorderManagement() { Width = 1000.0, Height = 500.0}, 100);                            
     }
 
     public EboardDataSet(EBoardViewModel eBoardViewModel)
     {
-        _EBoardViewModel = eBoardViewModel;
+        this.eBoardViewModel = eBoardViewModel;
 
-        EBID = eBoardViewModel.EBID;
-        EBoardName = eBoardViewModel.EBoardName;
-        EBoardDepth = eBoardViewModel.EBoardDepth;
+        this.EBID = eBoardViewModel.EBID;
+        this.EBoardName = eBoardViewModel.EBoardName;
+        this.EBoardDepth = eBoardViewModel.EBoardDepth;
 
-        BorderDataSet = new BorderDataSet(eBoardViewModel.BorderManager);
+        this.BorderDataSet = new BorderDataSet(eBoardViewModel.BorderManager);
 
-        BrushDataSet = new BrushDataSet(eBoardViewModel.BrushManager);
+        this.BrushDataSet = new BrushDataSet(eBoardViewModel.BrushManager);
 
-
-        if (BorderDataSet == null)
+        if (this.BorderDataSet == null)
         {
-            BorderDataSet = new BorderDataSet(new BorderManagement());
+            this.BorderDataSet = new BorderDataSet(new BorderManagement());
         }
 
-        if (BrushDataSet == null)
+        if (this.BrushDataSet == null)
         {
-            BrushDataSet = new BrushDataSet(new BrushManagement());
+            this.BrushDataSet = new BrushDataSet(new BrushManagement());
         }
     }
 
+    [XmlIgnore]
+    public EBoardViewModel EBoardViewModel => this.eBoardViewModel;
 
+    public string EBID { get; set; }
+
+    public string EBoardName { get; set; }
+
+    public int EBoardDepth { get; set; }
+
+    public BorderDataSet BorderDataSet { get; set; }
+
+    public BrushDataSet BrushDataSet { get; set; }
+
+    [XmlIgnore]
+    public ObservableCollection<ElementViewModel> Elements { get; set; } = new ObservableCollection<ElementViewModel> { };
 }
+
 // EOF

@@ -1,0 +1,176 @@
+﻿<UserControl x:Class="EBoardElementPluginBudgeteer.Views.BudgetView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EBoardElementPluginBudgeteer.Views"
+             xmlns:vm="clr-namespace:EBoardElementPluginBudgeteer.ViewModels"
+             xmlns:usercontrols="clr-namespace:EBoardElementPluginBudgeteer.UserControls"
+             d:DataContext="{d:DesignInstance Type=vm:BudgetViewModel}"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    
+    <StackPanel>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!--
+                better solution, one button for budget changes
+                and some sort of input field for price, quantity,
+                date and item
+            
+                goal: output via flowdocument            
+            -->
+
+            <Button Content="+ Change"
+                    Grid.Column="0"
+                    Grid.Row="1"
+                    Margin="5 10 0 0"
+                    Command="{Binding AddChangeCommand}"
+                    HorizontalAlignment="Left"
+                    HorizontalContentAlignment="Left"
+                    Padding="5 2"/>
+
+            <Button Content="- Change"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Margin="10 10 0 0"
+                                Command="{Binding RemoveChangeCommand}"
+                                HorizontalAlignment="Left"
+                                HorizontalContentAlignment="Left"
+        
+                                Padding="5 2"/>
+
+            <StackPanel Orientation="Horizontal"
+                        Grid.Column="2"
+                        Grid.ColumnSpan="1"
+                        Grid.Row="1">
+                <Button Content="Item Selection Mode"
+                    Margin="10 10 0 0"
+                                Command="{Binding ItemSelectionModeCommand}"
+                                HorizontalAlignment="Left"
+                                HorizontalContentAlignment="Left"
+        
+                                Padding="5 2"/>
+
+
+                <Button Content="Text Selection Mode"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Margin="10 10 0 0"
+                                Command="{Binding TextSelectionModeCommand}"
+                                HorizontalAlignment="Left"
+                                HorizontalContentAlignment="Left"
+        
+                                Padding="5 2"/>
+            </StackPanel>
+
+
+            <Border Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    Grid.Row="0">
+                <usercontrols:BudgetChangeSetup
+                    Type="{Binding SelectedBudgetChange.Type, Mode=TwoWay}"
+                    Date="{Binding SelectedBudgetChange.BudgetChangeDate, Mode=TwoWay}"
+                    Item="{Binding SelectedBudgetChange.Item, Mode=TwoWay}"
+                    Price="{Binding SelectedBudgetChange.Price, Mode=TwoWay}"
+                    Quantity="{Binding SelectedBudgetChange.Quantity, Mode=TwoWay}"
+                    CanExecute="{Binding RemoveBudgetChangeCanExecute}"/>
+
+            </Border>
+
+
+            <Grid Grid.Row="2"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+
+
+                <TextBlock Text="Current Budget"
+                           HorizontalAlignment="Left"
+                           Grid.Row="0"/>
+
+                <TextBlock Text="{Binding CurrentBudget, StringFormat=c}"
+                           HorizontalAlignment="Right"
+                           Grid.Row="0"/>
+                
+                
+                <!--
+                Item Selection Mode => use listbox or alike to have selectable item rows
+                
+                Text Selection Mode => use FlowDocument to print tables with headers or export budget
+                -->
+
+                <ListBox ItemsSource="{Binding BudgetChanges}"
+                         SelectedItem="{Binding SelectedBudgetChange}"
+                         SelectionMode="Single"
+                         Grid.Row="1">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                                <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Grid.Column="0" MinWidth="50" Margin="0 0 10 0" Text="{Binding BudgetChangeDate, StringFormat=d}"/>
+                                    <TextBlock Grid.Column="1" MinWidth="50" Margin="0 0 10 0" Text="{Binding Type}"/>
+                                    <TextBlock Grid.Column="2" MinWidth="70" Margin="0 0 10 0" Text="{Binding Item}"/>
+                                    <TextBlock Grid.Column="3" MinWidth="50" Margin="0 0 10 0" Text="{Binding Price, StringFormat=c}"
+                                               TextAlignment="Right"/>
+                                    <TextBlock Grid.Column="4" MinWidth="50" Margin="0 0 10 0" Text="{Binding Quantity}"
+                                               TextAlignment="Right"/>
+                                    <TextBlock Grid.Column="5" MinWidth="90" Margin="0 0 10 0" Text="{Binding TotalPrice, StringFormat=c}"
+                                               HorizontalAlignment="Right"
+                                               TextAlignment="Right"/>
+                                </Grid>
+
+                        </DataTemplate>
+                        
+                    </ListBox.ItemTemplate>
+                    
+                </ListBox>
+
+
+                <TextBlock Text="Initial Budget"
+                           HorizontalAlignment="Left"
+                           Grid.Row="2"/>
+
+                <TextBlock Text="{Binding InitialBudget, StringFormat=c}"
+                           HorizontalAlignment="Right"
+                           Grid.Row="2"/>
+
+
+            </Grid>
+            
+            <!--<local:BudgetDefinitionView DataContext="{Binding SelectedBudgetChange}"
+                                                Grid.Row="1"
+                                                Grid.Column="0"
+                                                Grid.ColumnSpan="3"/>-->
+        </Grid>
+
+
+
+    </StackPanel>
+</UserControl>

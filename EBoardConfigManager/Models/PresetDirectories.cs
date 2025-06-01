@@ -1,19 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-namespace EBoardConfigManager.Models;
+﻿namespace EBoardConfigManager.Models;
 
 public class PresetDirectories
 {
 #if RELEASE
 
-    public string DefaultConfigFolder => Path.Combine(Environment.ProcessPath, "config");
+    public string DefaultConfigFolder => GenerateFolderName("config");
 
-    public string DefaultPluginsFolder => Path.Combine(Environment.ProcessPath, "plugins");
-    
-    public string DefaultScreensFolder => Path.Combine(Environment.ProcessPath, "screens");
+    public string DefaultPluginsFolder => GenerateFolderName("plugins");
+
+    public string DefaultScreensFolder => GenerateFolderName("screens");
 #endif
 
+    public string DefaultDebugLogFolder => @"Logs\";
+
+    private string GenerateFolderName(string subfolder)
+    {
+        var assemblyfile = new FileInfo(Environment.ProcessPath).DirectoryName;
+
+        var folderpath = Path.Combine(assemblyfile, subfolder);
+
+        return folderpath;
+    }
+
 #if DEBUG
+
     public string DefaultConfigFolder => @"..\..\..\__DEBUG_config\";
 
     public string DefaultPluginsFolder => @"..\..\..\__DEBUG_plugins\";

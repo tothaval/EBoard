@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    x:Name="ElementPluginResources"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:elementPlugin ="clr-namespace:EBoardElementPluginBudgeteer.Views"                    
+                    xmlns:elementPluginVM ="clr-namespace:EBoardElementPluginBudgeteer.ViewModels">
+    
+    <DataTemplate DataType="{x:Type elementPluginVM:BudgetServiceViewModel}">
+        <elementPlugin:BudgetServiceView/>
+    </DataTemplate>
+
+</ResourceDictionary>

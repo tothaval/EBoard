@@ -1,0 +1,157 @@
+﻿<UserControl x:Class="EBoardElementPluginMyNote.MyNoteView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EBoardElementPluginMyNote"
+             xmlns:vms="clr-namespace:EBoardElementPluginMyNote.ViewModels"
+             xmlns:views="clr-namespace:EBoardElementPluginMyNote.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=local:MyNoteViewModel}">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="visConv"/>
+    </UserControl.Resources>
+
+    <!--<UserControl.InputBindings>
+        <MouseBinding MouseAction="LeftDoubleClick"
+                          Command="{Binding NewNoteCommand}"/>
+    </UserControl.InputBindings>-->
+
+    <Border BorderBrush="Transparent" Margin="15"
+    Background="Transparent">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+
+            </Grid.ColumnDefinitions>
+            <TabControl  Background="Transparent"
+                 BorderThickness="0"
+                 BorderBrush="Transparent"
+                 Grid.Column="0"
+                 >
+
+                <TabItem x:Name="TI_log"  Header="Log"
+                 Background="FloralWhite"
+                 Foreground="Black"
+                 BorderBrush="Transparent"
+                 BorderThickness="0">
+                    <views:NoteView DataContext="{Binding Protocol}"/>
+                </TabItem>
+
+                <TabItem x:Name="TI_notes" Header="Notes"
+                 Background="FloralWhite"
+                 Foreground="Black"                         
+                 BorderBrush="Transparent"
+                 BorderThickness="0">
+                    <views:NotesView DataContext="{Binding Notes}"/>
+                </TabItem>
+
+                <TabItem x:Name="TI_matrix"  Header="Matrix"
+                 Background="FloralWhite"
+                 Foreground="Black"
+                 BorderBrush="Transparent"
+                 BorderThickness="0">
+
+                </TabItem>
+
+                <TabItem x:Name="TI_history"  Header="History"
+                 Background="FloralWhite"
+                 Foreground="Black"
+                 BorderBrush="Transparent"
+                 BorderThickness="0">
+
+
+                </TabItem>
+
+            </TabControl>
+
+            <StackPanel x:Name="SP_options" Visibility="{Binding OptionsClicked,
+                Converter={StaticResource visConv}}"
+                    Grid.Column="1">
+
+                <Slider 
+                        Interval="1"
+                        Value="{Binding Rounding}"
+                        LargeChange="5"
+                        SmallChange="1"
+                        IsSnapToTickEnabled="True"
+                        Minimum="0"
+                        Maximum="60"
+                    Width="120">
+                    <Slider.Background>
+                        <SolidColorBrush Color="red"/>
+                    </Slider.Background>
+                </Slider>
+
+
+                <Slider 
+                        Interval="1"
+                        Value="{Binding InnerRounding}"
+                        LargeChange="5"
+                        SmallChange="1"
+                        IsSnapToTickEnabled="True"
+                        Minimum="0"
+                        Maximum="60"
+                    Width="120">
+                    <Slider.Background>
+                        <SolidColorBrush Color="DarkOrange"/>
+                    </Slider.Background>
+                </Slider>
+
+                <Slider 
+                        Interval="1"
+                        Value="{Binding DateTimeFontSizeSliderValue}"
+                        LargeChange="4"
+                        SmallChange="1"
+                        IsSnapToTickEnabled="True"
+                        Minimum="8"
+                        Maximum="48"
+                    
+                    Width="120">
+                    <Slider.Background>
+                        <SolidColorBrush Color="MidnightBlue"/>
+                    </Slider.Background>
+                </Slider>
+
+                <Slider 
+                        Interval="1"
+                        Value="{Binding HeaderFontSizeSliderValue}"
+                        LargeChange="4"
+                        SmallChange="1"
+                        IsSnapToTickEnabled="True"
+                        Minimum="8"
+                        Maximum="48"
+                    
+                    Width="120">
+                    <Slider.Background>
+                        <SolidColorBrush Color="SkyBlue"/>
+                    </Slider.Background>
+                </Slider>
+
+                <Slider 
+                        Interval="1"
+                        Value="{Binding ContentFontSizeSliderValue}"
+                        LargeChange="4"
+                        SmallChange="1"
+                        IsSnapToTickEnabled="True"
+                        Minimum="8"
+                        Maximum="48"
+                    
+                    Width="120">
+                    <Slider.Background>
+                        <SolidColorBrush Color="Green"/>
+                    </Slider.Background>
+                </Slider>
+            </StackPanel>
+
+            <Button x:Name="BTN_options" 
+                Grid.Column="2"
+                Height="50" Width="4"
+                    Command="{Binding OptionsClickedCommand}"/>
+        </Grid>
+    </Border>
+</UserControl>

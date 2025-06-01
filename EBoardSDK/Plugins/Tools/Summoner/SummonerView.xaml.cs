@@ -9,7 +9,7 @@ namespace EBoardSDK.Plugins.Tools.Summoner
     {
         public SummonerView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

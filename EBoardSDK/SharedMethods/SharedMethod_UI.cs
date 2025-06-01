@@ -1,11 +1,11 @@
 ﻿
 namespace EBoardSDK.SharedMethods;
 
-using System.IO;
+using EBoardSDK.Controls.QuadValueSetup;
+using EBoardSDK.Models;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml.Serialization;
 
 public class SharedMethod_UI
 {
@@ -25,16 +25,30 @@ public class SharedMethod_UI
         }
         catch (Exception)
         {
-            return ImagePathErrorDefaultBrush;
+            return this.ImagePathErrorDefaultBrush;
         }
 
         return brush;
     }
 
+    public int ResetSizeDisplayValue(double value)
+    {
+        if (double.IsNaN(value))
+        {
+            return -1;
+        }
+
+        return (int)value;
+    }
 
     public void CloseApplication()
     {
         Application.Current.Shutdown();
+    }
+
+    public QuadValueSetupViewModel BuildQuadValueSetup(QuadValue<int> quadValue, Action action)
+    {
+        return new QuadValueSetupViewModel(quadValue, action);
     }
 
     public void MaximizeApplication(Window mainWindow)
@@ -45,13 +59,13 @@ public class SharedMethod_UI
         {
             mainWindow.WindowState = WindowState.Maximized;
             mainWindow.Background = (SolidColorBrush)Application.Current.Resources["BackgroundBrush"];
-            Application.Current.Resources["MaximizeContextMenuItemHeader"] = "Normalize";
+            Application.Current.Resources["EboardMainWindowMaximizeContextMenuHeader"] = "Normalize";
         }
         else
         {
             mainWindow.WindowState = WindowState.Normal;
             mainWindow.Background = new SolidColorBrush(Colors.Transparent);
-            Application.Current.Resources["MaximizeContextMenuItemHeader"] = "Maximize";
+            Application.Current.Resources["EboardMainWindowMaximizeContextMenuHeader"] = "Maximize";
         }
     }
 
@@ -71,5 +85,4 @@ public class SharedMethod_UI
 
         return imagePathProperty;
     }
-
 }

@@ -10,6 +10,5 @@ public class PluginDataSet
     public List<References> References { get; set; } = new List<References>();
 }
 
-
 public record References(string Key, string Value);
 

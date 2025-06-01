@@ -1,24 +1,19 @@
 ﻿namespace EBoardSDK.Plugins.Tools.Summoner;
 
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
-using EBoardSDK.Models.DataSets;
 using EBoardSDK.Plugins.Elements.StandardText;
 using EBoardSDK.SharedMethods;
-
-using CommunityToolkit.Mvvm;
-using CommunityToolkit.Mvvm.ComponentModel;
-
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Plugins.Tools.EmptyRadial;
-using System.Reflection;
 
-public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElementSelection, IElementBackgroundImage
+public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElementBackgroundImage
 {
-
     [ObservableProperty]
     private string userCommandString = ">";
 
@@ -26,21 +21,19 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     {
     }
 
-    [ObservableProperty]
-    private bool isSelected;
-
     private double Angle { get; set; }
 
     [ObservableProperty]
     private IPlugin summonee;
 
-   //public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
+    //public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
 
     [ObservableProperty]
     private string imagePath;
+
     partial void OnImagePathChanged(string value)
     {
-        ChangeElementBackgroundToImage();
+        ChangeElementBackgroundToImage(BrushTargets.Background, value);
     }
 
     [ObservableProperty]
@@ -104,7 +97,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     }
 
     /// <summary>
-    /// until a real plugin architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real plugin architecture is implemented, this serves as a mockup solution
     /// 
     /// a real plugin architecture should check a folder for certain files or a file, in which
     /// data on plugins is stored, then all that data needs to be loaded and instanciated if
@@ -115,25 +108,31 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     public List<string> PluginsCategoryElements { get; set; } = ["StandardText"];
 
     /// <summary>
-    /// until a real plugin architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real plugin architecture is implemented, this serves as a mockup solution
     /// </summary>
     public List<string> PluginsCategoryShapes { get; set; } = ["Ellipse", "Rectangle"];
 
     /// <summary>
-    /// until a real plugin architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real plugin architecture is implemented, this serves as a mockup solution
     /// </summary>
     public List<string> PluginsCategoryTools { get; set; } = [
         "SessionUptimeClock", "EmptyLinear", "EmptyRadial", "Summoner", "Uptime"];
-    
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
+
+    public override bool NoDefaultBorders { get; } = false;
+
+    public override PluginCategories PluginCategory => PluginCategories.Tool;
+
+    public override ImageBrush PluginLogo { get; set; }
+
+    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
 
     private string pluginHeader = "Summoner Element";
 
-    public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
+    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
 
     private string pluginName = "Summoner";
 
-    public override string PluginName { get { return pluginName; } set { pluginName = value; } }
+    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
 
     public override string ElementPluginName => "Summoner";
 
@@ -147,13 +146,13 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
     public override Type ElementPluginViewModel => typeof(SummonerViewModel);
 
-    public SummonerViewModel() => InstantiateProperties();
+    public SummonerViewModel() => this.InstantiateProperties();
 
-    public void ChangeElementBackgroundToImage()
+    public void ChangeElementBackgroundToImage(BrushTargets brushTargets, string path)
     {
-        if (ImagePath != null && ImagePath != string.Empty)
+        if (this.ImagePath != null && this.ImagePath != string.Empty)
         {
-            Summonee?.ApplyBrush(new SharedMethod_UI().ChangeBackgroundToImage(Summonee.BrushManagement.Background, ImagePath), Enums.BrushTargets.Background);
+            this.Summonee?.ApplyBrush(new SharedMethod_UI().ChangeBackgroundToImage(this.Summonee.BrushManagement.Background, this.ImagePath), Enums.BrushTargets.Background);
         }
     }
 
@@ -177,27 +176,26 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
             return false;
         }
 
-        if (PluginsCategoryElements.Contains(commandString))
+        if (this.PluginsCategoryElements.Contains(commandString))
         {
             category = "Elements";
 
             return true;
         }
 
-        if (PluginsCategoryShapes.Contains(commandString))
+        if (this.PluginsCategoryShapes.Contains(commandString))
         {
             category = "Shapes";
 
             return true;
         }
 
-        if (PluginsCategoryTools.Contains(commandString))
+        if (this.PluginsCategoryTools.Contains(commandString))
         {
             category = "Tools";
 
             return true;
         }
-
 
         category = string.Empty;
 
@@ -207,7 +205,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     [RelayCommand]
     private void DeleteElement(object s)
     {
-        Summonee = null;
+        this.Summonee = null;
     }
 
     /// <summary>
@@ -221,14 +219,14 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     [RelayCommand]
     private void ExecuteCommandString()
     {
-        Width = double.NaN;
-        Height = double.NaN;
+        this.Width = double.NaN;
+        this.Height = double.NaN;
 
-        string command = UserCommandString.Substring(1);
+        string command = this.UserCommandString.Substring(1);
 
-        if (UserCommandString.StartsWith(">"))
+        if (this.UserCommandString.StartsWith(">"))
         {
-            if (CommandStringValidator(command, out string category))
+            if (this.CommandStringValidator(command, out string category))
             {
                 /// am besten separate plugin category listen führen, diese vergleichen und wo treffer,
                 /// da instanzieren.
@@ -236,23 +234,22 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
                 if (plugin is not null)
                 {
-                    Summonee = plugin;
+                    this.Summonee = plugin;
                     return;
                 }
             }
 
-            Summonee = new StandardTextViewModel() { Text = $"unknown plugin '{command}' called" };
+            this.Summonee = new StandardTextViewModel() { Text = $"unknown plugin '{command}' called" };
             return;
         }
 
-        Summonee = new StandardTextViewModel() { Text = $"unrecognized command" };
-
+        this.Summonee = new StandardTextViewModel() { Text = $"unrecognized command" };
     }
 
     private void InstantiateProperties()
     {
-        BorderManagement = new BorderManagement();
-        BrushManagement = new BrushManagement();
+        this.BorderManagement = new BorderManagement();
+        this.BrushManagement = new BrushManagement();
     }
 
     public override Task<EBoardFeedbackMessage> Load(string path)
@@ -260,12 +257,11 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
         return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
     }
 
-
     public override Task<EBoardFeedbackMessage> Save(string path)
     {
-        PluginDataSet.References.Add(new("Type", Summonee?.Plugin?.GetType().FullName));
-        PluginDataSet.References.Add(new("Name", Summonee?.PluginName));
-        PluginDataSet.References.Add(new("Header", Summonee?.PluginHeader));
+        //this.PluginDataSet.References.Add(new("Type", this.Summonee?.Plugin?.GetType().FullName));
+        //this.PluginDataSet.References.Add(new("Name", this.Summonee?.PluginName));
+        //this.PluginDataSet.References.Add(new("Header", this.Summonee?.PluginHeader));
 
         //string contentDataPath = Path.Combine(path, linkDataFileName);
 
@@ -286,56 +282,48 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     [RelayCommand]
     private void ResetImage()
     {
-        ImagePath = string.Empty;
+        this.ImagePath = string.Empty;
 
-        Summonee.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, Enums.BrushTargets.Background);
-    }
-
-    [RelayCommand]
-    public void Select()
-    {
-        IsSelected = !IsSelected;
-
-        Summonee?.SelectionChange(IsSelected);
+        this.Summonee.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, Enums.BrushTargets.Background);
     }
 
     [RelayCommand]
     private void SetImage()
     {
-        ImagePath = new SharedMethod_UI().SetBackgroundImage(ImagePath);
+        this.ImagePath = new SharedMethod_UI().SetBackgroundImage(this.ImagePath);
     }
 
     private void UpdateContentHeight(int height)
     {
-        if (Summonee is not null)
+        if (this.Summonee is not null)
         {
-            Summonee.Height = height;
+            this.Summonee.Height = height;
         }
     }
 
     private void UpdateContentWidth(int width)
     {
-        if (Summonee is not null)
+        if (this.Summonee is not null)
         {
-            Summonee.Width = width;
+            this.Summonee.Width = width;
         }
     }
 
     private void UpdateCornerRadius(int value)
     {
-        if (Summonee is not null)
+        if (this.Summonee is not null)
         {
-            Summonee.CornerRadiusValue = value;
+            // TODO update implementation
+            //Summonee.BorderManagement.CornerRadiusValue = value;
         }
     }
 
     private void UpdateRotation(int rotationAngle)
     {
-        RotateTransformValue = new RotateTransform(rotationAngle * -1);
+        this.RotateTransformValue = new RotateTransform(rotationAngle * -1);
 
-        TransformOriginPoint = new Point(0.5, 0.5);
+        this.TransformOriginPoint = new Point(0.5, 0.5);
 
-        Width = double.NaN;
+        this.Width = double.NaN;
     }
-
 }// EOF

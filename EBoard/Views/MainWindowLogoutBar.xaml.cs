@@ -9,7 +9,7 @@ namespace EBoard.Views
     {
         public MainWindowLogoutBar()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

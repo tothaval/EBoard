@@ -1,17 +1,17 @@
-﻿using EBoardSDK.Models;
+﻿namespace EBoard.Utilities.Factories;
 
+using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
 using EBoard.ViewModels;
+using EBoardSDK.Models;
 using EBoardSDK.Models.DataSets;
-using System.Collections.ObjectModel;
-using EBoard.IOProcesses.DataSets;
 using EBoardSDK.Plugins;
-
-namespace EBoard.Utilities.Factories;
+using Serilog;
+using System.Collections.ObjectModel;
+using System.IO;
 
 public static class EBoardFactory
 {
-
     public static EBoardViewModel GetEBoardViewModelByEBoardDataSet(EboardScreen eboardScreen, MainViewModel mainViewModel)
     {
         var eBoardViewModel = new EBoardViewModel(mainViewModel);
@@ -23,6 +23,32 @@ public static class EBoardFactory
         return eBoardViewModel;
     }
 
+    public static EboardScreen GetNewEboardScreen(string name, int depth, double width, double height)
+    {
+        return new EboardScreen
+        {
+            EBID = $"EBoard_{DateTime.Now.Ticks}",
+            EBoardName = name,
+            EBoardDepth = depth,
+            BorderDataSet = new BorderDataSet(new BorderManagement() { Width = width, Height = height }),
+            BrushDataSet = new BrushDataSet(new BrushManagement()),
+        };
+    }
+
+    public static EboardDataSet GetNewEBoardDataSet()
+    {
+        EboardDataSet eboardDataSet = new EboardDataSet
+        {
+            EBID = $"EBoard_{DateTime.Now.Ticks}",
+            EBoardName = "new eboard",
+            EBoardDepth = 100,
+            BorderDataSet = new BorderDataSet(new BorderManagement() { Width = 640, Height = 320 }),
+            BrushDataSet = new BrushDataSet(new BrushManagement()),
+        };
+
+        return eboardDataSet;
+    }
+
     private static EboardDataSet ScreenToDataSetMapper(EboardScreen eboardScreen, EBoardViewModel eBoardViewModel)
     {
         ObservableCollection<ElementViewModel> elementViewModels = [];
@@ -30,11 +56,9 @@ public static class EBoardFactory
         eboardScreen.Elements.Select(x => x).ToList().ForEach(
         async element =>
         {
-            var evm = new ElementViewModel();
             var eds = new ElementDataSet()
             {
                 EID = element.EID,
-                //ID = escreen.Elements.IndexOf(element),
                 PluginHeader = element.PluginHeader,
                 PluginType = element.PluginName,
 
@@ -47,13 +71,12 @@ public static class EBoardFactory
 
             if (type_PluginViewModel != null)
             {
-                IEBoardElement? externalPlugin = Activator.CreateInstance(type_PluginViewModel) as IEBoardElement;
+                EBoardElementPluginBaseViewModel? externalPlugin = Activator.CreateInstance(type_PluginViewModel) as EBoardElementPluginBaseViewModel;
 
-                if (externalPlugin is not null)
+                if (externalPlugin != null)
                 {
                     eds.Plugin = externalPlugin;
 
-                    // datasets umbauen
                     externalPlugin.PluginHeader = element.PluginHeader;
 
                     var plugindatapath = eboardScreen.ContentDataFilePaths.Where(x => x.FullName.EndsWith($"{eds.EID}.data")).FirstOrDefault();
@@ -62,52 +85,47 @@ public static class EBoardFactory
                     {
                         await eds.Plugin.Load(plugindatapath.FullName);
                     }
+                    try
+                    {
+                        App.Current.Resources.MergedDictionaries.Add(externalPlugin.ResourceDictionary);
+                    }
+                    catch (IOException ioex)
+                    {
+                        var ioexAdditionalMessage = string.Join(
+                            $"\n__{type_PluginViewModel}\t",
+                            $"plugin load error: {externalPlugin.PluginName}",
+                            "ResourceDictionary path or file is corrupt");
 
-                    App.Current.Resources.MergedDictionaries.Add(externalPlugin.ResourceDictionary);
-                } 
+                        Log.Error(ioex, ioexAdditionalMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "unhandled exception");
+                        throw;
+                    }
+                }
             }
 
-            evm.ApplyData(eBoardViewModel, eds);
+            var elementViewModel = new ElementViewModel();
 
-            elementViewModels.Add(evm);
+            elementViewModel.ApplyData(eBoardViewModel, eds);
+
+            elementViewModel.Redraw();
+
+            elementViewModels.Add(elementViewModel);
         });
 
         return new EboardDataSet()
         {
-            EBID = eboardScreen.EBID,            
+            EBID = eboardScreen.EBID,
             EBoardName = eboardScreen.EBoardName,
             EBoardDepth = eboardScreen.EBoardDepth,
             BorderDataSet = eboardScreen.BorderDataSet,
             BrushDataSet = eboardScreen.BrushDataSet,
 
-            Elements = elementViewModels
+            Elements = elementViewModels,
         };
     }
-
-    public static EboardScreen GetNewEboardScreen(string name, int depth, double width, double height)
-    {
-        return new EboardScreen
-        {
-            EBID = $"EBoard_{DateTime.Now.Ticks}",
-            EBoardName = name,
-            EBoardDepth = depth,
-            BorderDataSet = new BorderDataSet(new BorderManagement() { Width = width, Height = height }),
-            BrushDataSet = new BrushDataSet(new BrushManagement())
-        };
-    }
-
-    public static EboardDataSet GetNewEBoardDataSet()
-    {
-        EboardDataSet eboardDataSet = new EboardDataSet
-        {
-            EBID = $"EBoard_{DateTime.Now.Ticks}",
-            EBoardName = "new eboard",
-            EBoardDepth = 100,
-            BorderDataSet = new BorderDataSet(new BorderManagement() { Width = 640, Height = 320 }),
-            BrushDataSet = new BrushDataSet(new BrushManagement())
-        };
-
-        return eboardDataSet;
-    }
-
 }
+
+// EOF

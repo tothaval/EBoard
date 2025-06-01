@@ -15,6 +15,7 @@ public class EboardConfig
     public BorderDataSet BorderDataSet { get; set; } = new(new BorderManagement());
 
     public BrushDataSet BrushDataSet { get; set; } = new(new BrushManagement());
+
     public PlacementDataSet PlacementDataSet { get; set; } = new(new PlacementManagement());
 
     public BorderDataSet EBVBorderDataSet { get; set; } = new(new BorderManagement());
@@ -22,5 +23,14 @@ public class EboardConfig
     public BrushDataSet EBVBrushDataSet { get; set; } = new(new BrushManagement());
 
     [JsonIgnore]
-    public IList<EBoardElementPluginBaseViewModel> InstalledPlugins { get; set; } = [];
+    public IList<EBoardElementPluginBaseViewModel> ElementPlugins { get; set; } = [];
+
+    public IList<EBoardElementPluginBaseViewModel> ShapePlugins { get; set; } = [];
+
+    public IList<EBoardElementPluginBaseViewModel> ToolPlugins { get; set; } = [];
+
+#if DEBUG
+    [JsonIgnore]
+    public IList<EBoardElementPluginBaseViewModel> CurrentDevelopmentPlugins { get; set; } = [];
+#endif
 }

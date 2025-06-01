@@ -1,16 +1,8 @@
 ﻿using EBoardConfigManager.Helper;
-using EBoardConfigManager.Models;
-using EBoardSDK.Models;
 using EBoardSDK.Plugins;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using Serilog;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace EBoardSDK
 {
@@ -22,8 +14,21 @@ namespace EBoardSDK
 
             IList<EBoardElementPluginBaseViewModel> plugins = [];
 
-            assemblies.Select(x => x).ToList().ForEach(async dllfile => 
+            assemblies.Select(x => x).ToList().ForEach(async dllfile =>
             {
+                if (dllfile.Name.Equals("EBoardSDK.dll"))
+                {
+                    return;
+                }
+
+                if (!dllfile.Name.StartsWith("EboardElementPlugin")
+                    && !dllfile.Name.StartsWith("EBoardElementPlugin")
+                    && !dllfile.Name.StartsWith("EEP_")
+                    && !dllfile.Name.StartsWith("EEP"))
+                {
+                    return;
+                }
+
                 try
                 {
                     var assembly = Assembly.LoadFrom(dllfile.FullName);
@@ -47,8 +52,7 @@ namespace EBoardSDK
 
                     try
                     {
-
-                        var baseviewmodel = Activator.CreateInstance(baseviewmodeltype!) as EBoardElementPluginBaseViewModel;
+                        var baseviewmodel = Activator.CreateInstance(baseviewmodeltype) as EBoardElementPluginBaseViewModel;
 
                         if (baseviewmodel != null)
                         {
@@ -57,8 +61,7 @@ namespace EBoardSDK
                     }
                     catch (Exception ex)
                     {
-
-                        MessageBox.Show(ex.Message);
+                        Log.Error(ex.Message);
 
                         throw;
                     }
@@ -71,7 +74,6 @@ namespace EBoardSDK
 
                     return;
                 }
-
             });
 
             return Task.FromResult(plugins);

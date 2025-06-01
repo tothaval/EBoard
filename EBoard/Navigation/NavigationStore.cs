@@ -14,11 +14,12 @@ public class NavigationStore
 
     public ObservableObject CurrentViewModel
     {
-        get { return _baseViewModel; }
+        get { return this._baseViewModel; }
+
         set
         {
-            _baseViewModel = value;
-            OnCurrentViewModelChanged();
+            this._baseViewModel = value;
+            this.OnCurrentViewModelChanged();
         }
     }
 
@@ -26,8 +27,7 @@ public class NavigationStore
 
     private void OnCurrentViewModelChanged()
     {
-        CurrentViewModelChanged?.Invoke();
+        this.CurrentViewModelChanged?.Invoke();
     }
-
 }
 // EOF

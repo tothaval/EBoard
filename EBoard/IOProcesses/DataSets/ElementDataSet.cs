@@ -1,192 +1,185 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  ElementDataSet 
- * 
+ *
+ *  ElementDataSet
+ *
  *  serializable helper class to store and retrieve ElementViewModel(s) data to
  *  or from hard drive storage.
- *  
+ *
  *  Each Eboard has to store its own properties, as well as a list of all child
  *  elements - for now. Once Elements are getting more complex, it is probably
  *  better to trigger a separate serialization process/method for the elements and their data.
- *  
+ *
  *  It is vital to further development efforts, to be able to save and load Eboard contents
- *  asap, because it reduces time needed to setup the ui and test a specific or recently added 
+ *  asap, because it reduces time needed to setup the ui and test a specific or recently added
  *  feature.
  */
-
-using EBoardSDK.Models;
-using EBoardSDK.Models.DataSets;
-using EBoardSDK.Interfaces;
+namespace EBoard.IOProcesses.DataSets;
 
 using EBoard.ViewModels;
+using EBoardSDK.Interfaces;
+using EBoardSDK.Models;
+using EBoardSDK.Models.DataSets;
 using System.Xml.Serialization;
-
-namespace EBoard.IOProcesses.DataSets;
 
 [Serializable]
 [XmlRoot("ElementDataSet")]
 public class ElementDataSet : IElementDataSet
 {
     [XmlIgnore]
-    private readonly EBoardViewModel _EBoardViewModel;
+    private readonly EBoardViewModel eBoardViewModel;
 
     [XmlIgnore]
-    private ElementViewModel _ElementViewModel { get; set; }
+    private readonly ElementViewModel elementViewModel;
+
+    public ElementDataSet()
+    {
+    }
+
+    public ElementDataSet(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel)
+    {
+        this.eBoardViewModel = eBoardViewModel;
+        this.elementViewModel = elementViewModel;
+
+        this.BorderDataSet = new BorderDataSet(elementViewModel.Plugin.BorderManagement);
+
+        this.BrushDataSet = new BrushDataSet(elementViewModel.Plugin.BrushManagement);
+
+        this.PlacementDataSet = new PlacementDataSet(elementViewModel.PlacementManager);
+
+        if (this.BorderDataSet == null)
+        {
+            this.BorderDataSet = new BorderDataSet();
+        }
+
+        if (this.BrushDataSet == null)
+        {
+            this.BrushDataSet = new BrushDataSet();
+        }
+
+        if (this.PlacementDataSet == null)
+        {
+            this.PlacementDataSet = new PlacementDataSet();
+        }
+    }
 
     [XmlIgnore]
-    public ElementViewModel ElementViewModel => _ElementViewModel;
-
+    public ElementViewModel ElementViewModel => this.elementViewModel;
 
     public BorderDataSet BorderDataSet { get; set; }
+
     public BrushDataSet BrushDataSet { get; set; }
+
     public PlacementDataSet PlacementDataSet { get; set; }
-
-
 
     [XmlIgnore]
     public IPlugin Plugin { get; set; }
 
-
     /// <summary>
-    /// determines if ElementContent is
-    /// of type ShapeManagement(false)
-    /// or ContentManagement(true)
-    /// </summary>
-    //public bool IsContentNotShape { get; set; }
-
-
-    /// <summary>
-    /// Element ID, built using $"Element_{DateTime().Ticks} on first
+    /// Gets or sets Element ID, built using $"Element_{DateTime().Ticks} on first
     /// creation of an element.
     /// </summary>
     public string EID { get; set; }
 
-
     /// <summary>
-    /// a string representation of an assembly, where the element type can be found
+    /// Gets or sets a string representation of an assembly, where the element type can be found
     /// </summary>
     public string PluginHeader { get; set; }
 
-
-    // unification effort due to reduction, build abstraction layer can be removed and simplified
-    // loading can be simplified, but element as plugin container needs some rework
-    // every plugin can implement certain features, and maybe should be required to do so.
+    /// <summary>
+    /// Gets or sets unification effort due to reduction, build abstraction layer can be removed and simplified
+    /// loading can be simplified, but element as plugin container needs some rework
+    /// every plugin can implement certain features, and maybe should be required to do so.
+    /// </summary>
     public string PluginType { get; set; }
-    public string AssemblyString { get; set; }
-
 
     /// <summary>
-    /// a string representation of an element type
+    /// Gets or sets.
+    /// </summary>
+    public string AssemblyString { get; set; }
+
+    /// <summary>
+    /// Gets or sets a string representation of an element type.
     /// </summary>
     public string ElementTypeString { get; set; }
 
-
     /// <summary>
-    /// the header text of an ElementView
+    /// Sets the BorderDataSet parameter, if null creates a new one.
     /// </summary>
-    //public string ElementHeader { get; set; }
-
-
-
-
-    public ElementDataSet()
-    {
-        //_EBoardViewModel = new EBoardViewModel("new", new BorderManagement() { Width = 1000.0, Height = 500.0}, 100);
-
-        //_ElementViewModel = new ElementViewModel(_EBoardViewModel);
-    }
-
-
-    public ElementDataSet(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel)
-    {
-        _EBoardViewModel = eBoardViewModel;
-        _ElementViewModel = elementViewModel;
-
-        BorderDataSet = new BorderDataSet(elementViewModel.Plugin.BorderManagement);
-
-        BrushDataSet = new BrushDataSet(elementViewModel.Plugin.BrushManagement);
-
-        PlacementDataSet = new PlacementDataSet(elementViewModel.PlacementManager);
-
-        if (BorderDataSet == null)
-        {
-            BorderDataSet = new BorderDataSet();
-        }
-
-        if (BrushDataSet == null)
-        {
-            BrushDataSet = new BrushDataSet();
-        }
-
-        if (PlacementDataSet == null)
-        {
-            PlacementDataSet = new PlacementDataSet();
-        }
-    }
-
-
+    /// <param name="borderDataSet">Apply this BorderDataSet to ElementDataSet</param>
     public void AddBorderDataSet(BorderDataSet borderDataSet)
     {
-        BorderDataSet = borderDataSet;
+        this.BorderDataSet = borderDataSet;
 
-        if (BorderDataSet == null)
+        if (this.BorderDataSet == null)
         {
-            BorderDataSet = new BorderDataSet(new BorderManagement());
+            this.BorderDataSet = new BorderDataSet(new BorderManagement());
         }
-
     }
 
+    /// <summary>
+    /// Gets or sets.
+    /// </summary>
     public void AddBrushDataSet(BrushDataSet brushDataSet)
     {
-        BrushDataSet = brushDataSet;
+        this.BrushDataSet = brushDataSet;
 
-        if (BrushDataSet == null)
+        if (this.BrushDataSet == null)
         {
-            BrushDataSet = new BrushDataSet(new BrushManagement());
+            this.BrushDataSet = new BrushDataSet(new BrushManagement());
         }
     }
+
+    /// <summary>
+    /// Gets or sets.
+    /// </summary>
     public void AddPlacementDataSet(PlacementDataSet placementDataSet)
     {
-        PlacementDataSet = placementDataSet;
+        this.PlacementDataSet = placementDataSet;
 
-        if (PlacementDataSet == null)
+        if (this.PlacementDataSet == null)
         {
-            PlacementDataSet = new PlacementDataSet(new PlacementManagement());
+            this.PlacementDataSet = new PlacementDataSet(new PlacementManagement());
         }
     }
 
+    /// <summary>
+    /// Gets or sets.
+    /// </summary>
     public async Task ConvertData()
     {
-        EID = ElementViewModel.EID;
+        this.EID = this.ElementViewModel.EID;
 
-        Plugin = ElementViewModel.Plugin;
+        this.Plugin = this.ElementViewModel.Plugin;
 
-        PluginHeader = ElementViewModel.Plugin.PluginHeader;
+        this.PluginHeader = this.ElementViewModel.Plugin.PluginHeader;
 
-        ElementTypeString = Plugin.GetType().FullName;
-        PluginType = Plugin.GetType().FullName;
-        AssemblyString = Plugin.GetType().AssemblyQualifiedName;
+        this.ElementTypeString = this.Plugin.GetType().FullName;
+        this.PluginType = this.Plugin.GetType().FullName;
+        this.AssemblyString = this.Plugin.GetType().AssemblyQualifiedName;
 
-        BorderDataSet = new BorderDataSet(ElementViewModel.Plugin.BorderManagement);
+        this.BorderDataSet = new BorderDataSet(this.ElementViewModel.Plugin.BorderManagement);
 
-        BrushDataSet = new BrushDataSet(ElementViewModel.Plugin.BrushManagement);
+        this.BrushDataSet = new BrushDataSet(this.ElementViewModel.Plugin.BrushManagement);
 
-        PlacementDataSet = new PlacementDataSet(ElementViewModel.PlacementManager);
+        this.PlacementDataSet = new PlacementDataSet(this.ElementViewModel.PlacementManager);
 
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Gets or sets.
+    /// </summary>
     public async Task Initialize(string elementDataFileString)
     {
-        if (Plugin != null)
+        if (this.Plugin != null)
         {
             string element_folder = elementDataFileString.Replace(".xml", "\\");
 
-            await Plugin.Load($"{element_folder}");
+            await this.Plugin.Load($"{element_folder}");
         }
 
         await Task.CompletedTask;
-
     }
 }
+
 // EOF

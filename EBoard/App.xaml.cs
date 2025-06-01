@@ -2,45 +2,47 @@
  *  
  *  App 
  */
-using EBoard.IOProcesses;
+namespace EBoard;
+
 using EBoard.Navigation;
 using EBoard.ViewModels;
+using EBoardConfigManager.Models;
 using EBoardSDK;
 using EBoardSDK.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using System.IO;
 using System.Windows;
 
-namespace EBoard;
-
 /// <summary>
-/// Interaction logic for App.xaml
+/// Interaction logic for App.xaml .
 /// </summary>
+///
 public partial class App : Application
 {
     private MainViewModel _MainViewModel;
 
     private NavigationStore _navigationStore;
 
-    private static Mutex _InstanceMutex;
-    private static string _ApplicationKey =
-        @"EBoard .shOd:(1>tDOa!qI^`kl0s}[]sU,m$(?v6(p5$s?H?rP1Fb,zQ$PlUW'60tWE^~";// online generated uuid "cf645c2c-b646-4c2e-be76-6b15f1a4f6d3"
-
-    public App() => _navigationStore = new NavigationStore();
+    public App()
+    {
+        AppDomain.CurrentDomain.UnhandledException += this.CurrentDomain_UnhandledException;
+    }
 
     private Task<EboardConfig?> EBoardConfigInitialization(MainWindow mainWindow, EboardConfig eboardConfig)
     {
         if (eboardConfig != null)
         {
-            if (eboardConfig.EBoardIndex > 0 && eboardConfig.EBoardIndex <= _MainViewModel.EBoardBrowserViewModel.EBoards.Count)
+            if (eboardConfig.EBoardIndex > 0 && eboardConfig.EBoardIndex <= this._MainViewModel.EBoardBrowserViewModel.EBoards.Count)
             {
-                _MainViewModel.EBoardBrowserViewModel.SelectedEBoard = _MainViewModel.EBoardBrowserViewModel.EBoards[eboardConfig.EBoardIndex-1];
+                this._MainViewModel.EBoardBrowserViewModel.SelectedEBoard = this._MainViewModel.EBoardBrowserViewModel.EBoards[eboardConfig.EBoardIndex - 1];
             }
 
-            _MainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch = eboardConfig.EBoardBrowserSwitch;
+            this._MainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch = eboardConfig.EBoardBrowserSwitch;
 
             mainWindow.Left = eboardConfig.PlacementDataSet.Position.X;
             mainWindow.Top = eboardConfig.PlacementDataSet.Position.Y;
-            
+
             mainWindow.Width = eboardConfig.BorderDataSet.Width;
             mainWindow.Height = eboardConfig.BorderDataSet.Height;
         }
@@ -50,108 +52,133 @@ public partial class App : Application
 
     protected async override void OnExit(ExitEventArgs e)
     {
-        var runner = new Runner();
-
-        var saveConfigResult = await runner.SaveConfig(_MainViewModel.GetEboardConfig());
-
-        if (!saveConfigResult.TaskResult.Equals(EBoardTaskResult.Success))
-        {
-            // TODO do stuff like logging, exception throwing etc.
-        }
-
-        var saveScreensResult = await runner.SaveScreens(_MainViewModel.GetScreenData());
+        this.ExitEBoard().RunSynchronously();
 
         base.OnExit(e);
-
-        KillInstance(e.ApplicationExitCode);
     }
 
+    private async Task ExitEBoard()
+    {
+        var logstring = "exiting eboard";
+
+        Log.Debug(logstring);
+
+        var runner = new Runner();
+
+        var saveConfigResult = await runner.SaveConfig(this._MainViewModel.GetEboardConfig());
+
+        logstring = $"{saveConfigResult}";
+
+        Log.Debug(logstring);
+
+        var saveScreensResult = await runner.SaveScreens(this._MainViewModel.GetScreenData());
+
+        saveScreensResult.ToList().ForEach(x =>
+        {
+            logstring = x.ToString();
+            Log.Error(logstring);
+        });
+
+        return;
+    }
 
     protected async override void OnStartup(StartupEventArgs e)
     {
-        SplashScreen splashScreen = new SplashScreen();
-        splashScreen.Show();
-
-        if (StartInstance())
-        {
-            Application.Current.Shutdown(1);
-        }
-
-        CommunityToolkit.Mvvm.DependencyInjection.Ioc.Default.ConfigureServices(
-            new ServiceCollection()
-                .AddSingleton<Runner>()
-                .BuildServiceProvider()
-                );
-
-        var eboardSdk = new Runner();
-
-        var setup = await eboardSdk.Run();
-
-        var config = await eboardSdk.GetConfigAsync(true);
-
-        config = await eboardSdk.GetPlugins(config);
-
-        var screens = await eboardSdk.GetScreensAsync();
-
-        _MainViewModel = new MainViewModel(_navigationStore, config);
-
-        _MainViewModel.SetScreenData(screens);
-
-        MainWindow mainWindow = new MainWindow(_MainViewModel);
-
-        await EBoardConfigInitialization(mainWindow, config);
-
-        splashScreen.Close();
-        mainWindow.Show();
-
-        base.OnStartup(e);
-    }
-
-    public static bool StartInstance()
-    {
-        _InstanceMutex = new Mutex(true, _ApplicationKey);
-
-        bool _InstanceMutexIsInUse = false;
+        AppDomain.CurrentDomain.UnhandledException += this.CurrentDomain_UnhandledException;
 
         try
         {
-            _InstanceMutexIsInUse = !_InstanceMutex.WaitOne(TimeSpan.Zero, true);
-        }
-        catch (AbandonedMutexException)
-        {
-            KillInstance();
-            _InstanceMutexIsInUse = false;
-        }
-        catch (Exception)
-        {
-            _InstanceMutex.Close();
-            _InstanceMutexIsInUse = false;
-        }
+            var activationTime = DateTime.Now;
+            var activationTimeString = string.Join(
+                "_",
+                $"{activationTime.Year}{activationTime.Month}{activationTime.Day}",
+                $"{activationTime.Hour}{activationTime.Minute}{activationTime.Second}");
 
-        //logger log: $"{_InstanceMutexIsInUse} {_EBoardKey} {_InstanceMutex.ToString()}");
+            var debugLogFolder = new PresetDirectories().DefaultDebugLogFolder;
 
-        return _InstanceMutexIsInUse;
+            if (!Directory.Exists(debugLogFolder))
+            {
+                Directory.CreateDirectory(debugLogFolder);
+            }
+
+#if DEBUG
+            var debugLogFileName = Path.Combine(debugLogFolder, $"debug.txt");
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File(
+                    debugLogFileName,
+                    rollingInterval: RollingInterval.Day,
+                    rollOnFileSizeLimit: true)
+                .CreateLogger();
+#endif
+
+#if RELEASE
+
+        var eventLogFileName = Path.Combine(debugLogFolder, $"log{activationTimeString}.txt");
+
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.File(
+                eventLogFileName,                
+                rollingInterval: RollingInterval.Month,
+                rollOnFileSizeLimit: true)
+            .CreateLogger();
+#endif
+
+            this._navigationStore = new NavigationStore();
+
+            SplashScreen splashScreen = new SplashScreen();
+            splashScreen.Show();
+
+            CommunityToolkit.Mvvm.DependencyInjection.Ioc.Default.ConfigureServices(
+                new ServiceCollection()
+                    .AddSingleton<Runner>()
+                    .BuildServiceProvider()
+                    );
+
+            var eboardSdk = new Runner();
+
+            var setup = await eboardSdk.Run();
+
+            var config = await eboardSdk.GetConfigAsync(true);
+
+            config = await eboardSdk.GetPlugins(config);
+
+            var screens = await eboardSdk.GetScreensAsync();
+
+            this._MainViewModel = new MainViewModel(this._navigationStore, config);
+
+            this._MainViewModel.SetScreenData(screens);
+
+            MainWindow mainWindow = new MainWindow(this._MainViewModel);
+
+            await this.EBoardConfigInitialization(mainWindow, config);
+
+            splashScreen.Close();
+            mainWindow.Show();
+
+            base.OnStartup(e);
+
+            Log.Information("Eboard");
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, string.Join("\n", "Unhandled exception", ex.Message));
+        }
     }
 
-    public static void KillInstance(int code = 0)
+    private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        if (_InstanceMutex is null) return;
+        //MessageBox.Show($"{e.IsTerminating}\n{e}\n{e.ExceptionObject}");
 
-        if (code == 0)
-        {
-            try
-            {
-                _InstanceMutex.ReleaseMutex();
-            }
-            catch (Exception)
-            {
+        _ = this.ExitEBoard().IsCompleted;
 
-            }
+        var s = $"{e.ExceptionObject}\n{e.IsTerminating}";
 
-            _InstanceMutex.Close();
-        }
+        Log.Error(s);
+
+        Log.CloseAndFlush();
     }
-
-
 }
+
 // EOF

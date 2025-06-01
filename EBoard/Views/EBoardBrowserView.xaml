@@ -4,14 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoard.Views"
+             xmlns:ut="clr-namespace:EBoard.Utilities"
              xmlns:vms="clr-namespace:EBoard.ViewModels" 
              xmlns:esdkCtrl="clr-namespace:EBoardSDK.Controls;assembly=EBoardSDK"
+             xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup;assembly=EBoardSDK"
              x:Name="EBoard_EBoardBrowser"
              d:DataContext="{d:DesignInstance Type=vms:EBoardBrowserViewModel}"
              mc:Ignorable="d" 
              ClipToBounds="True"
              d:DesignHeight="450" d:DesignWidth="800"
-             Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"
+             Foreground="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"             
              >
     <UserControl.DataContext>
         <vms:EBoardBrowserViewModel/>
@@ -19,14 +21,16 @@
 
 
     <UserControl.Resources>
+        
+        <ut:VisibilityConverterToCollapsed x:Key="VisibilityToCollapsed"/>
 
-        <SolidColorBrush x:Key="fgbrush" Color="#77CCEE"/>
+        <!--<SolidColorBrush x:Key="fgbrush" Color="#77CCEE"/>
         <SolidColorBrush x:Key="bgbrush" Color="#000000"/>
 
         <Style TargetType="Label" >
             <Setter Property="Foreground" Value="{StaticResource fgbrush}"/>
             <Setter Property="Background" Value="{StaticResource bgbrush}"/>
-        </Style>
+        </Style>-->
 
         <Style TargetType="TextBox" >
             <Setter Property="Foreground" Value="{Binding BrushManager.Foreground, NotifyOnSourceUpdated=True}"/>
@@ -35,9 +39,9 @@
 
     </UserControl.Resources>
 
-    <Border Margin="{Binding BorderManager.Margin, NotifyOnSourceUpdated=True}"
-            Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+    <Border Margin="{Binding BorderManager.Margin, NotifyOnSourceUpdated=True}"            
             Padding="{Binding BorderManager.Padding, NotifyOnSourceUpdated=True}"
+            Background="{Binding BrushManager.Background}"
             BorderThickness="{Binding BorderManager.BorderThickness, NotifyOnSourceUpdated=True}"
             BorderBrush="{Binding BrushManager.Border, NotifyOnSourceUpdated=True}"
             CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}">
@@ -45,215 +49,338 @@
         <Border.ContextMenu>
 
             <ContextMenu>
-                <Label Content="EBoard Browser"/>
+                <Label Content="EBoard Browser" Background="Transparent" Foreground="{Binding BrushManager.Foreground}"/>
 
-                <MenuItem Header="Colors">
-                    <MenuItem Header="Background">
-                        <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BackgroundBrushSetup}"/>
+                <MenuItem Header="Size">
+                    <MenuItem Header="Dimensions">
+
+                        <!--<MenuItem Header="Area">
+
+                            <WrapPanel Orientation="Horizontal">
+                                <Label Content="Width"
+                                       MinWidth="50"/>
+                                <Label Content="{Binding WidthValue, NotifyOnSourceUpdated=True}"
+                           MinWidth="35"/>
+                                <Slider Value="{Binding WidthValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                        Minimum="60"
+                        Maximum="1024"
+                        MinWidth="100"
+                        SmallChange="1"
+                        LargeChange="5"
+                        Interval="1"
+                        Orientation="Horizontal"/>
+                            </WrapPanel>
+
+                            <WrapPanel Orientation="Horizontal">
+                                <Label Content="Height"
+                                       MinWidth="50"/>
+                                <Label Content="{Binding HeightValue, StringFormat=d0, NotifyOnSourceUpdated=True}"
+                           MinWidth="35"/>
+                                <Slider Value="{Binding HeightValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                        Minimum="60"
+                        Maximum="1024"
+                        MinWidth="100"
+                        SmallChange="1"
+                        LargeChange="5"
+                        Interval="1"
+                        Orientation="Horizontal"/>
+
+                            </WrapPanel>
+
+
+
+                            <MenuItem Header="Reset Size"
+                          Command="{Binding ResetSizeCommand}"
+                          />
+
+                        </MenuItem>-->
+
+                        <MenuItem Header="Margin">
+                            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding MarginQuadSetup}"
+                                                              
+                                                                  Maximum="25"
+                                                              Value1="Left"
+                                                              Value2="Top"
+                                                              Value3="Right"
+                                                              Value4="Bottom"
+                                                              OKCommand="{Binding ResetMarginCommand}"/>
+                        </MenuItem>
+
+                        <MenuItem Header="Padding"
+                              Visibility="{Binding PluginNoDefaultBordersSet, Converter={StaticResource VisibilityToCollapsed}}">
+                            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding PaddingQuadSetup}"
+                                                              
+                                                                  Maximum="25"
+                                                              Value1="Left"
+                                                              Value2="Top"
+                                                              Value3="Right"
+                                                              Value4="Bottom"
+                                                              OKCommand="{Binding ResetPaddingCommand}"/>
+                        </MenuItem>
+
+                        <MenuItem Header="Thickness">
+                            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding ThicknessQuadSetup}"
+                                                              
+                                                                  Maximum="25"
+                                                              Value1="Left"
+                                                              Value2="Top"
+                                                              Value3="Right"
+                                                              Value4="Bottom"
+                                                              OKCommand="{Binding ResetThicknessCommand}"/>
+                        </MenuItem>
+
                     </MenuItem>
 
-                    <MenuItem Header="Foreground">
-                        <esdkCtrl:SolidColorBrushSetup DataContext="{Binding ForegroundBrushSetup}"/>
+                    <MenuItem Header="Corners"
+                          Visibility="{Binding PluginNoDefaultBordersSet, Converter={StaticResource VisibilityToCollapsed}}">
+                        <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding CornerRadiusQuadSetup}"
+                                                              
+                                                                  Maximum="100"
+                                                              Value1="TopLeft"
+                                                              Value2="TopRight"
+                                                              Value3="BottomRight"
+                                                              Value4="BottomLeft"
+                                                              OKCommand="{Binding ResetCornersCommand}"/>
                     </MenuItem>
-
-                    <MenuItem Header="Border">
-                        <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BorderBrushSetup}"/>
-                    </MenuItem>
-
-                    <!--<MenuItem Header="Highlight">
-              <esdkCtrl:SolidColorBrushSetup DataContext="{Binding HighlightBrushSetup}"/>
-          </MenuItem>-->
                 </MenuItem>
 
-                <MenuItem Header="+Image" Command="{Binding SetImageCommand}"/>
+                <MenuItem Header="Design">
 
-                <MenuItem Header="Reset" Command="{Binding ResetImageCommand}"/>
-                
+                    <MenuItem Header="Colors">
+                        <MenuItem Header="Background">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BackgroundBrushSetup}"/>
+                        </MenuItem>
+
+                        <MenuItem Header="Foreground">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding ForegroundBrushSetup}"/>
+                        </MenuItem>
+
+                        <MenuItem Header="Border">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BorderBrushSetup}"/>
+                        </MenuItem>
+
+                        <MenuItem Header="Highlight">
+                            <esdkCtrl:SolidColorBrushSetup DataContext="{Binding HighlightBrushSetup}"/>
+                        </MenuItem>
+                    </MenuItem>
+
+                    <MenuItem Header="Image">
+                        <MenuItem Header="Background" Command="{Binding SetImageCommand}"/>
+                        <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
+                        <MenuItem Header="Border" Command="{Binding SetImageBorderCommand}"/>
+                        <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
+
+                    </MenuItem>
+
+                    <MenuItem Header="Reset">
+                        <MenuItem Header="Background" Command="{Binding ResetImageCommand}"/>
+                    </MenuItem>
+
+                </MenuItem>
+
+                <MenuItem Header="Delete" Command="{Binding DeleteElementCommand}"/>
+
             </ContextMenu>
 
         </Border.ContextMenu>
 
-        <StackPanel Orientation="Vertical">
+        <Grid Background="{Binding BrushManager.Border}">
 
-            <StackPanel>
-                <Button Content="Add EBoard"
-                        Command="{Binding AddEBoardCommand}"
-                        Style="{StaticResource EBoardBrowserViewButtonStyle}"/>
-                
-                <Grid>                    
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" MinWidth="100"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto" MinWidth="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+            <Grid.OpacityMask>
+                <VisualBrush Visual="{Binding ElementName=mask}"/>
+            </Grid.OpacityMask>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Name"
-                         Grid.Column="0"
-                         Grid.Row="0"/>                    
-                    <TextBox Text="{Binding EBoardName,
-                  NotifyOnSourceUpdated=True,
-                  UpdateSourceTrigger=LostFocus}"
-                             Margin="0 0 5 0"
-                         Grid.Column="1"
-                         Grid.Row="0"/>
-
-                    <TextBlock Text="Depth"
-                         Grid.Column="2"
-                         Grid.Row="0"/>
-                    <TextBox Text="{Binding EBoardDepth,
-                  NotifyOnSourceUpdated=True,
-                  UpdateSourceTrigger=LostFocus}"
-                             Margin="0 0 5 0"
-                         Grid.Column="3"
-                         Grid.Row="0"/>
-                    
-                    
-                    <TextBlock Text="Width"
-                         Grid.Column="0"
-                         Grid.Row="1"/>
-                    <TextBox Text="{Binding NewEBoardWidth,
-                  NotifyOnSourceUpdated=True,
-                  UpdateSourceTrigger=LostFocus}"
-                             Margin="0 0 5 0"
-                         Grid.Column="1"
-                         Grid.Row="1"/>
-
-                    <TextBlock Text="Height"
-                         Grid.Column="2"
-                         Grid.Row="1"/>
-                    <TextBox Text="{Binding NewEBoardHeight,
-                  NotifyOnSourceUpdated=True,
-                  UpdateSourceTrigger=LostFocus}"
-                             Margin="0 0 5 0"
-                         Grid.Column="3"
-                         Grid.Row="1"/>
-
-                </Grid>
+            <Border Name="mask"
+                Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+                CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"/>
 
 
-                <Button Content="Edit EBoard"
-                        Command="{Binding EditEBoardParametersCommand}"
-                        Style="{StaticResource EBoardBrowserViewButtonStyle}"/>
-
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" MinWidth="100"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto" MinWidth="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-
-                    <TextBlock Text="Created"
-              Grid.Column="0"
-              Grid.Row="0"/>
-                    <TextBlock Text="{Binding EBoardCreatedDate,
-       NotifyOnSourceUpdated=True}"
-                             Margin="0 0 5 0"
-              Grid.Column="1"
-              Grid.Row="0"/>
-
-                    <TextBlock Text="Elements"
-              Grid.Column="2"
-              Grid.Row="0"/>
-                    <TextBlock Text="{Binding EBoardElementCount,
-       NotifyOnSourceUpdated=True}"
-                             Margin="0 0 5 0"
-              Grid.Column="3"
-              Grid.Row="0"/>
-
-                    <TextBlock Text="Container"
-              Grid.Column="0"
-              Grid.Row="1"/>
-                    <TextBlock Text="{Binding EBoardContainerCount,
-       NotifyOnSourceUpdated=True}"
-                             Margin="0 0 5 0"
-              Grid.Column="1"
-              Grid.Row="1"/>
-
-                    <TextBlock Text="Shapes"
-              Grid.Column="2"
-              Grid.Row="1"/>
-                    <TextBlock Text="{Binding EBoardShapeCount,
-       NotifyOnSourceUpdated=True}"
-                             Margin="0 0 5 0"
-              Grid.Column="3"
-              Grid.Row="1"/>
-
-                </Grid>
-
-
-
-                <Button Content="Delete EBoard"
-                        Command="{Binding DeleteEBoardCommand}"
-                        Style="{StaticResource EBoardBrowserViewButtonStyle}"/>
-            </StackPanel>
-
+            <StackPanel Orientation="Vertical">
 
                 <StackPanel Orientation="Horizontal">
-                <TextBlock>
+                    <TextBlock>
                     <Run Text="Selected EBoard: "/>
                     <Run Text="{Binding SelectedEBoard.EBoardName}"/>
 
                     <Run Text="{Binding CurrentSelectionID, NotifyOnSourceUpdated=True}"/>
                     <Run Text="/"/>
                     <Run Text="{Binding EBoardCount, NotifyOnSourceUpdated=True}"/>
-                </TextBlock>
+                    </TextBlock>
 
-            </StackPanel>
-                
+                </StackPanel>
 
-            <ScrollViewer CanContentScroll="True"
+
+                <ScrollViewer CanContentScroll="True"
                           VerticalScrollBarVisibility="Auto">
-                
-                <ListBox ItemsSource="{Binding EBoards}"
+
+                    <ListBox ItemsSource="{Binding EBoards}"
                      Background="Transparent"
                      BorderBrush="Transparent"
                      SelectedItem="{Binding SelectedEBoard, NotifyOnSourceUpdated=True}"
                          MaxHeight="240">
 
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid x:Name="wp_eBoardBrowser"
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid x:Name="wp_eBoardBrowser"
                                      Columns="6"
                                    Background="Transparent"
                                    VerticalAlignment="Top"
                                    HorizontalAlignment="Left"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
 
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Background="{Binding BrushManager.Background}"
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <!--<local:EBoardView Content="{Binding }" MaxHeight="50" MaxWidth="50"/>-->
+
+                                <Border Background="{Binding BrushManager.Background}"
                                 Padding="5"
                                 CornerRadius="10"
                                 BorderBrush="{Binding BrushManager.Border}"
-                                BorderThickness="{Binding BorderManager.BorderThickness}">
-                                <TextBlock Text="{Binding EBoardName, NotifyOnSourceUpdated=True}"
+                                BorderThickness="3">
+                                    <TextBlock Text="{Binding EBoardName, NotifyOnSourceUpdated=True}"
+                                           Foreground="{Binding BrushManager.Foreground}"
                                            MinWidth="42" MinHeight="40"/>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ListBox>
-            </ScrollViewer>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+
+                <StackPanel>
+                    <Button Content="Add EBoard"
+                        Command="{Binding AddEBoardCommand}"
+                        Style="{StaticResource EBoardBrowserViewButtonStyle}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="100"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto" MinWidth="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Name"
+                         Grid.Column="0"
+                         Grid.Row="0"/>
+                        <TextBox Text="{Binding EBoardName,
+                  NotifyOnSourceUpdated=True,
+                  UpdateSourceTrigger=LostFocus}"
+                             Margin="0 0 5 0"
+                         Grid.Column="1"
+                         Grid.Row="0"/>
+
+                        <TextBlock Text="Depth"
+                         Grid.Column="2"
+                         Grid.Row="0"/>
+                        <TextBox Text="{Binding EBoardDepth,
+                  NotifyOnSourceUpdated=True,
+                  UpdateSourceTrigger=LostFocus}"
+                             Margin="0 0 5 0"
+                         Grid.Column="3"
+                         Grid.Row="0"/>
 
 
-        </StackPanel>
+                        <TextBlock Text="Width"
+                         Grid.Column="0"
+                         Grid.Row="1"/>
+                        <TextBox Text="{Binding NewEBoardWidth,
+                  NotifyOnSourceUpdated=True,
+                  UpdateSourceTrigger=LostFocus}"
+                             Margin="0 0 5 0"
+                         Grid.Column="1"
+                         Grid.Row="1"/>
 
+                        <TextBlock Text="Height"
+                         Grid.Column="2"
+                         Grid.Row="1"/>
+                        <TextBox Text="{Binding NewEBoardHeight,
+                  NotifyOnSourceUpdated=True,
+                  UpdateSourceTrigger=LostFocus}"
+                             Margin="0 0 5 0"
+                         Grid.Column="3"
+                         Grid.Row="1"/>
+
+                    </Grid>
+
+
+                    <Button Content="Edit EBoard"
+                        Command="{Binding EditEBoardParametersCommand}"
+                        Style="{StaticResource EBoardBrowserViewButtonStyle}"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="100"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto" MinWidth="100"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Created"
+              Grid.Column="0"
+              Grid.Row="0"/>
+                        <TextBlock Text="{Binding EBoardCreatedDate,
+       NotifyOnSourceUpdated=True}"
+                             Margin="0 0 5 0"
+              Grid.Column="1"
+              Grid.Row="0"/>
+
+                        <TextBlock Text="Elements"
+              Grid.Column="2"
+              Grid.Row="0"/>
+                        <TextBlock Text="{Binding EBoardElementCount,
+       NotifyOnSourceUpdated=True}"
+                             Margin="0 0 5 0"
+              Grid.Column="3"
+              Grid.Row="0"/>
+
+                        <TextBlock Text="Container"
+              Grid.Column="0"
+              Grid.Row="1"/>
+                        <TextBlock Text="{Binding EBoardContainerCount,
+       NotifyOnSourceUpdated=True}"
+                             Margin="0 0 5 0"
+              Grid.Column="1"
+              Grid.Row="1"/>
+
+                        <TextBlock Text="Shapes"
+              Grid.Column="2"
+              Grid.Row="1"/>
+                        <TextBlock Text="{Binding EBoardShapeCount,
+       NotifyOnSourceUpdated=True}"
+                             Margin="0 0 5 0"
+              Grid.Column="3"
+              Grid.Row="1"/>
+
+                    </Grid>
+
+
+
+                    <Button Content="Delete EBoard"
+                        Command="{Binding DeleteEBoardCommand}"
+                        Style="{StaticResource EBoardBrowserViewButtonStyle}"/>
+                </StackPanel>
+
+
+
+            </StackPanel>
+        
+
+    </Grid>
 
     </Border>
 

@@ -9,7 +9,7 @@ namespace EBoard.Views
     {
         public EBoardBrowserView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

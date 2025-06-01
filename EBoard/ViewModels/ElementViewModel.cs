@@ -8,47 +8,55 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-
+using EBoard.Views;
+using EBoardSDK.Controls;
+using EBoardSDK.Controls.QuadValueSetup;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
 using EBoardSDK.SharedMethods;
-
-using EBoard.Views;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using EBoardSDK.Controls;
 
 namespace EBoard.ViewModels;
 
 public partial class ElementViewModel : ObservableObject, IElementSelection, IElementBackgroundImage
 {
-
     // Properties & Fields
     #region Properties & Fields
 
+    public bool? PluginNoDefaultBordersSet => !this.Plugin?.NoDefaultBorders;
+
     private ElementView _ElementView;
-    
+
     private EBoardViewModel _EBoardViewModel;
 
     [ObservableProperty]
     private string imagePath;
 
-    public ElementView ElementView => _ElementView;
-
-    public EBoardViewModel EBoardViewModel => _EBoardViewModel;
-
     partial void OnImagePathChanged(string value)
     {
-        ChangeElementBackgroundToImage();
+        ChangeElementBackgroundToImage(BrushTargets.Background, value);
     }
+
+    [ObservableProperty]
+    private string imageBorderPath;
+
+    partial void OnImageBorderPathChanged(string value)
+    {
+        ChangeElementBackgroundToImage(BrushTargets.Border, value);
+    }
+
+    public ElementView ElementView => this._ElementView;
+
+    public EBoardViewModel EBoardViewModel => this._EBoardViewModel;
 
     [ObservableProperty]
     private bool isSelected;
 
-    private IPlugin plugin;
-    public IPlugin Plugin => plugin;
+    //private IPlugin plugin;
+    //public IPlugin Plugin => plugin;
 
     [ObservableProperty]
     private PlacementManagement placementManager;
@@ -75,21 +83,8 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         placementManager.Angle = RotationAngleValue;
     }
 
-
     [ObservableProperty]
     private Point transformOriginPoint;
-
-
-    [ObservableProperty]
-    private int cornerRadiusValue;
-
-    partial void OnCornerRadiusValueChanged(int value)
-    {
-        UpdateCornerRadius(value);
-
-        ChangeSelection_CornerRadiusValue(value);
-    }
-
 
     [ObservableProperty]
     private int heightValue;
@@ -108,7 +103,6 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         ChangeSelection_HeightValue(value);
     }
 
-
     [ObservableProperty]
     private int widthValue;
 
@@ -126,14 +120,12 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         ChangeSelection_WidthValue(value);
     }
 
-
     private string _EID;
     /// <summary>
-    /// Element ID, created upon first creation,
+    /// Gets element ID, created upon first creation,
     /// built using $"Element_{DateTime().Ticks}"        
     /// </summary>
-    public string EID => _EID;
-
+    public string EID => this._EID;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(PlacementManager))]
@@ -146,16 +138,15 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         ChangeSelection_ZIndexValue(value);
     }
 
-
     [ObservableProperty]
     private int zMinimumValue;
-
 
     [ObservableProperty]
     private int zMaximumValue;
 
     [ObservableProperty]
     private int xSliderValue;
+
     partial void OnXSliderValueChanged(int value)
     {
         XPosition = value;
@@ -163,6 +154,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
     [ObservableProperty]
     private double xPosition;
+
     partial void OnXPositionChanged(double value)
     {
         XSliderValue = (int)value;
@@ -173,6 +165,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
     [ObservableProperty]
     private int ySliderValue;
+
     partial void OnYSliderValueChanged(int value)
     {
         YPosition = value;
@@ -180,18 +173,18 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
     [ObservableProperty]
     private double yPosition;
+
     partial void OnYPositionChanged(double value)
     {
         YSliderValue = (int)value;
     }
 
-
     [ObservableProperty]
     private int yMaximumValue;
 
-
     [ObservableProperty]
     private SolidColorBrush backgroundColorBrush;
+
     partial void OnBackgroundColorBrushChanged(SolidColorBrush value)
     {
 
@@ -200,25 +193,63 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     [ObservableProperty]
     private SolidColorBrush foregroundColorBrush;
 
-
     [ObservableProperty]
     private SolidColorBrush borderColorBrush = new SolidColorBrush(Colors.Black);
-
 
     [ObservableProperty]
     private SolidColorBrush highlightColorBrush = new SolidColorBrush(Colors.Orange);
 
+    public Brush BBackground
+    {
+        get
+        {
+            if (this.Plugin == null || this.Plugin!.NoDefaultBorders)
+            {
+                return new SolidColorBrush(Colors.Transparent);
+            }
+
+            return this.Plugin.BrushManagement.Background;
+        }
+
+        set
+        {
+            if (this.Plugin != null)
+            {
+                if (!this.Plugin.NoDefaultBorders)
+                {
+                    this.Plugin.BrushManagement.Background = value;
+
+                    this.Plugin.ApplyBrush(value, BrushTargets.Background);
+                }
+            }
+            this.OnPropertyChanged(nameof(this.BBackground));
+            this.OnPropertyChanged(nameof(this.Plugin.BrushManagement.Background));
+            this.OnPropertyChanged(nameof(this.Plugin.BrushManagement));
+            this.OnPropertyChanged(nameof(this.Plugin));
+            this.OnPropertyChanged();
+        }
+    }
+
     #endregion
 
-
     public SolidColorBrushSetupViewModel BackgroundBrushSetup { get; set; }
+
     public SolidColorBrushSetupViewModel ForegroundBrushSetup { get; set; }
+
     public SolidColorBrushSetupViewModel BorderBrushSetup { get; set; }
-    public SolidColorBrushSetupViewModel HighlightBrushSetup { get; set; } 
+
+    public SolidColorBrushSetupViewModel HighlightBrushSetup { get; set; }
+
+    public QuadValueSetupViewModel CornerRadiusQuadSetup { get; set; }
+
+    public QuadValueSetupViewModel MarginQuadSetup { get; set; }
+
+    public QuadValueSetupViewModel PaddingQuadSetup { get; set; }
+
+    public QuadValueSetupViewModel ThicknessQuadSetup { get; set; }
 
     public ElementViewModel()
     {
-
     }
 
     /// <summary>
@@ -226,392 +257,611 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     /// </summary>
     /// <param name="eBoardViewModel"></param>
     /// <param name="elementDataSet"></param>
-    public ElementViewModel(EBoardViewModel eBoardViewModel, IElementDataSet elementDataSet) => ApplyData(eBoardViewModel, elementDataSet);
-
+    public ElementViewModel(EBoardViewModel eBoardViewModel, IElementDataSet elementDataSet) => this.ApplyData(eBoardViewModel, elementDataSet);
 
     // Methods
     #region Methods
 
-    internal void ApplyBackgroundBrush(Brush brush)
+    public void ApplyBackgroundBrush(Brush brush)
     {
-        Plugin.ApplyBrush(brush, BrushTargets.Background);
+        this.Plugin.ApplyBrush(brush, BrushTargets.Background);
     }
-
 
     // in order to apply the value onto every selected element without triggering the value change 
     // and ChangeSelection_VALUE everytime in every element insance, use the ApplyVALUE method 
-    public void Apply_CornerRadiusValue(int cornerRadius)
+    public void Apply_CornerRadiusValue(QuadValue<int> cornerRadius)
     {
-        CornerRadiusValue = cornerRadius;
+        this.CornerRadiusQuadSetup.TopLeft = cornerRadius.Value1;
+        this.CornerRadiusQuadSetup.TopRight = cornerRadius.Value2;
+        this.CornerRadiusQuadSetup.BottomRight = cornerRadius.Value3;
+        this.CornerRadiusQuadSetup.BottomLeft = cornerRadius.Value4;
 
-        UpdateCornerRadius(cornerRadius);
+        this.OnPropertyChanged(nameof(this.Plugin));
     }
-
 
     public void Apply_HeightValue(int heightValue)
     {
-        HeightValue = heightValue;
+        this.HeightValue = heightValue;
 
-        UpdateContentHeight(heightValue);
+        this.UpdateContentHeight(heightValue);
     }
 
     public int ApplyRotationAngleValue(int rotationAngleValue)
     {
-        UpdateRotation(rotationAngleValue);
+        this.UpdateRotation(rotationAngleValue);
 
         this.RotationAngleValue = rotationAngleValue;
 
-        OnPropertyChanged(nameof(RotationAngleValue));
+        this.OnPropertyChanged(nameof(this.RotationAngleValue));
 
-        return RotationAngleValue;
+        return this.RotationAngleValue;
     }
 
     public int ApplyRotationAngleValueByMouseWheel(int delta)
     {
-        if (delta < 0 && RotationAngleValue > -180)
+        if (delta < 0 && this.RotationAngleValue > -180)
         {
-            RotationAngleValue--;
+            this.RotationAngleValue--;
         }
 
-        if (delta > 0 && RotationAngleValue < 180)
+        if (delta > 0 && this.RotationAngleValue < 180)
         {
-            RotationAngleValue++;
+            this.RotationAngleValue++;
         }
 
-        UpdateRotation(RotationAngleValue);
+        this.UpdateRotation(this.RotationAngleValue);
 
-        OnPropertyChanged(nameof(RotationAngleValue));
+        this.OnPropertyChanged(nameof(this.RotationAngleValue));
 
-        return RotationAngleValue;
+        return this.RotationAngleValue;
     }
 
     public void ApplyWidthValue(int widthValue)
     {
-        WidthValue = widthValue;
+        this.WidthValue = widthValue;
 
-        UpdateContentWidth(widthValue);
+        this.UpdateContentWidth(widthValue);
     }
-
 
     public int ApplyZIndexValueByMouseWheel(int delta)
     {
-        if (delta < 0 && ZMinimumValue < ZIndexValue)
+        if (delta < 0 && this.ZMinimumValue < this.ZIndexValue)
         {
-            ZIndexValue--;
+            this.ZIndexValue--;
         }
 
-        if (delta > 0 && ZMaximumValue > ZIndexValue)
+        if (delta > 0 && this.ZMaximumValue > this.ZIndexValue)
         {
-            ZIndexValue++;
+            this.ZIndexValue++;
         }
 
-        PlacementManager.Z = ZIndexValue;
+        this.PlacementManager.Z = this.ZIndexValue;
 
-        OnPropertyChanged(nameof(PlacementManager.Z));
+        this.OnPropertyChanged(nameof(this.PlacementManager.Z));
 
-        return ZIndexValue;
+        return this.ZIndexValue;
     }
-
 
     public void ApplyZIndexValue(int zIndexValue)
     {
-        ZIndexValue = zIndexValue;
+        this.ZIndexValue = zIndexValue;
 
-        PlacementManager.Z = zIndexValue;
+        this.PlacementManager.Z = zIndexValue;
 
-        OnPropertyChanged(nameof(PlacementManager.Z));
+        this.OnPropertyChanged(nameof(this.PlacementManager.Z));
     }
 
-
-    internal void BeginMovement(ElementViewModel elementViewModel)
+    public void BeginMovement(ElementViewModel elementViewModel)
     {
-        XPosition = ElementView.X;
-        YPosition = ElementView.Y;
+        this.XPosition = this.ElementView.X;
+        this.YPosition = this.ElementView.Y;
 
-        PlacementManager.Position = new Point(XPosition, YPosition);
+        this.PlacementManager.Position = new Point(this.XPosition, this.YPosition);
     }
-
 
     public void CalibrateZSliderValues(int eboardDepth)
     {
         if (eboardDepth >= 0)
         {
-            ZMinimumValue = 0;
-            ZMaximumValue = eboardDepth;
+            this.ZMinimumValue = 0;
+            this.ZMaximumValue = eboardDepth;
 
             if (eboardDepth == 0)
             {
-                ZMaximumValue = 1;
+                this.ZMaximumValue = 1;
             }
         }
         else if (eboardDepth < 0)
         {
-            ZMinimumValue = eboardDepth;
-            ZMaximumValue = 0;
+            this.ZMinimumValue = eboardDepth;
+            this.ZMaximumValue = 0;
         }
 
-        OnPropertyChanged(nameof(ZMinimumValue));
-        OnPropertyChanged(nameof(ZMaximumValue));
+        this.OnPropertyChanged(nameof(this.ZMinimumValue));
+        this.OnPropertyChanged(nameof(this.ZMaximumValue));
 
-        OnPropertyChanged(nameof(XMaximumValue));
-        OnPropertyChanged(nameof(YMaximumValue));
+        this.OnPropertyChanged(nameof(this.XMaximumValue));
+        this.OnPropertyChanged(nameof(this.YMaximumValue));
     }
 
-
-    public void ChangeElementBackgroundToImage()
+    private bool SetImageToBrushTarget(BrushTargets brushTargets, string path)
     {
-        if (ImagePath != null && ImagePath != string.Empty)
+        if (string.IsNullOrWhiteSpace(path) || this.Plugin == null)
         {
-            Plugin?.ApplyBrush(new SharedMethod_UI().ChangeBackgroundToImage(Plugin.BrushManagement.Background, ImagePath), BrushTargets.Background);
+            return false;
         }
+
+        Brush brush = new ImageBrush();
+
+        switch (brushTargets)
+        {
+            case BrushTargets.Background:
+                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.Plugin.BrushManagement.Background, path);
+                break;
+            case BrushTargets.Border:
+                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.Plugin.BrushManagement.Border, path);
+                break;
+            case BrushTargets.Foreground:
+            case BrushTargets.Highlight:
+                break;
+            default:
+                break;
+        }
+
+        var applyBrushResult = this.Plugin!.ApplyBrush(brush, brushTargets);
+        if (applyBrushResult)
+        {
+            this.OnPropertyChanged(nameof(this.Plugin));
+            this.OnPropertyChanged(nameof(this.BBackground));
+        }
+
+        return applyBrushResult;
     }
 
-
-    private void ChangeSelection_CornerRadiusValue(int cornerRadius)
+    public void ChangeElementBackgroundToImage(BrushTargets brushTargets, string path)
     {
-        _EBoardViewModel?.ChangeSelection_CornerRadius(this, cornerRadius);
+        if (this.Plugin == null)
+        {
+            return;
+        }
+
+        this.SetImageToBrushTarget(brushTargets, path);
     }
 
+    private void ChangeSelection_CornerRadiusValue(QuadValue<int> cornerRadius)
+    {
+        this._EBoardViewModel?.ChangeSelection_CornerRadius(this, cornerRadius);
+    }
 
     private void ChangeSelection_HeightValue(int heightValue)
     {
-        _EBoardViewModel?.ChangeSelection_Height(this, heightValue);
+        this._EBoardViewModel?.ChangeSelection_Height(this, heightValue);
     }
-
 
     private void ChangeSelection_RotationAngleValue(int rotationAngleValue)
     {
-        _EBoardViewModel?.ChangeSelection_RotationAngle(this, rotationAngleValue);
+        this._EBoardViewModel?.ChangeSelection_RotationAngle(this, rotationAngleValue);
     }
-
 
     private void ChangeSelection_WidthValue(int widthValue)
     {
-        _EBoardViewModel?.ChangeSelection_WidthValue(this, widthValue);
+        this._EBoardViewModel?.ChangeSelection_WidthValue(this, widthValue);
     }
-
 
     private void ChangeSelection_ZIndexValue(int zIndexValue)
     {
-        _EBoardViewModel.ChangeSelection_ZIndex(this, zIndexValue);
+        this._EBoardViewModel.ChangeSelection_ZIndex(this, zIndexValue);
     }
 
+    public IPlugin Plugin { get; set; }
+
+    public void Redraw()
+    {
+        this.Plugin.ApplyRedraw();
+
+        this.OnPropertyChanged(nameof(this.Plugin));
+
+        this.OnPropertyChanged(nameof(this.Plugin.BrushManagement));
+
+        this.OnPropertyChanged(nameof(this.Plugin.BorderManagement));
+    }
 
     public void ApplyData(EBoardViewModel eBoardViewModel, IElementDataSet elementDataSet)
     {
+        this.PlacementManager = new PlacementManagement();
 
-        PlacementManager = new PlacementManagement();
+        this._EBoardViewModel = eBoardViewModel;
 
-        _EBoardViewModel = eBoardViewModel;
-
-        _EID = elementDataSet.EID;
-
-        // need to look into string format again. on implementation, i failed to apply a no digit value to the label stringformat,
-        // tried {}{0:F0} and some others, since it didn't work for whatever reason, i made them ints to circumvent the issue for now.
-        // better solution for permanent use would be to use doubles and limit the digits on output. gonna try this again sometime, but it has no priority
-        HeightValue = (int)elementDataSet.BorderDataSet.Height;
-        WidthValue = (int)elementDataSet.BorderDataSet.Width;
+        this._EID = elementDataSet.EID;
 
         if (elementDataSet.PlacementDataSet != null)
         {
-            PlacementManager = new PlacementManagement(elementDataSet.PlacementDataSet);
+            this.PlacementManager = new PlacementManagement(elementDataSet.PlacementDataSet);
 
-            RotationAngleValue = (int)elementDataSet.PlacementDataSet.Angle;
-            //PlacementManager.Position = elementDataSet.PlacementDataSet.Position;
-            //PlacementManager.Z = elementDataSet.PlacementDataSet.Z;
+            this.RotationAngleValue = (int)elementDataSet.PlacementDataSet.Angle;
 
-            XPosition = PlacementManager.Position.X;
-            YPosition = PlacementManager.Position.Y;
-            XMaximumValue = eBoardViewModel.Width;
-            YMaximumValue = eBoardViewModel.Height;
+            this.XPosition = this.PlacementManager.Position.X;
+            this.YPosition = this.PlacementManager.Position.Y;
+            this.XMaximumValue = eBoardViewModel.Width;
+            this.YMaximumValue = eBoardViewModel.Height;
 
-            ZIndexValue = PlacementManager.Z;
+            this.ZIndexValue = this.PlacementManager.Z;
         }
 
-        if (_EID == null || _EID.Equals("-1"))
+        if (this._EID == null || this._EID.Equals("-1"))
         {
             DateTime dateTime = DateTime.Now;
 
-            _EID = $"Element_{dateTime.Ticks}";
+            this._EID = $"Element_{dateTime.Ticks}";
         }
 
         if (elementDataSet.Plugin != null)
         {
-            plugin = elementDataSet.Plugin;
+            this.Plugin = elementDataSet.Plugin;
 
-            Plugin.Height = HeightValue;
-            Plugin.Width = WidthValue;
+            this.Plugin.Height = elementDataSet.BorderDataSet.Height;
+            this.Plugin.Width = elementDataSet.BorderDataSet.Width;
 
-            var brushdataset = new BrushManagement(elementDataSet.BrushDataSet);
+            this.SetElementSizeDisplayValue();
 
-            Plugin.ApplyBrush(brushdataset.Background, BrushTargets.Background);
-            Plugin.ApplyBrush(brushdataset.Foreground, BrushTargets.Foreground);
-            Plugin.ApplyBrush(brushdataset.Border, BrushTargets.Border);
-            Plugin.ApplyBrush(brushdataset.Highlight, BrushTargets.Highlight);
+            var bordermanagment = new BorderManagement(elementDataSet.BorderDataSet);
+            this.Plugin.BorderManagement = bordermanagment;
 
-            CornerRadiusValue = (int)elementDataSet.BorderDataSet.CornerRadius.TopLeft;
+            var brushmanagement = new BrushManagement(elementDataSet.BrushDataSet);
+            this.Plugin.BrushManagement = brushmanagement;
 
+            this.Plugin.ApplyBrush(brushmanagement.Background, BrushTargets.Background);
+            this.Plugin.ApplyBrush(brushmanagement.Foreground, BrushTargets.Foreground);
+            this.Plugin.ApplyBrush(brushmanagement.Border, BrushTargets.Border);
+            this.Plugin.ApplyBrush(brushmanagement.Highlight, BrushTargets.Highlight);
 
-            if (Plugin.BrushManagement.Background.GetType().Equals(typeof(SolidColorBrush)))
+            var helper = new SharedMethod_UI();
+
+            if (!this.Plugin.NoDefaultBorders)
             {
-                BackgroundBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)Plugin.BrushManagement.Background, SetColorValueAsBackground);
+                this.CornerRadiusQuadSetup = helper.BuildQuadValueSetup(
+                    new QuadValue<int>()
+                    {
+                        Value1 = (int)elementDataSet.BorderDataSet.CornerRadius.TopLeft,
+                        Value2 = (int)elementDataSet.BorderDataSet.CornerRadius.TopRight,
+                        Value3 = (int)elementDataSet.BorderDataSet.CornerRadius.BottomRight,
+                        Value4 = (int)elementDataSet.BorderDataSet.CornerRadius.BottomLeft,
+                    },
+                    this.ResetCorners);
+
+                this.CornerRadiusQuadSetup.PropertyChanged += this.CornerRadiusQuadSetup_PropertyChanged;
+
+                this.PaddingQuadSetup = helper.BuildQuadValueSetup(
+                    new QuadValue<int>()
+                    {
+                        Value1 = (int)elementDataSet.BorderDataSet.Padding.Left,
+                        Value2 = (int)elementDataSet.BorderDataSet.Padding.Top,
+                        Value3 = (int)elementDataSet.BorderDataSet.Padding.Right,
+                        Value4 = (int)elementDataSet.BorderDataSet.Padding.Bottom,
+                    },
+                    this.ResetPadding);
+
+                this.PaddingQuadSetup.PropertyChanged += this.PaddingQuadSetup_PropertyChanged; ;
             }
 
-            if (Plugin.BrushManagement.Foreground.GetType().Equals(typeof(SolidColorBrush)))
+            this.MarginQuadSetup = helper.BuildQuadValueSetup(
+                new QuadValue<int>()
+                {
+                    Value1 = (int)elementDataSet.BorderDataSet.Margin.Left,
+                    Value2 = (int)elementDataSet.BorderDataSet.Margin.Top,
+                    Value3 = (int)elementDataSet.BorderDataSet.Margin.Right,
+                    Value4 = (int)elementDataSet.BorderDataSet.Margin.Bottom,
+                },
+                this.ResetThickness);
+
+            this.MarginQuadSetup.PropertyChanged += this.MarginQuadSetup_PropertyChanged;
+
+            this.ThicknessQuadSetup = helper.BuildQuadValueSetup(
+                new QuadValue<int>()
+                {
+                    Value1 = (int)elementDataSet.BorderDataSet.BorderThickness.Left,
+                    Value2 = (int)elementDataSet.BorderDataSet.BorderThickness.Top,
+                    Value3 = (int)elementDataSet.BorderDataSet.BorderThickness.Right,
+                    Value4 = (int)elementDataSet.BorderDataSet.BorderThickness.Bottom,
+                },
+                this.ResetMargin);
+
+            this.ThicknessQuadSetup.PropertyChanged += this.ThicknessQuadSetup_PropertyChanged;
+
+            if (this.Plugin.BrushManagement.Background.GetType().Equals(typeof(SolidColorBrush)))
             {
-                ForegroundBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)Plugin.BrushManagement.Foreground, SetColorValueAsForeground);
+                this.BackgroundBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)this.Plugin.BrushManagement.Background, this.SetColorValueAsBackground);
             }
 
-            if (Plugin.BrushManagement.Border.GetType().Equals(typeof(SolidColorBrush)))
+            if (this.Plugin.BrushManagement.Foreground.GetType().Equals(typeof(SolidColorBrush)))
             {
-                BorderBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)Plugin.BrushManagement.Border, SetColorValueAsBorder);
+                this.ForegroundBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)this.Plugin.BrushManagement.Foreground, this.SetColorValueAsForeground);
             }
 
-            if (Plugin.BrushManagement.Highlight.GetType().Equals(typeof(SolidColorBrush)))
+            if (this.Plugin.BrushManagement.Border.GetType().Equals(typeof(SolidColorBrush)))
             {
-                HighlightBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)Plugin.BrushManagement.Highlight, SetColorValueAsHighlight);
+                this.BorderBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)this.Plugin.BrushManagement.Border, this.SetColorValueAsBorder);
             }
 
-            if (BackgroundBrushSetup == null)
+            if (this.Plugin.BrushManagement.Highlight.GetType().Equals(typeof(SolidColorBrush)))
             {
-                BackgroundBrushSetup = new SolidColorBrushSetupViewModel(new SolidColorBrush() { Color=Color.FromArgb(255,0,0,0)}, SetColorValueAsBackground);
+                this.HighlightBrushSetup = new SolidColorBrushSetupViewModel((SolidColorBrush)this.Plugin.BrushManagement.Highlight, this.SetColorValueAsHighlight);
             }
 
-            OnPropertyChanged(nameof(Plugin));
+            if (this.BackgroundBrushSetup == null)
+            {
+                this.BackgroundBrushSetup = new SolidColorBrushSetupViewModel(new SolidColorBrush() { Color = Color.FromArgb(255, 0, 0, 0) }, this.SetColorValueAsBackground);
+            }
 
-            CalibrateZSliderValues(_EBoardViewModel.EBoardDepth);
+            if (this.BorderBrushSetup == null)
+            {
+                this.BorderBrushSetup = new SolidColorBrushSetupViewModel(new SolidColorBrush() { Color = Color.FromArgb(255, 0, 0, 0) }, this.SetColorValueAsBorder);
+            }
+
+            this.OnPropertyChanged(nameof(this.Plugin));
+
+            this.CalibrateZSliderValues(this._EBoardViewModel.EBoardDepth);
         }
 
-        ApplyRotationAngleValue(RotationAngleValue);
+        this.ApplyRotationAngleValue(this.RotationAngleValue);
+
+        this.OnPropertyChanged(nameof(this.Plugin));
+    }
+
+    private void CornerRadiusQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        this.Plugin.BorderManagement.CornerRadius = new CornerRadius(
+            this.CornerRadiusQuadSetup.QuadValue.Value1,
+            this.CornerRadiusQuadSetup.QuadValue.Value2,
+            this.CornerRadiusQuadSetup.QuadValue.Value3,
+            this.CornerRadiusQuadSetup.QuadValue.Value4);
+
+        this.ChangeSelection_CornerRadiusValue(this.CornerRadiusQuadSetup.QuadValue);
+
+        this.OnPropertyChanged(nameof(this.Plugin));
+    }
+
+    private void ThicknessQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        this.Plugin.BorderManagement.BorderThickness = new Thickness(
+            this.ThicknessQuadSetup.QuadValue.Value1,
+            this.ThicknessQuadSetup.QuadValue.Value2,
+            this.ThicknessQuadSetup.QuadValue.Value3,
+            this.ThicknessQuadSetup.QuadValue.Value4);
+
+        this.OnPropertyChanged(nameof(this.Plugin));
+    }
+
+    private void PaddingQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        this.Plugin.BorderManagement.Padding = new Thickness(
+            this.PaddingQuadSetup.QuadValue.Value1,
+            this.PaddingQuadSetup.QuadValue.Value2,
+            this.PaddingQuadSetup.QuadValue.Value3,
+            this.PaddingQuadSetup.QuadValue.Value4);
+
+        this.OnPropertyChanged(nameof(this.Plugin));
+    }
+
+    private void MarginQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        this.Plugin.BorderManagement.Margin = new Thickness(
+            this.MarginQuadSetup.QuadValue.Value1,
+            this.MarginQuadSetup.QuadValue.Value2,
+            this.MarginQuadSetup.QuadValue.Value3,
+            this.MarginQuadSetup.QuadValue.Value4);
+
+        this.OnPropertyChanged(nameof(this.Plugin));
     }
 
     public void MoveXY(ElementViewModel elementViewModel, Point deltaPosition)
     {
-
-        if (_ElementView != null)
+        if (this._ElementView != null)
         {
             double x, y;
 
-            x = XPosition - deltaPosition.X;
-            y = YPosition - deltaPosition.Y;
+            x = this.XPosition - deltaPosition.X;
+            y = this.YPosition - deltaPosition.Y;
 
-            PlacementManager.Position = new Point(x, y);
+            this.PlacementManager.Position = new Point(x, y);
 
-            Canvas.SetLeft(ElementView.VisualParent, x);
-            Canvas.SetTop(ElementView.VisualParent, y);
+            Canvas.SetLeft(this.ElementView.VisualParent, x);
+            Canvas.SetTop(this.ElementView.VisualParent, y);
         }
     }
-
 
     [RelayCommand]
     private void SetColorValueAsBackground()
     {
-        Plugin.ApplyBrush(BackgroundBrushSetup.ColorBrush, BrushTargets.Background);
+        this.Plugin.ApplyBrush(this.BackgroundBrushSetup.ColorBrush, BrushTargets.Background);
+
+        this.OnPropertyChanged(nameof(this.BBackground));
+        this.OnPropertyChanged(nameof(this.Plugin));
     }
 
-    [RelayCommand]    
+    [RelayCommand]
     private void SetColorValueAsForeground()
     {
-        Plugin.ApplyBrush(ForegroundBrushSetup.ColorBrush, BrushTargets.Foreground);
+        this.Plugin.ApplyBrush(this.ForegroundBrushSetup.ColorBrush, BrushTargets.Foreground);
+        this.OnPropertyChanged(nameof(this.Plugin));
     }
 
     [RelayCommand]
     private void SetColorValueAsBorder()
     {
-        Plugin.ApplyBrush(BorderBrushSetup.ColorBrush, BrushTargets.Border);
+        this.Plugin.ApplyBrush(this.BorderBrushSetup.ColorBrush, BrushTargets.Border);
+
+        this.OnPropertyChanged(nameof(this.Plugin.BrushManagement));
+        this.OnPropertyChanged(nameof(this.Plugin));
     }
 
     [RelayCommand]
     private void SetColorValueAsHighlight()
     {
-        Plugin.ApplyBrush(HighlightBrushSetup.ColorBrush, BrushTargets.Highlight);
+        this.Plugin.ApplyBrush(this.HighlightBrushSetup.ColorBrush, BrushTargets.Highlight);
+        this.OnPropertyChanged(nameof(this.Plugin));
     }
-
 
     [RelayCommand]
     private void DeleteElement(object s)
     {
-        _EBoardViewModel?.RemoveElement(this);
+        this._EBoardViewModel?.RemoveElement(this);
     }
 
+    [RelayCommand]
+    private void ResetCorners()
+    {
+        this.CornerRadiusQuadSetup.All = 0;
+
+        this.OnPropertyChanged(nameof(this.Plugin));
+    }
 
     [RelayCommand]
     private void ResetImage()
     {
-        ImagePath = string.Empty;
+        this.ImagePath = string.Empty;
 
-        Plugin.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, BrushTargets.Background);
+        this.Plugin.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, BrushTargets.Background);
     }
 
+    [RelayCommand]
+    private void ResetMargin()
+    {
+        this.MarginQuadSetup.All = 0;
+
+        this.OnPropertyChanged(nameof(this.Plugin));
+    }
+
+    [RelayCommand]
+    private void ResetPadding()
+    {
+        this.PaddingQuadSetup.All = 0;
+
+        this.OnPropertyChanged(nameof(this.Plugin));
+    }
+
+    [RelayCommand]
+    private void ResetThickness()
+    {
+        this.ThicknessQuadSetup.All = 0;
+
+        this.OnPropertyChanged(nameof(this.Plugin));
+    }
+
+    [RelayCommand]
+    private void ResetSize()
+    {
+        this.Plugin.BorderManagement.Width = double.NaN;
+        this.Plugin.BorderManagement.Height = double.NaN;
+
+        this.SetElementSizeDisplayValue();
+
+        this.OnPropertyChanged(nameof(this.Plugin));
+    }
 
     [RelayCommand]
     public void Select()
     {
-        IsSelected = !IsSelected;
+        this.IsSelected = !this.IsSelected;
 
-        Plugin?.SelectionChange(IsSelected);
+        this.SelectionChange(this.IsSelected);
     }
 
+    public bool SelectionChange(bool isSelected)
+    {
+        if (isSelected)
+        {
+            this.Plugin.BrushManagement.SwitchBorderToHighlight();
+
+            this.OnPropertyChanged(nameof(this.Plugin.BrushManagement));
+            this.OnPropertyChanged(nameof(this.Plugin));
+
+            return true;
+        }
+
+        this.Plugin.BrushManagement.SwitchBorderToBorder();
+
+        this.OnPropertyChanged(nameof(this.Plugin.BrushManagement));
+        this.OnPropertyChanged(nameof(this.Plugin));
+
+        return false;
+    }
 
     [RelayCommand]
     private void SetImage()
     {
-        ImagePath = new SharedMethod_UI().SetBackgroundImage(ImagePath);
+        this.ImagePath = new SharedMethod_UI().SetBackgroundImage(this.ImagePath);
+
+        this.OnPropertyChanged(nameof(this.Plugin.BrushManagement));
+        this.OnPropertyChanged(nameof(this.Plugin));
     }
 
+    [RelayCommand]
+    private void SetImageBorder()
+    {
+        this.ImageBorderPath = new SharedMethod_UI().SetBackgroundImage(this.ImageBorderPath);
+
+        this.OnPropertyChanged(nameof(this.Plugin.BrushManagement));
+        this.OnPropertyChanged(nameof(this.Plugin));
+    }
+
+    private void SetElementSizeDisplayValue()
+    {
+        // need to look into string format again. on implementation, i failed to apply a no digit value to the label stringformat,
+        // tried {}{0:F0} and some others, since it didn't work for whatever reason, i made them ints to circumvent the issue for now.
+        // better solution for permanent use would be to use doubles and limit the digits on output. gonna try this again sometime, but it has no priority
+
+        if (this.Plugin == null)
+        {
+            return;
+        }
+
+        this.widthValue = new SharedMethod_UI().ResetSizeDisplayValue(this.Plugin.BorderManagement.Width);
+        this.heightValue = new SharedMethod_UI().ResetSizeDisplayValue(this.Plugin.BorderManagement.Height);
+
+        this.OnPropertyChanged(nameof(this.WidthValue));
+        this.OnPropertyChanged(nameof(this.HeightValue));
+    }
 
     public void SetView(ElementView elementView)
     {
-        _ElementView = elementView;
+        this._ElementView = elementView;
     }
 
-
-    internal void StopMovement()
+    public void StopMovement()
     {
-        XPosition = Canvas.GetLeft(_ElementView.VisualParent);
-        YPosition = Canvas.GetTop(_ElementView.VisualParent);
+        this.XPosition = Canvas.GetLeft(this._ElementView.VisualParent);
+        this.YPosition = Canvas.GetTop(this._ElementView.VisualParent);
 
-        PlacementManager.Position = new Point(XPosition, YPosition);
+        this.PlacementManager.Position = new Point(this.XPosition, this.YPosition);
     }
-
 
     private void UpdateContentHeight(int height)
     {
-        if (Plugin is not null)
+        if (this.Plugin is not null)
         {
-            Plugin.Height = height;
+            this.Plugin.Height = height;
         }
     }
-
 
     private void UpdateContentWidth(int width)
     {
-        if (Plugin is not null)
+        if (this.Plugin is not null)
         {
-            Plugin.Width = width;
+            this.Plugin.Width = width;
         }
     }
-
-
-    private void UpdateCornerRadius(int value)
-    {
-        if (Plugin is not null)
-        {
-            Plugin.CornerRadiusValue = value;
-        }
-    }
-
 
     private void UpdateRotation(int rotationAngle)
     {
-        RotateTransformValue = new RotateTransform(rotationAngle * -1);
+        this.RotateTransformValue = new RotateTransform(rotationAngle * -1);
 
-        TransformOriginPoint = new Point(0.5, 0.5);
+        this.TransformOriginPoint = new Point(0.5, 0.5);
     }
 
-    internal void WasLastActive()
+    public void WasLastActive()
     {
-        _EBoardViewModel?.MoveLastClickedElement(this);
+        this._EBoardViewModel?.MoveLastClickedElement(this);
     }
 
     #endregion

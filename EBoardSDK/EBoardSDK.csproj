@@ -9,6 +9,12 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -25,10 +31,10 @@
     <Compile Update="Plugins\Shapes\Rectangle\RectangleView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Plugins\Tools\EmptyLinear\EmptyLinearView.xaml.cs">
+    <Compile Update="Plugins\Elements\EmptyLinear\EmptyLinearView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Plugins\Tools\EmptyRadial\EmptyRadialView.xaml.cs">
+    <Compile Update="Plugins\Elements\EmptyRadial\EmptyRadialView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Plugins\Tools\Summoner\SummonerView.xaml.cs">
@@ -37,6 +43,10 @@
     <Compile Update="Plugins\Tools\UptimeTimer\UptimeTimerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Plugins\Addons\Snake\" />
   </ItemGroup>
 
 </Project>

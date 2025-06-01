@@ -3,9 +3,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoardSDK;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins;
-using EBoardSDK.Plugins.Elements.StandardText;
 using EBoardSDK.SharedMethods;
 using System;
 using System.Diagnostics;
@@ -14,7 +14,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using static System.Net.Mime.MediaTypeNames;
+using System.Windows.Media;
 
 public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollectiveClickableObject
 {
@@ -37,6 +37,12 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
     private bool isLinked = false;
 
     public bool IsLinkEmpty => !IsLinked;
+
+    public override PluginCategories PluginCategory => PluginCategories.Element;
+
+    public override bool NoDefaultBorders { get; } = false;
+
+    public override ImageBrush PluginLogo { get; set; }
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
 
@@ -181,7 +187,7 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
 
         if (new DirectoryInfo(path).Exists)
         {
-            path = Path.Combine(path, linkDataFileName);            
+            path = Path.Combine(path, linkDataFileName);
         }
 
         serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);

@@ -10,72 +10,68 @@ namespace EBoard
     /// </summary>
     public partial class MainWindow : Window
     {
+        public MainWindow()
+        {
+        }
 
         public MainWindow(MainViewModel mainViewModel)
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             this.DataContext = mainViewModel;
         }
 
-
         private void SizeAndPositionUpdate()
         {
-            ((MainViewModel)DataContext).PlacementManager.Position = new Point(Left, Top);
+            ((MainViewModel)this.DataContext).PlacementManager.Position = new Point(this.Left, this.Top);
 
-            ((MainViewModel)DataContext).BorderManager.Width = ActualWidth;
-            ((MainViewModel)DataContext).BorderManager.Height = ActualHeight;
+            ((MainViewModel)this.DataContext).BorderManager.Width = this.ActualWidth;
+            ((MainViewModel)this.DataContext).BorderManager.Height = this.ActualHeight;
         }
-
 
         private void EboardMainWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            ((MainViewModel)DataContext).DeselectElements();
+            ((MainViewModel)this.DataContext).DeselectElements();
 
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                DragMove();
+                this.DragMove();
             }
-
-
         }
-
 
         private void EboardMainWindow_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            SizeAndPositionUpdate();
+            this.SizeAndPositionUpdate();
 
             e.Handled = true;
         }
 
-
         private void EboardMainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            SizeAndPositionUpdate();
+            this.SizeAndPositionUpdate();
 
             e.Handled = true;
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (WindowState == WindowState.Normal)
+            if (this.WindowState == WindowState.Normal)
             {
-                WindowState = WindowState.Maximized;
-                Background = (SolidColorBrush)Application.Current.Resources["BackgroundBrush"];
+                this.WindowState = WindowState.Maximized;
+                this.Background = (SolidColorBrush)Application.Current.Resources["BackgroundBrush"];
                 Application.Current.Resources["MaximizeContextMenuItemHeader"] = "Normalize";
             }
             else
             {
-                WindowState = WindowState.Normal;
-                Background = new SolidColorBrush(Colors.Transparent);
+                this.WindowState = WindowState.Normal;
+                this.Background = new SolidColorBrush(Colors.Transparent);
                 Application.Current.Resources["MaximizeContextMenuItemHeader"] = "Maximize";
             }
-
         }
 
         private void Minimize_Click(object sender, RoutedEventArgs e)
         {
-            WindowState = System.Windows.WindowState.Minimized;
+            this.WindowState = System.Windows.WindowState.Minimized;
         }
     }
 }
