@@ -1,7 +1,7 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  IElementPlacement 
- *  
+ *
+ *  IElementPlacement
+ *
  *  interface for PlacementManager class
  */
 namespace EBoardSDK.Interfaces;

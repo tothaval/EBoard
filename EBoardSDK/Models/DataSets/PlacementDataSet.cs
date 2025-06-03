@@ -1,7 +1,7 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  PlacementDataSet 
- * 
+ *
+ *  PlacementDataSet
+ *
  *  serializable helper class to store and retrieve placement related data to
  *  or from hard drive storage.
  */

@@ -1,7 +1,7 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  ColorDataSet 
- * 
+ *
+ *  ColorDataSet
+ *
  *  serializable helper class to store and retrieve color and brush related data to
  *  or from hard drive storage, to allow for saving and loading of complex brushes
  *  like LinearGradientBrush, RadialGradientBrush, VisualBrush
@@ -84,8 +84,7 @@ public class ColorDataSet
                 linearGradientBrush.GradientStops.Add(
                     new GradientStop(
                         this.GradientColors[i],
-                        this.GradientStops[i])
-                    );
+                        this.GradientStops[i]));
             }
         }
 
@@ -109,8 +108,7 @@ public class ColorDataSet
                 radialGradientBrush.GradientStops.Add(
                     new GradientStop(
                         this.GradientColors[i],
-                        this.GradientStops[i])
-                    );
+                        this.GradientStops[i]));
             }
         }
 

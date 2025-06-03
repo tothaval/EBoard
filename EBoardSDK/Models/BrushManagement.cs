@@ -1,7 +1,7 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  BrushManagement 
- * 
+ *
+ *  BrushManagement
+ *
  *  model for brush property changes
  */
 namespace EBoardSDK.Models;

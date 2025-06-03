@@ -1,10 +1,12 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  MainWindowMenuBarViewModel 
- * 
+ *
+ *  MainWindowMenuBarViewModel
+ *
  *  view model for MainWindowMenuBarView, which has prototype element instantiation
  *  button and a prototype shape menu and a button to switch on or off the EBoardBrowserView
  */
+namespace EBoard.ViewModels;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoard.IOProcesses.DataSets;
@@ -15,32 +17,15 @@ using Serilog;
 using System.IO;
 using System.Windows.Input;
 
-namespace EBoard.ViewModels;
-
 public partial class MainWindowMenuBarViewModel : ObservableObject
 {
-    // Properties & Fields
-    #region Properties & Fields
-
     [ObservableProperty]
     private string title;
 
     [ObservableProperty]
     private bool eBoardBrowserSwitch;
 
-    private MainViewModel _MainViewModel;
-
-    public MainViewModel MainViewModel => this._MainViewModel;
-
-    public EBoardBrowserViewModel EBoardBrowserViewModel => this.MainViewModel.EBoardBrowserViewModel;
-
-    #endregion
-
-    // Commands
-    #region Commands
-    public ICommand InvokeElementCommand { get; }
-
-    #endregion
+    private MainViewModel mainViewModel;
 
     [ObservableProperty]
     private IList<EBoardElementPluginBaseViewModel> pluginCategoryAddons = [];
@@ -74,7 +59,7 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
     {
         this.title = "EBoard";
 
-        this._MainViewModel = mainViewModel;
+        this.mainViewModel = mainViewModel;
 
         this.InstallEboardPlugins(SDKPluginManager.SDKPlugins);
 
@@ -85,6 +70,12 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
 #endif
     }
 
+    public MainViewModel MainViewModel => this.mainViewModel;
+
+    public EBoardBrowserViewModel EBoardBrowserViewModel => this.MainViewModel.EBoardBrowserViewModel;
+
+    public ICommand InvokeElementCommand { get; }
+
     private void InstallEboardPlugins(IList<EBoardElementPluginBaseViewModel> elements)
     {
         elements.ToList().ForEach(
@@ -92,7 +83,7 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
             {
                 try
                 {
-                    sdkplugin.Initialize();
+                    _ = sdkplugin.Initialize();
                 }
                 catch (Exception ex)
                 {
@@ -126,7 +117,7 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
     [RelayCommand]
     private void ClearElements()
     {
-        this._MainViewModel?.EBoardBrowserViewModel?.DeleteAllElements();
+        this.mainViewModel?.EBoardBrowserViewModel?.DeleteAllElements();
     }
 
     [RelayCommand]
@@ -139,7 +130,7 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
 
             var interfaces = plugin?.GetType().GetInterfaces();
 
-            if (this._MainViewModel.EBoardBrowserViewModel.SelectedEBoard != null &&
+            if (this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard != null &&
                 plugin != null &&
                 interfaces != null &&
                 interfaces.Any(x => x.Name.Equals(nameof(IPlugin))))
@@ -147,15 +138,13 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
                 IElementDataSet newElementDataSet = new ElementDataSet();
 
                 newElementDataSet = ElementDataSetFactory.GetElementDataSet(
-                    plugin: plugin
-                    );
+                    plugin: plugin);
 
                 ElementViewModel evm = new ElementViewModel(
-                    this._MainViewModel.EBoardBrowserViewModel.SelectedEBoard,
-                    newElementDataSet
-                );
+                    this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard,
+                    newElementDataSet);
 
-                ElementViewModel element = new ElementViewModel(this._MainViewModel.EBoardBrowserViewModel.SelectedEBoard, newElementDataSet);
+                ElementViewModel element = new ElementViewModel(this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard, newElementDataSet);
 
                 try
                 {
@@ -178,9 +167,10 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
                     throw;
                 }
 
-                this._MainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(element);
+                this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(element);
             }
         }
     }
 }
+
 // EOF

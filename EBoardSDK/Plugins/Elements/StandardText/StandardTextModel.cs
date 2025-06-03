@@ -1,6 +1,5 @@
 ﻿namespace EBoardSDK.Plugins.Elements.StandardText;
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using System.Xml.Serialization;
 
 [Serializable]
@@ -10,7 +9,7 @@ public class StandardTextModel
     private StandardTextViewModel standardTextViewModel;
 
     public int FontSize { get; set; } = 10;
-    
+
     public int FontSizeTitle { get; set; } = 20;
 
     public string Text { get; set; } = string.Empty;

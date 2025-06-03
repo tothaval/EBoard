@@ -1,9 +1,9 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  EBoardBrowserViewModel 
- * 
+ *
+ *  EBoardBrowserViewModel
+ *
  *  view model class for EBoardBrowserView
- *  
+ *
  *  EBoardBrowserView presents the EBoardViewModels currently existent within the application,
  *  as well as functionality to create, edit or delete eboard instances.
  */

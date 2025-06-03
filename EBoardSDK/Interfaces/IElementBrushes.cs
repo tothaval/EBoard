@@ -1,7 +1,7 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  IElementBrushes 
- * 
+ *
+ *  IElementBrushes
+ *
  *  interface for BrusManagement
  */
 using System.Windows.Media;

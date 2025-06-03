@@ -5,11 +5,9 @@ using EBoardSDK.Models;
 using EBoardSDK.SharedMethods;
 using System.IO;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Xml.Serialization;
 
 namespace EBoardSDK.Plugins.Elements.StandardText
 {
