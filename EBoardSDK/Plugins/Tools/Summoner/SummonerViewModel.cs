@@ -98,11 +98,11 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
     /// <summary>
     /// Gets or sets until a real plugin architecture is implemented, this serves as a mockup solution
-    /// 
+    ///
     /// a real plugin architecture should check a folder for certain files or a file, in which
     /// data on plugins is stored, then all that data needs to be loaded and instanciated if
     /// necessary during app start
-    /// 
+    ///
     /// the ui should build menuitems dynamically from that data
     /// </summary>
     public List<string> PluginsCategoryElements { get; set; } = ["StandardText"];
@@ -158,13 +158,13 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
     /// <summary>
     /// until a real command architecture is implemented, this serves as a mockup solution
-    /// 
+    ///
     /// a real command architecture should be done in a separate class or using an api that
     /// handles all validations etc. it should also have several usercontrols for different
     /// authorization levels, f.e. Request(from aeui) could include some display with output(stderr, stdout, internal logging)
     /// and allow for call of operations on elements or other stuff, f.e. Admin could be used to handle stuff, that requires
     /// some sort of security clearance, all that has low priority atm
-    /// 
+    ///
     /// validation could also use onerrorinfo with community toolkit, but i need to look into that first
     /// </summary>
     private bool CommandStringValidator(string commandString, out string category)
@@ -210,10 +210,10 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
     /// <summary>
     /// until a real command architecture is implemented, this serves as a mockup solution
-    /// 
+    ///
     /// a real command architecture should be done in a separate class or using an api that
     /// handles all validations etc.
-    /// 
+    ///
     /// validation could also use onerrorinfo with community toolkit, but i need to look into that first
     /// </summary>
     [RelayCommand]

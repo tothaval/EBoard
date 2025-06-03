@@ -83,8 +83,7 @@ public class Runner
                         var elementConfig = await Loader.LoadJsonFile<ElementConfig>(elementFileName.FullName);
 
                         escreen.Elements.Add(elementConfig);
-                    }
-                    );
+                    });
 
                 eboardScreens.Add(escreen);
             });

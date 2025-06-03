@@ -1,7 +1,7 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  IElementBorder 
- * 
+ *
+ *  IElementBorder
+ *
  *  interface for BorderManagement
  */
 using System.Windows;

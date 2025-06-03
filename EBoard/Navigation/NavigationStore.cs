@@ -1,33 +1,34 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  NavigationStore 
- * 
+ *
+ *  NavigationStore
+ *
  *  helper class for ViewModel changes
  */
-using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace EBoard.Navigation;
+
+using CommunityToolkit.Mvvm.ComponentModel;
 
 public class NavigationStore
 {
-    private ObservableObject _baseViewModel;
+    private ObservableObject baseViewModel;
+
+    public event Action CurrentViewModelChanged;
 
     public ObservableObject CurrentViewModel
     {
-        get { return this._baseViewModel; }
+        get { return this.baseViewModel; }
 
         set
         {
-            this._baseViewModel = value;
+            this.baseViewModel = value;
             this.OnCurrentViewModelChanged();
         }
     }
-
-    public event Action CurrentViewModelChanged;
 
     private void OnCurrentViewModelChanged()
     {
         this.CurrentViewModelChanged?.Invoke();
     }
 }
+
 // EOF

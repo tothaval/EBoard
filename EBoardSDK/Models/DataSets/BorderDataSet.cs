@@ -1,7 +1,7 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  BorderDataSet 
- * 
+ *
+ *  BorderDataSet
+ *
  *  serializable helper class to store and retrieve Border related data to
  *  or from hard drive storage.
  */

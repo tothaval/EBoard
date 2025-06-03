@@ -1,9 +1,9 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  EBoardViewModel 
- * 
+ *
+ *  EBoardViewModel
+ *
  *  view model class for EBoardView
- *  
+ *
  *  it is basically a canvas within a frame and some properties, that can be edited,
  *  stored and loaded
  */
@@ -132,8 +132,6 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     private static string TxtRemoveElementQuestion => "Remove Element?";
 
     private static string TxtRemoveElementTitle => "Element Deletion";
-
-
 
     public void AddElement(ElementViewModel elementViewModel)
     {

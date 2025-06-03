@@ -17,8 +17,7 @@ public partial class EmptyLinearViewModel : EBoardElementPluginBaseViewModel
     private LinearGradientBrush background = new LinearGradientBrush(
         [new GradientStop(Colors.AliceBlue, 0.0), new GradientStop(Colors.Navy, 0.5)],
         new Point(0, 0),
-        new Point(0.5, 1)
-    );
+        new Point(0.5, 1));
 
     public override PluginCategories PluginCategory => PluginCategories.Element;
 

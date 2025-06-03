@@ -1,7 +1,7 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  BorderManagement 
- * 
+ *
+ *  BorderManagement
+ *
  *  model class for border properties
  */
 using EBoardSDK.Interfaces;

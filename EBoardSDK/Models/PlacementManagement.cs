@@ -1,7 +1,7 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  PlacementManagement 
- * 
+ *
+ *  PlacementManagement
+ *
  *  model for placement property changes
  *  can be applied to MainWindowViewModel and ElementViewModel to define the initial
  *  values on load or upon creation, as well as to store changes during runtime.

@@ -1,6 +1,6 @@
 ﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  App 
+ *
+ *  App.
  */
 namespace EBoard;
 
@@ -20,66 +20,20 @@ using System.Windows;
 ///
 public partial class App : Application
 {
-    private MainViewModel _MainViewModel;
+    private MainViewModel mainViewModel;
 
-    private NavigationStore _navigationStore;
+    private NavigationStore navigationStore;
 
     public App()
     {
         AppDomain.CurrentDomain.UnhandledException += this.CurrentDomain_UnhandledException;
     }
 
-    private Task<EboardConfig?> EBoardConfigInitialization(MainWindow mainWindow, EboardConfig eboardConfig)
-    {
-        if (eboardConfig != null)
-        {
-            if (eboardConfig.EBoardIndex > 0 && eboardConfig.EBoardIndex <= this._MainViewModel.EBoardBrowserViewModel.EBoards.Count)
-            {
-                this._MainViewModel.EBoardBrowserViewModel.SelectedEBoard = this._MainViewModel.EBoardBrowserViewModel.EBoards[eboardConfig.EBoardIndex - 1];
-            }
-
-            this._MainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch = eboardConfig.EBoardBrowserSwitch;
-
-            mainWindow.Left = eboardConfig.PlacementDataSet.Position.X;
-            mainWindow.Top = eboardConfig.PlacementDataSet.Position.Y;
-
-            mainWindow.Width = eboardConfig.BorderDataSet.Width;
-            mainWindow.Height = eboardConfig.BorderDataSet.Height;
-        }
-
-        return Task.FromResult(eboardConfig);
-    }
-
-    protected async override void OnExit(ExitEventArgs e)
+    protected override void OnExit(ExitEventArgs e)
     {
         this.ExitEBoard().RunSynchronously();
 
         base.OnExit(e);
-    }
-
-    private async Task ExitEBoard()
-    {
-        var logstring = "exiting eboard";
-
-        Log.Debug(logstring);
-
-        var runner = new Runner();
-
-        var saveConfigResult = await runner.SaveConfig(this._MainViewModel.GetEboardConfig());
-
-        logstring = $"{saveConfigResult}";
-
-        Log.Debug(logstring);
-
-        var saveScreensResult = await runner.SaveScreens(this._MainViewModel.GetScreenData());
-
-        saveScreensResult.ToList().ForEach(x =>
-        {
-            logstring = x.ToString();
-            Log.Error(logstring);
-        });
-
-        return;
     }
 
     protected async override void OnStartup(StartupEventArgs e)
@@ -125,7 +79,7 @@ public partial class App : Application
             .CreateLogger();
 #endif
 
-            this._navigationStore = new NavigationStore();
+            this.navigationStore = new NavigationStore();
 
             SplashScreen splashScreen = new SplashScreen();
             splashScreen.Show();
@@ -133,8 +87,7 @@ public partial class App : Application
             CommunityToolkit.Mvvm.DependencyInjection.Ioc.Default.ConfigureServices(
                 new ServiceCollection()
                     .AddSingleton<Runner>()
-                    .BuildServiceProvider()
-                    );
+                    .BuildServiceProvider());
 
             var eboardSdk = new Runner();
 
@@ -146,11 +99,11 @@ public partial class App : Application
 
             var screens = await eboardSdk.GetScreensAsync();
 
-            this._MainViewModel = new MainViewModel(this._navigationStore, config);
+            this.mainViewModel = new MainViewModel(this.navigationStore, config);
 
-            this._MainViewModel.SetScreenData(screens);
+            this.mainViewModel.SetScreenData(screens);
 
-            MainWindow mainWindow = new MainWindow(this._MainViewModel);
+            MainWindow mainWindow = new MainWindow(this.mainViewModel);
 
             await this.EBoardConfigInitialization(mainWindow, config);
 
@@ -167,10 +120,55 @@ public partial class App : Application
         }
     }
 
+    private Task<EboardConfig?> EBoardConfigInitialization(MainWindow mainWindow, EboardConfig eboardConfig)
+    {
+        if (eboardConfig != null)
+        {
+            if (eboardConfig.EBoardIndex > 0 && eboardConfig.EBoardIndex <= this.mainViewModel.EBoardBrowserViewModel.EBoards.Count)
+            {
+                this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard = this.mainViewModel.EBoardBrowserViewModel.EBoards[eboardConfig.EBoardIndex - 1];
+            }
+
+            this.mainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch = eboardConfig.EBoardBrowserSwitch;
+
+            mainWindow.Left = eboardConfig.PlacementDataSet.Position.X;
+            mainWindow.Top = eboardConfig.PlacementDataSet.Position.Y;
+
+            mainWindow.Width = eboardConfig.BorderDataSet.Width;
+            mainWindow.Height = eboardConfig.BorderDataSet.Height;
+        }
+
+        return Task.FromResult(eboardConfig);
+    }
+
+    private async Task ExitEBoard()
+    {
+        var logstring = "exiting eboard";
+
+        Log.Debug(logstring);
+
+        var runner = new Runner();
+
+        var saveConfigResult = await runner.SaveConfig(this.mainViewModel.GetEboardConfig());
+
+        logstring = $"{saveConfigResult}";
+
+        Log.Debug(logstring);
+
+        var saveScreensResult = await runner.SaveScreens(this.mainViewModel.GetScreenData());
+
+        saveScreensResult.ToList().ForEach(x =>
+        {
+            logstring = x.ToString();
+            Log.Error(logstring);
+        });
+
+        return;
+    }
+
     private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
-        //MessageBox.Show($"{e.IsTerminating}\n{e}\n{e.ExceptionObject}");
-
+        // MessageBox.Show($"{e.IsTerminating}\n{e}\n{e.ExceptionObject}");
         _ = this.ExitEBoard().IsCompleted;
 
         var s = $"{e.ExceptionObject}\n{e.IsTerminating}";
