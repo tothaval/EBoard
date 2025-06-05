@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins;
+﻿// <copyright file="PluginFactory.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins;
 
 using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins.Elements.StandardText;

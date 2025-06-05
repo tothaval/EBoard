@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="MainViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  MainViewModel
  *
@@ -8,7 +12,6 @@ namespace EBoard.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoard.Navigation;
 using EBoard.Utilities.Factories;
 using EBoardSDK;
 using EBoardSDK.Controls;
@@ -53,8 +56,6 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
     [ObservableProperty]
     private MainWindowMenuBarViewModel mainWindowMenuBarVM;
 
-    private readonly NavigationStore navigationStore;
-
     [ObservableProperty]
     private PlacementManagement placementManager;
 
@@ -65,15 +66,11 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
     [NotifyPropertyChangedFor(nameof(BorderManager))]
     private int width;
 
-    public MainViewModel(NavigationStore navigationStore, EBoardSDK.Models.EboardConfig eboardConfig)
+    public MainViewModel(EBoardSDK.Models.EboardConfig eboardConfig)
     {
-        this.navigationStore = navigationStore;
-
-        this.navigationStore.CurrentViewModelChanged += this.OnCurrentViewModelChanged;
-
         this.eboardConfig = eboardConfig;
 
-        this.eBoardBrowserViewModel = new EBoardBrowserViewModel(this.navigationStore, this);
+        this.eBoardBrowserViewModel = new EBoardBrowserViewModel(this);
 
         this.MainWindowMenuBarVM = new MainWindowMenuBarViewModel(this, eboardConfig);
 
@@ -174,8 +171,6 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
     public SolidColorBrushSetupViewModel BorderBrushSetup { get; set; }
 
     public QuadValueSetupViewModel CornerRadiusQuadSetup { get; set; }
-
-    public ObservableObject CurrentViewModel => this.navigationStore.CurrentViewModel;
 
     public EboardConfig EBoardConfig => this.eboardConfig;
 
@@ -315,19 +310,6 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
     partial void OnCornerRadiusValueChanged(int value)
     {
         BorderManager.CornerRadius = new CornerRadius(value);
-    }
-
-    private void OnCurrentViewModelChanged()
-    {
-        this.OnPropertyChanged(nameof(this.CurrentViewModel));
-
-        this.OnPropertyChanged(nameof(this.BrushManager));
-        this.OnPropertyChanged(nameof(this.BrushManager.Background));
-        this.OnPropertyChanged(nameof(this.BrushManager.Border));
-
-        this.OnPropertyChanged(nameof(this.BorderManager));
-        this.OnPropertyChanged(nameof(this.BorderManager.CornerRadius));
-        this.OnPropertyChanged(nameof(this.BorderManager.BorderThickness));
     }
 
     partial void OnHeightChanged(int value)

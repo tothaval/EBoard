@@ -1,4 +1,8 @@
-﻿namespace EBoard.Utilities.Factories;
+﻿// <copyright file="EBoardFactory.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoard.Utilities.Factories;
 
 using EBoard.IOProcesses.DataSets;
 using EBoard.Models;
@@ -85,6 +89,7 @@ public static class EBoardFactory
                     {
                         await eds.Plugin.Load(plugindatapath.FullName);
                     }
+
                     try
                     {
                         App.Current.Resources.MergedDictionaries.Add(externalPlugin.ResourceDictionary);

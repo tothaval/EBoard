@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins.Elements.Image;
+﻿// <copyright file="ImageViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins.Elements.Image;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;

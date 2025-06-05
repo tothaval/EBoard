@@ -1,4 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// <copyright file="SolidColorBrushSetupViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows.Media;
 

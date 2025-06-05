@@ -1,4 +1,7 @@
-﻿
+﻿// <copyright file="ElementView.xaml.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
 using EBoard.ViewModels;
 using System.ComponentModel;
 using System.Windows;
@@ -280,4 +283,5 @@ public partial class ElementView : UserControl
         }
     }
 }
+
 // EOF

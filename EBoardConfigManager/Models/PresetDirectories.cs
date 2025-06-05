@@ -1,4 +1,8 @@
-﻿namespace EBoardConfigManager.Models;
+﻿// <copyright file="PresetDirectories.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace EBoardConfigManager.Models;
 
 public class PresetDirectories
 {

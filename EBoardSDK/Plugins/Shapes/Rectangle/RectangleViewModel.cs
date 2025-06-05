@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins.Shapes.Rectangle;
+﻿// <copyright file="RectangleViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins.Shapes.Rectangle;
 
 using EBoardSDK.Enums;
 using EBoardSDK.Models;

@@ -1,4 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// <copyright file="EmptyRadialViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using EBoardSDK.Enums;
 using EBoardSDK.Models;
 using System.Reflection;

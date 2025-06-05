@@ -5,20 +5,15 @@ using CommunityToolkit.Mvvm.Input;
 using EBoardSDK;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins;
-using EBoardSDK.Plugins.Elements.StandardText;
 using EBoardSDK.SharedMethods;
 using EEP_BudgetWatcher.Models;
 using EEP_BudgetWatcher.Resources;
 using EEP_BudgetWatcher.Views;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Markup;
 using System.Windows.Media;
-using System.Xml.Serialization;
 
 public partial class BudgetWatcherMainViewModel : EBoardElementPluginBaseViewModel
 {

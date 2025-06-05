@@ -1,4 +1,8 @@
-﻿using System.Windows.Controls;
+﻿// <copyright file="RectangleView.xaml.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using System.Windows.Controls;
 
 namespace EBoardSDK.Plugins.Shapes.Rectangle
 {

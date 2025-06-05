@@ -1,4 +1,8 @@
-﻿using System.IO;
+﻿// <copyright file="SharedMethod_Plugins.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using System.IO;
 using System.Xml.Serialization;
 
 namespace EBoardSDK.SharedMethods

@@ -1,4 +1,8 @@
-﻿using EBoardSDK.Interfaces;
+﻿// <copyright file="ElementConfig.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using EBoardSDK.Interfaces;
 using EBoardSDK.Models.DataSets;
 using System.Text.Json.Serialization;
 using System.Xml.Serialization;

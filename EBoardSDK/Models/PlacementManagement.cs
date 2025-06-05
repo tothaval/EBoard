@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="PlacementManagement.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  PlacementManagement
  *
@@ -58,4 +62,5 @@ public class PlacementManagement : IElementPlacement
         this.Z = 0;
     }
 }
+
 // EOF

@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="PlacementDataSet.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  PlacementDataSet
  *
@@ -40,4 +44,5 @@ public class PlacementDataSet
         this.Z = placementManagement.Z;
     }
 }
+
 // EOF

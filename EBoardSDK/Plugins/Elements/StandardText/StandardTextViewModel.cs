@@ -1,4 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// <copyright file="StandardTextViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Enums;
 using EBoardSDK.Models;

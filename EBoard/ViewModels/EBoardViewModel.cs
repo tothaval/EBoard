@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="EBoardViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  EBoardViewModel
  *
@@ -7,6 +11,8 @@
  *  it is basically a canvas within a frame and some properties, that can be edited,
  *  stored and loaded
  */
+namespace EBoard.ViewModels;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoard.Models;
@@ -14,15 +20,15 @@ using EBoardSDK.Controls;
 using EBoardSDK.Controls.QuadValueSetup;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
+using EBoardSDK.Interfaces.ScreenIntegration;
 using EBoardSDK.Models;
 using EBoardSDK.SharedMethods;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 
-namespace EBoard.ViewModels;
-
-public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
+public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage, IEboardIdentity
 {
     private readonly MainViewModel mainViewModel;
 
@@ -60,29 +66,8 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     [ObservableProperty]
     private int heightValue;
 
-    partial void OnHeightValueChanged(int value)
-    {
-        if (this.BorderManager.Height != value)
-        {
-            this.BorderManager.Height = value;
-        }
-
-        OnPropertyChanged(nameof(BorderManager));
-        OnPropertyChanged(nameof(BorderManager.Height));
-    }
-
     [ObservableProperty]
     private int widthValue;
-    partial void OnWidthValueChanged(int value)
-    {
-        if (this.BorderManager.Width != value)
-        {
-            this.BorderManager.Width = value;
-        }
-
-        OnPropertyChanged(nameof(BorderManager));
-        OnPropertyChanged(nameof(BorderManager.Width));
-    }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(BorderManager))]
@@ -102,6 +87,20 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
 
         this.ApplyData(eboardDataSet);
     }
+
+    public IList<ElementInstantiationPolicy>? InstantiationPolicies => [
+        ElementInstantiationPolicy.Unique,
+        ElementInstantiationPolicy.Global,
+        ElementInstantiationPolicy.OnePerScreen,
+        ElementInstantiationPolicy.DefaultScreenTypesOnly,
+        //ElementInstantiationPolicy.Unconstrained,
+        //ElementInstantiationPolicy.ValueNotSet
+    ];
+
+    public IList<EboardScreenType>? ScreenTypes => [
+        EboardScreenType.EBoardDefault,
+        EboardScreenType.EboardSDKDefault,
+        ];
 
     /// <summary>
     /// Gets eBoard ID, created upon first creation,
@@ -394,6 +393,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
 
         this.OnPropertyChanged(nameof(this.Elements));
     }
+
     public void ApplyData(EboardDataSet eboardDataSet)
     {
         this.BorderManager = new BorderManagement(eboardDataSet.BorderDataSet);
@@ -458,7 +458,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
                 },
                 this.ResetCorners);
 
-        this.CornerRadiusQuadSetup.PropertyChanged += this.CornerRadiusQuadSetup_PropertyChanged; ; ;
+        this.CornerRadiusQuadSetup.PropertyChanged += this.CornerRadiusQuadSetup_PropertyChanged;
 
         this.PaddingQuadSetup = helper.BuildQuadValueSetup(
             new QuadValue<int>()
@@ -470,7 +470,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
             },
             this.ResetPadding);
 
-        this.PaddingQuadSetup.PropertyChanged += this.PaddingQuadSetup_PropertyChanged; ;
+        this.PaddingQuadSetup.PropertyChanged += this.PaddingQuadSetup_PropertyChanged;
 
         this.MarginQuadSetup = helper.BuildQuadValueSetup(
             new QuadValue<int>()
@@ -508,13 +508,65 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         this.OnPropertyChanged(nameof(this.BorderManager));
     }
 
-    private void ThicknessQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    partial void OnCornerRadiusValueChanged(int value)
     {
-        this.BorderManager.BorderThickness = new Thickness(
-            this.ThicknessQuadSetup.QuadValue.Value1,
-            this.ThicknessQuadSetup.QuadValue.Value2,
-            this.ThicknessQuadSetup.QuadValue.Value3,
-            this.ThicknessQuadSetup.QuadValue.Value4);
+        BorderManager.CornerRadius = new CornerRadius(value);
+    }
+
+    partial void OnHeightValueChanged(int value)
+    {
+        if (this.BorderManager.Height != value)
+        {
+            this.BorderManager.Height = value;
+        }
+
+        OnPropertyChanged(nameof(BorderManager));
+        OnPropertyChanged(nameof(BorderManager.Height));
+    }
+
+    partial void OnEBoardDepthChanged(int value)
+    {
+        UpdateElementsZIndexProperties(value);
+    }
+
+    partial void OnHeightChanged(int value)
+    {
+        BorderManager.Height = value;
+    }
+
+    partial void OnImageBorderPathChanged(string value)
+    {
+        ChangeElementBackgroundToImage(BrushTargets.Border, value);
+    }
+
+    partial void OnImagePathChanged(string value)
+    {
+        ChangeElementBackgroundToImage(BrushTargets.Background, value);
+    }
+
+    partial void OnWidthChanged(int value)
+    {
+        BorderManager.Width = value;
+    }
+
+    partial void OnWidthValueChanged(int value)
+    {
+        if (this.BorderManager.Width != value)
+        {
+            this.BorderManager.Width = value;
+        }
+
+        OnPropertyChanged(nameof(BorderManager));
+        OnPropertyChanged(nameof(BorderManager.Width));
+    }
+
+    private void MarginQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        this.BorderManager.Margin = new Thickness(
+            this.MarginQuadSetup.QuadValue.Value1,
+            this.MarginQuadSetup.QuadValue.Value2,
+            this.MarginQuadSetup.QuadValue.Value3,
+            this.MarginQuadSetup.QuadValue.Value4);
 
         this.OnPropertyChanged(nameof(this.BorderManager));
     }
@@ -530,45 +582,15 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         this.OnPropertyChanged(nameof(this.BorderManager));
     }
 
-    private void MarginQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void ThicknessQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        this.BorderManager.Margin = new Thickness(
-            this.MarginQuadSetup.QuadValue.Value1,
-            this.MarginQuadSetup.QuadValue.Value2,
-            this.MarginQuadSetup.QuadValue.Value3,
-            this.MarginQuadSetup.QuadValue.Value4);
+        this.BorderManager.BorderThickness = new Thickness(
+            this.ThicknessQuadSetup.QuadValue.Value1,
+            this.ThicknessQuadSetup.QuadValue.Value2,
+            this.ThicknessQuadSetup.QuadValue.Value3,
+            this.ThicknessQuadSetup.QuadValue.Value4);
 
         this.OnPropertyChanged(nameof(this.BorderManager));
-    }
-
-    partial void OnCornerRadiusValueChanged(int value)
-    {
-        BorderManager.CornerRadius = new CornerRadius(value);
-    }
-
-    partial void OnEBoardDepthChanged(int value)
-    {
-        UpdateElementsZIndexProperties(value);
-    }
-
-    partial void OnHeightChanged(int value)
-    {
-        BorderManager.Height = value;
-    }
-
-    partial void OnImagePathChanged(string value)
-    {
-        ChangeElementBackgroundToImage(BrushTargets.Background, value);
-    }
-
-    partial void OnImageBorderPathChanged(string value)
-    {
-        ChangeElementBackgroundToImage(BrushTargets.Border, value);
-    }
-
-    partial void OnWidthChanged(int value)
-    {
-        BorderManager.Width = value;
     }
 
     private bool SetImageToBrushTarget(BrushTargets brushTargets, string path)
@@ -722,7 +744,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     [RelayCommand]
     private void SwitchToEboard(object? parameter)
     {
-        string commandParameter = parameter as string;
+        string? commandParameter = parameter as string;
 
         if (this.mainViewModel != null && this.mainViewModel.EBoardBrowserViewModel.EBoards.Count > 1)
         {

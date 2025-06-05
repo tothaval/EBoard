@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="BorderManagement.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  BorderManagement
  *
@@ -59,4 +63,5 @@ public class BorderManagement : IElementBorder
         this.Width = Double.NaN;
     }
 }
+
 // EOF

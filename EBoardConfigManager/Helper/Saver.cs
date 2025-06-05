@@ -1,4 +1,8 @@
-﻿using EBoardConfigManager.Enums;
+﻿// <copyright file="Saver.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+using EBoardConfigManager.Enums;
 using Serilog;
 using System.Text.Json;
 

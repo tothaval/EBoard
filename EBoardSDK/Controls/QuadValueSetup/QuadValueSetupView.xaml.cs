@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿// <copyright file="QuadValueSetupView.xaml.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 

@@ -1,4 +1,8 @@
-﻿using EBoard.ViewModels;
+﻿// <copyright file="MainWindow.xaml.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using EBoard.ViewModels;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -75,4 +79,5 @@ namespace EBoard
         }
     }
 }
+
 // EOF

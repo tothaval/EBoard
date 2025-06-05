@@ -1,4 +1,7 @@
-﻿
+﻿// <copyright file="SharedMethod_UI.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
 namespace EBoardSDK.SharedMethods;
 
 using EBoardSDK.Controls.QuadValueSetup;

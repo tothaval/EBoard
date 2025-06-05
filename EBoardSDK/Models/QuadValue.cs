@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Models
+﻿// <copyright file="QuadValue.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Models
 {
     public class QuadValue<T>
     {

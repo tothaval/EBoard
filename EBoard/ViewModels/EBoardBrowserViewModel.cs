@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="EBoardBrowserViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  EBoardBrowserViewModel
  *
@@ -7,9 +11,10 @@
  *  EBoardBrowserView presents the EBoardViewModels currently existent within the application,
  *  as well as functionality to create, edit or delete eboard instances.
  */
+namespace EBoard.ViewModels;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoard.Navigation;
 using EBoard.Utilities.Factories;
 using EBoardSDK.Controls;
 using EBoardSDK.Controls.QuadValueSetup;
@@ -21,13 +26,8 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 
-namespace EBoard.ViewModels;
-
 public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgroundImage
 {
-    // Properties & Fields
-    #region Properties & Fields
-
     private readonly MainViewModel mainViewModel;
 
     [ObservableProperty]
@@ -61,7 +61,7 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
     private int eBoardCount;
 
     [ObservableProperty]
-    private int _eBoardDepth = 100;
+    private int eBoardDepth = 100;
 
     [ObservableProperty]
     private string eBoardName = "new";
@@ -69,53 +69,19 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
     [ObservableProperty]
     private string imagePath;
 
-    partial void OnImagePathChanged(string value)
-    {
-        ChangeElementBackgroundToImage(BrushTargets.Background, value);
-    }
-
     [ObservableProperty]
     private string imageBorderPath;
-
-    partial void OnImageBorderPathChanged(string value)
-    {
-        ChangeElementBackgroundToImage(BrushTargets.Border, value);
-    }
-
-    private NavigationStore _NavigationStore;
-    //public NavigationStore NavigationStore
-    //{
-    //    get { return _NavigationStore; }
-    //    set
-    //    {
-    //        _NavigationStore = value;
-    //        OnPropertyChanged(nameof(NavigationStore));
-    //    }
-    //}
 
     [ObservableProperty]
     private EBoardViewModel selectedEBoard;
 
-    partial void OnSelectedEBoardChanged(EBoardViewModel value)
+    public EBoardBrowserViewModel() => this.InstantiateProperties();
+
+    public EBoardBrowserViewModel(MainViewModel mainViewModel)
     {
-        if (selectedEBoard != null)
-        {
-            selectedEBoard.EBoardActive = false; // changing the active value of the old one, should do this in a different way
-        }
+        this.mainViewModel = mainViewModel;
 
-        selectedEBoard = value;
-
-        if (selectedEBoard != null)
-        {
-            selectedEBoard.Elements.CollectionChanged += SelectedEBoardElements_CollectionChanged;
-        }
-
-        RefreshEBoardParameters();
-    }
-
-    private void SelectedEBoardElements_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        this.RefreshEBoardParameters();
+        this.InstantiateProperties();
     }
 
     public SolidColorBrushSetupViewModel BackgroundBrushSetup { get; set; }
@@ -133,36 +99,29 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
     public QuadValueSetupViewModel PaddingQuadSetup { get; set; }
 
     public QuadValueSetupViewModel ThicknessQuadSetup { get; set; }
-    #endregion
 
-    // Collections
-    #region Collections
-
-    private ObservableCollection<EBoardViewModel> _eboards;
+    private ObservableCollection<EBoardViewModel> eboards;
 
     public ObservableCollection<EBoardViewModel> EBoards
     {
-        get { return this._eboards; }
-        set { this._eboards = value; }
+        get { return this.eboards; }
+        set { this.eboards = value; }
     }
-    #endregion
 
-    // Constructors
-    #region Constructors
-
-    public EBoardBrowserViewModel() => this.InstantiateProperties();
-
-    public EBoardBrowserViewModel(NavigationStore navigationStore, MainViewModel mainViewModel)
+    public Task AddEBoardViewModel(EBoardViewModel eBoardViewModel)
     {
-        this.mainViewModel = mainViewModel;
+        if (eBoardViewModel != null)
+        {
+            this.EBoards.Add(eBoardViewModel);
+        }
 
-        this.InstantiateProperties(navigationStore);
+        return Task.CompletedTask;
     }
 
-    #endregion
-
-    // Methods
-    #region Methods
+    public void ChangeElementBackgroundToImage(BrushTargets brushTargets, string path)
+    {
+        this.SetImageToBrushTarget(brushTargets, path);
+    }
 
     public IList<EBoardSDK.Models.EboardScreen> GetScreenData()
     {
@@ -221,7 +180,7 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
             this.EBoardName = "";
         }
 
-        var eboardScreen = EBoardFactory.GetNewEboardScreen(this.EBoardName, this.EBoardDepth, this.NewEBoardWidth, this.newEBoardHeight);
+        var eboardScreen = EBoardFactory.GetNewEboardScreen(this.EBoardName, this.EBoardDepth, this.NewEBoardWidth, this.NewEBoardHeight);
 
         EBoardViewModel eBoardViewModel = EBoardFactory.GetEBoardViewModelByEBoardDataSet(eboardScreen, this.mainViewModel);
 
@@ -229,11 +188,6 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
 
         this.SelectedEBoard = this.EBoards.Last();
         this.RefreshEBoardParameters();
-    }
-
-    public void ChangeElementBackgroundToImage(BrushTargets brushTargets, string path)
-    {
-        this.SetImageToBrushTarget(brushTargets, path);
     }
 
     private bool SetImageToBrushTarget(BrushTargets brushTargets, string path)
@@ -268,14 +222,36 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         return this.ApplyBrush(brush, brushTargets);
     }
 
-    public Task AddEBoardViewModel(EBoardViewModel eBoardViewModel)
+    partial void OnImageBorderPathChanged(string value)
     {
-        if (eBoardViewModel != null)
+        ChangeElementBackgroundToImage(BrushTargets.Border, value);
+    }
+
+    partial void OnImagePathChanged(string value)
+    {
+        ChangeElementBackgroundToImage(BrushTargets.Background, value);
+    }
+
+    partial void OnSelectedEBoardChanged(EBoardViewModel value)
+    {
+        if (selectedEBoard != null)
         {
-            this.EBoards.Add(eBoardViewModel);
+            selectedEBoard.EBoardActive = false; // changing the active value of the old one, should do this in a different way
         }
 
-        return Task.CompletedTask;
+        selectedEBoard = value;
+
+        if (selectedEBoard != null)
+        {
+            selectedEBoard.Elements.CollectionChanged += SelectedEBoardElements_CollectionChanged;
+        }
+
+        RefreshEBoardParameters();
+    }
+
+    private void SelectedEBoardElements_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        this.RefreshEBoardParameters();
     }
 
     [RelayCommand]
@@ -291,10 +267,6 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
                 this.RefreshEBoardParameters();
 
                 this.OnPropertyChanged(nameof(this.EBoards));
-            }
-            else
-            {
-                this._NavigationStore.CurrentViewModel = null;
             }
         }
     }
@@ -375,13 +347,7 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
                 },
                 this.ResetCorners);
 
-        this.CornerRadiusQuadSetup.PropertyChanged += this.CornerRadiusQuadSetup_PropertyChanged; ; ;
-
-        //BMarginValue = (int)elementDataSet.BorderDataSet.Margin.Left;
-
-        //BPaddingValue = (int)elementDataSet.BorderDataSet.Padding.Left;
-
-        //BThicknessValue = (int)BorderManager.BorderThickness.Left;
+        this.CornerRadiusQuadSetup.PropertyChanged += this.CornerRadiusQuadSetup_PropertyChanged;
 
         this.PaddingQuadSetup = helper.BuildQuadValueSetup(
             new QuadValue<int>()
@@ -393,7 +359,7 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
             },
             this.ResetPadding);
 
-        this.PaddingQuadSetup.PropertyChanged += this.PaddingQuadSetup_PropertyChanged; ;
+        this.PaddingQuadSetup.PropertyChanged += this.PaddingQuadSetup_PropertyChanged;
 
         this.MarginQuadSetup = helper.BuildQuadValueSetup(
             new QuadValue<int>()
@@ -418,18 +384,6 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
             this.ResetMargin);
 
         this.ThicknessQuadSetup.PropertyChanged += this.ThicknessQuadSetup_PropertyChanged;
-    }
-
-    private void InstantiateProperties(NavigationStore navigationStore)
-    {
-        this._NavigationStore = navigationStore;
-
-        this.InstantiateProperties();
-
-        if (this.EBoards.Count > 0)
-        {
-            navigationStore.CurrentViewModel = this.EBoards[0];
-        }
     }
 
     private void CornerRadiusQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -516,17 +470,6 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         this.OnPropertyChanged(nameof(this.BrushManager));
     }
 
-    //[RelayCommand]
-    //private void ResetSize()
-    //{
-    //    Plugin.BorderManagement.Width = double.NaN;
-    //    Plugin.BorderManagement.Height = double.NaN;
-
-    //    this.SetElementSizeDisplayValue();
-
-    //    OnPropertyChanged(nameof(Plugin));
-    //}
-
     [RelayCommand]
     private void SetColorValueAsBackground()
     {
@@ -604,12 +547,20 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         }
     }
 
+    public void RemoveSelectedEBoard()
+    {
+        this.EBoards.Remove(this.SelectedEBoard);
+
+        if (this.EBoards.Count > 0)
+        {
+            this.SelectedEBoard = this.EBoards.Last();
+        }
+    }
+
     private void RefreshEBoardParameters()
     {
         if (this.SelectedEBoard != null)
         {
-            this._NavigationStore.CurrentViewModel = this.SelectedEBoard;
-
             this.EBoardName = this.SelectedEBoard.EBoardName;
             this.EBoardDepth = this.SelectedEBoard.EBoardDepth;
             this.NewEBoardHeight = this.SelectedEBoard.BorderManager.Height;
@@ -639,16 +590,6 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         }
     }
 
-    public void RemoveSelectedEBoard()
-    {
-        this.EBoards.Remove(this.SelectedEBoard);
-
-        if (this.EBoards.Count > 0)
-        {
-            this.SelectedEBoard = this.EBoards.Last();
-        }
-    }
-
     [RelayCommand]
     private void SetImage()
     {
@@ -669,8 +610,6 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
     {
         this.SelectedEBoard?.Clear();
     }
-
-    #endregion
-
 }
+
 // EOF

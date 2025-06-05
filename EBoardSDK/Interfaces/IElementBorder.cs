@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="IElementBorder.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  IElementBorder
  *
@@ -22,4 +26,5 @@ public interface IElementBorder
 
     public Thickness Padding { get; set; }
 }
+
 // EOF

@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK
+﻿// <copyright file="EBoardFeedbackMessage.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK
 {
     public class EBoardFeedbackMessage
     {

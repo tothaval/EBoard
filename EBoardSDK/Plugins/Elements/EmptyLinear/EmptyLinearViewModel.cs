@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins.Elements.EmptyLinear;
+﻿// <copyright file="EmptyLinearViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins.Elements.EmptyLinear;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using EBoardSDK.Enums;

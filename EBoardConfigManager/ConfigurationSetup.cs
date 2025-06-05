@@ -1,4 +1,8 @@
-﻿using EBoardConfigManager.Enums;
+﻿// <copyright file="ConfigurationSetup.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardConfigManager.Models;
 

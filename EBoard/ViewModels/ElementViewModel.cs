@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="ElementViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  ElementViewModel
  *
@@ -69,13 +73,13 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     private int widthValue;
 
     [ObservableProperty]
-    private int xSliderValue;
-
-    [ObservableProperty]
     private int xMaximumValue;
 
     [ObservableProperty]
     private double xPosition;
+
+    [ObservableProperty]
+    private int xSliderValue;
 
     [ObservableProperty]
     private int yMaximumValue;
@@ -127,6 +131,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
                     this.Plugin.ApplyBrush(value, BrushTargets.Background);
                 }
             }
+
             this.OnPropertyChanged(nameof(this.BBackground));
             this.OnPropertyChanged(nameof(this.Plugin.BrushManagement.Background));
             this.OnPropertyChanged(nameof(this.Plugin.BrushManagement));
@@ -164,10 +169,10 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         this.Plugin.ApplyBrush(brush, BrushTargets.Background);
     }
 
-    // in order to apply the value onto every selected element without triggering the value change
-    // and ChangeSelection_VALUE everytime in every element insance, use the ApplyVALUE method
     public void Apply_CornerRadiusValue(QuadValue<int> cornerRadius)
     {
+    // in order to apply the value onto every selected element without triggering the value change
+    // and ChangeSelection_VALUE everytime in every element insance, use the ApplyVALUE method
         this.CornerRadiusQuadSetup.TopLeft = cornerRadius.Value1;
         this.CornerRadiusQuadSetup.TopRight = cornerRadius.Value2;
         this.CornerRadiusQuadSetup.BottomRight = cornerRadius.Value3;
@@ -208,10 +213,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         if (elementDataSet.Plugin != null)
         {
             this.Plugin = elementDataSet.Plugin;
-
-            this.Plugin.Height = elementDataSet.BorderDataSet.Height;
-            this.Plugin.Width = elementDataSet.BorderDataSet.Width;
-
+            
             this.SetElementSizeDisplayValue();
 
             var bordermanagment = new BorderManagement(elementDataSet.BorderDataSet);
@@ -321,8 +323,6 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     public void Apply_HeightValue(int heightValue)
     {
         this.HeightValue = heightValue;
-
-        this.UpdateContentHeight(heightValue);
     }
 
     public int ApplyRotationAngleValue(int rotationAngleValue)
@@ -358,8 +358,6 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     public void ApplyWidthValue(int widthValue)
     {
         this.WidthValue = widthValue;
-
-        this.UpdateContentWidth(widthValue);
     }
 
     public void ApplyZIndexValue(int zIndexValue)
@@ -560,6 +558,11 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         this.OnPropertyChanged(nameof(this.Plugin));
     }
 
+    partial void OnBackgroundColorBrushChanged(SolidColorBrush value)
+    {
+
+    }
+
     partial void OnImageBorderPathChanged(string value)
     {
         ChangeElementBackgroundToImage(BrushTargets.Border, value);
@@ -591,12 +594,26 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
         if (Plugin is not null)
         {
-            Plugin.Height = value;
+            Plugin.BorderManagement.Height = value;
         }
 
         OnPropertyChanged(nameof(Plugin));
 
         ChangeSelection_HeightValue(value);
+    }
+
+    partial void OnWidthValueChanged(int value)
+    {
+        TransformOriginPoint = new Point(0, 0);
+
+        if (Plugin is not null)
+        {
+            Plugin.BorderManagement.Width = value;
+        }
+
+        OnPropertyChanged(nameof(Plugin));
+
+        ChangeSelection_WidthValue(value);
     }
 
     partial void OnXPositionChanged(double value)
@@ -619,30 +636,11 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         YPosition = value;
     }
 
-    partial void OnWidthValueChanged(int value)
-    {
-        TransformOriginPoint = new Point(0, 0);
-
-        if (Plugin is not null)
-        {
-            Plugin.Width = value;
-        }
-
-        UpdateContentWidth(value);
-
-        ChangeSelection_WidthValue(value);
-    }
-
     partial void OnZIndexValueChanged(int value)
     {
         PlacementManager.Z = value;
 
         ChangeSelection_ZIndexValue(value);
-    }
-
-    partial void OnBackgroundColorBrushChanged(SolidColorBrush value)
-    {
-
     }
 
     private void PaddingQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -705,40 +703,6 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         this.ThicknessQuadSetup.All = 0;
 
         this.OnPropertyChanged(nameof(this.Plugin));
-    }
-
-    private bool SetImageToBrushTarget(BrushTargets brushTargets, string path)
-    {
-        if (string.IsNullOrWhiteSpace(path) || this.Plugin == null)
-        {
-            return false;
-        }
-
-        Brush brush = new ImageBrush();
-
-        switch (brushTargets)
-        {
-            case BrushTargets.Background:
-                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.Plugin.BrushManagement.Background, path);
-                break;
-            case BrushTargets.Border:
-                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.Plugin.BrushManagement.Border, path);
-                break;
-            case BrushTargets.Foreground:
-            case BrushTargets.Highlight:
-                break;
-            default:
-                break;
-        }
-
-        var applyBrushResult = this.Plugin!.ApplyBrush(brush, brushTargets);
-        if (applyBrushResult)
-        {
-            this.OnPropertyChanged(nameof(this.Plugin));
-            this.OnPropertyChanged(nameof(this.BBackground));
-        }
-
-        return applyBrushResult;
     }
 
     [RelayCommand]
@@ -809,6 +773,40 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         this.OnPropertyChanged(nameof(this.Plugin));
     }
 
+    private bool SetImageToBrushTarget(BrushTargets brushTargets, string path)
+    {
+        if (string.IsNullOrWhiteSpace(path) || this.Plugin == null)
+        {
+            return false;
+        }
+
+        Brush brush = new ImageBrush();
+
+        switch (brushTargets)
+        {
+            case BrushTargets.Background:
+                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.Plugin.BrushManagement.Background, path);
+                break;
+            case BrushTargets.Border:
+                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.Plugin.BrushManagement.Border, path);
+                break;
+            case BrushTargets.Foreground:
+            case BrushTargets.Highlight:
+                break;
+            default:
+                break;
+        }
+
+        var applyBrushResult = this.Plugin!.ApplyBrush(brush, brushTargets);
+        if (applyBrushResult)
+        {
+            this.OnPropertyChanged(nameof(this.Plugin));
+            this.OnPropertyChanged(nameof(this.BBackground));
+        }
+
+        return applyBrushResult;
+    }
+
     private void ThicknessQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         this.Plugin.BorderManagement.BorderThickness = new Thickness(
@@ -818,22 +816,6 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
             this.ThicknessQuadSetup.QuadValue.Value4);
 
         this.OnPropertyChanged(nameof(this.Plugin));
-    }
-
-    private void UpdateContentHeight(int height)
-    {
-        if (this.Plugin is not null)
-        {
-            this.Plugin.Height = height;
-        }
-    }
-
-    private void UpdateContentWidth(int width)
-    {
-        if (this.Plugin is not null)
-        {
-            this.Plugin.Width = width;
-        }
     }
 
     private void UpdateRotation(int rotationAngle)

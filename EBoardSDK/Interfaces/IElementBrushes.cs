@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="IElementBrushes.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  IElementBrushes
  *
@@ -20,4 +24,5 @@ public interface IElementBrushes
 
     public string ImagePath { get; set; }
 }
+
 // EOF

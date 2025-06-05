@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿// <copyright file="SplashScreen.xaml.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using System.Windows;
 
 namespace EBoard
 {

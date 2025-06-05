@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins.Addons.SoundMix;
+﻿// <copyright file="SoundMixMainViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins.Addons.SoundMix;
 
 using EBoardSDK.Enums;
 using EBoardSDK.Models;

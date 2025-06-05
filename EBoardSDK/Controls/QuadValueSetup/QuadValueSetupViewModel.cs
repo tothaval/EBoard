@@ -1,4 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// <copyright file="QuadValueSetupViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Models;
 
