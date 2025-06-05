@@ -1,3 +1,7 @@
+// <copyright file="AssemblyInfo.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
 using System.Windows;
 
 [assembly: ThemeInfo(

@@ -1,4 +1,8 @@
-﻿using EBoardSDK.Models.DataSets;
+﻿// <copyright file="EboardScreen.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using EBoardSDK.Models.DataSets;
 using System.IO;
 using System.Text.Json.Serialization;
 

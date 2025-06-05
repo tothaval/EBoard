@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Models;
+﻿// <copyright file="EboardConfig.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Models;
 
 using EBoardSDK.Models.DataSets;
 using EBoardSDK.Plugins;

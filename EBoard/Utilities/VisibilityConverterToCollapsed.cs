@@ -1,4 +1,8 @@
-﻿namespace EBoard.Utilities;
+﻿// <copyright file="VisibilityConverterToCollapsed.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoard.Utilities;
 
 using System.Globalization;
 using System.Windows;

@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins.Elements.StandardText;
+﻿// <copyright file="StandardTextModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins.Elements.StandardText;
 
 using System.Xml.Serialization;
 

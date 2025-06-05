@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Interfaces;
+﻿// <copyright file="IElementDataSet.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Interfaces;
 
 using EBoardSDK.Models.DataSets;
 

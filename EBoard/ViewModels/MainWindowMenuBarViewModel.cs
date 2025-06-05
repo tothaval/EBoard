@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="MainWindowMenuBarViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  MainWindowMenuBarViewModel
  *
@@ -125,12 +129,16 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
     {
         if (s is Type)
         {
+            var selectedEboard = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard;
+
             var p = s as Type;
-            var plugin = Activator.CreateInstance(p) as EBoardElementPluginBaseViewModel;
+            var plugin = Activator.CreateInstance(p) as IPlugin;
+
+            var pt = plugin?.GetType();
 
             var interfaces = plugin?.GetType().GetInterfaces();
 
-            if (this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard != null &&
+            if (selectedEboard != null &&
                 plugin != null &&
                 interfaces != null &&
                 interfaces.Any(x => x.Name.Equals(nameof(IPlugin))))
@@ -140,11 +148,39 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
                 newElementDataSet = ElementDataSetFactory.GetElementDataSet(
                     plugin: plugin);
 
-                ElementViewModel evm = new ElementViewModel(
+                var screenpolicies = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.InstantiationPolicies;
+
+                if (screenpolicies == null || screenpolicies.Contains(EBoardSDK.Enums.ElementInstantiationPolicy.ValueNotSet))
+                {
+                    return;
+                }
+
+                if (newElementDataSet.Plugin.ElementScreenIntegrationConstraints == null)
+                {
+                    return;
+                }
+
+                if (newElementDataSet.Plugin.ElementScreenIntegrationConstraints.InstantiationPolicy == EBoardSDK.Enums.ElementInstantiationPolicy.OnePerScreen)
+                {
+                    bool exists = false;
+
+                    selectedEboard.Elements.ToList().ForEach(element =>
+                    {
+                        if (element.Plugin.ElementPluginViewModel.Equals(newElementDataSet.Plugin.ElementPluginViewModel))
+                        {
+                            exists = true;
+                        }
+                    });
+
+                    if (exists)
+                    {
+                        return;
+                    }
+                }
+
+                ElementViewModel element = new ElementViewModel(
                     this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard,
                     newElementDataSet);
-
-                ElementViewModel element = new ElementViewModel(this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard, newElementDataSet);
 
                 try
                 {

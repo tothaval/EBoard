@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins;
+﻿// <copyright file="SDKPluginManager.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins;
 
 using EBoardSDK.Plugins.Addons.SoundMix;
 using EBoardSDK.Plugins.Elements.EmptyLinear;

@@ -1,4 +1,8 @@
-﻿namespace EBoard.Utilities.Factories;
+﻿// <copyright file="ElementDataSetFactory.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoard.Utilities.Factories;
 
 using EBoard.IOProcesses.DataSets;
 using EBoardSDK.Interfaces;
@@ -8,7 +12,7 @@ using EBoardSDK.Plugins;
 
 public static class ElementDataSetFactory
 {
-    public static ElementDataSet GetElementDataSet(IPlugin? plugin = null, IEBoardElement? externalPlugin = null)
+    public static ElementDataSet GetElementDataSet(IPlugin? plugin = null, IPlugin? externalPlugin = null)
     {
         ElementDataSet elementDataSet = new ElementDataSet();
 

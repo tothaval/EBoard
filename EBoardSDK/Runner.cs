@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK;
+﻿// <copyright file="Runner.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK;
 
 using EBoardConfigManager;
 using EBoardConfigManager.Enums;

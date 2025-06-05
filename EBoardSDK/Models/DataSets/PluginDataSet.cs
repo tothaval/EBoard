@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Models.DataSets;
+﻿// <copyright file="PluginDataSet.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Models.DataSets;
 
 [Serializable]
 public class PluginDataSet

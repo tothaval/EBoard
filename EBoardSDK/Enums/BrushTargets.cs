@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Enums;
+﻿// <copyright file="BrushTargets.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Enums;
 
 public enum BrushTargets
 {

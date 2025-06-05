@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="BorderDataSet.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  BorderDataSet
  *
@@ -49,4 +53,5 @@ public class BorderDataSet
         this.Width = this._BorderManagement.Width;
     }
 }
+
 // EOF

@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="ColorDataSet.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  ColorDataSet
  *
@@ -247,4 +251,5 @@ public class ColorDataSet
         this.GradientStops.Add(0.0);
     }
 }
+
 // EOF

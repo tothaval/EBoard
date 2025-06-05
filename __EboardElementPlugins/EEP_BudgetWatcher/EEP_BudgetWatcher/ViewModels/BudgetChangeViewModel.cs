@@ -15,8 +15,6 @@ using EEP_BudgetWatcher.ViewModels.ViewLess;
 using Serilog;
 using System.Collections;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
 using System.Windows;
 
 
@@ -48,7 +46,7 @@ public partial class BudgetChangeViewModel : ObservableObject
     }
 
     public BudgetChangeViewModel(BudgetOverviewModel budgets)
-    {        
+    {
         this.ApplyData(budgets);
     }
 
@@ -70,7 +68,7 @@ public partial class BudgetChangeViewModel : ObservableObject
         {
             this.AddBudget(new BudgetViewModel(new Budget()));
         }
-        
+
         SelectFirst();
 
         return true;

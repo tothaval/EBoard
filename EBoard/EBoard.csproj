@@ -67,6 +67,11 @@
     <None Remove="Fonts\Urbanist-Thin.ttf" />
     <None Remove="Fonts\Urbanist-ThinItalic.ttf" />
     <None Remove="Fonts\Urbanist-VariableFont_wght.ttf" />
+    <None Remove="stylecop.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
   <ItemGroup>

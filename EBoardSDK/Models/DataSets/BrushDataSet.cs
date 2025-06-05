@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="BrushDataSet.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  BrushDataSet
  *
@@ -42,4 +46,5 @@ public class BrushDataSet
         this.HighlightColor = new ColorDataSet(this._BrushManagement.Highlight);
     }
 }
+
 // EOF

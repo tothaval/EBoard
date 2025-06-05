@@ -1,4 +1,8 @@
-﻿using System.Text.Json;
+﻿// <copyright file="ConfigOptions.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace EBoardConfigManager.Helper

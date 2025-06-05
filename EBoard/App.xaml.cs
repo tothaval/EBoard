@@ -1,10 +1,13 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="App.xaml.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  App.
  */
 namespace EBoard;
 
-using EBoard.Navigation;
 using EBoard.ViewModels;
 using EBoardConfigManager.Models;
 using EBoardSDK;
@@ -22,8 +25,6 @@ public partial class App : Application
 {
     private MainViewModel mainViewModel;
 
-    private NavigationStore navigationStore;
-
     public App()
     {
         AppDomain.CurrentDomain.UnhandledException += this.CurrentDomain_UnhandledException;
@@ -31,7 +32,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        this.ExitEBoard().RunSynchronously();
+        this.ExitEBoard().Wait();
 
         base.OnExit(e);
     }
@@ -79,8 +80,6 @@ public partial class App : Application
             .CreateLogger();
 #endif
 
-            this.navigationStore = new NavigationStore();
-
             SplashScreen splashScreen = new SplashScreen();
             splashScreen.Show();
 
@@ -99,7 +98,7 @@ public partial class App : Application
 
             var screens = await eboardSdk.GetScreensAsync();
 
-            this.mainViewModel = new MainViewModel(this.navigationStore, config);
+            this.mainViewModel = new MainViewModel(config);
 
             this.mainViewModel.SetScreenData(screens);
 

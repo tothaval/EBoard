@@ -1,4 +1,8 @@
-﻿using EBoardConfigManager.Helper;
+﻿// <copyright file="PluginLoader.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using EBoardConfigManager.Helper;
 using EBoardSDK.Plugins;
 using Serilog;
 using System.IO;

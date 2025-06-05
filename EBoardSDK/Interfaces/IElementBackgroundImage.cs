@@ -1,4 +1,8 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+﻿// <copyright file="IElementBackgroundImage.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  IElementBackgroundImage
  *
@@ -15,4 +19,5 @@ public interface IElementBackgroundImage
 
     public void ChangeElementBackgroundToImage(BrushTargets brushTargets, string path);
 }
+
 // EOF

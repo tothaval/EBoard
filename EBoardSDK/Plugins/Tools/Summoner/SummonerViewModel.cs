@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins.Tools.Summoner;
+﻿// <copyright file="SummonerViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins.Tools.Summoner;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -75,7 +79,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
         if (Summonee is not null)
         {
-            Summonee.Height = value;
+            //Summonee.Height = value;
         }
 
         UpdateContentHeight(value);
@@ -90,7 +94,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
         if (Summonee is not null)
         {
-            Summonee.Width = value;
+            //Summonee.Width = value;
         }
 
         UpdateContentWidth(value);
@@ -219,8 +223,8 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     [RelayCommand]
     private void ExecuteCommandString()
     {
-        this.Width = double.NaN;
-        this.Height = double.NaN;
+        //this.Width = double.NaN;
+        //this.Height = double.NaN;
 
         string command = this.UserCommandString.Substring(1);
 
@@ -297,7 +301,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     {
         if (this.Summonee is not null)
         {
-            this.Summonee.Height = height;
+            //this.Summonee.Height = height;
         }
     }
 
@@ -305,7 +309,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     {
         if (this.Summonee is not null)
         {
-            this.Summonee.Width = width;
+            //this.Summonee.Width = width;
         }
     }
 
@@ -324,6 +328,6 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
         this.TransformOriginPoint = new Point(0.5, 0.5);
 
-        this.Width = double.NaN;
+        //this.Width = double.NaN;
     }
 }// EOF

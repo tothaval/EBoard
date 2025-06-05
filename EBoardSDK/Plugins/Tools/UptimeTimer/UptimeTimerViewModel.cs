@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins.Tools.Uptime;
+﻿// <copyright file="UptimeTimerViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins.Tools.Uptime;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using EBoardSDK.Enums;
@@ -17,7 +21,20 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
     [ObservableProperty]
     private string uptime;
 
-    private DispatcherTimer _timer;
+    private DispatcherTimer timer;
+
+    private string pluginHeader = "Uptime";
+
+    private string pluginName = "Uptime";
+
+    public UptimeViewModel()
+    {
+        this.ElementScreenIntegrationConstraints = new ElementScreenIntegrationConstraints(ElementInstantiationPolicy.OnePerScreen);
+
+        Task.Delay(500);
+
+        this.InstantiateProperties();
+    }
 
     public override bool NoDefaultBorders { get; } = false;
 
@@ -27,11 +44,7 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
 
     public override PluginCategories PluginCategory => PluginCategories.Tool;
 
-    private string pluginHeader = "Uptime";
-
     public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
-
-    private string pluginName = "Uptime";
 
     public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
 
@@ -47,21 +60,30 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
 
     public override Type ElementPluginViewModel => typeof(UptimeViewModel);
 
-    public UptimeViewModel() => this.InstantiateProperties();
+    public static string ToolTipMessage => "Days : Hours : Minutes : Seconds";
+
+    public override Task<EBoardFeedbackMessage> Load(string path)
+    {
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
+    }
+
+    public override Task<EBoardFeedbackMessage> Save(string path)
+    {
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
+    }
 
     private void InstantiateProperties()
     {
+
         this.BorderManagement = new BorderManagement();
         this.BrushManagement = new BrushManagement();
 
-        this._timer = new DispatcherTimer();
-        this._timer.Interval = TimeSpan.FromMilliseconds(200);
-        this._timer.Tick += this._timer_Tick; ;
+        this.timer = new DispatcherTimer();
+        this.timer.Interval = TimeSpan.FromMilliseconds(200);
+        this.timer.Tick += this.Timer_Tick; ;
 
-        this._timer.Start();
+        this.timer.Start();
     }
-
-    public static string ToolTipMessage => "Days : Hours : Minutes : Seconds";
 
     private void UpdateOutput()
     {
@@ -73,18 +95,10 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
         this.Uptime = $"{uptimeValue.Days:D2}:{uptimeValue.Hours:D2}:{uptimeValue.Minutes:D2}:{uptimeValue.Seconds:D2}";
     }
 
-    private void _timer_Tick(object? sender, EventArgs e)
+    private void Timer_Tick(object? sender, EventArgs e)
     {
         this.UpdateOutput();
     }
+}
 
-    public override Task<EBoardFeedbackMessage> Load(string path)
-    {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
-    }
-
-    public override Task<EBoardFeedbackMessage> Save(string path)
-    {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
-    }
-}// EOF
+// EOF

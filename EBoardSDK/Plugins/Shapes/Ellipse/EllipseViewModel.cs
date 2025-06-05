@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins.Shapes.Ellipse;
+﻿// <copyright file="EllipseViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins.Shapes.Ellipse;
 
 using EBoardSDK.Enums;
 using EBoardSDK.Models;

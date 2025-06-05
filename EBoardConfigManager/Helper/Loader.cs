@@ -1,4 +1,8 @@
-﻿namespace EBoardConfigManager.Helper;
+﻿// <copyright file="Loader.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace EBoardConfigManager.Helper;
 
 using Serilog;
 using System.Text.Json;
