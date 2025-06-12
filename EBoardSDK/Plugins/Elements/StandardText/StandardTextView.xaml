@@ -6,52 +6,118 @@
              xmlns:local="clr-namespace:EBoardSDK.Plugins.Elements.StandardText"
              d:DataContext="{d:DesignInstance Type=local:StandardTextViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             >
 
-    <!-- no effect
+    <UserControl.Resources>
+        <Style TargetType="Label" >
+            <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        
+        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
+            <Setter Property="BorderBrush" Value="{Binding BrushManagement.Border}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding BrushManagement.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
+            <Setter Property="Background" Value="{Binding BrushManagement.Background}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{Binding BrushManagement.Highlight}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
     
-    
-    <UserControl.Resources>        
-    <DataTemplate DataType="{x:Type local:StandardTextViewModel}">
-            <local:StandardTextView/>
-        </DataTemplate>
-    </UserControl.Resources>-->
+    <Border>
 
+        <Border.ContextMenu>
 
-    <Border Background="{Binding BrushManagement.Background, NotifyOnSourceUpdated=True}"
-            BorderBrush="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"
-            BorderThickness="{Binding BorderManagement.BorderThickness, NotifyOnSourceUpdated=True}"
-            CornerRadius="{Binding BorderManagement.CornerRadius, NotifyOnSourceUpdated=True}"
-
-                     Padding="{Binding BorderManagement.Padding}"
-            MinHeight="60"
-            MinWidth="60"
-            Width="{Binding BorderManagement.Width, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-            Height="{Binding BorderManagement.Height, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
-
+            <ContextMenu Background="{Binding BrushManagement.Background}"
+                         Foreground="{Binding BrushManagement.Foreground}"
+                         BorderBrush="{Binding BrushManagement.Border}"
+                         Style="{StaticResource ContextMenuStyle}">
+                <MenuItem Header="Title" Style="{StaticResource menuitem}">
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="FontSize"
+                                           MinWidth="50"/>
+                        <Label Content="{Binding FontSizeTitle, NotifyOnSourceUpdated=True}"
+                               MinWidth="35"/>
+                        <Slider Value="{Binding FontSizeTitle, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="7"
+                            Maximum="80"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                    </WrapPanel>
+                    </MenuItem>
+                
+                <MenuItem Header="Text" Style="{StaticResource menuitem}">
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="FontSize"
+                                           MinWidth="50"/>
+                        <Label Content="{Binding FontSize, NotifyOnSourceUpdated=True}"
+                               MinWidth="35"/>
+                        <Slider Value="{Binding FontSize, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="7"
+                            Maximum="80"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                    </WrapPanel>
+                </MenuItem>
+            </ContextMenu>
+        </Border.ContextMenu>
         <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch"
-                     Margin="{Binding BorderManagement.Margin}">
+           VerticalAlignment="Stretch"
+           
+           Margin="{Binding BorderManagement.Margin}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0"
+            <Border Grid.Row="0" HorizontalAlignment="Stretch" Background="Transparent"/>
+
+            <TextBox Grid.Row="0"
+                     IsReadOnly="{Binding IsTitleSet}"
+                     IsReadOnlyCaretVisible="False"
+                     FontSize="{Binding FontSizeTitle}"
+                 BorderThickness="{Binding TitleTextBoxBorderThickness}"
+                     BorderBrush="{Binding TitleTextBoxBrush}"
+                     MinWidth="50"
+                     Background="{Binding TitleTextBoxBrush}"
                            Foreground="{Binding BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
                            FontWeight="Bold"
-                           Text="{Binding PluginHeader, NotifyOnSourceUpdated=True}"
+                           Text="{Binding Title, NotifyOnSourceUpdated=True}"
                            TextWrapping="Wrap"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center">
+                
+                <TextBox.InputBindings>
+                    <MouseBinding Gesture="Control+Leftclick" Command="{Binding SetTitleCommand}"/>
+                    <KeyBinding Gesture="Enter" Command="{Binding ConfirmTitleCommand}"/>
+                </TextBox.InputBindings>
+            </TextBox>
 
-            <TextBox Grid.Row="1"
+        <TextBox Grid.Row="1"
                      Text="{Binding Text}"  
                      Margin="5"
                      Padding="5"         
-                     
+                 
+                 BorderThickness="3"
+                 FontSize="{Binding FontSize}"
                  Background="Transparent"
                  Foreground="{Binding BrushManagement.Foreground}"
-                 BorderThickness="1"
                  BorderBrush="{Binding BrushManagement.Border}"
                  CaretBrush="{Binding BrushManagement.Foreground}"
                  AcceptsReturn="True"
@@ -61,8 +127,7 @@
                  HorizontalAlignment="Stretch"
                  VerticalAlignment="Stretch">
 
-                
-                    <!-- Focus farbe irgendwann noch korrekt zuweisen per template oder so
+            <!-- Focus farbe irgendwann noch korrekt zuweisen per template oder so
                 <TextBox.Style>
 
                     <Style>
@@ -82,7 +147,5 @@
             </TextBox>
 
         </Grid>
-
     </Border>
-
 </UserControl>

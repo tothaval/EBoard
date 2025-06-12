@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Interfaces
+﻿// <copyright file="IElementContentSaveAndLoad.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Interfaces
 {
     public interface IElementContentSaveAndLoad
     {

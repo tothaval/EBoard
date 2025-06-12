@@ -1,7 +1,8 @@
-﻿using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Input;
+﻿// <copyright file="StandardTextView.xaml.cs" company=".">
+// Stephan Kammel
+// </copyright>
 
+using System.Windows.Controls;
 
 namespace EBoardSDK.Plugins.Elements.StandardText
 {
@@ -12,7 +13,7 @@ namespace EBoardSDK.Plugins.Elements.StandardText
     {
         public StandardTextView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

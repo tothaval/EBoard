@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Plugins;
+﻿// <copyright file="PluginFactory.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins;
 
 using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins.Elements.StandardText;
@@ -9,8 +13,8 @@ internal static class PluginFactory
 {
     internal static IPlugin? GetPluginByCommand(string pluginCategory, string command)
     {
-        string pluginView = string.Concat($"EBoard.Plugins.{pluginCategory}.{command}.{command}View");
-        string pluginViewModel = string.Concat($"EBoard.Plugins.{pluginCategory}.{command}.{command}ViewModel");
+        string pluginView = string.Concat($"EBoardSDK.Plugins.{pluginCategory}.{command}.{command}View");
+        string pluginViewModel = string.Concat($"EBoardSDK.Plugins.{pluginCategory}.{command}.{command}ViewModel");
 
         Type? type_PluginView = Type.GetType(pluginView);
         Type? type_PluginViewModel = Type.GetType(pluginViewModel);
@@ -25,6 +29,7 @@ internal static class PluginFactory
 
         if (pluginViewInstance is not null && plugin is not null)
         {
+            // TODO brushManagement is not the viewmodel
             pluginViewInstance.DataContext = plugin;
 
             return plugin;
@@ -32,7 +37,7 @@ internal static class PluginFactory
 
         return new StandardTextViewModel()
         {
-            Text = "Plugin Instantiation Error"
+            Text = "Plugin Instantiation Error",
         };
     }
 }

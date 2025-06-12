@@ -2,17 +2,16 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Interfaces;
-using EBoardSDK.Models;
-using EBoardSDK.Models.DataSets;
+using EBoardSDK;
+using EBoardSDK.Enums;
 using EBoardSDK.Plugins;
 
 using System;
-using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 public partial class CommandViewModel : EBoardElementPluginBaseViewModel
 {
@@ -26,6 +25,12 @@ public partial class CommandViewModel : EBoardElementPluginBaseViewModel
 
     [ObservableProperty]
     private string epicText = "this is the 2nd most epic text in the entire existance.";
+
+    public override bool NoDefaultBorders { get; } = false;
+
+    public override PluginCategories PluginCategory => PluginCategories.Tool;
+
+    public override ImageBrush PluginLogo { get; set; }
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
 
@@ -53,13 +58,14 @@ public partial class CommandViewModel : EBoardElementPluginBaseViewModel
         StdOut = string.Join("\n", StdOut, s.ToString());
     }
 
-    public override Task Load(string path, IElementDataSet elementDataSet)
+    public override Task<EBoardFeedbackMessage> Load(string path)
     {
-        return Task.CompletedTask;
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
     }
 
-    public override Task Save(string path, IElementDataSet elementDataSet)
+
+    public override Task<EBoardFeedbackMessage> Save(string path)
     {
-        return Task.CompletedTask;
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
     }
 }

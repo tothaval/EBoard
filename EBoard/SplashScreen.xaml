@@ -4,14 +4,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EBoard"
+        Name="splashscreenWindow"
+        d:DataContext="{d:DesignInstance Type=local:SplashScreenViewModel}"
         WindowStyle="None"
         WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
         
         mc:Ignorable="d"
-        Title="EBoard is loading..." Height="500" Width="500">
-    <Grid Background="Black">
-        <TextBlock Text="initializing eboard..."
+        Title="EBoard is loading..." Height="500" Width="500"
+        Foreground ="AntiqueWhite">
+    <Grid
+                           HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+        >
+
+        <TextBlock Text="{Binding LogMessage}"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   TextWrapping="Wrap"
+                   MinWidth="250"
+                   MinHeight="250"
+                 FontSize="15"
+                 Background="black"                 
                    Foreground="Wheat"/>
 
     </Grid>

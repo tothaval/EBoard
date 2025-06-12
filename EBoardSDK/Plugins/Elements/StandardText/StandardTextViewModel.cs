@@ -1,184 +1,172 @@
-﻿using EBoardSDK.Interfaces;
-using EBoardSDK.Models;
-using EBoardSDK.Models.DataSets;
-using EBoardSDK.Plugins.Elements.StandardText;
+﻿// <copyright file="StandardTextViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
 
-using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.ComponentModel;
-
+using CommunityToolkit.Mvvm.Input;
+using EBoardSDK.Enums;
+using EBoardSDK.Models;
+using EBoardSDK.SharedMethods;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Xml.Serialization;
 
 namespace EBoardSDK.Plugins.Elements.StandardText
 {
-    public partial class StandardTextViewModel : ObservableObject, IPlugin, IPluginData
+    public partial class StandardTextViewModel : EBoardElementPluginBaseViewModel
     {
+        [ObservableProperty]
+        private int fontSize;
+
+        [ObservableProperty]
+        private int fontSizeTitle;
+
+        [ObservableProperty]
+        private bool isTitleSet;
+
         [ObservableProperty]
         private string text;
 
-
-        public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
-
-
-
-        public BorderManagement BorderManagement { get; set; }
-
-
-        public BrushManagement BrushManagement { get; set; }
-
-
-        // !!!! prüfen ob sinnvoll und relevant, ggf. ersetzen
-        // später ggf. per Factory oder via Singleton, falls nötig
-        // ist für die option, im load des programms den view typ sauber
-        // instanzieren zu können.
-        private StandardTextView plugin = new StandardTextView();
-        public UserControl Plugin => plugin;
-
+        [ObservableProperty]
+        private string title;
 
         [ObservableProperty]
-        private CornerRadius cornerRadius;
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(BorderManagement))]
-        private int cornerRadiusValue;
-
-
-        partial void OnCornerRadiusValueChanged(int value)
-        {
-            BorderManagement.CornerRadius = new CornerRadius(value);
-        }
-
+        private Brush titleTextBoxBorderBrush;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(BorderManagement))]
-        private double height;
-
-        partial void OnHeightChanged(double value)
-        {
-            BorderManagement.Height = value;
-        }
-
+        private int titleTextBoxBorderThickness;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(BorderManagement))]
-        private double width;
+        private Brush titleTextBoxBrush;
 
-        partial void OnWidthChanged(double value)
-        {
-            BorderManagement.Width = value;
-        }
+        public override bool NoDefaultBorders { get; } = false;
 
-        [ObservableProperty]
-        private string pluginHeader = "Standard Text";
+        public override PluginCategories PluginCategory => PluginCategories.Element;
 
+        public override ImageBrush PluginLogo { get; set; }
 
-        [ObservableProperty]
+        public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+
+        private string pluginHeader = "Standard Text Element";
+
+        public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+
         private string pluginName = "StandardText";
 
+        public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
 
-        public StandardTextViewModel() => InstantiateProperties();
+        public override string ElementPluginName => "StandardText";
 
+        public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
-        public bool ApplyBackgroundBrush(Brush brush)
-        {
-            try
-            {
-                BrushManagement.Background = brush;
+        public override ResourceDictionary ResourceDictionary => new();
 
-                OnPropertyChanged(nameof(BrushManagement));
+        public override Type? ElementPluginModel => null;
 
-                OnPropertyChanged(nameof(BrushManagement.Background));
+        public override Type ElementPluginView => typeof(StandardTextView);
 
-                return true;
-            }
-            catch (Exception)
-            {
+        public override Type ElementPluginViewModel => typeof(StandardTextViewModel);
 
-                return false;
-            }
-        }
+        public bool IsTitleTextboxEditing => !this.IsTitleSet;
 
+        public StandardTextViewModel() => this.InstantiateProperties();
 
         private void InstantiateProperties()
         {
-            BorderManagement = new BorderManagement();
-            BrushManagement = new BrushManagement();
+            this.IsTitleSet = true;
 
-            if (PluginHeader.Equals(string.Empty))
+            this.BorderManagement = new BorderManagement();
+            this.BrushManagement = new BrushManagement();
+
+            if (this.PluginHeader.Equals(string.Empty))
             {
-                PluginHeader = "Standard Text";
+                this.PluginHeader = "Standard Text";
+            }
+
+            if (string.IsNullOrWhiteSpace(this.Title))
+            {
+                this.Title = this.PluginHeader;
             }
         }
 
+        public override async Task<EBoardFeedbackMessage> Load(string path)
+        {
+            if (new DirectoryInfo(path).Exists)
+            {
+                string contentfilename = "content.xml";
 
-        public Task Load(string path, IElementDataSet elementDataSet)
+                path = Path.Combine(path, contentfilename);
+            }
+
+            try
+            {
+                var data = await new SharedMethod_Plugins().DeserializeConfigFiles<StandardTextModel>(path)!;
+
+                if (data != null)
+                {
+                    this.FontSize = data.FontSize;
+                    this.FontSizeTitle = data.FontSizeTitle;
+                    this.Text = data.Text;
+                    this.Title = data.Title;
+
+                    return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
+            }
+
+            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = "" };
+        }
+
+        public override async Task<EBoardFeedbackMessage> Save(string path)
         {
             string contentDataPath = $"{path}content.xml";
+            var standardTextModel = new StandardTextModel(this);
 
-            var xmlSerializer = new XmlSerializer(typeof(StandardTextModel));
+            EBoardFeedbackMessage? serializationResult = null;
 
-            using (var reader = new StreamReader(contentDataPath))
+            if (new DirectoryInfo(path).Exists)
             {
-                try
-                {
-                    var member = (StandardTextModel)xmlSerializer.Deserialize(reader);
-
-                    if (member != null)
-                    {
-                        Text = member.Text;
-                    }
-
-                    return Task.FromResult(member);
-                }
-                catch (Exception ex)
-                {
-                    throw new FileLoadException(ex.Message);
-                }
+                path = Path.Combine(path, contentDataPath);
             }
 
+            serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(standardTextModel, path);
+
+            if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+            {
+                // TODO do stuff
+            }
+
+            return serializationResult!;
         }
 
-
-        public async Task Save(string path, IElementDataSet elementDataSet)
+        [RelayCommand]
+        private void ConfirmTitle()
         {
+            this.IsTitleSet = true;
 
-            string contentDataPath = $"{path}content.xml";
+            this.TitleTextBoxBorderBrush = new SolidColorBrush(Colors.Transparent);
 
-            // serialize content
-            var xmlSerializer = new XmlSerializer(typeof(StandardTextModel));
+            this.TitleTextBoxBrush = new SolidColorBrush(Colors.Transparent);
 
-            StandardTextModel standardTextModel = new StandardTextModel(this);
-
-            await using (var writer = new StreamWriter(contentDataPath))
-            {
-                xmlSerializer.Serialize(writer, standardTextModel);
-            }
-
-            return;
+            this.TitleTextBoxBorderThickness = 0;
         }
 
-
-        public bool SelectionChange(bool isSelected)
+        [RelayCommand]
+        private void SetTitle()
         {
-            if (isSelected)
-            {
-                BrushManagement.SwitchBorderToHighlight();
+            this.IsTitleSet = false;
 
-                OnPropertyChanged(nameof(BrushManagement));
+            this.TitleTextBoxBorderBrush = this.BrushManagement.Foreground;
+            this.TitleTextBoxBrush = this.BrushManagement.Highlight;
 
-                return true;
-            }
-
-            BrushManagement.SwitchBorderToBorder();
-
-            OnPropertyChanged(nameof(BrushManagement));
-
-            return false;
+            this.TitleTextBoxBorderThickness = 2;
         }
-
-
     }
 }
+
 // EOF

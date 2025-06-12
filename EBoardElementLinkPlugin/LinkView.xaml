@@ -9,19 +9,13 @@
              d:DataContext="{d:DesignInstance Type=local:LinkViewModel}"
              >
 
-    <Border Background="{Binding BrushManagement.Background, NotifyOnSourceUpdated=True}"
-            BorderBrush="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"
-            BorderThickness="{Binding BorderManagement.BorderThickness, NotifyOnSourceUpdated=True}"
-            CornerRadius="{Binding BorderManagement.CornerRadius, NotifyOnSourceUpdated=True}"
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
 
-                     Padding="{Binding BorderManagement.Padding}"
-            MinHeight="60"
-            MinWidth="60"
-            Width="{Binding BorderManagement.Width, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-            Height="{Binding BorderManagement.Height, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
-
-        <Grid MinHeight="150" MinWidth="150"
-          Background="MediumOrchid">
+    </UserControl.Resources>
+  
+        <Grid MinHeight="30" MinWidth="30"
+          Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
@@ -30,7 +24,22 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Label Content="{Binding EpicText}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <!--<Label Content="{Binding EpicText}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>-->
+            <Button Margin="10" Content="{Binding LinkStatusText, NotifyOnSourceUpdated=True}" Command="{Binding LinkCommand}"
+                    Background="{Binding BrushManagement.Background}"
+                    Foreground="{Binding BrushManagement.Foreground}"
+                    Visibility="{Binding IsLinkEmpty, NotifyOnSourceUpdated=True, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Grid.Column="0" Grid.Row="0"/>
+            <Button Margin="10" Content="{Binding LinkTargetName, UpdateSourceTrigger=PropertyChanged}" Command="{Binding ExecuteLinkTargetCommand}"
+                    Visibility="{Binding IsLinked, Converter={StaticResource BoolToVisibilityConverter}}"
+                    Grid.Column="0" Grid.Row="0"                    
+                    ToolTip="{Binding LinkTargetName, UpdateSourceTrigger=PropertyChanged}"
+                    Background="{Binding BrushManagement.Background}"
+                    Foreground="{Binding BrushManagement.Foreground}">
+                <Button.InputBindings>
+                    <MouseBinding Gesture="Control+Leftclick" Command="{Binding ResetCommand}"/>
+                </Button.InputBindings>
+            </Button>
+
         </Grid>
-    </Border>
 </UserControl>

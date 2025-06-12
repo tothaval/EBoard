@@ -8,20 +8,30 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Border Background="{Binding BrushManagement.Background, NotifyOnSourceUpdated=True}"
-            BorderBrush="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"
-            BorderThickness="{Binding BorderManagement.BorderThickness, NotifyOnSourceUpdated=True}"
-            CornerRadius="{Binding BorderManagement.CornerRadius}"           
+    <UserControl.Resources>
+        <Style TargetType="ToolTip">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                        <Border Background="{Binding  BrushManagement.Background}"
+                                BorderBrush="{Binding BrushManagement.Border}"
+                                BorderThickness="{Binding BorderManagement.BorderThickness}">
+                            <TextBlock Text="{Binding ToolTipMessage}"
+                                       Foreground="{Binding  BrushManagement.Foreground}"
+                                       Margin="5"/>
+                        </Border>
+                        </Grid>
+                    </ControlTemplate>
+                    
+                </Setter.Value>
+            </Setter>
 
-            Padding="{Binding BorderManagement.Padding}"
-            MinHeight="60"
-            MinWidth="60"
-            Width="{Binding BorderManagement.Width, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-            Height="{Binding BorderManagement.Height, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}">
-
-
+        </Style>
+    </UserControl.Resources>
+    
         <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch"
+          VerticalAlignment="Stretch"          
                      Margin="{Binding BorderManagement.Margin}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -66,12 +76,13 @@
                        Grid.Column="0"        
                        Background="Transparent"
                        Padding="0 10 0 0"
-                     Foreground="{Binding BrushManagement.Foreground}"
+                     Foreground="{Binding BrushManagement.Foreground}"     
                          Text="uptime"/>
 
             <TextBlock Grid.Row="2"                      
                        Grid.Column="1"
                        Text="{Binding Uptime, UpdateSourceTrigger=PropertyChanged}"
+                       ToolTip="{Binding ToolTipMessage}"
                        Background="Transparent"     
                        TextAlignment="Right"         
                        VerticalAlignment="Center"         
@@ -79,6 +90,5 @@
                        Padding="0 10 0 0"
                        MinWidth="100"/>
         </Grid>
-    </Border>
-
+    
 </UserControl>

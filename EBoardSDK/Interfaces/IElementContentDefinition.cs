@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿// <copyright file="IElementContentDefinition.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using System.Windows;
 
 namespace EBoardSDK.Interfaces
 {
@@ -7,6 +11,5 @@ namespace EBoardSDK.Interfaces
         //public bool ContentIsUserControlAndNotShape { get; }
 
         public FrameworkElement Plugin { get; }
-
     }
 }

@@ -1,0 +1,257 @@
+﻿<UserControl x:Class="EEP_BudgetWatcher.Views.BudgetChangeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EEP_BudgetWatcher.Views"
+             xmlns:comps="clr-namespace:EEP_BudgetWatcher.Components"
+             xmlns:conv="clr-namespace:EEP_BudgetWatcher.Converters"
+             xmlns:vms="clr-namespace:EEP_BudgetWatcher.ViewModels.ViewLess"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+
+        <conv:VisibilityConverter x:Key="VisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid Background="Transparent"
+          Margin="0 0 0 5">
+
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+
+        <ToggleButton IsChecked="{Binding ShowBugdetOverview}"
+                      Content="budget overview"
+                      HorizontalAlignment="Stretch"
+                      Margin="0 5 0 0"
+                      Style="{StaticResource centralTopToggleButtonStyle}"                      
+                      Grid.Row="0"/>
+
+        <Border Style="{StaticResource VisibilityFieldBorder}"
+                Visibility="{Binding ShowBugdetOverview, Converter={StaticResource VisibilityConverter}}"
+                Margin="0 0 0 0"
+                Grid.Row="1"
+                >
+            <comps:BudgetResultMask
+                Begin="{Binding BudgetViewModel.Begin,
+                Mode=TwoWay, 
+                UpdateSourceTrigger=PropertyChanged}"
+                
+                End="{Binding BudgetViewModel.End,
+                Mode=TwoWay, 
+                UpdateSourceTrigger=PropertyChanged}"
+                
+                NumberOfDays="{Binding BudgetViewModel.NumberOfDays,
+                Mode=OneWay,
+                NotifyOnSourceUpdated=True,
+                UpdateSourceTrigger=PropertyChanged}"                
+
+                DaysLeftPercentage="{Binding BudgetViewModel.DaysLeftPercentage,
+                Mode=OneWay, 
+                NotifyOnSourceUpdated=True,
+                UpdateSourceTrigger=PropertyChanged}"    
+                
+                BudgetPerDay="{Binding BudgetViewModel.BudgetPerDay,
+                Mode=OneWay,
+                NotifyOnSourceUpdated=True,
+                UpdateSourceTrigger=PropertyChanged}"
+                
+                InitialBudget="{Binding BudgetViewModel.InitialBudget,
+                Mode=TwoWay,
+                UpdateSourceTrigger=PropertyChanged}"
+                
+                Expenses="{Binding BudgetViewModel.Expenses,
+                UpdateSourceTrigger=PropertyChanged}"
+                
+                Gains="{Binding BudgetViewModel.Gains,
+                UpdateSourceTrigger=PropertyChanged}"
+                
+                CurrentBalance="{Binding BudgetViewModel.CurrentBalance,                
+                UpdateSourceTrigger=PropertyChanged}"
+                
+                Margin="0 20"
+                
+                GainExpenseBrush="{Binding BudgetViewModel.GainExpenseBrush,
+            NotifyOnSourceUpdated=True,
+                UpdateSourceTrigger=PropertyChanged,
+                Mode=OneWay}"
+                />
+
+        </Border>
+
+
+        <ToggleButton IsChecked="{Binding ShowBugdetAccount}"
+                     Content="budget account"
+                     HorizontalAlignment="Stretch"
+                     Margin="0 5 0 0"
+                     Style="{StaticResource centralTopToggleButtonStyle}"                      
+                     Grid.Row="2"/>
+
+        <Border Style="{StaticResource VisibilityFieldBorder}"                
+                Margin="0"
+                Visibility="{Binding ShowBugdetAccount, Converter={StaticResource VisibilityConverter}}"
+                        Grid.Row="3">
+
+            <Grid HorizontalAlignment="Stretch"
+                     VerticalAlignment="Center"                              
+                     Background="Transparent"
+                     Margin="0 5 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Button Content="+ Expense"
+                    Margin="0 0 5 0"
+                    Grid.Column="0"
+                    
+                    Command="{Binding AddExpenseCommand}"
+                    Style="{StaticResource buttonStyle}"/>
+
+                <Button Content="+ Gain"
+                    Margin="5 0 5 0"
+                    Grid.Column="1"
+                    Command="{Binding AddGainCommand}"
+                    Style="{StaticResource buttonStyle}"/>
+
+                <Button Content="- Item"
+                    Margin="5 0 5 0"
+                    Grid.Column="2"
+                    Command="{Binding RemoveItemCommand}"
+                    CommandParameter="{Binding ElementName=BudgetListView, Path=SelectedItems}"
+                    Style="{StaticResource buttonStyle}"/>
+
+                <Button Content="Clear All"
+                    Margin="5 0 0 0"
+                    Grid.Column="3"
+                    Command="{Binding ClearAllCommand}"
+                    Style="{StaticResource buttonStyle}"/>
+
+                <ListView ItemsSource="{Binding BudgetItemViewModels,
+                            NotifyOnSourceUpdated=True,
+                UpdateSourceTrigger=PropertyChanged}"
+                      Margin="5 2"
+                      SelectionMode="Extended"                      
+                      Name="BudgetListView"         
+                          VerticalContentAlignment="Top" 
+                          Grid.ColumnSpan="4"
+                      Grid.Column="0"
+                      Grid.Row="1"                         
+                          MaxHeight="300"
+                          
+                      SelectedItem="{Binding BudgetItemViewModel}">
+
+                    <ListBox.Template>
+                        <ControlTemplate>
+                            <ScrollViewer VerticalScrollBarVisibility="Visible" CanContentScroll="True">
+                                <ItemsPresenter/>
+                            </ScrollViewer>
+                        </ControlTemplate>
+
+                    </ListBox.Template>
+
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem" BasedOn="{StaticResource ItemContainerStyle}">
+
+                            <Setter Property="Template">
+                                <Setter.Value>
+
+                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+
+                                        <Border CornerRadius="2" SnapsToDevicePixels="True"  
+                                     BorderThickness="{TemplateBinding BorderThickness}"   
+                                     BorderBrush="{TemplateBinding BorderBrush}"   
+                                     Background="{TemplateBinding Background}">
+                                            <comps:BudgetItemInputMask Margin="5 2 5 2"
+                                                                   BudgetPeriodBegin="{Binding BudgetViewModel.Begin,
+                                            NotifyOnSourceUpdated=True}"
+                                                                   
+                                                                   BudgetPeriodEnd="{Binding BudgetViewModel.End,
+                                            NotifyOnSourceUpdated=True}"
+                                                                   
+                                                                   BudgetInterval="{Binding Interval,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            Mode=TwoWay}"
+                                                                     
+                                                                   BudgetType="{Binding Type,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            Mode=TwoWay}"
+                                                                   
+                                                                   Date="{Binding Date,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            Mode=TwoWay}"
+                                                                   
+                                                                   Item="{Binding Item,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            Mode=TwoWay}"
+                                                                   
+                                                                   Quantity="{Binding Quantity,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            Mode=TwoWay}"
+                                                                   
+                                                                   Sum="{Binding Sum,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            Mode=TwoWay}"
+                                                                   
+                                                                   Result="{Binding Result,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            Mode=OneWay}"
+                                                                   
+                                                                   GainExpenseBrush="{Binding GainExpenseBrush,
+                                            NotifyOnSourceUpdated=True,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            Mode=OneWay}"
+                                                                   />
+
+                                        </Border>
+
+                                        <ControlTemplate.Triggers>
+
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource SelectionBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource BackgroundBrush}"/>
+                                            </Trigger>
+
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource SelectionBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource BackgroundBrush}"/>
+                                                <Setter Property="BorderBrush" Value="{DynamicResource TextBrush}" />
+
+                                            </Trigger>
+
+                                        </ControlTemplate.Triggers>
+
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+
+                    </ListBox.ItemContainerStyle>
+
+                    <ListView.ItemTemplate>
+
+                        <DataTemplate>
+
+                        </DataTemplate>
+
+                    </ListView.ItemTemplate>
+
+                </ListView>
+
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

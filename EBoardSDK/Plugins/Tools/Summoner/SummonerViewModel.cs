@@ -1,30 +1,28 @@
-﻿namespace EBoardSDK.Plugins.Tools.Summoner;
+﻿// <copyright file="SummonerViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
 
+namespace EBoardSDK.Plugins.Tools.Summoner;
+
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
-using EBoardSDK.Models.DataSets;
 using EBoardSDK.Plugins.Elements.StandardText;
 using EBoardSDK.SharedMethods;
-
-using CommunityToolkit.Mvvm;
-using CommunityToolkit.Mvvm.ComponentModel;
-
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using CommunityToolkit.Mvvm.Input;
 
-public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSelection, IElementBackgroundImage, IPluginData
+public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElementBackgroundImage
 {
-
     [ObservableProperty]
     private string userCommandString = ">";
 
     partial void OnUserCommandStringChanged(string value)
     {
-
-
-
     }
 
     private double Angle { get; set; }
@@ -32,15 +30,15 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
     [ObservableProperty]
     private IPlugin summonee;
 
-    public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
+    //public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
 
     [ObservableProperty]
     private string imagePath;
+
     partial void OnImagePathChanged(string value)
     {
-        ChangeElementBackgroundToImage();
+        ChangeElementBackgroundToImage(BrushTargets.Background, value);
     }
-
 
     [ObservableProperty]
     private int rotationAngleValue;
@@ -53,7 +51,6 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
         }
     }
 
-
     [ObservableProperty]
     private RotateTransform rotateTransformValue;
 
@@ -62,10 +59,8 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
         Angle = RotationAngleValue;
     }
 
-
     [ObservableProperty]
     private Point transformOriginPoint;
-
 
     [ObservableProperty]
     private int cornerRadiusValueSummonee;
@@ -74,7 +69,6 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
     {
         UpdateCornerRadius(value);
     }
-
 
     [ObservableProperty]
     private int heightValue;
@@ -85,12 +79,11 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
 
         if (Summonee is not null)
         {
-            Summonee.Height = value;
+            //Summonee.Height = value;
         }
 
         UpdateContentHeight(value);
     }
-
 
     [ObservableProperty]
     private int widthValue;
@@ -101,150 +94,81 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
 
         if (Summonee is not null)
         {
-            Summonee.Width = value;
+            //Summonee.Width = value;
         }
 
         UpdateContentWidth(value);
     }
 
-
-
-
-    #region IPlugin properties
-
-    public BorderManagement BorderManagement { get; set; }
-
-
-    public BrushManagement BrushManagement { get; set; }
-
-
-    // !!!! prüfen ob sinnvoll und relevant, ggf. ersetzen
-    // später ggf. per Factory oder via Singleton, falls nötig
-    // ist für die option, im load des programms den view typ sauber
-    // instanzieren zu können.
-    private StandardTextView plugin = new StandardTextView();
-
-    public UserControl Plugin => plugin;
-
-
-    [ObservableProperty]
-    private CornerRadius cornerRadius;
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private int cornerRadiusValue;
-
-
-    partial void OnCornerRadiusValueChanged(int value)
-    {
-        BorderManagement.CornerRadius = new CornerRadius(value);
-    }
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private double height;
-
-    partial void OnHeightChanged(double value)
-    {
-        BorderManagement.Height = value;
-    }
-
-
-    [ObservableProperty]
-    private bool isSelected;
-
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private double width;
-
-    partial void OnWidthChanged(double value)
-    {
-        BorderManagement.Width = value;
-    }
-
-
-    [ObservableProperty]
-    private string pluginHeader = "Summoner";
-
-
-    [ObservableProperty]
-    private string pluginName = "Summoner";
-
-
-
-
     /// <summary>
-    /// until a real plugin architecture is implemented, this serves as a mockup solution
-    /// 
-    /// a real plugin architecture should check a folder for certain files or a file, in which
+    /// Gets or sets until a real brushManagement architecture is implemented, this serves as a mockup solution
+    ///
+    /// a real brushManagement architecture should check a folder for certain files or a file, in which
     /// data on plugins is stored, then all that data needs to be loaded and instanciated if
     /// necessary during app start
-    /// 
+    ///
     /// the ui should build menuitems dynamically from that data
     /// </summary>
     public List<string> PluginsCategoryElements { get; set; } = ["StandardText"];
 
-
     /// <summary>
-    /// until a real plugin architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real brushManagement architecture is implemented, this serves as a mockup solution
     /// </summary>
     public List<string> PluginsCategoryShapes { get; set; } = ["Ellipse", "Rectangle"];
 
-
     /// <summary>
-    /// until a real plugin architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real brushManagement architecture is implemented, this serves as a mockup solution
     /// </summary>
     public List<string> PluginsCategoryTools { get; set; } = [
         "SessionUptimeClock", "EmptyLinear", "EmptyRadial", "Summoner", "Uptime"];
-    #endregion
 
+    public override bool NoDefaultBorders { get; } = false;
 
-    public SummonerViewModel() => InstantiateProperties();
+    public override PluginCategories PluginCategory => PluginCategories.Tool;
 
+    public override ImageBrush PluginLogo { get; set; }
 
-    public bool ApplyBackgroundBrush(Brush brush)
+    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+
+    private string pluginHeader = "Summoner Element";
+
+    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+
+    private string pluginName = "Summoner";
+
+    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+
+    public override string ElementPluginName => "Summoner";
+
+    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
+
+    public override ResourceDictionary ResourceDictionary => new();
+
+    public override Type? ElementPluginModel => null;
+
+    public override Type ElementPluginView => typeof(SummonerView);
+
+    public override Type ElementPluginViewModel => typeof(SummonerViewModel);
+
+    public SummonerViewModel() => this.InstantiateProperties();
+
+    public void ChangeElementBackgroundToImage(BrushTargets brushTargets, string path)
     {
-        try
+        if (this.ImagePath != null && this.ImagePath != string.Empty)
         {
-            BrushManagement.Background = brush;
-
-            OnPropertyChanged(nameof(BrushManagement));
-
-            OnPropertyChanged(nameof(BrushManagement.Background));
-
-            return true;
-        }
-        catch (Exception)
-        {
-
-            return false;
+            this.Summonee?.ApplyBrush(new SharedMethod_UI().ChangeBackgroundToImage(this.Summonee.BrushManagement.Background, this.ImagePath), Enums.BrushTargets.Background);
         }
     }
-
-
-    public void ChangeElementBackgroundToImage()
-    {
-        if (ImagePath != null && ImagePath != string.Empty)
-        {
-            Summonee?.ApplyBackgroundBrush(new SharedMethod_UI().ChangeBackgroundToImage(Summonee.BrushManagement.Background, ImagePath));
-        }
-    }
-
-
 
     /// <summary>
     /// until a real command architecture is implemented, this serves as a mockup solution
-    /// 
+    ///
     /// a real command architecture should be done in a separate class or using an api that
     /// handles all validations etc. it should also have several usercontrols for different
     /// authorization levels, f.e. Request(from aeui) could include some display with output(stderr, stdout, internal logging)
     /// and allow for call of operations on elements or other stuff, f.e. Admin could be used to handle stuff, that requires
     /// some sort of security clearance, all that has low priority atm
-    /// 
+    ///
     /// validation could also use onerrorinfo with community toolkit, but i need to look into that first
     /// </summary>
     private bool CommandStringValidator(string commandString, out string category)
@@ -256,185 +180,154 @@ public partial class SummonerViewModel : ObservableObject, IPlugin, IElementSele
             return false;
         }
 
-        if (PluginsCategoryElements.Contains(commandString))
+        if (this.PluginsCategoryElements.Contains(commandString))
         {
             category = "Elements";
 
             return true;
         }
 
-        if (PluginsCategoryShapes.Contains(commandString))
+        if (this.PluginsCategoryShapes.Contains(commandString))
         {
             category = "Shapes";
 
             return true;
         }
 
-        if (PluginsCategoryTools.Contains(commandString))
+        if (this.PluginsCategoryTools.Contains(commandString))
         {
             category = "Tools";
 
             return true;
         }
 
-
         category = string.Empty;
 
         return false;
     }
 
-
-
     [RelayCommand]
     private void DeleteElement(object s)
     {
-        Summonee = null;
+        this.Summonee = null;
     }
-
 
     /// <summary>
     /// until a real command architecture is implemented, this serves as a mockup solution
-    /// 
+    ///
     /// a real command architecture should be done in a separate class or using an api that
     /// handles all validations etc.
-    /// 
+    ///
     /// validation could also use onerrorinfo with community toolkit, but i need to look into that first
     /// </summary>
     [RelayCommand]
     private void ExecuteCommandString()
     {
-        Width = double.NaN;
-        Height = double.NaN;
+        //this.Width = double.NaN;
+        //this.Height = double.NaN;
 
-        string command = UserCommandString.Substring(1);
+        string command = this.UserCommandString.Substring(1);
 
-        if (UserCommandString.StartsWith(">"))
+        if (this.UserCommandString.StartsWith(">"))
         {
-            if (CommandStringValidator(command, out string category))
+            if (this.CommandStringValidator(command, out string category))
             {
-                /// am besten separate plugin category listen führen, diese vergleichen und wo treffer,
+                /// am besten separate brushManagement category listen führen, diese vergleichen und wo treffer,
                 /// da instanzieren.
                 IPlugin? plugin = PluginFactory.GetPluginByCommand(category, command);
 
                 if (plugin is not null)
                 {
-                    Summonee = plugin;
+                    this.Summonee = plugin;
                     return;
                 }
             }
 
-            Summonee = new StandardTextViewModel() { Text = $"unknown plugin '{command}' called" };
+            this.Summonee = new StandardTextViewModel() { Text = $"unknown brushManagement '{command}' called" };
             return;
         }
 
-        Summonee = new StandardTextViewModel() { Text = $"unrecognized command" };
-
+        this.Summonee = new StandardTextViewModel() { Text = $"unrecognized command" };
     }
-
 
     private void InstantiateProperties()
     {
-        BorderManagement = new BorderManagement();
-        BrushManagement = new BrushManagement();
+        this.BorderManagement = new BorderManagement();
+        this.BrushManagement = new BrushManagement();
     }
 
-
-    public Task Load(string path, IElementDataSet elementDataSet)
+    public override Task<EBoardFeedbackMessage> Load(string path)
     {
-        return Task.CompletedTask;
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
     }
 
+    public override Task<EBoardFeedbackMessage> Save(string path)
+    {
+        //this.PluginDataSet.References.Add(new("Type", this.Summonee?.Plugin?.GetType().FullName));
+        //this.PluginDataSet.References.Add(new("Name", this.Summonee?.PluginName));
+        //this.PluginDataSet.References.Add(new("Header", this.Summonee?.PluginHeader));
+
+        //string contentDataPath = Path.Combine(path, linkDataFileName);
+
+        //var model = new LinkModel() { LinkTargetName = this.LinkTargetName, LinkTargetPath = this.LinkTargetPath };
+
+        //var serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, contentDataPath);
+
+        //if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        //{
+        //    // TODO do stuff
+        //}
+
+        //return serializationResult;
+
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
+    }
 
     [RelayCommand]
     private void ResetImage()
     {
-        ImagePath = string.Empty;
+        this.ImagePath = string.Empty;
 
-        Summonee.ApplyBackgroundBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush);
+        this.Summonee.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, Enums.BrushTargets.Background);
     }
-
-
-    public Task Save(string path, IElementDataSet elementDataSet)
-    {
-        PluginDataSet.References.Add(new("Type", Summonee?.Plugin?.GetType().FullName));
-        PluginDataSet.References.Add(new("Name", Summonee?.PluginName));
-        PluginDataSet.References.Add(new("Header", Summonee?.PluginHeader));
-
-        return Task.CompletedTask;
-    }
-
-
-    [RelayCommand]
-    public void Select()
-    {
-        IsSelected = !IsSelected;
-
-        Summonee?.SelectionChange(IsSelected);
-    }
-
-
-    public bool SelectionChange(bool isSelected)
-    {
-
-        if (isSelected)
-        {
-            BrushManagement.SwitchBorderToHighlight();
-
-            OnPropertyChanged(nameof(BrushManagement));
-
-            return true;
-        }
-
-        BrushManagement.SwitchBorderToBorder();
-
-        OnPropertyChanged(nameof(BrushManagement));
-
-        return false;
-    }
-
 
     [RelayCommand]
     private void SetImage()
     {
-        ImagePath = new SharedMethod_UI().SetBackgroundImage(ImagePath);
+        this.ImagePath = new SharedMethod_UI().SetBackgroundImage(this.ImagePath);
     }
-
 
     private void UpdateContentHeight(int height)
     {
-        if (Summonee is not null)
+        if (this.Summonee is not null)
         {
-            Summonee.Height = height;
+            //this.Summonee.Height = height;
         }
     }
-
 
     private void UpdateContentWidth(int width)
     {
-        if (Summonee is not null)
+        if (this.Summonee is not null)
         {
-            Summonee.Width = width;
+            //this.Summonee.Width = width;
         }
     }
-
 
     private void UpdateCornerRadius(int value)
     {
-        if (Summonee is not null)
+        if (this.Summonee is not null)
         {
-            Summonee.CornerRadiusValue = value;
+            // TODO update implementation
+            //Summonee.BorderManagement.CornerRadiusValue = value;
         }
     }
 
-
     private void UpdateRotation(int rotationAngle)
     {
-        RotateTransformValue = new RotateTransform(rotationAngle * -1);
+        this.RotateTransformValue = new RotateTransform(rotationAngle * -1);
 
-        TransformOriginPoint = new Point(0.5, 0.5);
+        this.TransformOriginPoint = new Point(0.5, 0.5);
 
-        Width = double.NaN;
+        //this.Width = double.NaN;
     }
-
-
 }// EOF

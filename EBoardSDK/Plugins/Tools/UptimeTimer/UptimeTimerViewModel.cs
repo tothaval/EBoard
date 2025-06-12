@@ -1,169 +1,103 @@
-﻿namespace EBoardSDK.Plugins.Tools.Uptime;
+﻿// <copyright file="UptimeTimerViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
 
-using EBoardSDK.Interfaces;
-using EBoardSDK.Models;
-using EBoardSDK.Plugins.Elements.StandardText;
+namespace EBoardSDK.Plugins.Tools.Uptime;
 
-using CommunityToolkit.Mvvm;
 using CommunityToolkit.Mvvm.ComponentModel;
-
+using EBoardSDK.Enums;
+using EBoardSDK.Models;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
-public partial class UptimeViewModel : ObservableObject, IPlugin
+public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
 {
     [ObservableProperty]
     private string clock;
 
     [ObservableProperty]
-    private string uptimeValue;
+    private string uptime;
 
+    private DispatcherTimer timer;
 
-    #region IPlugin properties
-
-    public BorderManagement BorderManagement { get; set; }
-
-
-    public BrushManagement BrushManagement { get; set; }
-
-
-    // !!!! prüfen ob sinnvoll und relevant, ggf. ersetzen
-    // später ggf. per Factory oder via Singleton, falls nötig
-    // ist für die option, im load des programms den view typ sauber
-    // instanzieren zu können.
-    private StandardTextView plugin = new StandardTextView();
-    public UserControl Plugin => plugin;
-
-
-    [ObservableProperty]
-    private CornerRadius cornerRadius;
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private int cornerRadiusValue;
-
-    partial void OnCornerRadiusValueChanged(int value)
-    {
-        BorderManagement.CornerRadius = new CornerRadius(value);
-    }
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private double height;
-
-    partial void OnHeightChanged(double value)
-    {
-        BorderManagement.Height = value;
-    }
-
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private double width;
-
-    partial void OnWidthChanged(double value)
-    {
-        BorderManagement.Width = value;
-    }
-
-    [ObservableProperty]
     private string pluginHeader = "Uptime";
 
-
-    [ObservableProperty]
     private string pluginName = "Uptime";
 
-    #endregion
+    public UptimeViewModel()
+    {
+        this.ElementScreenIntegrationConstraints = new ElementScreenIntegrationConstraints(ElementInstantiationPolicy.OnePerScreen);
 
+        //Task.Delay(500);
 
-    private DispatcherTimer _timer;
+        this.InstantiateProperties();
+    }
 
+    public override bool NoDefaultBorders { get; } = false;
 
-    public UptimeViewModel() => InstantiateProperties();
+    public override ImageBrush PluginLogo { get; set; }
 
+    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+
+    public override PluginCategories PluginCategory => PluginCategories.Tool;
+
+    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+
+    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+
+    public override string ElementPluginName => "Uptimer";
+
+    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
+
+    public override ResourceDictionary ResourceDictionary => new();
+
+    public override Type? ElementPluginModel => null;
+
+    public override Type ElementPluginView => typeof(UptimeView);
+
+    public override Type ElementPluginViewModel => typeof(UptimeViewModel);
+
+    public static string ToolTipMessage => "Days : Hours : Minutes : Seconds";
+
+    public override Task<EBoardFeedbackMessage> Load(string path)
+    {
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
+    }
+
+    public override Task<EBoardFeedbackMessage> Save(string path)
+    {
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
+    }
 
     private void InstantiateProperties()
     {
-        BorderManagement = new BorderManagement();
-        BrushManagement = new BrushManagement();
+        this.BorderManagement = new BorderManagement();
+        this.BrushManagement = new BrushManagement();
 
-        _timer = new DispatcherTimer();
-        _timer.Interval = TimeSpan.FromMilliseconds(200);
-        _timer.Tick += _timer_Tick; ;
+        this.timer = new DispatcherTimer();
+        this.timer.Interval = TimeSpan.FromMilliseconds(200);
+        this.timer.Tick += this.Timer_Tick;
 
-        _timer.Start();
+        this.timer.Start();
     }
-
 
     private void UpdateOutput()
     {
         long tickCountMs = Environment.TickCount64;
 
-        var uptime = TimeSpan.FromMilliseconds(tickCountMs);
+        var uptimeValue = TimeSpan.FromMilliseconds(tickCountMs);
         DateTime currentTime = DateTime.Now;
-        Clock = $"{DateTime.Now.ToLocalTime()}";
-        UptimeValue = $"{uptime.Hours:D2}:{uptime.Minutes:D2}:{uptime.Seconds:D2}";
+        this.Clock = $"{DateTime.Now.ToLocalTime()}";
+        this.Uptime = $"{uptimeValue.Days:D2}:{uptimeValue.Hours:D2}:{uptimeValue.Minutes:D2}:{uptimeValue.Seconds:D2}";
     }
 
-
-    private void _timer_Tick(object? sender, EventArgs e)
+    private void Timer_Tick(object? sender, EventArgs e)
     {
-        UpdateOutput();
+        this.UpdateOutput();
     }
+}
 
-    public bool ApplyBackgroundBrush(Brush brush)
-    {
-        try
-        {
-            BrushManagement.Background = brush;
-
-            OnPropertyChanged(nameof(BrushManagement));
-
-            OnPropertyChanged(nameof(BrushManagement.Background));
-
-            return true;
-        }
-        catch (Exception)
-        {
-
-            return false;
-        }
-    }
-
-
-    public Task Load(string path, IElementDataSet elementDataSet)
-    {
-        return Task.CompletedTask;
-    }
-
-
-    public Task Save(string path, IElementDataSet elementDataSet)
-    {
-        return Task.CompletedTask;
-    }
-
-
-    public bool SelectionChange(bool isSelected)
-    {
-
-        if (isSelected)
-        {
-            BrushManagement.SwitchBorderToHighlight();
-
-            OnPropertyChanged(nameof(BrushManagement));
-
-            return true;
-        }
-
-        BrushManagement.SwitchBorderToBorder();
-
-        OnPropertyChanged(nameof(BrushManagement));
-
-        return false;
-    }
-
-
-}// EOF
+// EOF

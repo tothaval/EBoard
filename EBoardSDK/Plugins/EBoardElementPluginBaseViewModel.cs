@@ -1,115 +1,160 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿// <copyright file="EBoardElementPluginBaseViewModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Plugins;
+
+using CommunityToolkit.Mvvm.ComponentModel;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
-using EBoardSDK.Models.DataSets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Serilog;
+using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
-namespace EBoardSDK.Plugins
+public abstract partial class EBoardElementPluginBaseViewModel : ObservableObject, IPlugin
 {
-    public abstract partial class EBoardElementPluginBaseViewModel : ObservableObject, IEBoardElement
+    private BorderManagement borderManagement = new();
+
+    private BrushManagement brushManagement = new();
+
+    public BorderManagement BorderManagement
     {
-        public PluginDataSet PluginDataSet { get; set; } = new ();
+        get { return this.borderManagement; }
 
-        public BorderManagement BorderManagement { get; set; } = new();
-
-        public BrushManagement BrushManagement { get; set; } = new();
-
-        public abstract UserControl Plugin { get; }
-
-        public abstract string PluginHeader { get; set; }
-        public abstract string PluginName { get; set; }
-
-        public abstract string ElementPluginName { get; }
-
-        public abstract Assembly? ElementPluginAssembly { get; }
-
-        public abstract Type? ElementPluginModel { get; }
-
-        public abstract Type ElementPluginView { get; }
-
-        public abstract Type ElementPluginViewModel { get; }
-
-        public abstract ResourceDictionary ResourceDictionary { get; }
-
-        [ObservableProperty]
-        private CornerRadius cornerRadius;
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(BorderManagement))]
-        private int cornerRadiusValue;
-
-
-        partial void OnCornerRadiusValueChanged(int value)
+        set
         {
-            BorderManagement.CornerRadius = new CornerRadius(value);
+            this.borderManagement = value;
+            this.OnPropertyChanged(nameof(this.BorderManagement));
+            this.OnPropertyChanged(nameof(this.Plugin));
         }
+    }
 
+    public BrushManagement BrushManagement
+    {
+        get { return this.brushManagement; }
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(BorderManagement))]
-        private double height;
-
-        partial void OnHeightChanged(double value)
+        set
         {
-            BorderManagement.Height = value;
+            this.brushManagement = value;
+            this.OnPropertyChanged(nameof(this.BrushManagement));
+            this.OnPropertyChanged(nameof(this.Plugin));
         }
+    }
 
+    public abstract Assembly? ElementPluginAssembly { get; }
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(BorderManagement))]
-        private double width;
+    public abstract Type? ElementPluginModel { get; }
 
-        partial void OnWidthChanged(double value)
+    public abstract string ElementPluginName { get; }
+
+    public abstract Type ElementPluginView { get; }
+
+    public abstract Type ElementPluginViewModel { get; }
+
+    public ElementScreenIntegrationConstraints? ElementScreenIntegrationConstraints { get; set; } = new ElementScreenIntegrationConstraints(ElementInstantiationPolicy.ValueNotSet);
+
+    public abstract bool NoDefaultBorders { get; }
+
+    public abstract UserControl Plugin { get; }
+
+    public abstract PluginCategories PluginCategory { get; }
+
+    public abstract ImageBrush PluginLogo { get; set; }
+
+    public abstract string PluginName { get; set; }
+
+    public abstract string PluginHeader { get; set; }
+
+    public abstract ResourceDictionary ResourceDictionary { get; }
+
+    public bool ApplyBrush(Brush brush, BrushTargets brushTargets)
+    {
+        try
         {
-            BorderManagement.Width = value;
-        }
-
-        public bool ApplyBackgroundBrush(Brush brush)
-        {
-            try
+            switch (brushTargets)
             {
-                BrushManagement.Background = brush;
+                case BrushTargets.Background:
+                    this.BrushManagement.Background = brush;
+                    this.OnPropertyChanged(nameof(this.BrushManagement.Background));
 
-                OnPropertyChanged(nameof(BrushManagement));
-
-                OnPropertyChanged(nameof(BrushManagement.Background));
-
-                return true;
-            }
-            catch (Exception)
-            {
-
-                return false;
-            }
-        }
-
-        public abstract Task Load(string path, IElementDataSet elementDataSet);
-
-        public abstract Task Save(string path, IElementDataSet elementDataSet);
-
-        public bool SelectionChange(bool isSelected)
-        {
-            if (isSelected)
-            {
-                BrushManagement.SwitchBorderToHighlight();
-
-                OnPropertyChanged(nameof(BrushManagement));
-
-                return true;
+                    break;
+                case BrushTargets.Border:
+                    this.BrushManagement.Border = brush;
+                    this.OnPropertyChanged(nameof(this.BrushManagement.Border));
+                    break;
+                case BrushTargets.Foreground:
+                    this.BrushManagement.Foreground = brush;
+                    this.OnPropertyChanged(nameof(this.BrushManagement.Foreground));
+                    break;
+                case BrushTargets.Highlight:
+                    this.BrushManagement.Highlight = brush;
+                    this.OnPropertyChanged(nameof(this.BrushManagement.Highlight));
+                    break;
+                default:
+                    break;
             }
 
-            BrushManagement.SwitchBorderToBorder();
+            this.OnPropertyChanged(nameof(this.BrushManagement));
+            this.OnPropertyChanged(nameof(this.Plugin));
 
-            OnPropertyChanged(nameof(BrushManagement));
-
+            return true;
+        }
+        catch (Exception)
+        {
             return false;
         }
     }
+
+    public bool ApplyRedraw()
+    {
+        this.OnPropertyChanged(nameof(this.BorderManagement));
+        this.OnPropertyChanged(nameof(this.BrushManagement));
+        this.OnPropertyChanged(nameof(this.Plugin));
+
+        return true;
+    }
+
+    public async Task<bool> Initialize()
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(this.PluginName))
+            {
+                return false;
+            }
+
+            var path = await new Runner().GetConfigPathsAsync();
+
+            var resourcestring = Path.Combine(path.PluginFolder, $"{this.PluginName}_Logo.png");
+
+            var imagefile = new FileInfo(resourcestring);
+
+            if (!imagefile.Exists)
+            {
+                return false;
+            }
+
+            var imagesource = new BitmapImage(new Uri(imagefile.FullName));
+
+            this.PluginLogo = new ImageBrush(imagesource);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+            //throw;
+        }
+
+        return false;
+    }
+
+    public abstract Task<EBoardFeedbackMessage> Load(string path);
+
+    public abstract Task<EBoardFeedbackMessage> Save(string path);
 }

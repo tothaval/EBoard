@@ -1,4 +1,8 @@
-﻿using System.Windows.Controls;
+﻿// <copyright file="EllipseView.xaml.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using System.Windows.Controls;
 
 namespace EBoardSDK.Plugins.Shapes.Ellipse
 {
@@ -9,7 +13,7 @@ namespace EBoardSDK.Plugins.Shapes.Ellipse
     {
         public EllipseView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

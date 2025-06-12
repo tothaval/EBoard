@@ -1,4 +1,8 @@
-﻿using System.Windows.Controls;
+﻿// <copyright file="UptimeTimerView.xaml.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+using System.Windows.Controls;
 
 namespace EBoardSDK.Plugins.Tools.Uptime
 {
@@ -9,7 +13,7 @@ namespace EBoardSDK.Plugins.Tools.Uptime
     {
         public UptimeView()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

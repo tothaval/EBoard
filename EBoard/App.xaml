@@ -7,20 +7,12 @@
 
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-
-                <ResourceDictionary Source="Styles/Button.xaml"/>
-                <ResourceDictionary Source="Styles/Menu.xaml"/>
-
-                <ResourceDictionary Source="Utilities/DataTemplate.xaml"/>
-                
+                <ResourceDictionary Source="/EBoardSDK;component/Styles/Button.xaml"/>
+                <ResourceDictionary Source="/EBoardSDK;component/Styles/Menu.xaml"/>
+                <ResourceDictionary Source="/EBoardSDK;component/Utilities/DataTemplate.xaml"/>
                 <ResourceDictionary Source="/EBoardSDK;component/Plugins/PluginManifest.xaml"/>
-
-                <!--<ResourceDictionary Source="/EBoardElementPluginLinker;component/ElementPluginResourceDictionary.xaml"/>-->
-
             </ResourceDictionary.MergedDictionaries>
-            
-            
         </ResourceDictionary>
-        
+
     </Application.Resources>
 </Application>

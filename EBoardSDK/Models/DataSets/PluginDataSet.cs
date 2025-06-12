@@ -1,4 +1,8 @@
-﻿namespace EBoardSDK.Models.DataSets;
+﻿// <copyright file="PluginDataSet.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+namespace EBoardSDK.Models.DataSets;
 
 [Serializable]
 public class PluginDataSet
@@ -9,7 +13,6 @@ public class PluginDataSet
 
     public List<References> References { get; set; } = new List<References>();
 }
-
 
 public record References(string Key, string Value);
 

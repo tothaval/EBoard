@@ -8,20 +8,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <Border Background="{Binding BrushManagement.Background, NotifyOnSourceUpdated=True}"
-            BorderBrush="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"
-            BorderThickness="{Binding BorderManagement.BorderThickness, NotifyOnSourceUpdated=True}"
-            CornerRadius="{Binding BorderManagement.CornerRadius}"           
-
-            Padding="{Binding BorderManagement.Padding}"
-            MinHeight="60"
-            MinWidth="60"
-            Width="{Binding BorderManagement.Width, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-            Height="{Binding BorderManagement.Height, UpdateSourceTrigger=PropertyChanged, NotifyOnSourceUpdated=True}"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
-
-
         <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch"
                      Margin="{Binding BorderManagement.Margin}">
@@ -175,6 +161,5 @@
             </Border>
 
         </Grid>
-    </Border>
 
 </UserControl>

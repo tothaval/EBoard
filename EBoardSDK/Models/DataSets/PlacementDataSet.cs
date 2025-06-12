@@ -1,11 +1,14 @@
-﻿/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *  
- *  PlacementDataSet 
- * 
+﻿// <copyright file="PlacementDataSet.cs" company=".">
+// Stephan Kammel
+// </copyright>
+
+/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
+ *
+ *  PlacementDataSet
+ *
  *  serializable helper class to store and retrieve placement related data to
  *  or from hard drive storage.
  */
-using EBoardSDK.Models;
 using System.Windows;
 using System.Xml.Serialization;
 
@@ -19,32 +22,27 @@ public class PlacementDataSet
 
     public double Angle { get; set; }
 
-
     public Point Position { get; set; }
-
 
     public int Z { get; set; }
 
-
     public PlacementDataSet()
     {
-
     }
-
 
     public PlacementDataSet(PlacementManagement placementManagement)
     {
-        _PlacementManagement = placementManagement;
+        this._PlacementManagement = placementManagement;
 
-        if (_PlacementManagement == null)
+        if (this._PlacementManagement == null)
         {
-            _PlacementManagement = new PlacementManagement();
+            this._PlacementManagement = new PlacementManagement();
         }
 
-        Angle = placementManagement.Angle;
-        Position = placementManagement.Position;
-        Z = placementManagement.Z;
-
+        this.Angle = placementManagement.Angle;
+        this.Position = placementManagement.Position;
+        this.Z = placementManagement.Z;
     }
 }
+
 // EOF

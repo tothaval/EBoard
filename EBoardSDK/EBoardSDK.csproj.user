@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <Compile Update="Controls\QuadValueSetup\QuadValueSetupView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\SolidColorBrushSetup\SolidColorBrushSetupView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Addons\EEP_SoundMix\SoundMixMainView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Plugins\Elements\Image\ImageView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>
