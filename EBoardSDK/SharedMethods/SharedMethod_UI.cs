@@ -4,8 +4,11 @@
 
 namespace EBoardSDK.SharedMethods;
 
+using EBoardSDK.Controls;
 using EBoardSDK.Controls.QuadValueSetup;
+using EBoardSDK.Enums;
 using EBoardSDK.Models;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -13,6 +16,10 @@ using System.Windows.Media.Imaging;
 public class SharedMethod_UI
 {
     public SolidColorBrush ImagePathErrorDefaultBrush => new SolidColorBrush(Colors.White);
+
+    private string txtShutDownQuestion = "Do you want to power down your physical hardware?";
+
+    private string txtShutDownTitle = "Shutdown machine?";
 
     public Brush ChangeBackgroundToImage(Brush brush, string imagePath)
     {
@@ -49,9 +56,14 @@ public class SharedMethod_UI
         Application.Current.Shutdown();
     }
 
-    public QuadValueSetupViewModel BuildQuadValueSetup(QuadValue<int> quadValue, Action action)
+    public SolidColorBrushSetupViewModel BuildSolidColorBrushSetup(BrushManagement brushManagement, BrushTargets brushTargets, Action okResult)
     {
-        return new QuadValueSetupViewModel(quadValue, action);
+        return new SolidColorBrushSetupViewModel(brushManagement, brushTargets, okResult);
+    }
+
+    public QuadValueSetupViewModel BuildQuadValueSetup(QuadValue<int> quadValue, Action action, BrushManagement brushManagement)
+    {
+        return new QuadValueSetupViewModel(quadValue, action, brushManagement);
     }
 
     public void MaximizeApplication(Window mainWindow)
@@ -87,5 +99,15 @@ public class SharedMethod_UI
         }
 
         return imagePathProperty;
+    }
+
+    public void ShutDownMachine()
+    {
+        MessageBoxResult result = MessageBox.Show(this.txtShutDownQuestion, this.txtShutDownTitle, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+        if (result == MessageBoxResult.Yes)
+        {
+            string command = "/C shutdown /p";
+            Process.Start("cmd.exe", command);
+        }
     }
 }

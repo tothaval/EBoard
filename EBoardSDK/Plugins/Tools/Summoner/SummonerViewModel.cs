@@ -101,9 +101,9 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     }
 
     /// <summary>
-    /// Gets or sets until a real plugin architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real brushManagement architecture is implemented, this serves as a mockup solution
     ///
-    /// a real plugin architecture should check a folder for certain files or a file, in which
+    /// a real brushManagement architecture should check a folder for certain files or a file, in which
     /// data on plugins is stored, then all that data needs to be loaded and instanciated if
     /// necessary during app start
     ///
@@ -112,12 +112,12 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     public List<string> PluginsCategoryElements { get; set; } = ["StandardText"];
 
     /// <summary>
-    /// Gets or sets until a real plugin architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real brushManagement architecture is implemented, this serves as a mockup solution
     /// </summary>
     public List<string> PluginsCategoryShapes { get; set; } = ["Ellipse", "Rectangle"];
 
     /// <summary>
-    /// Gets or sets until a real plugin architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real brushManagement architecture is implemented, this serves as a mockup solution
     /// </summary>
     public List<string> PluginsCategoryTools { get; set; } = [
         "SessionUptimeClock", "EmptyLinear", "EmptyRadial", "Summoner", "Uptime"];
@@ -232,7 +232,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
         {
             if (this.CommandStringValidator(command, out string category))
             {
-                /// am besten separate plugin category listen führen, diese vergleichen und wo treffer,
+                /// am besten separate brushManagement category listen führen, diese vergleichen und wo treffer,
                 /// da instanzieren.
                 IPlugin? plugin = PluginFactory.GetPluginByCommand(category, command);
 
@@ -243,7 +243,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
                 }
             }
 
-            this.Summonee = new StandardTextViewModel() { Text = $"unknown plugin '{command}' called" };
+            this.Summonee = new StandardTextViewModel() { Text = $"unknown brushManagement '{command}' called" };
             return;
         }
 

@@ -18,15 +18,16 @@ namespace EBoardSDK.Controls
             this.InitializeComponent();
         }
 
-        //public SolidColorBrush ColorBrush
-        //{
-        //    get { return (SolidColorBrush)GetValue(SolidColorBrushProperty); }
-        //    set { SetValue(SolidColorBrushProperty, value); }
-        //}
+        public Style ButtonStyle
+        {
+            get { return (Style)GetValue(ButtonStyleProperty); }
+            set { SetValue(ButtonStyleProperty, value); }
+        }
 
-        //// Using a DependencyProperty as the backing store for SolidColorBrush.  This enables animation, styling, binding, etc...
-        //public static readonly DependencyProperty SolidColorBrushProperty =
-        //    DependencyProperty.Register("ColorBrush", typeof(SolidColorBrush), typeof(SolidColorBrushSetup), new PropertyMetadata(new SolidColorBrush()));
+        // Using a DependencyProperty as the backing store for ButtonStyle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ButtonStyleProperty =
+            DependencyProperty.Register("ButtonStyle", typeof(Style), typeof(SolidColorBrushSetup), new PropertyMetadata(null));
+
 
         public ICommand OKCommand
         {

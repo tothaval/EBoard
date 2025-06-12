@@ -1,19 +1,19 @@
 ﻿// <copyright file="SplashScreen.xaml.cs" company=".">
 // Stephan Kammel
 // </copyright>
+namespace EBoard;
 
 using System.Windows;
 
-namespace EBoard
+/// <summary>
+/// Interaktionslogik für SplashScreen.xaml .
+/// </summary>
+public partial class SplashScreen : Window
 {
-    /// <summary>
-    /// Interaktionslogik für SplashScreen.xaml
-    /// </summary>
-    public partial class SplashScreen : Window
+    public SplashScreen()
     {
-        public SplashScreen()
-        {
-            this.InitializeComponent();
-        }
+        this.InitializeComponent();
     }
 }
+
+// EOF

@@ -2,7 +2,6 @@
 // Stephan Kammel
 // </copyright>
 
-using CommunityToolkit.Mvvm.ComponentModel;
 using EBoardSDK.Enums;
 
 namespace EBoardSDK.Interfaces.ScreenIntegration;

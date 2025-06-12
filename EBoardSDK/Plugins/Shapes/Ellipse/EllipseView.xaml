@@ -9,8 +9,8 @@
              d:DesignHeight="450" d:DesignWidth="800">
         
     <Ellipse
-        Fill="{Binding BrushManagement.Background}"
-        StrokeThickness="{Binding BorderManagement.BorderThickness}"
+        Fill="{Binding BrushManagement.Background, NotifyOnSourceUpdated=True}"
+        StrokeThickness="{Binding BorderManagement.BorderThickness, NotifyOnSourceUpdated=True}"
         Stroke="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"
         
         MinWidth="10"

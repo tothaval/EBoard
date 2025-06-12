@@ -67,36 +67,6 @@ public partial class ResistorCalculatorViewModel : EBoardElementPluginBaseViewMo
 
     }
 
-    //public new bool Initialize()
-    //{
-    //    try
-    //    {
-    //        if (string.IsNullOrWhiteSpace(this.PluginName))
-    //        {
-    //            return false;
-    //        }
-
-    //        var resourcestring = $"{PluginName}_Logo.png";
-
-    //        var imagefile = new FileInfo(resourcestring);
-
-    //        if (!imagefile.Exists)
-    //        {
-    //            return false;
-    //        }
-
-    //        var imagesource = new BitmapImage(new Uri(imagefile.FullName));
-
-    //        this.PluginLogo = new ImageBrush(imagesource);
-
-    //        return true;
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        Log.Error(ex.Message);
-    //        //throw;
-    //    }
-
-    //    return false;
-    //}
 }
+
+// EOF

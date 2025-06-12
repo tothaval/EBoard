@@ -75,10 +75,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
@@ -95,6 +91,7 @@
     <ProjectReference Include="..\EBoardElementPluginMyNote\EBoardElementPluginMyNote\EBoardElementPluginMyNote.csproj" />
     <ProjectReference Include="..\EBoardSDK\EBoardSDK.csproj" />
     <ProjectReference Include="..\__EboardElementPlugins\EEP_BudgetWatcher\EEP_BudgetWatcher\EEP_BudgetWatcher.csproj" />
+    <ProjectReference Include="..\__EboardElementPlugins\EEP_Drives\EEP_Drives.csproj" />
     <ProjectReference Include="..\__EboardElementPlugins\EEP_ResistorCalculator\EEP_ResistorCalculator\EEP_ResistorCalculator.csproj" />
   </ItemGroup>
 

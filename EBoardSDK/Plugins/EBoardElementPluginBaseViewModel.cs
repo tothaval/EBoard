@@ -18,9 +18,9 @@ using System.Windows.Media.Imaging;
 
 public abstract partial class EBoardElementPluginBaseViewModel : ObservableObject, IPlugin
 {
-    private BorderManagement borderManagement = new ();
+    private BorderManagement borderManagement = new();
 
-    private BrushManagement brushManagement = new ();
+    private BrushManagement brushManagement = new();
 
     public BorderManagement BorderManagement
     {

@@ -10,49 +10,5 @@
     <Compile Update="SplashScreen.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\EBoardBrowserView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\EBoardView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\ElementView.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\MainWindowLogoutBar.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\MainWindowMenuBar.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="MainWindow.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Styles\Button.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Styles\Menu.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Utilities\DataTemplate.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\EBoardBrowserView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\EBoardView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\ElementView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\MainWindowLogoutBar.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Views\MainWindowMenuBar.xaml">
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
 </Project>

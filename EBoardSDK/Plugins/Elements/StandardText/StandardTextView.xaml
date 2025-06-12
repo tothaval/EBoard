@@ -9,28 +9,41 @@
              d:DesignHeight="450" d:DesignWidth="800"
              >
 
+    <UserControl.Resources>
+        <Style TargetType="Label" >
+            <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+        
+        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
+            <Setter Property="BorderBrush" Value="{Binding BrushManagement.Border}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding BrushManagement.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
+            <Setter Property="Background" Value="{Binding BrushManagement.Background}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{Binding BrushManagement.Highlight}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+    
     <Border>
 
         <Border.ContextMenu>
 
-            <ContextMenu>
-                <MenuItem Header="Text">
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="FontSize"
-                                           MinWidth="50"/>
-                        <Label Content="{Binding FontSize, NotifyOnSourceUpdated=True}"
-                               MinWidth="35"/>
-                        <Slider Value="{Binding FontSize, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="7"
-                            Maximum="80"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-                    </WrapPanel>
-                </MenuItem>
-                <MenuItem Header="Title">
+            <ContextMenu Background="{Binding BrushManagement.Background}"
+                         Foreground="{Binding BrushManagement.Foreground}"
+                         BorderBrush="{Binding BrushManagement.Border}"
+                         Style="{StaticResource ContextMenuStyle}">
+                <MenuItem Header="Title" Style="{StaticResource menuitem}">
                     <WrapPanel Orientation="Horizontal">
                         <Label Content="FontSize"
                                            MinWidth="50"/>
@@ -46,6 +59,23 @@
                             Orientation="Horizontal"/>
                     </WrapPanel>
                     </MenuItem>
+                
+                <MenuItem Header="Text" Style="{StaticResource menuitem}">
+                    <WrapPanel Orientation="Horizontal">
+                        <Label Content="FontSize"
+                                           MinWidth="50"/>
+                        <Label Content="{Binding FontSize, NotifyOnSourceUpdated=True}"
+                               MinWidth="35"/>
+                        <Slider Value="{Binding FontSize, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="7"
+                            Maximum="80"
+                            MinWidth="100"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                    </WrapPanel>
+                </MenuItem>
             </ContextMenu>
         </Border.ContextMenu>
         <Grid HorizontalAlignment="Stretch"

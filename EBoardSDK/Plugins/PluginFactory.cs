@@ -29,7 +29,7 @@ internal static class PluginFactory
 
         if (pluginViewInstance is not null && plugin is not null)
         {
-            // TODO plugin is not the viewmodel
+            // TODO brushManagement is not the viewmodel
             pluginViewInstance.DataContext = plugin;
 
             return plugin;

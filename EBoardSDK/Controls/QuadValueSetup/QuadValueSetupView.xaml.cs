@@ -18,6 +18,16 @@ namespace EBoardSDK.Controls.QuadValueSetup
             this.InitializeComponent();
         }
 
+        public Style ButtonStyle
+        {
+            get { return (Style)GetValue(ButtonStyleProperty); }
+            set { SetValue(ButtonStyleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ButtonStyle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ButtonStyleProperty =
+            DependencyProperty.Register("ButtonStyle", typeof(Style), typeof(QuadValueSetupView), new PropertyMetadata(null));
+
         public int Maximum
         {
             get { return (int)this.GetValue(MaximumProperty); }
