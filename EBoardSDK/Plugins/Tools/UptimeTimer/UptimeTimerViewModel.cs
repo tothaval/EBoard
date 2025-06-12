@@ -31,7 +31,7 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
     {
         this.ElementScreenIntegrationConstraints = new ElementScreenIntegrationConstraints(ElementInstantiationPolicy.OnePerScreen);
 
-        Task.Delay(500);
+        //Task.Delay(500);
 
         this.InstantiateProperties();
     }
@@ -74,13 +74,12 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
 
     private void InstantiateProperties()
     {
-
         this.BorderManagement = new BorderManagement();
         this.BrushManagement = new BrushManagement();
 
         this.timer = new DispatcherTimer();
         this.timer.Interval = TimeSpan.FromMilliseconds(200);
-        this.timer.Tick += this.Timer_Tick; ;
+        this.timer.Tick += this.Timer_Tick;
 
         this.timer.Start();
     }

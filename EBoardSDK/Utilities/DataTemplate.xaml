@@ -1,0 +1,41 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:eboard="clr-namespace:EBoardSDK"
+                    xmlns:vms="clr-namespace:EBoardSDK.ViewModels"
+                    xmlns:views="clr-namespace:EBoardSDK.Views"
+                    xmlns:esdkctrl_quadsetup ="clr-namespace:EBoardSDK.Controls.QuadValueSetup"                    
+                    xmlns:esdkctrl ="clr-namespace:EBoardSDK.Controls">
+
+    <DataTemplate DataType="{x:Type eboard:MainViewModel}">
+        <eboard:MainWindow/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vms:MainWindowMenuBarViewModel}">
+        <views:MainWindowMenuBar/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vms:MainWindowLogoutBarViewModel}">
+        <views:MainWindowLogoutBar/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vms:EBoardBrowserViewModel}">
+        <views:EBoardBrowserView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type vms:EBoardViewModel}">
+        <views:EBoardView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type esdkctrl:SolidColorBrushSetupViewModel}">
+        <esdkctrl:SolidColorBrushSetup/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type esdkctrl_quadsetup:QuadValueSetupViewModel}">
+        <esdkctrl_quadsetup:QuadValueSetupView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="vms:ElementViewModel">
+        <views:ElementView/>
+    </DataTemplate>
+
+</ResourceDictionary>

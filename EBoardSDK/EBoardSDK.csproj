@@ -51,6 +51,21 @@
     <Compile Update="Plugins\Tools\UptimeTimer\UptimeTimerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\EBoardBrowserView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\EBoardView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ElementView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\MainWindowLogoutBar.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\MainWindowMenuBar.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

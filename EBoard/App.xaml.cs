@@ -8,7 +8,7 @@
  */
 namespace EBoard;
 
-using EBoard.ViewModels;
+using EBoardSDK.ViewModels;
 using EBoardConfigManager.Models;
 using EBoardSDK;
 using EBoardSDK.Models;
@@ -36,6 +36,8 @@ public partial class App : Application
 
         base.OnExit(e);
     }
+
+    public SplashScreenViewModel splashScreenViewModel { get; set; }
 
     protected async override void OnStartup(StartupEventArgs e)
     {
@@ -79,22 +81,23 @@ public partial class App : Application
                 rollOnFileSizeLimit: true)
             .CreateLogger();
 #endif
-
-            SplashScreen splashScreen = new SplashScreen();
-            splashScreen.Show();
-
             CommunityToolkit.Mvvm.DependencyInjection.Ioc.Default.ConfigureServices(
                 new ServiceCollection()
                     .AddSingleton<Runner>()
                     .BuildServiceProvider());
 
+            this.splashScreenViewModel = new SplashScreenViewModel();
+            SplashScreen splashScreen = new SplashScreen() { DataContext = this.splashScreenViewModel, SizeToContent = SizeToContent.WidthAndHeight };
+
+            splashScreen.Show();
+
             var eboardSdk = new Runner();
 
-            var setup = await eboardSdk.Run();
+            var setup = eboardSdk.Run().Result;
 
             var config = await eboardSdk.GetConfigAsync(true);
 
-            config = await eboardSdk.GetPlugins(config);
+            config = await eboardSdk.GetPluginsAsync(config);
 
             var screens = await eboardSdk.GetScreensAsync();
 
@@ -104,19 +107,27 @@ public partial class App : Application
 
             MainWindow mainWindow = new MainWindow(this.mainViewModel);
 
-            await this.EBoardConfigInitialization(mainWindow, config);
+            _ = await this.EBoardConfigInitialization(mainWindow, config);
 
-            splashScreen.Close();
             mainWindow.Show();
 
-            base.OnStartup(e);
+            splashScreen.Close();
 
-            Log.Information("Eboard");
+            base.OnStartup(e);
         }
         catch (Exception ex)
         {
             Log.Error(ex, string.Join("\n", "Unhandled exception", ex.Message));
         }
+    }
+
+    public string CreateLogEventAsync(string v)
+    {
+        Log.Information(v);
+
+        this.splashScreenViewModel.LogMessage = v;
+
+        return v;
     }
 
     private Task<EboardConfig?> EBoardConfigInitialization(MainWindow mainWindow, EboardConfig eboardConfig)

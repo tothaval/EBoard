@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:EEP_Drives">
+
+    <DataTemplate DataType="{x:Type local:DrivesViewModel}">
+        <local:DrivesView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type local:DriveInfoView}">
+        <local:DrivesView/>
+    </DataTemplate>
+
+    <ImageBrush ImageSource="/EEP_Drives;component/Drives_Logo.png"              
+                x:Key="Drives_Logo"/>
+
+    <Style TargetType="TextBox" x:Key="txtbx">
+        <Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="IsReadOnlyCaretVisible" Value="True"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
+        <Setter Property="FontSize" Value="15"/>
+    </Style>
+
+</ResourceDictionary>

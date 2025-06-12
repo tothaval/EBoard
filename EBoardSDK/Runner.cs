@@ -110,7 +110,7 @@ public class Runner
         return string.Empty;
     }
 
-    public async Task<EboardConfig> GetPlugins(EboardConfig eboardConfig)
+    public async Task<EboardConfig> GetPluginsAsync(EboardConfig eboardConfig)
     {
         var configPaths = await this.GetConfigPathsAsync();
 
@@ -191,10 +191,14 @@ public class Runner
         IList<EBoardFeedbackMessage> feedbackMessages = [];
         var screensPath = this.GetConfigPathsAsync().Result.ScreensFolder;
 
+        if (Directory.Exists(screensPath))
+        {
+            _ = new ConfigurationSetup().CleanFolderAsync(screensPath);
+        }
+
         eboardScreens.AsParallel().ForAll(
            async escreen =>
            {
-               //eboard.screen
                var filename = string.Join("", this.PresetFilenames.ScreensFilename.Replace("eboard", escreen.EBID));
 
                var path = Path.Combine(screensPath, filename);
@@ -202,7 +206,6 @@ public class Runner
                var result = Saver.SaveJsonFile<EboardScreen>(path, escreen);
 
                // do saving of elements, after creating the required folder
-
                var elementfolderpath = Path.Combine(screensPath, escreen.EBID);
 
                var configsetup = new ConfigurationSetup();

@@ -4,14 +4,20 @@
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardSDK.Enums;
+using EBoardSDK.Models;
 using System.Windows.Media;
 
 namespace EBoardSDK.Controls
 {
-    public partial class SolidColorBrushSetupViewModel : ObservableObject
+    public partial class SolidColorBrushSetupViewModel : ObservableObject, IDisposable
     {
         [ObservableProperty]
         private SolidColorBrush colorBrush;
+
+
+        [ObservableProperty]
+        private string colorStringValue;
 
         [ObservableProperty]
         private Color colorValue;
@@ -19,6 +25,8 @@ namespace EBoardSDK.Controls
         partial void OnColorValueChanged(Color value)
         {
             ColorBrush = new SolidColorBrush(value);
+
+            ColorStringValue = value.ToString();
         }
 
         [ObservableProperty]
@@ -71,13 +79,38 @@ namespace EBoardSDK.Controls
             this.okAction?.Invoke();
         }
 
-        public SolidColorBrushSetupViewModel(SolidColorBrush thebeforebrush, Action okResult)
+        private readonly BrushManagement brushManagement;
+
+        public BrushManagement BrushManagement => this.brushManagement;
+
+        public SolidColorBrushSetupViewModel(BrushManagement brushManagement, BrushTargets brushTargets, Action okResult)
         {
+            this.brushManagement = brushManagement;
             this.okAction = okResult;
 
-            this.ColorBrush = thebeforebrush;
+            Brush brush = new SolidColorBrush();
 
-            var c = thebeforebrush.Color;
+            switch (brushTargets)
+            {
+                case BrushTargets.Background:
+                    brush = brushManagement.Background;
+                    break;
+                case BrushTargets.Border:
+                    brush = brushManagement.Border;
+                    break;
+                case BrushTargets.Foreground:
+                    brush = brushManagement.Foreground;
+                    break;
+                case BrushTargets.Highlight:
+                    brush = brushManagement.Highlight;
+                    break;
+                default:
+                    break;
+            }
+
+            this.ColorBrush = brush.GetType().Equals(typeof(SolidColorBrush)) ? (SolidColorBrush)brush : new SolidColorBrush();
+
+            var c = this.ColorBrush.Color;
 
             this.AlphaValue = c.A;
 
@@ -88,6 +121,20 @@ namespace EBoardSDK.Controls
             this.RedValue = c.R;
             this.GreenValue = c.G;
             this.BlueValue = c.B;
+
+            this.BrushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
+        }
+
+        public void Dispose()
+        {
+            this.BrushManagement.PropertyChangedEvent -= this.BrushManagement_PropertyChangedEvent;
+
+            GC.SuppressFinalize(this);
+        }
+
+        private void BrushManagement_PropertyChangedEvent()
+        {
+            this.OnPropertyChanged(nameof(this.BrushManagement));
         }
     }
 }

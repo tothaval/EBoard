@@ -42,8 +42,8 @@ namespace EBoardSDK.Models
         public string PluginHeader { get; set; } = string.Empty;
 
         // unification effort due to reduction, build abstraction layer can be removed and simplified
-        // loading can be simplified, but element as plugin container needs some rework
-        // every plugin can implement certain features, and maybe should be required to do so.
+        // loading can be simplified, but element as brushManagement container needs some rework
+        // every brushManagement can implement certain features, and maybe should be required to do so.
         public string PluginName { get; set; } = string.Empty;
 
         public string PluginType { get; set; } = string.Empty;

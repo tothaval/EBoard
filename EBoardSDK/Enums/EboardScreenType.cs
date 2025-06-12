@@ -11,6 +11,7 @@ public enum EboardScreenType
     AdministrationBoard,
     CreativityBoard,
     CustomBoard,
+    DockingBoard,
     DrawingBoard,
     EbookBoard,
     EducationalBoard,
