@@ -1,3 +1,4 @@
+
 the current state of the project is work in progress<br>
 many areas of the code are not yet refactored, simple or robust, there are duplications and other bad elements
 many features are training exercises or experiments and are hacked as mockups until better implementations are at hand
@@ -9,13 +10,20 @@ updating this readme will also be done in an upcoming update<br><br>
 EBoard is a successor to AEUI (2024, Aiding Elements User Interface) and YSUI (2022, YRS, Your Startup UI) and will be created using the MVVM pattern and C#/WPF<br><br>
 
 Current Features:<br><br>
-
-top Buttons<br>
-'Off' button on top closes the application, there is no warning!<br><br>
-
-'Eboard Browser' shows or hides eboardbrowser view, which is an overview over all existing eboard instances and it allows to create, edit or delete eboard instances<br><br>
-
-the currently selected eboard instance is basically a WPF canvas. any number of eboards with any size, depth and name can be instantiated, to instantiate a new eboard, use 'AddEBoard' button in eboard browser, eboards can be switched clicking on the small eboard representation within the eboard browser. the background in the selection field is that of the eboard instance.
+top Buttons
+<br>
+'Off' button on top closes the application, there is no warning!
+<br>
+<br>
+'Eboard Browser' shows or hides eboardbrowser view, which is an overview over all existing eboard instances and
+it allows to create, edit or delete eboard instances
+<br>
+<br>
+the currently selected eboard instance is basically a WPF canvas. any number of eboards with any size, depth and
+name can be instantiated, to instantiate a new eboard, use 'AddEBoard' button in eboard browser, eboards can be
+switched clicking on the small eboard representation within the eboard browser. 
+the background in the selection field is that of the eboard instance.
+<br>
 <br>
 '+Elements' opens a menu to instantiate container elements
 <br>
