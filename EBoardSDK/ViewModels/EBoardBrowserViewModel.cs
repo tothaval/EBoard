@@ -15,7 +15,6 @@ namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.ViewModels;
 using EBoardSDK.Controls;
 using EBoardSDK.Controls.QuadValueSetup;
 using EBoardSDK.Enums;
@@ -105,12 +104,14 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
 
     public ObservableCollection<EBoardViewModel> EBoards
     {
-        get { return this.eboards; }
+        get
+        {
+            return this.eboards;
+        }
 
         set
         {
             this.eboards = value;
-
             if (this.eboards.Count == 0)
             {
                 this.eboards.Clear();
@@ -193,7 +194,7 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
     {
         if (this.EBoardName == null)
         {
-            this.EBoardName = "";
+            this.EBoardName = string.Empty;
         }
 
         var eboardScreen = EBoardFactory.GetNewEboardScreen(this.EBoardName, this.EBoardDepth, this.NewEBoardWidth, this.NewEBoardHeight);

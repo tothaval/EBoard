@@ -11,56 +11,41 @@
     <UserControl.Resources>
         <utils:DateConverter x:Key="DateTimeConverter"/>
 
-
-
-
         <CornerRadius x:Key="Radius">15</CornerRadius>
         <CornerRadius x:Key="NoteRadius">15</CornerRadius>
 
         <sys:Double x:Key="FontSize">11.0</sys:Double>
-
 
         <Style TargetType="{x:Type Button}" x:Key="DefaultButton">
             <Setter Property="MinWidth" Value="25"/>
             <Setter Property="MinHeight" Value="25"/>
         </Style>
 
-
         <Style TargetType="{x:Type RichTextBox}" x:Key="HeaderRichTextBox">
-
-
         </Style>
 
         <Style TargetType="{x:Type RichTextBox}" x:Key="ContentRichTextBox">
-
-
         </Style>
 
         <Style TargetType="{x:Type RichTextBox}" x:Key="DateTimeRichTextBox">
-
-
         </Style>
-
-
 
         <Style TargetType="{x:Type TextBox}" x:Key="HeaderTextBox">
             <Setter Property="FontSize" Value="{DynamicResource HeaderFontSize}"/>
-
         </Style>
 
         <Style TargetType="{x:Type TextBox}" x:Key="ContentTextBox">
             <Setter Property="FontSize" Value="{DynamicResource ContentFontSize}"/>
-
-
         </Style>
 
         <Style TargetType="{x:Type TextBlock}" x:Key="DateTimeTextBlock">
             <Setter Property="FontSize" Value="{DynamicResource DateTimeFontSize}"/>
         </Style>
     </UserControl.Resources>
+    
     <Border BorderBrush="AntiqueWhite"
-                BorderThickness="5"
-                CornerRadius="{DynamicResource NoteRadius}"
+            BorderThickness="5"
+            CornerRadius="{DynamicResource NoteRadius}"
             Margin="0"
             Padding="0">
         <Border x:Name="MainBorder"
@@ -72,7 +57,7 @@
                     Background="Black"
                     SnapsToDevicePixels="True"
                     CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource AncestorType=Border}}"
-                    Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}}"
+                            Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}}"
                     Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}}"
                     />
                     </VisualBrush.Visual>
@@ -83,17 +68,18 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
-                    <RowDefinition Height="*" />
+                    <RowDefinition Height="auto" />
                 </Grid.RowDefinitions>
 
                 <Button Command="{Binding NewEntryCommand}"
                         Grid.Row="0">
                     <Button.Content>
                         <TextBlock Text="{Binding CurrentDateTime, Converter={StaticResource DateTimeConverter}, NotifyOnSourceUpdated=True}"
-                                   Style="{StaticResource DateTimeTextBlock}" Padding="5"
-                             Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"/>
+                                   Style="{StaticResource DateTimeTextBlock}" Padding="5"/>
                     </Button.Content>
                 </Button>
+
+                <!--Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"/>-->
 
                 <TextBox x:Name="TX_Title"
                      Style="{StaticResource HeaderTextBox}"
@@ -101,12 +87,13 @@
                          AcceptsTab="True"
                          TextWrapping="Wrap"
                              Padding="5 5 20 5"
-                             Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
                          Grid.Row="1"
                          MinWidth="100"                         
                          Background="FloralWhite"
                          Foreground="SlateGray"
                      Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <!--Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"-->
 
                 <ScrollViewer VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
@@ -116,8 +103,7 @@
                      Style="{StaticResource ContentTextBox}"
                          MinWidth="150"
                          MinHeight="150"
-                             Padding="5 5 20 5"
-                             Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"
+                             Padding="5 5 20 5"                             
                          AcceptsReturn="True"
                          AcceptsTab="True"
                          IsUndoEnabled="True"
@@ -127,8 +113,11 @@
                          TextWrapping="Wrap"
                          Background="FloralWhite"
                          Foreground="SlateGray"
+                             Width="250"
+                             Height="250"
                      Text="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
                          />
+                    <!--Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ScrollViewer}}"-->
                 </ScrollViewer>
 
             </Grid>

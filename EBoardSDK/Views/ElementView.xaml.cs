@@ -1,6 +1,7 @@
 ﻿// <copyright file="ElementView.xaml.cs" company=".">
 // Stephan Kammel
 // </copyright>
+namespace EBoardSDK.Views;
 
 using EBoardSDK.ViewModels;
 using System.ComponentModel;
@@ -9,10 +10,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace EBoardSDK.Views;
-
 /// <summary>
-/// Interaktionslogik für ElementView.xaml
+/// Interaktionslogik für ElementView.xaml.
 /// </summary>
 public partial class ElementView : UserControl
 {
@@ -34,7 +33,10 @@ public partial class ElementView : UserControl
 
     public double X
     {
-        get { return this._X; }
+        get
+        {
+            return this._X;
+        }
 
         set
         {
@@ -46,7 +48,10 @@ public partial class ElementView : UserControl
 
     public double Y
     {
-        get { return this._Y; }
+        get
+        {
+            return this._Y;
+        }
 
         set
         {
@@ -61,7 +66,10 @@ public partial class ElementView : UserControl
 
     public int Z
     {
-        get { return this._Z; }
+        get
+        {
+            return this._Z;
+        }
 
         set
         {
@@ -74,7 +82,7 @@ public partial class ElementView : UserControl
         this.InitializeComponent();
     }
 
-    private void _ElementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private void ElementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         this.UpdatePlacement();
     }
@@ -118,12 +126,14 @@ public partial class ElementView : UserControl
         }
     }
 
-    Point oldMousePosition = new Point();
+    private Point oldMousePosition = default;
 
     private void Border_MouseMove(object sender, MouseEventArgs e)
     {
         if (!this._IsDragging)
+        {
             return;
+        }
 
         if (this._IsResizing)
         {
@@ -156,9 +166,8 @@ public partial class ElementView : UserControl
 
     private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
-        //if (!_IsDragging)
+        // if (!_IsDragging)
         //    return;
-
         if (this._IsDragging)
         {
             this._IsDragging = false;
@@ -202,7 +211,7 @@ public partial class ElementView : UserControl
 
         this._ElementViewModel = (ElementViewModel)this.DataContext;
 
-        this._ElementViewModel.PropertyChanged += this._ElementViewModel_PropertyChanged;
+        this._ElementViewModel.PropertyChanged += this.ElementViewModel_PropertyChanged;
 
         this._ElementViewModel.SetView(this);
 
@@ -229,11 +238,11 @@ public partial class ElementView : UserControl
     {
         if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
         {
-            this._IsResizing = true; this._IsDragging = false;
+            this._IsResizing = true;
+
+            this._IsDragging = false;
 
             this._Position = e.GetPosition(this._VisualParent);
-
-            //_ElementViewModel.EBoardViewModel.BeginElementSelectionMovement(_ElementViewModel);
 
             this.X = Canvas.GetLeft(this._VisualParent);
 
@@ -248,7 +257,9 @@ public partial class ElementView : UserControl
     private void Border_MouseLeftButtonUp_1(object sender, MouseButtonEventArgs e)
     {
         if (!this._IsResizing)
+        {
             return;
+        }
 
         if (this._IsResizing)
         {

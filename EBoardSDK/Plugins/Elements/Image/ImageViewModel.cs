@@ -38,13 +38,21 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
 
     private string pluginHeader = "Image Element";
 
-    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+    public override string PluginHeader
+    {
+        get { return this.pluginHeader; }
+        set { this.pluginHeader = value; }
+    }
 
     private string pluginName = "Image";
 
     public override bool NoDefaultBorders { get; } = false;
 
-    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+    public override string PluginName
+    {
+        get { return this.pluginName; }
+        set { this.pluginName = value; }
+    }
 
     public override string ElementPluginName => "Image";
 
@@ -58,13 +66,71 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
 
     public override Type ElementPluginViewModel => typeof(ImageViewModel);
 
+    public void SetLinkedFile(string path)
+    {
+        this.LinkFile(path);
+    }
+
+    public override async Task<EBoardFeedbackMessage> Load(string path)
+    {
+        if (new DirectoryInfo(path).Exists)
+        {
+            path = System.IO.Path.Combine(path, this.imageDataFileName);
+        }
+
+        try
+        {
+            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<ImageModel>(path);
+
+            if (data != null)
+            {
+                this.LinkFile(data.LinkTargetPath);
+
+                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
+        }
+
+        return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = string.Empty };
+    }
+
+    public async override Task<EBoardFeedbackMessage> Save(string path)
+    {
+        EBoardFeedbackMessage? serializationResult = null;
+
+        var model = new ImageModel() { LinkTargetPath = this.LinkTargetPath };
+
+        if (new DirectoryInfo(path).Exists)
+        {
+            path = System.IO.Path.Combine(path, this.imageDataFileName);
+        }
+
+        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
+
+        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        {
+            // TODO do stuff
+        }
+
+        return serializationResult!;
+    }
+
     private void ApplyImage()
     {
         var shared = new SharedMethod_UI();
+        try
+        {
+            this.ImageBrush = (ImageBrush)shared.ChangeBackgroundToImage(this.ImageBrush, this.LinkTargetPath);
 
-        this.ImageBrush = (ImageBrush)shared.ChangeBackgroundToImage(this.ImageBrush, this.LinkTargetPath);
-
-        this.IsLinked = true;
+            this.IsLinked = true;
+        }
+        catch (Exception)
+        {
+            this.IsLinked = false;
+        }
     }
 
     private void LinkFile(string fileName)
@@ -99,53 +165,8 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
 
         this.LinkTargetPath = shared.SetBackgroundImage(this.LinkTargetPath);
 
-        this.ApplyImage();
-    }
-
-    public override async Task<EBoardFeedbackMessage> Load(string path)
-    {
-        if (new DirectoryInfo(path).Exists)
-        {
-            path = System.IO.Path.Combine(path, this.imageDataFileName);
-        }
-
-        try
-        {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<ImageModel>(path);
-
-            if (data != null)
-            {
-                this.LinkFile(data.LinkTargetPath);
-
-                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
-            }
-        }
-        catch (Exception ex)
-        {
-            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
-        }
-
-        return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = "" };
-    }
-
-    public async override Task<EBoardFeedbackMessage> Save(string path)
-    {
-        EBoardFeedbackMessage? serializationResult = null;
-
-        var model = new ImageModel() { LinkTargetPath = this.LinkTargetPath };
-
-        if (new DirectoryInfo(path).Exists)
-        {
-            path = System.IO.Path.Combine(path, this.imageDataFileName);
-        }
-
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
-
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
-        {
-            // TODO do stuff
-        }
-
-        return serializationResult!;
+        this.LinkFile(this.LinkTargetPath);
     }
 }
+
+// EOF

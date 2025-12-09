@@ -2,10 +2,10 @@
 // Stephan Kammel
 // </copyright>
 
-using System.Windows.Controls;
-
 namespace EBoardSDK.Plugins.Shapes.Ellipse
 {
+    using System.Windows.Controls;
+
     /// <summary>
     /// Interaktionslogik für EllipseView.xaml
     /// </summary>

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0-windows</TargetFramework>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -23,6 +23,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Drawing.Common" Version="9.0.11" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +31,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Plugins\Elements\BasicAV\BasicAVMainView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Plugins\Elements\StandardText\StandardTextView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -64,6 +68,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\MainWindowMenuBar.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\SplashScreen.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

@@ -12,7 +12,7 @@ namespace EBoardSDK;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK;
+using EBoardConfigManager.Models;
 using EBoardSDK.Controls;
 using EBoardSDK.Controls.QuadValueSetup;
 using EBoardSDK.Enums;
@@ -26,6 +26,8 @@ using System.Windows.Media;
 
 public partial class MainViewModel : ObservableObject, IElementBackgroundImage
 {
+    private DataLocations _dataLocations;
+
     [ObservableProperty]
     private BorderManagement borderManagement;
 
@@ -73,22 +75,25 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
     [NotifyPropertyChangedFor(nameof(BorderManagement))]
     private int width;
 
-    public MainViewModel(EBoardSDK.Models.EboardConfig eboardConfig)
+    private readonly Runner runner;
+
+    public MainViewModel(EBoardSDK.Models.EboardConfig eboardConfig, DataLocations dataLocations, Runner runner)
     {
+        this.runner = runner;
         this.title = "EBoard";
+
+        this._dataLocations = dataLocations;
 
         this.eboardConfig = eboardConfig;
 
         this.eBoardBrowserViewModel = new EBoardBrowserViewModel(this);
 
         this.MainWindowMenuBarVM = new MainWindowMenuBarViewModel(this, eboardConfig);
-        this.MainWindowLogoutBarVM = new MainWindowLogoutBarViewModel(this.EBoardBrowserViewModel.BrushManagement);
+        this.MainWindowLogoutBarVM = new MainWindowLogoutBarViewModel(this.EBoardBrowserViewModel.BrushManagement, this);
 
         this.BorderManagement = new BorderManagement(eboardConfig.BorderDataSet);
         this.BrushManagement = new BrushManagement(eboardConfig.BrushDataSet);
         this.PlacementManager = new PlacementManagement(eboardConfig.PlacementDataSet);
-
-        this.CornerRadiusValue = (int)this.BorderManagement.CornerRadius.TopLeft;
 
         this.brushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
 
@@ -115,7 +120,7 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
                 this.ResetCorners,
                 this.BrushManagement);
 
-        this.CornerRadiusQuadSetup.PropertyChanged += this.CornerRadiusQuadSetup_PropertyChanged; ;
+        this.CornerRadiusQuadSetup.PropertyChanged += this.CornerRadiusQuadSetup_PropertyChanged;
 
         this.PaddingQuadSetup = helper.BuildQuadValueSetup(
             new QuadValue<int>()
@@ -155,6 +160,8 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
             this.BrushManagement);
 
         this.ThicknessQuadSetup.PropertyChanged += this.ThicknessQuadSetup_PropertyChanged;
+
+        this.ResetSize();
     }
 
     private void BrushManagement_PropertyChangedEvent()
@@ -258,6 +265,11 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
         this.eboardConfig.PlacementDataSet = new EBoardSDK.Models.DataSets.PlacementDataSet(this.PlacementManager);
 
         return this.eboardConfig;
+    }
+
+    public Runner GetRunnerInstance()
+    {
+        return this.runner;
     }
 
     public IList<EBoardSDK.Models.EboardScreen> GetScreenData()
@@ -490,6 +502,14 @@ public partial class MainViewModel : ObservableObject, IElementBackgroundImage
     private void SetImageBorder()
     {
         this.ImageBorderPath = new SharedMethod_UI().SetBackgroundImage(this.ImageBorderPath);
+
+        this.OnPropertyChanged(nameof(this.BrushManagement));
+    }
+
+    [RelayCommand]
+    private void SetSavePath()
+    {
+        this._dataLocations.EBoardDataContextPath = new SharedMethod_UI().SetSaveDirectory();
 
         this.OnPropertyChanged(nameof(this.BrushManagement));
     }

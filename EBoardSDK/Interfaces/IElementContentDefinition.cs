@@ -2,14 +2,13 @@
 // Stephan Kammel
 // </copyright>
 
-using System.Windows;
-
 namespace EBoardSDK.Interfaces
 {
+    using System.Windows;
+
     public interface IElementContentDefinition
     {
-        //public bool ContentIsUserControlAndNotShape { get; }
-
+        // public bool ContentIsUserControlAndNotShape { get; }
         public FrameworkElement Plugin { get; }
     }
 }

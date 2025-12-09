@@ -153,8 +153,8 @@
                         </Border.ContextMenu>
 
                         <ContentPresenter Content="{Binding Summonee}"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center"/>
+                                  HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch"/>
                     </Border>
                 </ScrollViewer>
                 

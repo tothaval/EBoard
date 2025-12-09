@@ -5,9 +5,12 @@
 namespace EBoardSDK.Plugins;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.DependencyInjection;
+using EBoardConfigManager.Models;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
+using EBoardSDK.ViewModels;
 using Serilog;
 using System.IO;
 using System.Reflection;
@@ -18,13 +21,20 @@ using System.Windows.Media.Imaging;
 
 public abstract partial class EBoardElementPluginBaseViewModel : ObservableObject, IPlugin
 {
-    private BorderManagement borderManagement = new();
+    private EBoardViewModel eBoardViewModel;
 
-    private BrushManagement brushManagement = new();
+    private ElementViewModel elementViewModel;
+
+    protected BorderManagement borderManagement = new();
+
+    protected BrushManagement brushManagement = new();
 
     public BorderManagement BorderManagement
     {
-        get { return this.borderManagement; }
+        get
+        {
+            return this.borderManagement;
+        }
 
         set
         {
@@ -36,7 +46,10 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
 
     public BrushManagement BrushManagement
     {
-        get { return this.brushManagement; }
+        get
+        {
+            return this.brushManagement;
+        }
 
         set
         {
@@ -71,6 +84,10 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
     public abstract string PluginHeader { get; set; }
 
     public abstract ResourceDictionary ResourceDictionary { get; }
+
+    public EBoardViewModel EBoardViewModel => this.eBoardViewModel;
+
+    public ElementViewModel ElementViewModel => this.elementViewModel;
 
     public bool ApplyBrush(Brush brush, BrushTargets brushTargets)
     {
@@ -128,9 +145,11 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
                 return false;
             }
 
-            var path = await new Runner().GetConfigPathsAsync();
+            var dataLocation = Ioc.Default.GetRequiredService<Runner>().DataLocations;
 
-            var resourcestring = Path.Combine(path.PluginFolder, $"{this.PluginName}_Logo.png");
+            var path = Path.Combine(dataLocation.EBoardDataPath, DataLocations.EBoardInstalledPluginsPath);
+
+            var resourcestring = Path.Combine(path, $"{this.PluginName}_Logo.png");
 
             var imagefile = new FileInfo(resourcestring);
 
@@ -148,7 +167,8 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
         catch (Exception ex)
         {
             Log.Error(ex.Message);
-            //throw;
+
+            // throw;
         }
 
         return false;
@@ -157,4 +177,10 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
     public abstract Task<EBoardFeedbackMessage> Load(string path);
 
     public abstract Task<EBoardFeedbackMessage> Save(string path);
+
+    public void SetEBoardAndElementViewModel(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel)
+    {
+        this.eBoardViewModel = eBoardViewModel;
+        this.elementViewModel = elementViewModel;
+    }
 }

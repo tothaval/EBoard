@@ -72,33 +72,36 @@
         <Border.InputBindings>
             <MouseBinding Gesture="Shift+LeftClick" Command="{Binding SelectCommand}"/>
         </Border.InputBindings>
-        
+
         <Border.Resources>
             <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItem}">
                 <Setter Property="BorderBrush" Value="{Binding Plugin.BrushManagement.Border}"/>
                 <Setter Property="BorderThickness" Value="5"/>
                 <Setter Property="Foreground" Value="Red"/>
                 <Setter Property="Background" Value="{Binding Plugin.BrushManagement.Background}"/>
-            </Style>                   
+            </Style>
         </Border.Resources>
 
         <Border.ContextMenu >
             <ContextMenu Background="{Binding Plugin.BrushManagement.Background}"
-                             BorderBrush="{Binding Plugin.BrushManagement.Border}"
+                         BorderBrush="{Binding Plugin.BrushManagement.Border}"
                          Foreground="{Binding Plugin.BrushManagement.Foreground}"
                          Style="{StaticResource ContextMenuStyle}">
 
                 <Label Content="{Binding Plugin.PluginHeader}" Background="Transparent" Foreground="{Binding Plugin.BrushManagement.Foreground}"/>
 
                 <MenuItem Header="Placement" Style="{StaticResource menuitem}">
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="X"
+
+                    <MenuItem Header="Basic" Style="{StaticResource menuitem}">
+
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="X"
                            MinWidth="50"/>
-                        <Label Content="{Binding XPosition, NotifyOnSourceUpdated=True}"
+                            <Label Content="{Binding XPosition, NotifyOnSourceUpdated=True}"
                            MinWidth="30"/>
-                        <Label Content="{Binding XMaximumValue, NotifyOnSourceUpdated=True, Mode=OneWay}"
+                            <Label Content="{Binding XMaximumValue, NotifyOnSourceUpdated=True, Mode=OneWay}"
                            MinWidth="30"/>
-                        <Slider Value="{Binding XSliderValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            <Slider Value="{Binding XSliderValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="0"
                             Maximum="{Binding XMaximumValue, NotifyOnSourceUpdated=True}"
                             Width="330"
@@ -106,16 +109,16 @@
                             LargeChange="5"
                             Interval="1"
                             Orientation="Horizontal"/>
-                    </WrapPanel>
+                        </WrapPanel>
 
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="Y"
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="Y"
                            MinWidth="50"/>
-                        <Label Content="{Binding YPosition, NotifyOnSourceUpdated=True}"
+                            <Label Content="{Binding YPosition, NotifyOnSourceUpdated=True}"
                                MinWidth="30"/>
-                        <Label Content="{Binding YMaximumValue, NotifyOnSourceUpdated=True, Mode=OneWay}"
+                            <Label Content="{Binding YMaximumValue, NotifyOnSourceUpdated=True, Mode=OneWay}"
                                MinWidth="30"/>
-                        <Slider Value="{Binding YSliderValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            <Slider Value="{Binding YSliderValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="0"
                             Maximum="{Binding YMaximumValue, UpdateSourceTrigger=PropertyChanged, Delay=20}"
                             Width="330"
@@ -123,14 +126,14 @@
                             LargeChange="5"
                             Interval="1"
                             Orientation="Horizontal"/>
-                    </WrapPanel>
+                        </WrapPanel>
 
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="Z"
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="Z"
                                MinWidth="50"/>
-                        <Label Content="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"
+                            <Label Content="{Binding ZIndexValue, NotifyOnSourceUpdated=True}"
                                MinWidth="30"/>
-                        <Slider Value="{Binding ZIndexValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            <Slider Value="{Binding ZIndexValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="{Binding ZMinimumValue, NotifyOnSourceUpdated=True}"
                             Maximum="{Binding ZMaximumValue, NotifyOnSourceUpdated=True}"
                             Width="360"
@@ -138,14 +141,14 @@
                             LargeChange="5"
                             Interval="1"
                             Orientation="Horizontal"/>
-                    </WrapPanel>
+                        </WrapPanel>
 
-                    <WrapPanel Orientation="Horizontal">
-                        <Label Content="R"
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="R"
                            MinWidth="50"/>
-                        <Label Content="{Binding RotationAngleValue, NotifyOnSourceUpdated=True}"
+                            <Label Content="{Binding RotationAngleValue, NotifyOnSourceUpdated=True}"
                                MinWidth="30"/>
-                        <Slider Value="{Binding RotationAngleValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            <Slider Value="{Binding RotationAngleValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="-180"
                             Maximum="180"
                             Width="361"
@@ -154,23 +157,68 @@
                             Interval="1"
                             Orientation="Horizontal"/>
 
-                    </WrapPanel>
+                        </WrapPanel>
+
+                    </MenuItem>
+
+                    <MenuItem Header="Arrange Group" Style="{StaticResource menuitem}">
+
+                        <WrapPanel Orientation="Vertical">
+                            <WrapPanel Orientation="Horizontal">
+                                <Label Content="Arrangement Rotation"/>
+                                <Label Content="{Binding EBoardViewModel.EBoardSettingsViewModel.ArrangementRotationValue, NotifyOnSourceUpdated=True}"/>
+                            </WrapPanel>
+                            <Slider Value="{Binding EBoardViewModel.EBoardSettingsViewModel.ArrangementRotationValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="-90"
+                            Maximum="90"
+                            Width="361"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                        </WrapPanel>
+
+                        <WrapPanel Orientation="Vertical">
+                            <WrapPanel Orientation="Horizontal">
+                                <Label Content="Arrangement Offset"
+                           MinWidth="50"/>
+                                <Label Content="{Binding EBoardViewModel.EBoardSettingsViewModel.ArrangementOffsetValue, NotifyOnSourceUpdated=True}"
+                               MinWidth="30"/>
+                            </WrapPanel>
+                            <Slider Value="{Binding EBoardViewModel.EBoardSettingsViewModel.ArrangementOffsetValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                            Minimum="-90"
+                            Maximum="90"
+                            Width="361"
+                            SmallChange="1"
+                            LargeChange="5"
+                            Interval="1"
+                            Orientation="Horizontal"/>
+                        </WrapPanel>
+
+                        <Rectangle StrokeThickness="1" Stroke="{Binding Plugin.BrushManagement.Border}" HorizontalAlignment="Stretch"/>
+
+                        <WrapPanel Orientation="Horizontal">
+                            <Button Content="Line" Command="{Binding ArrangeGroupAsLineCommand}" Style="{StaticResource DefaultButtonStyle}"/>
+                            <Button Content="Square" Command="{Binding ArrangeGroupAsSquareCommand}" Style="{StaticResource DefaultButtonStyle}"/>
+                            <Button Content="Random 10x10" Command="{Binding ArrangeGroupAsRandomMatrix10x10Command}" Style="{StaticResource DefaultButtonStyle}"/>
+                        </WrapPanel>
+
+                    </MenuItem>
 
                 </MenuItem>
 
                 <MenuItem Header="Size" Style="{StaticResource menuitem}">
 
-
                     <MenuItem Header="Dimensions" Style="{StaticResource menuitem}">
 
                         <MenuItem Header="Area" Style="{StaticResource menuitem}">
-                            
-                                <WrapPanel Orientation="Horizontal">
-                                    <Label Content="Width"
+
+                            <WrapPanel Orientation="Horizontal">
+                                <Label Content="Width"
                                            MinWidth="50"/>
-                                    <Label Content="{Binding WidthValue, NotifyOnSourceUpdated=True}"
+                                <Label Content="{Binding WidthValue, NotifyOnSourceUpdated=True}"
                                MinWidth="35"/>
-                                    <Slider Value="{Binding WidthValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                                <Slider Value="{Binding WidthValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="60"
                             Maximum="1024"
                             MinWidth="100"
@@ -178,14 +226,14 @@
                             LargeChange="5"
                             Interval="1"
                             Orientation="Horizontal"/>
-                                </WrapPanel>
+                            </WrapPanel>
 
-                                <WrapPanel Orientation="Horizontal">
-                                    <Label Content="Height"
+                            <WrapPanel Orientation="Horizontal">
+                                <Label Content="Height"
                                            MinWidth="50"/>
-                                    <Label Content="{Binding HeightValue, StringFormat=d0, NotifyOnSourceUpdated=True}"
+                                <Label Content="{Binding HeightValue, StringFormat=d0, NotifyOnSourceUpdated=True}"
                                MinWidth="35"/>
-                                    <Slider Value="{Binding HeightValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                                <Slider Value="{Binding HeightValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                             Minimum="60"
                             Maximum="1024"
                             MinWidth="100"
@@ -194,7 +242,7 @@
                             Interval="1"
                             Orientation="Horizontal"/>
 
-                                </WrapPanel>
+                            </WrapPanel>
 
 
 
@@ -256,10 +304,10 @@
                                                                   Value3="BottomRight"
                                                                   Value4="BottomLeft"
                                                                   OKCommand="{Binding ResetCornersCommand}"/>
-                    </MenuItem>                      
-                 
-                    
-                    
+                    </MenuItem>
+
+
+
                 </MenuItem>
 
                 <MenuItem Header="Design" Style="{StaticResource menuitem}">
@@ -314,7 +362,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            
+
             <Border
                 Background="{Binding BBackground, NotifyOnSourceUpdated=True}"
                 BorderBrush="{Binding Plugin.BrushManagement.Border,NotifyOnSourceUpdated=True}"
@@ -329,7 +377,6 @@
                 MouseMove="Border_MouseMove_1"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                 IsHitTestVisible="True"
-                
                 
                 MinHeight="60"
                 MinWidth="60">

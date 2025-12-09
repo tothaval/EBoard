@@ -2,23 +2,28 @@
 // Stephan Kammel
 // </copyright>
 
-using EBoardConfigManager.Helper;
-using EBoardSDK.Plugins;
-using Serilog;
-using System.IO;
-using System.Reflection;
-
 namespace EBoardSDK
 {
+    using EBoardConfigManager.Helper;
+    using EBoardSDK.Plugins;
+    using Serilog;
+    using System.IO;
+    using System.Reflection;
+
     public static class PluginLoader
     {
-        public static Task<IList<EBoardElementPluginBaseViewModel>> LoadPlugins(string path)
+        public static async Task<IList<EBoardElementPluginBaseViewModel>> LoadPluginsAsync(string path)
         {
-            var assemblies = Loader.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
-
             IList<EBoardElementPluginBaseViewModel> plugins = [];
 
-            assemblies.Select(x => x).ToList().ForEach(async dllfile =>
+            var assemblies = Loader.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
+
+            if (assemblies == null || assemblies.Count == 0)
+            {
+                return plugins;
+            }
+
+            assemblies.Select(x => x).ToList().ForEach(dllfile =>
             {
                 if (dllfile.Name.Equals("EBoardSDK.dll"))
                 {
@@ -37,8 +42,6 @@ namespace EBoardSDK
                 {
                     var assembly = Assembly.LoadFrom(dllfile.FullName);
                     var types = assembly.GetExportedTypes();
-
-                    // TODO ggf ein Interface oder Datenklasse mit Liste von Plugins, um Pluginbibliotheken einlesen zu können. nur wie sortieren?
 
                     var baseType = types.Where(dlltype => dlltype.BaseType != null && dlltype.BaseType.Equals(typeof(EBoardElementPluginBaseViewModel))).Any();
 
@@ -75,12 +78,11 @@ namespace EBoardSDK
                     // TODO log events of try catch block, specify what dll was skipped
                     // prevent not updated external dlls from crashing the application
                     // rethrow or pass exception to caller
-
                     return;
                 }
             });
 
-            return Task.FromResult(plugins);
+            return plugins;
         }
     }
 }

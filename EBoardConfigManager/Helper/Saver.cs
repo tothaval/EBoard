@@ -1,16 +1,15 @@
 ﻿// <copyright file="Saver.cs" company="PlaceholderCompany">
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
+namespace EBoardConfigManager.Helper;
 
 using EBoardConfigManager.Enums;
 using Serilog;
 using System.Text.Json;
 
-namespace EBoardConfigManager.Helper;
-
 public static class Saver
 {
-    public async static Task CreateFolderAsync(string saveFolderPath)
+    public static async Task CreateFolderAsync(string saveFolderPath)
     {
         if (!Directory.Exists(saveFolderPath))
         {

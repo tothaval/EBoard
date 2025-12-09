@@ -12,7 +12,7 @@ namespace EBoardSDK.Interfaces;
 
 using System.Windows;
 
-interface IElementPlacement
+internal interface IElementPlacement
 {
     public double Angle { get; set; }
 

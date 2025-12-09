@@ -11,6 +11,14 @@
     </UserControl.Resources>
     
     <Grid Background="{Binding ImageBrush}">
+        <Grid.ToolTip>
+            <ToolTip Content="{Binding LinkTargetPath, NotifyOnSourceUpdated=True}"
+                         Background="{Binding BrushManagement.Background}"
+                         Foreground="{Binding BrushManagement.Foreground}"
+                         BorderBrush="{Binding BrushManagement.Border}"
+                         BorderThickness="1"/>
+        </Grid.ToolTip>
+        
         <Grid.InputBindings>
                 <MouseBinding Gesture="Control+Leftclick" Command="{Binding ResetCommand}"/>
         </Grid.InputBindings>

@@ -14,47 +14,31 @@
         
         <BooleanToVisibilityConverter x:Key="visConv"/>
 
-
-
-
         <CornerRadius x:Key="Radius">15</CornerRadius>
         <CornerRadius x:Key="NoteRadius">15</CornerRadius>
 
         <sys:Double x:Key="FontSize">11.0</sys:Double>
-
 
         <Style TargetType="{x:Type Button}" x:Key="DefaultButton">
             <Setter Property="MinWidth" Value="25"/>
             <Setter Property="MinHeight" Value="25"/>
         </Style>
 
-
         <Style TargetType="{x:Type RichTextBox}" x:Key="HeaderRichTextBox">
-
-
         </Style>
 
         <Style TargetType="{x:Type RichTextBox}" x:Key="ContentRichTextBox">
-
-
         </Style>
 
         <Style TargetType="{x:Type RichTextBox}" x:Key="DateTimeRichTextBox">
-
-
         </Style>
-
-
 
         <Style TargetType="{x:Type TextBox}" x:Key="HeaderTextBox">
             <Setter Property="FontSize" Value="{DynamicResource HeaderFontSize}"/>
-
         </Style>
 
         <Style TargetType="{x:Type TextBox}" x:Key="ContentTextBox">
             <Setter Property="FontSize" Value="{DynamicResource ContentFontSize}"/>
-
-
         </Style>
 
         <Style TargetType="{x:Type TextBlock}" x:Key="DateTimeTextBlock">
@@ -80,7 +64,7 @@
                     Grid.Column="0"     
                     Margin="0 0 7 0"
                     >
-                <Button Width="2"
+                <Button Width="8"
                     Height="50"
                         BorderBrush="Transparent"
                         BorderThickness="0"
@@ -92,7 +76,7 @@
                         Margin="0 0 10 0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="50"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -105,7 +89,6 @@
                 <Button Content="-" Command="{Binding DeleteNoteCommand}"
                         CommandParameter="{Binding ElementName=LB_Notes, Path=SelectedItems}"
         Grid.Column="2" Style="{StaticResource DefaultButton}" Margin="5"/>
-
 
                 <Border CornerRadius="{DynamicResource NoteRadius}"
                          Grid.Column="0" Grid.ColumnSpan="3"
@@ -156,9 +139,7 @@
                                                   Grid.Row="1">
                                                 <TextBlock Text="{Binding Title, UpdateSourceTrigger=PropertyChanged}"
                                                    TextWrapping="Wrap"
-                                                   Width="150"
-                                                           ScrollViewer.VerticalScrollBarVisibility="Disabled"
-                                                   
+                                                           ScrollViewer.VerticalScrollBarVisibility="Auto"                                                   
                                                    />
                                             </ScrollViewer>
                                             <TextBlock Text="{Binding DateTime_Created, UpdateSourceTrigger=PropertyChanged,
@@ -171,12 +152,12 @@
                         </ListBox>
                     </Border>
                 </Border>
-
             </Grid>
 
-            <ContentControl Content="{Binding Note}"
-                            Grid.Column="2" Grid.Row="1"/>
-
+            <local:NoteView DataContext="{Binding Note, NotifyOnSourceUpdated=True, Mode=OneWay}"
+                            Grid.Column="2" Grid.Row="1"
+                            MinWidth="250"
+                            MinHeight="250"/>
         </Grid>
     </Border>
 </UserControl>

@@ -23,5 +23,4 @@ public partial class DriveInfoView : UserControl
     // Using a DependencyProperty as the backing store for DriveButtonCommand.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty DriveButtonCommandProperty =
         DependencyProperty.Register("DriveButtonCommand", typeof(ICommand), typeof(DriveInfoView), new PropertyMetadata(null));
-
 }

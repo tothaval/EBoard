@@ -43,7 +43,7 @@ public partial class DriveInfoViewModel : ObservableObject
 
     private IPlugin plugin;
 
-    public IPlugin Plugin => plugin;
+    public IPlugin Plugin => this.plugin;
 
     public DriveInfoViewModel(DriveInfo drive, IPlugin plugin)
     {
@@ -92,7 +92,7 @@ public partial class DriveInfoViewModel : ObservableObject
 
     public DriveInfo DriveInfo => this.driveInfo;
 
-    public BrushManagement BrushManagement => brushManagement;
+    public BrushManagement BrushManagement => this.brushManagement;
 
     public BorderManagement BorderManagement { get; }
 }

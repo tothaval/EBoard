@@ -4,7 +4,6 @@
 
 namespace EBoardSDK;
 
-using EBoardSDK;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;

@@ -2,10 +2,10 @@
 // Stephan Kammel
 // </copyright>
 
-using System.Windows.Controls;
-
 namespace EBoardSDK.Plugins.Tools.Uptime
 {
+    using System.Windows.Controls;
+
     /// <summary>
     /// Interaktionslogik für UptimeTimerView.xaml
     /// </summary>

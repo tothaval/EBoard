@@ -1,7 +1,7 @@
-﻿using System.Windows.Controls;
-
-namespace EEP_Drives
+﻿namespace EEP_Drives
 {
+    using System.Windows.Controls;
+
     /// <summary>
     /// Interaktionslogik für DrivesView.xaml
     /// </summary>

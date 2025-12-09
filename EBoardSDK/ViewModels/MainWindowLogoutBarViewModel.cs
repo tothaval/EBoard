@@ -17,20 +17,21 @@ using EBoardSDK.SharedMethods;
 
 public partial class MainWindowLogoutBarViewModel : ObservableObject
 {
+    private readonly BrushManagement brushManagement;
+    private readonly MainViewModel mainViewModel;
+
     [ObservableProperty]
     private string txtExitEboard = "Off";
 
     [ObservableProperty]
     private string txtShutDownMachine = "Shutdown";
 
-    private readonly BrushManagement brushManagement;
-
     public BrushManagement BrushManagement => this.brushManagement;
 
-
-    public MainWindowLogoutBarViewModel(BrushManagement brushManagement)
+    public MainWindowLogoutBarViewModel(BrushManagement brushManagement, MainViewModel mainViewModel)
     {
         this.brushManagement = brushManagement;
+        this.mainViewModel = mainViewModel;
 
         brushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
     }
@@ -49,6 +50,10 @@ public partial class MainWindowLogoutBarViewModel : ObservableObject
     [RelayCommand]
     private void ShutDown()
     {
+        var runner = this.mainViewModel.GetRunnerInstance();
+
+        var saveResult = runner.SaveEboardDataAsync().Result;
+
         new SharedMethod_UI().ShutDownMachine();
     }
 }

@@ -13,13 +13,13 @@ namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Views;
 using EBoardSDK.Controls;
 using EBoardSDK.Controls.QuadValueSetup;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
 using EBoardSDK.SharedMethods;
+using EBoardSDK.Views;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -100,6 +100,8 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
     [ObservableProperty]
     private int zMinimumValue;
 
+    private bool isRotating = false;
+
     public ElementViewModel()
     {
     }
@@ -171,6 +173,11 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
     public void Apply_CornerRadiusValue(QuadValue<int> cornerRadius)
     {
+        if (cornerRadius == null)
+        {
+            return;
+        }
+
         // in order to apply the value onto every selected element without triggering the value change
         // and ChangeSelection_VALUE everytime in every element insance, use the ApplyVALUE method
         this.CornerRadiusQuadSetup.TopLeft = cornerRadius.Value1;
@@ -186,6 +193,8 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         this.PlacementManager = new PlacementManagement();
 
         this.eBoardViewModel = eBoardViewModel;
+
+        elementDataSet.SetEBoardAndElementViewModel(eBoardViewModel, this);
 
         this.eID = elementDataSet.EID;
 
@@ -215,6 +224,8 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
             this.Plugin = elementDataSet.Plugin;
 
             this.SetElementSizeDisplayValue();
+
+            this.Plugin.SetEBoardAndElementViewModel(elementDataSet.EBoardViewModel, elementDataSet.ElementViewModel);
 
             var bordermanagment = new BorderManagement(elementDataSet.BorderDataSet);
             this.Plugin.BorderManagement = bordermanagment;
@@ -310,9 +321,15 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
         this.RotationAngleValue = rotationAngleValue;
 
-        this.OnPropertyChanged(nameof(this.RotationAngleValue));
-
         return this.RotationAngleValue;
+    }
+
+    public void ApplyRotationToGroupSelectedElement(int rotationValueDelta)
+    {
+        this.isRotating = true;
+
+        this.RotationAngleValue += rotationValueDelta;
+        this.UpdateRotation(this.RotationAngleValue);
     }
 
     public int ApplyRotationAngleValueByMouseWheel(int delta)
@@ -328,8 +345,6 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         }
 
         this.UpdateRotation(this.RotationAngleValue);
-
-        this.OnPropertyChanged(nameof(this.RotationAngleValue));
 
         return this.RotationAngleValue;
     }
@@ -441,6 +456,11 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
     public void Redraw()
     {
+        if (this.Plugin == null)
+        {
+            return;
+        }
+
         this.Plugin.ApplyRedraw();
 
         this.OnPropertyChanged(nameof(this.Plugin));
@@ -506,9 +526,9 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         this.eBoardViewModel?.ChangeSelection_Height(this, heightValue);
     }
 
-    private void ChangeSelection_RotationAngleValue(int rotationAngleValue)
+    private void ChangeSelection_RotationAngleValue(int rotationValueDelta)
     {
-        this.eBoardViewModel?.ChangeSelection_RotationAngle(this, rotationAngleValue);
+        this.eBoardViewModel?.ChangeSelection_RotationAngle(this, rotationValueDelta);
     }
 
     private void ChangeSelection_WidthValue(int widthValue)
@@ -568,11 +588,20 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
 
     partial void OnRotationAngleValueChanging(int oldValue, int newValue)
     {
+        if (oldValue != newValue && !this.isRotating)
+        {
+            this.isRotating = true;
+
+            ChangeSelection_RotationAngleValue(-(oldValue - newValue));
+
+            return;
+        }
+
         if (oldValue != newValue)
         {
-            ChangeSelection_RotationAngleValue(newValue);
+            this.UpdateRotation(newValue);
 
-            UpdateRotation(newValue);
+            return;
         }
     }
 
@@ -645,6 +674,24 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
             this.PaddingQuadSetup.QuadValue.Value4);
 
         this.OnPropertyChanged(nameof(this.Plugin));
+    }
+
+    [RelayCommand]
+    private void ArrangeGroupAsLine()
+    {
+        this.eBoardViewModel?.ArrangeGroupAsLine(this);
+    }
+
+    [RelayCommand]
+    private void ArrangeGroupAsSquare()
+    {
+        this.eBoardViewModel?.ArrangeGroupAsSquare(this);
+    }
+
+    [RelayCommand]
+    private void ArrangeGroupAsRandomMatrix10x10()
+    {
+        this.eBoardViewModel?.ArrangeGroupAsRandomMatrix10x10(this);
     }
 
     [RelayCommand]
@@ -743,7 +790,6 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         // need to look into string format again. on implementation, i failed to apply a no digit value to the label stringformat,
         // tried {}{0:F0} and some others, since it didn't work for whatever reason, i made them ints to circumvent the issue for now.
         // better solution for permanent use would be to use doubles and limit the digits on output. gonna try this again sometime, but it has no priority
-
         if (this.Plugin == null)
         {
             return;
@@ -801,6 +847,7 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
                 {
                     this.BorderBrushSetup.ColorStringValue = "imagebrush";
                 }
+
                 break;
             case BrushTargets.Foreground:
             case BrushTargets.Highlight:
@@ -835,6 +882,8 @@ public partial class ElementViewModel : ObservableObject, IElementSelection, IEl
         this.RotateTransformValue = new RotateTransform(rotationAngle * -1);
 
         this.TransformOriginPoint = new Point(0.5, 0.5);
+
+        this.isRotating = false;
     }
 }
 

@@ -16,10 +16,33 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
+/// <summary>
+/// TODO
+///
+/// hm okay, die Instanzierung erfolgt hier über hardgecodete pfade usw. hat auch vorteile.
+/// müsste irgendwie per reflection oder indem ich dem plugin das elementviewmodel mitgebe
+/// auf die mainwindow sache zugreifen, da könnte ich den string gegen die liste aller plugins
+/// prüfen und dann das entsprechende auswählen.
+/// .
+/// bei einem hardgecodeten summoner müsste ich mich auf sdk plugins beschränken, da ich nicht
+/// direkt wissen kann, wie die anderen namespaces und assemblies konkret benannt sind.
+/// .
+/// alternativ müsste ich aus den plugins eine datei erzeugen und aus dieser lesen, den rest
+/// müsste WPF über die ResourceDictionaries hinbekommen.
+/// .
+/// ist vielleicht der am schnellsten umsetzbare ansatz direkt, mit allem was da ist.
+/// 
+/// leider hatte ich bisher keinen Erfolg damit, die benötigte Instanz zu erhalten.
+/// Grund ist die abstrakte oder was auch immer Natur der Application Klasse.
+/// 
+/// also, elementviewmodel oder datei, was werde ich tun?
+/// </summary>
 public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElementBackgroundImage
 {
     [ObservableProperty]
     private string userCommandString = ">";
+
+    private List<EBoardElementPluginBaseViewModel> knownPlugins;
 
     partial void OnUserCommandStringChanged(string value)
     {
@@ -30,8 +53,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     [ObservableProperty]
     private IPlugin summonee;
 
-    //public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
-
+    // public PluginDataSet PluginDataSet { get; set; } = new PluginDataSet();
     [ObservableProperty]
     private string imagePath;
 
@@ -79,7 +101,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
         if (Summonee is not null)
         {
-            //Summonee.Height = value;
+            // Summonee.Height = value;
         }
 
         UpdateContentHeight(value);
@@ -94,7 +116,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
         if (Summonee is not null)
         {
-            //Summonee.Width = value;
+            // Summonee.Width = value;
         }
 
         UpdateContentWidth(value);
@@ -132,11 +154,19 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
     private string pluginHeader = "Summoner Element";
 
-    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+    public override string PluginHeader
+    {
+        get { return this.pluginHeader; }
+        set { this.pluginHeader = value; }
+    }
 
     private string pluginName = "Summoner";
 
-    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+    public override string PluginName
+    {
+        get { return this.pluginName; }
+        set { this.pluginName = value; }
+    }
 
     public override string ElementPluginName => "Summoner";
 
@@ -160,52 +190,6 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
         }
     }
 
-    /// <summary>
-    /// until a real command architecture is implemented, this serves as a mockup solution
-    ///
-    /// a real command architecture should be done in a separate class or using an api that
-    /// handles all validations etc. it should also have several usercontrols for different
-    /// authorization levels, f.e. Request(from aeui) could include some display with output(stderr, stdout, internal logging)
-    /// and allow for call of operations on elements or other stuff, f.e. Admin could be used to handle stuff, that requires
-    /// some sort of security clearance, all that has low priority atm
-    ///
-    /// validation could also use onerrorinfo with community toolkit, but i need to look into that first
-    /// </summary>
-    private bool CommandStringValidator(string commandString, out string category)
-    {
-        if (commandString is null || commandString.Equals(string.Empty))
-        {
-            category = string.Empty;
-
-            return false;
-        }
-
-        if (this.PluginsCategoryElements.Contains(commandString))
-        {
-            category = "Elements";
-
-            return true;
-        }
-
-        if (this.PluginsCategoryShapes.Contains(commandString))
-        {
-            category = "Shapes";
-
-            return true;
-        }
-
-        if (this.PluginsCategoryTools.Contains(commandString))
-        {
-            category = "Tools";
-
-            return true;
-        }
-
-        category = string.Empty;
-
-        return false;
-    }
-
     [RelayCommand]
     private void DeleteElement(object s)
     {
@@ -223,23 +207,34 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     [RelayCommand]
     private void ExecuteCommandString()
     {
-        //this.Width = double.NaN;
-        //this.Height = double.NaN;
-
+        // this.Width = double.NaN;
+        // this.Height = double.NaN;
         string command = this.UserCommandString.Substring(1);
 
         if (this.UserCommandString.StartsWith(">"))
         {
-            if (this.CommandStringValidator(command, out string category))
-            {
-                /// am besten separate brushManagement category listen führen, diese vergleichen und wo treffer,
-                /// da instanzieren.
-                IPlugin? plugin = PluginFactory.GetPluginByCommand(category, command);
+            var eboardscreen = this.EBoardViewModel;
 
-                if (plugin is not null)
+            if (eboardscreen != null)
+            {
+                this.knownPlugins = eboardscreen.GetPlugins().ToList();
+            }
+
+            if (this.knownPlugins != null && this.knownPlugins.Count > 0)
+            {
+                var pluginBaseViewModel = this.knownPlugins.Where(x => x.PluginName.Equals(command)).FirstOrDefault();
+
+                if (pluginBaseViewModel != null)
                 {
-                    this.Summonee = plugin;
-                    return;
+                    var plugin = Activator.CreateInstance(pluginBaseViewModel.ElementPluginViewModel) as IPlugin;
+
+                    if (plugin != null)
+                    {
+                        this.Summonee = plugin;
+
+                        // resource dictionary muss ggf. noch genutzt werden wegen datatemplates
+                        return;
+                    }
                 }
             }
 
@@ -263,23 +258,22 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
     public override Task<EBoardFeedbackMessage> Save(string path)
     {
-        //this.PluginDataSet.References.Add(new("Type", this.Summonee?.Plugin?.GetType().FullName));
-        //this.PluginDataSet.References.Add(new("Name", this.Summonee?.PluginName));
-        //this.PluginDataSet.References.Add(new("Header", this.Summonee?.PluginHeader));
+        // this.PluginDataSet.References.Add(new("Type", this.Summonee?.Plugin?.GetType().FullName));
+        // this.PluginDataSet.References.Add(new("Name", this.Summonee?.PluginName));
+        // this.PluginDataSet.References.Add(new("Header", this.Summonee?.PluginHeader));
 
-        //string contentDataPath = Path.Combine(path, linkDataFileName);
+        // string contentDataPath = Path.Combine(path, linkDataFileName);
 
-        //var model = new LinkModel() { LinkTargetName = this.LinkTargetName, LinkTargetPath = this.LinkTargetPath };
+        // var model = new LinkModel() { LinkTargetName = this.LinkTargetName, LinkTargetPath = this.LinkTargetPath };
 
-        //var serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, contentDataPath);
+        // var serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, contentDataPath);
 
-        //if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
-        //{
+        // if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        // {
         //    // TODO do stuff
-        //}
+        // }
 
-        //return serializationResult;
-
+        // return serializationResult;
         return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
     }
 
@@ -301,7 +295,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     {
         if (this.Summonee is not null)
         {
-            //this.Summonee.Height = height;
+            // this.Summonee.Height = height;
         }
     }
 
@@ -309,7 +303,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     {
         if (this.Summonee is not null)
         {
-            //this.Summonee.Width = width;
+            // this.Summonee.Width = width;
         }
     }
 
@@ -318,7 +312,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
         if (this.Summonee is not null)
         {
             // TODO update implementation
-            //Summonee.BorderManagement.CornerRadiusValue = value;
+            // Summonee.BorderManagement.CornerRadiusValue = value;
         }
     }
 
@@ -328,6 +322,6 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
         this.TransformOriginPoint = new Point(0.5, 0.5);
 
-        //this.Width = double.NaN;
+        // this.Width = double.NaN;
     }
 }// EOF

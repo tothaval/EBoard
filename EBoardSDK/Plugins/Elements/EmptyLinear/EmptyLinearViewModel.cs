@@ -33,11 +33,19 @@ public partial class EmptyLinearViewModel : EBoardElementPluginBaseViewModel
 
     private string pluginHeader = "Empty Linear Element";
 
-    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+    public override string PluginHeader
+    {
+        get { return this.pluginHeader; }
+        set { this.pluginHeader = value; }
+    }
 
     private string pluginName = "EmptyLinear";
 
-    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+    public override string PluginName
+    {
+        get { return this.pluginName; }
+        set { this.pluginName = value; }
+    }
 
     public override string ElementPluginName => "Linear";
 

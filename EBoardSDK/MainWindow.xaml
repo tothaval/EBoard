@@ -114,6 +114,11 @@
 
                     <Label Content="MainWindow" Background="Transparent" Foreground="{Binding BrushManagement.Foreground}"/>
 
+                    <MenuItem Header="Data" Style="{StaticResource menuitem}">
+                        <MenuItem Header="Save Path" Command="{Binding SetSavePathCommand}" Style="{StaticResource menuitem}"/>
+                        <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
+                    </MenuItem>
+
                     <MenuItem Header="Size" Style="{StaticResource menuitem}">
                         <MenuItem Header="Dimensions" Style="{StaticResource menuitem}">
                             <MenuItem Header="Area" Style="{StaticResource menuitem}">
@@ -301,11 +306,11 @@
                       Grid.ColumnSpan="4"                      
                       Background="Transparent">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
                     <Grid.ToolTip>
@@ -316,7 +321,7 @@
                                 BorderBrush="{Binding BrushManagement.Border}"
                                 BorderThickness="3"
                                 CornerRadius="3">
-                            <TextBlock Margin="3"
+                                <TextBlock Margin="3"
                                Background="Transparent"
                                Foreground="{Binding BrushManagement.Foreground}"
                                        HorizontalAlignment="Center"
@@ -326,15 +331,15 @@
                     <Run Text="{Binding EBoardBrowserViewModel.CurrentSelectionID, NotifyOnSourceUpdated=True}"/>
                     <Run Text="/"/>
                     <Run Text="{Binding EBoardBrowserViewModel.EBoardCount, NotifyOnSourceUpdated=True}"/>
-                            </TextBlock>
-                        </Border>
+                                </TextBlock>
+                            </Border>
                         </ToolTip>
                     </Grid.ToolTip>
 
                     <Button Content="|&lt;&lt;" Command="{Binding FirstEboardCommand}"
                             Style="{StaticResource DefaultButtonStyle}"
                             Grid.Column="0"/>
-                    
+
                     <Button Content="&lt;" Command="{Binding PrevEboardCommand}"
                          Style="{StaticResource DefaultButtonStyle}"
                          Grid.Column="1"/>
@@ -352,7 +357,7 @@
                     <Button Content="&gt;" Command="{Binding NextEboardCommand}"
                            Style="{StaticResource DefaultButtonStyle}"
                             Grid.Column="3"/>
-                    
+
                     <Button Content="&gt;&gt;|" Command="{Binding LastEboardCommand}"
                             Style="{StaticResource DefaultButtonStyle}"
                             Grid.Column="4"/>
@@ -372,18 +377,23 @@
                 </ScrollViewer>
 
                 <Border Grid.Row="2"
-                     Grid.RowSpan="2"
-             Grid.Column="0"
-             Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
-         Converter={StaticResource btvc},
-         NotifyOnSourceUpdated=True,
-         NotifyOnTargetUpdated=True}">
-
-                    <views:EBoardBrowserView DataContext="{Binding EBoardBrowserViewModel}"
-                                          
-                                  />
+                        Grid.RowSpan="2"
+                        Grid.Column="0">
+                    <Grid>
+                        <Border Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
+                            Converter={StaticResource btvc},
+                            NotifyOnSourceUpdated=True,
+                            NotifyOnTargetUpdated=True}">
+                            <views:EBoardBrowserView DataContext="{Binding EBoardBrowserViewModel}"/>
+                        </Border>
+                        <Border Visibility="{Binding MainWindowMenuBarVM.EBoardSettingsSwitch,
+                            Converter={StaticResource btvc},
+                            NotifyOnSourceUpdated=True,
+                            NotifyOnTargetUpdated=True}">
+                            <views:EBoardSettingsView DataContext="{Binding EBoardBrowserViewModel.SelectedEBoard.EBoardSettingsViewModel}"/>
+                        </Border>
+                    </Grid>
                 </Border>
-
             </Grid>
         </Border>
     </Grid>

@@ -19,10 +19,10 @@
  */
 namespace EBoardSDK.DataSets;
 
-using EBoardSDK.ViewModels;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
 using EBoardSDK.Models.DataSets;
+using EBoardSDK.ViewModels;
 using System.Xml.Serialization;
 
 [Serializable]
@@ -30,10 +30,10 @@ using System.Xml.Serialization;
 public class ElementDataSet : IElementDataSet
 {
     [XmlIgnore]
-    private readonly EBoardViewModel eBoardViewModel;
+    private EBoardViewModel eBoardViewModel;
 
     [XmlIgnore]
-    private readonly ElementViewModel elementViewModel;
+    private ElementViewModel elementViewModel;
 
     public ElementDataSet()
     {
@@ -65,6 +65,15 @@ public class ElementDataSet : IElementDataSet
             this.PlacementDataSet = new PlacementDataSet();
         }
     }
+
+    public void SetEBoardAndElementViewModel(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel)
+    {
+        this.eBoardViewModel = eBoardViewModel;
+        this.elementViewModel = elementViewModel;
+    }
+
+    [XmlIgnore]
+    public EBoardViewModel EBoardViewModel => this.eBoardViewModel;
 
     [XmlIgnore]
     public ElementViewModel ElementViewModel => this.elementViewModel;

@@ -5,10 +5,11 @@
 namespace EBoardSDK.Interfaces;
 
 using EBoardSDK.Models.DataSets;
+using EBoardSDK.ViewModels;
 
 public interface IElementDataSet
 {
-    //public bool IsContentNotShape { get; set; }
+    // public bool IsContentNotShape { get; set; }
 
     /// <summary>
     /// Gets or sets element ID, built using $"Element_{DateTime().Ticks} on first
@@ -29,9 +30,15 @@ public interface IElementDataSet
 
     public PlacementDataSet PlacementDataSet { get; set; }
 
+    public EBoardViewModel EBoardViewModel { get; }
+
+    public ElementViewModel ElementViewModel { get; }
+
     public void AddBorderDataSet(BorderDataSet borderDataSet);
 
     public void AddBrushDataSet(BrushDataSet brushDataSet);
 
     public void AddPlacementDataSet(PlacementDataSet placementDataSet);
+
+    public void SetEBoardAndElementViewModel(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel);
 }

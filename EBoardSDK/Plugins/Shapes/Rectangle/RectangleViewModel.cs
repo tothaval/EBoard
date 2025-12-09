@@ -21,13 +21,21 @@ public partial class RectangleViewModel : EBoardElementPluginBaseViewModel
 
     private string pluginHeader = "Rectangle Shape Element";
 
-    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+    public override string PluginHeader
+    {
+        get { return this.pluginHeader; }
+        set { this.pluginHeader = value; }
+    }
 
     private string pluginName = "RectangleShape";
 
     public override bool NoDefaultBorders { get; } = true;
 
-    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+    public override string PluginName
+    {
+        get { return this.pluginName; }
+        set { this.pluginName = value; }
+    }
 
     public override string ElementPluginName => "Rectangle";
 

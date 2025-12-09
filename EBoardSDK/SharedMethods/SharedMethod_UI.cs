@@ -4,11 +4,13 @@
 
 namespace EBoardSDK.SharedMethods;
 
+using EBoardConfigManager.Models;
 using EBoardSDK.Controls;
 using EBoardSDK.Controls.QuadValueSetup;
 using EBoardSDK.Enums;
 using EBoardSDK.Models;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -68,18 +70,19 @@ public class SharedMethod_UI
 
     public void MaximizeApplication(Window mainWindow)
     {
-        //MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
-
+        // MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
         if (mainWindow.WindowState == WindowState.Normal)
         {
             mainWindow.WindowState = WindowState.Maximized;
-            mainWindow.Background = (SolidColorBrush)Application.Current.Resources["BackgroundBrush"];
+
+            // mainWindow.Background = (SolidColorBrush)Application.Current.Resources["BackgroundBrush"];
             Application.Current.Resources["EboardMainWindowMaximizeContextMenuHeader"] = "Normalize";
         }
         else
         {
             mainWindow.WindowState = WindowState.Normal;
-            mainWindow.Background = new SolidColorBrush(Colors.Transparent);
+
+            // mainWindow.Background = new SolidColorBrush(Colors.Transparent);
             Application.Current.Resources["EboardMainWindowMaximizeContextMenuHeader"] = "Maximize";
         }
     }
@@ -95,10 +98,35 @@ public class SharedMethod_UI
         if (setPath.ShowDialog() == true)
         {
             imagePathProperty = setPath.FileName;
-            //viewModel.ImagePath = setPath.FileName;
+
+            // viewModel.ImagePath = setPath.FileName;
         }
 
         return imagePathProperty;
+    }
+
+    public string SetSaveDirectory()
+    {
+        Microsoft.Win32.OpenFolderDialog setPath = new Microsoft.Win32.OpenFolderDialog();
+        setPath.InitialDirectory = Environment.GetEnvironmentVariable("userdir");
+
+        if (setPath.ShowDialog() == true)
+        {
+            var savePath = Path.Combine(setPath.FolderName, DataLocations.EBoardDataRootPath);
+
+            if (!Directory.Exists(savePath))
+            {
+                Directory.CreateDirectory(savePath);
+
+                Directory.CreateDirectory(Path.Combine(savePath, DataLocations.EBoardInstalledPluginsPath));
+
+                Directory.CreateDirectory(Path.Combine(savePath, DataLocations.EBoardScreenDataPath));
+            }
+
+            return setPath.FolderName;
+        }
+
+        return string.Empty;
     }
 
     public void ShutDownMachine()
