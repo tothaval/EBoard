@@ -50,14 +50,14 @@
             <Setter Property="Background" Value="{Binding BrushManagement.Background, NotifyOnSourceUpdated=True}"/>
         </Style>
 
-        <Style TargetType="TextBox" >
+        <Style TargetType="TextBox" x:Key="ValueTextBox">
             <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderThickness" Value="3 2 0 0"/>
         </Style>
 
-        <Style TargetType="TextBlock" >
+        <Style TargetType="TextBlock" x:Key="ValueTextBlock">
             <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="TextBox.BorderBrush" Value="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"/>
@@ -250,7 +250,7 @@
                 <StackPanel Orientation="Vertical" Margin="0 0 10 0">
 
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Margin="15 5 0 0">
+                        <TextBlock Margin="15 5 0 0" Style="{StaticResource ValueTextBlock}">
                     <Run Text="Selected: "/>
                     <Run Text="{Binding SelectedEBoard.EBoardName}"/>
 
@@ -304,8 +304,8 @@
                                 BorderBrush="{Binding BrushManagement.Border}"
                                 BorderThickness="3">
                                         <Grid VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding EBoardName, NotifyOnSourceUpdated=True}"
-                                               Foreground="{Binding BrushManagement.Foreground}"         
+                                            <TextBlock Text="{Binding EBoardName, NotifyOnSourceUpdated=True}"    
+                                                        Style="{StaticResource ValueTextBlock}"
                                                Padding="0 10 0 0"
                                                MinWidth="42"
                                                MinHeight="42"
@@ -339,40 +339,44 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
 
-                        <TextBlock Text="Name"
+                        <TextBlock Text="Name" Style="{StaticResource ValueTextBlock}"
                          Grid.Column="0"
                          Grid.Row="0"/>
                         <TextBox Text="{Binding EBoardName,
                             NotifyOnSourceUpdated=True,
                             UpdateSourceTrigger=LostFocus}"
+                                 Style="{StaticResource ValueTextBox}"
                                  Grid.Column="1"
                                  Grid.Row="0"/>
 
-                        <TextBlock Text="Depth"
+                        <TextBlock Text="Depth"  Style="{StaticResource ValueTextBlock}"
                          Grid.Column="0"
                          Grid.Row="1"/>
                         <TextBox Text="{Binding EBoardDepth,
                   NotifyOnSourceUpdated=True,
                   UpdateSourceTrigger=LostFocus}"
+                                 Style="{StaticResource ValueTextBox}"
                          Grid.Column="1"
                          Grid.Row="1"/>
 
 
-                        <TextBlock Text="Width"                                   
+                        <TextBlock Text="Width"  Style="{StaticResource ValueTextBlock}"  
                          Grid.Column="0"
                          Grid.Row="2"/>
                         <TextBox Text="{Binding NewEBoardWidth,
                   NotifyOnSourceUpdated=True,
                   UpdateSourceTrigger=LostFocus}"
+                                 Style="{StaticResource ValueTextBox}"
                          Grid.Column="1"
                          Grid.Row="2"/>
 
-                        <TextBlock Text="Height"
+                        <TextBlock Text="Height"  Style="{StaticResource ValueTextBlock}"
                          Grid.Column="0"
                          Grid.Row="3"/>
                         <TextBox Text="{Binding NewEBoardHeight,
                   NotifyOnSourceUpdated=True,
                   UpdateSourceTrigger=LostFocus}"
+                                 Style="{StaticResource ValueTextBox}"
                          Grid.Column="1"
                          Grid.Row="3"/>
 
@@ -384,7 +388,7 @@
                                 Grid.Row="0"
                                 Grid.RowSpan="6"/>
 
-                        <TextBlock Text="Created"
+                        <TextBlock Text="Created"  Style="{StaticResource ValueTextBlock}"
                                    Grid.Column="0"
                                    Grid.Row="4"/>
                         <TextBlock Text="{Binding EBoardCreatedDate,
@@ -393,7 +397,7 @@
                                    Grid.Column="1"
                                    Grid.Row="4"/>
 
-                        <TextBlock Text="Active"
+                        <TextBlock Text="Active"  Style="{StaticResource ValueTextBlock}"
                                    Grid.Column="0"
                                    Grid.Row="5"/>
                         <TextBlock Grid.Column="1"

@@ -4,7 +4,8 @@
                     xmlns:vms="clr-namespace:EBoardSDK.ViewModels"
                     xmlns:views="clr-namespace:EBoardSDK.Views"
                     xmlns:esdkctrl_quadsetup ="clr-namespace:EBoardSDK.Controls.QuadValueSetup"                    
-                    xmlns:esdkctrl ="clr-namespace:EBoardSDK.Controls">
+                    xmlns:esdkctrl ="clr-namespace:EBoardSDK.Controls"
+                    xmlns:esdkctrl_area ="clr-namespace:EBoardSDK.Controls.Area">
 
     <DataTemplate DataType="{x:Type eboard:MainViewModel}">
         <eboard:MainWindow/>
@@ -22,6 +23,10 @@
         <views:EBoardBrowserView/>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type vms:EBoardSettingsViewModel}">
+        <views:EBoardSettingsView/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type vms:EBoardViewModel}">
         <views:EBoardView/>
     </DataTemplate>
@@ -32,6 +37,18 @@
 
     <DataTemplate DataType="{x:Type esdkctrl_quadsetup:QuadValueSetupViewModel}">
         <esdkctrl_quadsetup:QuadValueSetupView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type esdkctrl_area:AreaViewModel`1}">
+        <esdkctrl_area:AreaView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type esdkctrl_area:AreaHorizontalInnerViewModel`1}">
+        <esdkctrl_area:AreaHorizontalInnerView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type esdkctrl_area:AreaVerticalOuterViewModel`1}">
+        <esdkctrl_area:AreaVerticalOuterView/>
     </DataTemplate>
 
     <DataTemplate DataType="vms:ElementViewModel">

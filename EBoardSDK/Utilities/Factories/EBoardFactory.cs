@@ -6,9 +6,9 @@ namespace EBoardSDK.Utilities.Factories;
 
 using EBoardSDK.DataSets;
 using EBoardSDK.Models;
-using EBoardSDK.ViewModels;
 using EBoardSDK.Models.DataSets;
 using EBoardSDK.Plugins;
+using EBoardSDK.ViewModels;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -83,11 +83,11 @@ public static class EBoardFactory
 
                     externalPlugin.PluginHeader = element.PluginHeader;
 
-                    var plugindatapath = eboardScreen.ContentDataFilePaths.Where(x => x.FullName.EndsWith($"{eds.EID}.data")).FirstOrDefault();
+                    var contentPath = element.ContentFilePath;
 
-                    if (plugindatapath != null)
+                    if (!string.IsNullOrWhiteSpace(contentPath))
                     {
-                        await eds.Plugin.Load(plugindatapath.FullName);
+                        await eds.Plugin.Load(contentPath);
                     }
 
                     try

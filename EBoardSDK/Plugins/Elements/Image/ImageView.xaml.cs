@@ -2,10 +2,10 @@
 // Stephan Kammel
 // </copyright>
 
-using System.Windows.Controls;
-
 namespace EBoardSDK.Plugins.Elements.Image
 {
+    using System.Windows.Controls;
+
     /// <summary>
     /// Interaktionslogik für ImageView.xaml
     /// </summary>

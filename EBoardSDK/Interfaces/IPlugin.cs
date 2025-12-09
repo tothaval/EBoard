@@ -6,6 +6,7 @@ namespace EBoardSDK.Interfaces;
 
 using EBoardSDK.Enums;
 using EBoardSDK.Models;
+using EBoardSDK.ViewModels;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -43,6 +44,10 @@ public interface IPlugin
 
     public ResourceDictionary ResourceDictionary { get; }
 
+    public EBoardViewModel EBoardViewModel { get; }
+
+    public ElementViewModel ElementViewModel { get; }
+
     public bool ApplyBrush(Brush brush, BrushTargets brushTargets);
 
     public bool ApplyRedraw();
@@ -50,4 +55,6 @@ public interface IPlugin
     public Task<EBoardFeedbackMessage> Load(string path);
 
     public Task<EBoardFeedbackMessage> Save(string path);
+
+    public void SetEBoardAndElementViewModel(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel);
 }

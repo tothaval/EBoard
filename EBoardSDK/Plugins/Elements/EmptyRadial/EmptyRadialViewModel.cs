@@ -35,11 +35,19 @@ public partial class EmptyRadialViewModel : EBoardElementPluginBaseViewModel
 
     private string pluginHeader = "Empty Radial Element";
 
-    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+    public override string PluginHeader
+    {
+        get { return this.pluginHeader; }
+        set { this.pluginHeader = value; }
+    }
 
     private string pluginName = "EmptyRadial";
 
-    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+    public override string PluginName
+    {
+        get { return this.pluginName; }
+        set { this.pluginName = value; }
+    }
 
     public override string ElementPluginName => "Radial";
 

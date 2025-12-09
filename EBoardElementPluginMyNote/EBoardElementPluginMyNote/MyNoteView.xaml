@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:EBoardElementPluginMyNote"
              xmlns:vms="clr-namespace:EBoardElementPluginMyNote.ViewModels"
              xmlns:views="clr-namespace:EBoardElementPluginMyNote.Views"
+             xmlns:eboardsdkarea="clr-namespace:EBoardSDK.Controls.Area;assembly=EBoardSDK"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=local:MyNoteViewModel}">
@@ -23,23 +24,27 @@
     Background="Transparent">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-
+                <!--<ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>-->
             </Grid.ColumnDefinitions>
+
             <TabControl  Background="Transparent"
                  BorderThickness="0"
                  BorderBrush="Transparent"
                  Grid.Column="0"
+                         HorizontalAlignment="Center"
+                         HorizontalContentAlignment="Stretch"
                  >
 
                 <TabItem x:Name="TI_log"  Header="Log"
                  Background="FloralWhite"
                  Foreground="Black"
                  BorderBrush="Transparent"
-                 BorderThickness="0">
-                    <views:NoteView DataContext="{Binding Protocol}"/>
+                 BorderThickness="0"
+                         HorizontalAlignment="Center">
+                    <views:NoteView DataContext="{Binding Protocol}"
+                                    HorizontalAlignment="Center"/>
                 </TabItem>
 
                 <TabItem x:Name="TI_notes" Header="Notes"
@@ -55,7 +60,9 @@
                  Foreground="Black"
                  BorderBrush="Transparent"
                  BorderThickness="0">
-
+                    <Border>
+                        <eboardsdkarea:AreaView DataContext="{Binding Area}"/>
+                    </Border>
                 </TabItem>
 
                 <TabItem x:Name="TI_history"  Header="History"
@@ -63,15 +70,17 @@
                  Foreground="Black"
                  BorderBrush="Transparent"
                  BorderThickness="0">
-
-
                 </TabItem>
 
             </TabControl>
 
-            <StackPanel x:Name="SP_options" Visibility="{Binding OptionsClicked,
-                Converter={StaticResource visConv}}"
+            <!--<StackPanel Visibility="Hidden"
+                        IsEnabled="False"
+                        x:Name="SP_options" 
                     Grid.Column="1">
+                -->
+            <!--Visibility="{Binding OptionsClicked,Converter={StaticResource visConv}}"-->
+            <!--
 
                 <Slider 
                         Interval="1"
@@ -148,10 +157,12 @@
                 </Slider>
             </StackPanel>
 
-            <Button x:Name="BTN_options" 
+            <Button  Visibility="Hidden"
+                     IsEnabled="False"
+                     x:Name="BTN_options"
                 Grid.Column="2"
                 Height="50" Width="4"
-                    Command="{Binding OptionsClickedCommand}"/>
+                    Command="{Binding OptionsClickedCommand}"/>-->
         </Grid>
     </Border>
 </UserControl>

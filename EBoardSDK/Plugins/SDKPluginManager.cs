@@ -5,9 +5,14 @@
 namespace EBoardSDK.Plugins;
 
 using EBoardSDK.Plugins.Addons.SoundMix;
+using EBoardSDK.Plugins.Areas.FileLinkArea;
+using EBoardSDK.Plugins.Areas.TwoXThreeVImageArea;
+using EBoardSDK.Plugins.Elements.BasicAV;
 using EBoardSDK.Plugins.Elements.EmptyLinear;
 using EBoardSDK.Plugins.Elements.EmptyRadial;
+using EBoardSDK.Plugins.Elements.Gold;
 using EBoardSDK.Plugins.Elements.Image;
+using EBoardSDK.Plugins.Elements.Link;
 using EBoardSDK.Plugins.Elements.StandardText;
 using EBoardSDK.Plugins.Shapes.Ellipse;
 using EBoardSDK.Plugins.Shapes.Rectangle;
@@ -22,11 +27,17 @@ public static class SDKPluginManager
 
         new EmptyLinearViewModel(),
         new EmptyRadialViewModel(),
+        new GoldViewModel(),
         new ImageViewModel(),
+        new LinkViewModel(),
         new StandardTextViewModel(),
+        new BasicAVMainViewModel(),
 
         new EllipseViewModel(),
         new RectangleViewModel(),
+
+        new FileLinkAreaViewModel(),
+        new TwoXThreeImageAreaViewModel(),
 
         new SummonerViewModel(),
         new UptimeViewModel(),

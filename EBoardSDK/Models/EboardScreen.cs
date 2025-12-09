@@ -1,12 +1,11 @@
 ﻿// <copyright file="EboardScreen.cs" company=".">
 // Stephan Kammel
 // </copyright>
+namespace EBoardSDK.Models;
 
 using EBoardSDK.Models.DataSets;
 using System.IO;
 using System.Text.Json.Serialization;
-
-namespace EBoardSDK.Models;
 
 public class EboardScreen
 {

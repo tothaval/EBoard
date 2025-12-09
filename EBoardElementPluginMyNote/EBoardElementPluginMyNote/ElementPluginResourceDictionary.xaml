@@ -2,11 +2,19 @@
                     x:Name="ElementPluginResources"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:elementPlugin ="clr-namespace:EBoardElementPluginMyNote"
+                    xmlns:viewmodels ="clr-namespace:EBoardElementPluginMyNote.ViewModels"
+                    xmlns:views ="clr-namespace:EBoardElementPluginMyNote.Views"
              xmlns:sys="clr-namespace:System;assembly=mscorlib">
     
     <DataTemplate DataType="{x:Type elementPlugin:MyNoteViewModel}">
         <elementPlugin:MyNoteView/>
     </DataTemplate>
 
-    
+    <DataTemplate DataType="{x:Type viewmodels:NotesViewModel}">
+        <views:NotesView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodels:NoteViewModel}">
+        <views:NoteView/>
+    </DataTemplate>
 </ResourceDictionary>

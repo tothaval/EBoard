@@ -27,7 +27,7 @@ public partial class DrivesViewModel : EBoardElementPluginBaseViewModel
 
         this.ElementScreenIntegrationConstraints = new ElementScreenIntegrationConstraints(ElementInstantiationPolicy.OnePerScreen);
 
-        this.BrushManagement.PropertyChangedEvent += BrushManagement_PropertyChangedEvent;
+        this.BrushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
 
 
         this.RefreshDrives();
@@ -35,7 +35,7 @@ public partial class DrivesViewModel : EBoardElementPluginBaseViewModel
 
     private void BrushManagement_PropertyChangedEvent()
     {
-        RefreshDrives();
+        this.RefreshDrives();
     }
 
     private void RefreshDrives()
@@ -63,10 +63,18 @@ public partial class DrivesViewModel : EBoardElementPluginBaseViewModel
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
 
-    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+    public override string PluginHeader
+    {
+        get { return this.pluginHeader; }
+        set { this.pluginHeader = value; }
+    }
 
 
-    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+    public override string PluginName
+    {
+        get { return this.pluginName; }
+        set { this.pluginName = value; }
+    }
 
     public override string ElementPluginName => "Drives";
 

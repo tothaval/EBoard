@@ -37,7 +37,6 @@ public partial class QuadValueSetupViewModel : ObservableObject, IDisposable
         if (c.Value1 == c.Value2 && c.Value1 == c.Value3 && c.Value1 == c.Value4)
         {
             this.all = c.Value1;
-
         }
         else
         {

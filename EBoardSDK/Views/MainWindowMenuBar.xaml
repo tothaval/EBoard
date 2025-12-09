@@ -12,7 +12,7 @@
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="bool2vis"/>
-        
+
         <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
             <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
             <Setter Property="Background" Value="{Binding BrushManagement.Background}"/>
@@ -30,8 +30,8 @@
             <Setter Property="BorderThickness" Value="3"/>
             <Setter Property="TextBlock.Foreground" Value="{Binding ScreenBrushManagement.Foreground}"/>
             <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Foreground}"/>
-            <Setter Property="Background" Value="{Binding ScreenBrushManagement.Background}"/>            
-            
+            <Setter Property="Background" Value="{Binding ScreenBrushManagement.Background}"/>
+
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Highlight}"/>
@@ -41,7 +41,7 @@
                     <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Foreground}"/>
                 </Trigger>
             </Style.Triggers>
-            
+
         </Style>
 
         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource SubMenuItemStyle}" x:Key="sub">
@@ -87,11 +87,11 @@
             <Setter Property="BorderBrush" Value="{Binding ScreenBrushManagement.Border }"/>
             <Setter Property="BorderThickness" Value="5"/>
             <Setter Property="MaxHeight" Value="50"/>
-            <Setter Property="MinWidth" Value="50"/>                
+            <Setter Property="MinWidth" Value="50"/>
         </Style>
-               
+
     </UserControl.Resources>
-        
+
     <Grid>
 
         <StackPanel Orientation="Horizontal"
@@ -102,45 +102,57 @@
                 NotifyOnSourceUpdated=True,
                 UpdateSourceTrigger=PropertyChanged}"/>
 
+            <ToggleButton Content="Eboard Settings"
+                          IsChecked="{Binding EBoardSettingsSwitch,
+                NotifyOnSourceUpdated=True,
+                UpdateSourceTrigger=PropertyChanged}"/>
+
             <Border Style="{StaticResource MenuBarBorder}">
-                    <Grid Background="Transparent">
+                <Grid Background="Transparent">
                     <Menu>
                         <MenuItem Header="Addons" ItemsSource="{Binding PluginCategoryAddons}"
                                   ItemContainerStyle="{StaticResource PluginLogoMenuItem}"
-                                  >                            
+                                  >
                         </MenuItem>
-                        </Menu>
-                    </Grid>
+                    </Menu>
+                </Grid>
             </Border>
 
             <Border Style="{StaticResource MenuBarBorder}">
-                    <Grid Background="Transparent">
-                        <Menu>
-                    <MenuItem Header="Elements" 
+                <Grid Background="Transparent">
+                    <Menu>
+                        <MenuItem Header="Elements" 
                               ItemsSource="{Binding PluginCategoryElements}"
                               ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
-                        </Menu>
-                    </Grid>
-            </Border>
-            
-            <Border Style="{StaticResource MenuBarBorder}"
-                    Visibility="{Binding IsDebug, Converter={StaticResource bool2vis}}">
-                <Grid Background="Transparent">
-                        <Menu>
-                    <MenuItem ItemsSource="{Binding PluginProjects}" Header="Development"
-                              ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
-                        </Menu>
+                    </Menu>
                 </Grid>
             </Border>
 
             <Border Style="{StaticResource MenuBarBorder}" >
                 <Grid Background="Transparent">
-                        <Menu>
-                            <MenuItem Header="Shapes"
+                    <Menu>
+                        <MenuItem Header="Shapes"
                                       ItemsSource="{Binding PluginCategoryShapes}"
                                       ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
-                        </Menu>
-                </Grid>    
+                    </Menu>
+                </Grid>
+            </Border>
+
+            <Border Style="{StaticResource MenuBarBorder}">
+                <Grid Background="Transparent">
+                    <Menu>
+
+                        <!--<ComboBox ItemsSource="{Binding FoundPlugins}">
+                            <ItemContainerTemplate>
+
+                                <TextBlock Text="{Binding PluginHeader}"/>
+                            </ItemContainerTemplate>
+                        </ComboBox>-->
+
+                        <MenuItem Header="Areas" ItemsSource="{Binding PluginCategoryAreas}"
+                              ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
+                    </Menu>
+                </Grid>
             </Border>
 
             <Border Style="{StaticResource MenuBarBorder}">
@@ -148,7 +160,7 @@
                     <Menu>
                         <MenuItem Header="Tools" ItemsSource="{Binding PluginCategoryTools}"
                               ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
-                        </Menu>
+                    </Menu>
                 </Grid>
             </Border>
 

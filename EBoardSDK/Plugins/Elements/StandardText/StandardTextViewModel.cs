@@ -2,19 +2,18 @@
 // Stephan Kammel
 // </copyright>
 
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Enums;
-using EBoardSDK.Models;
-using EBoardSDK.SharedMethods;
-using System.IO;
-using System.Reflection;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-
 namespace EBoardSDK.Plugins.Elements.StandardText
 {
+    using CommunityToolkit.Mvvm.ComponentModel;
+    using CommunityToolkit.Mvvm.Input;
+    using EBoardSDK.Enums;
+    using EBoardSDK.Models;
+    using EBoardSDK.SharedMethods;
+    using System.Reflection;
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Media;
+
     public partial class StandardTextViewModel : EBoardElementPluginBaseViewModel
     {
         [ObservableProperty]
@@ -51,11 +50,19 @@ namespace EBoardSDK.Plugins.Elements.StandardText
 
         private string pluginHeader = "Standard Text Element";
 
-        public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+        public override string PluginHeader
+        {
+            get { return this.pluginHeader; }
+            set { this.pluginHeader = value; }
+        }
 
         private string pluginName = "StandardText";
 
-        public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+        public override string PluginName
+        {
+            get { return this.pluginName; }
+            set { this.pluginName = value; }
+        }
 
         public override string ElementPluginName => "StandardText";
 
@@ -93,13 +100,6 @@ namespace EBoardSDK.Plugins.Elements.StandardText
 
         public override async Task<EBoardFeedbackMessage> Load(string path)
         {
-            if (new DirectoryInfo(path).Exists)
-            {
-                string contentfilename = "content.xml";
-
-                path = Path.Combine(path, contentfilename);
-            }
-
             try
             {
                 var data = await new SharedMethod_Plugins().DeserializeConfigFiles<StandardTextModel>(path)!;
@@ -119,22 +119,16 @@ namespace EBoardSDK.Plugins.Elements.StandardText
                 return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
             }
 
-            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = "" };
+            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = string.Empty };
         }
 
         public override async Task<EBoardFeedbackMessage> Save(string path)
         {
-            string contentDataPath = $"{path}content.xml";
-            var standardTextModel = new StandardTextModel(this);
-
             EBoardFeedbackMessage? serializationResult = null;
 
-            if (new DirectoryInfo(path).Exists)
-            {
-                path = Path.Combine(path, contentDataPath);
-            }
+            var model = new StandardTextModel(this);
 
-            serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(standardTextModel, path);
+            serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
 
             if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
             {

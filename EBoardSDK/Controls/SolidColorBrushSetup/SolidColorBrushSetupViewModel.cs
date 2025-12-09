@@ -2,14 +2,14 @@
 // Stephan Kammel
 // </copyright>
 
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Enums;
-using EBoardSDK.Models;
-using System.Windows.Media;
-
 namespace EBoardSDK.Controls
 {
+    using CommunityToolkit.Mvvm.ComponentModel;
+    using CommunityToolkit.Mvvm.Input;
+    using EBoardSDK.Enums;
+    using EBoardSDK.Models;
+    using System.Windows.Media;
+
     public partial class SolidColorBrushSetupViewModel : ObservableObject, IDisposable
     {
         [ObservableProperty]

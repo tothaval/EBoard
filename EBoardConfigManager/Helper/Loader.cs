@@ -107,6 +107,7 @@ public static class Loader
             {
                 var instance = JsonSerializer.Deserialize<T>(openStream, ConfigOptions.JsonSerializerOptions);
 
+                openStream.Dispose(); // hopefully the using block collapses when catching an exception.
                 return instance;
             }
         }
@@ -114,21 +115,28 @@ public static class Loader
         {
             var s = $"filename: {file}, type {typeof(T)}";
 
+            Log.Error($"empty or damaged config file {s}");
             Log.Error(ex, s);
 
-            throw new ArgumentException(string.Join("__ ", s, ex.Message));
+            //throw new ArgumentException(string.Join("__ ", s, ex.Message));
         }
         catch (System.Text.Json.JsonException jsonEx)
         {
             var s = $"filename: {file}, type {typeof(T)}";
 
+            Log.Error($"empty or damaged config file {s}");
             Log.Error(jsonEx, s);
 
-            throw new System.Text.Json.JsonException(string.Join("__ ", s, jsonEx.Message));
+            //throw new System.Text.Json.JsonException(string.Join("__ ", s, jsonEx.Message));
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            throw;
+            var s = $"filename: {file}, type {typeof(T)}";
+
+            Log.Error($"empty or damaged config file {s}");
+            Log.Error(e, s);
         }
+
+        return (T)Activator.CreateInstance(typeof(T));
     }
 }

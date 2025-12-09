@@ -2,12 +2,12 @@
 // Stephan Kammel
 // </copyright>
 
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-
 namespace EBoardSDK.Controls
 {
+    using System.Windows;
+    using System.Windows.Controls;
+    using System.Windows.Input;
+
     /// <summary>
     /// Interaktionslogik für SolidColorBrushSetup.xaml
     /// </summary>
@@ -20,8 +20,8 @@ namespace EBoardSDK.Controls
 
         public Style ButtonStyle
         {
-            get { return (Style)GetValue(ButtonStyleProperty); }
-            set { SetValue(ButtonStyleProperty, value); }
+            get { return (Style)this.GetValue(ButtonStyleProperty); }
+            set { this.SetValue(ButtonStyleProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for ButtonStyle.  This enables animation, styling, binding, etc...

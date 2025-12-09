@@ -84,7 +84,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EBoardElementLinkPlugin\EBoardElementPluginLinker.csproj" />
     <ProjectReference Include="..\EBoardElementPluginBudgeteer\EBoardElementPluginBudgeteer\EBoardElementPluginBudgeteer.csproj" />
     <ProjectReference Include="..\EBoardElementPluginCommand\EBoardElementPluginCommand\EBoardElementPluginCommand.csproj" />
     <ProjectReference Include="..\EboardElementPluginCountDownTimer\EboardElementPluginCountDownTimer\EboardElementPluginCountDownTimer.csproj" />

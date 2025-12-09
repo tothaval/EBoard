@@ -16,7 +16,7 @@
         </Style>
 
         <Style TargetType="Slider" >
-            <Setter Property="Maximum" Value="{Binding ElementName=QVS, Path=Maximum}"/>
+            <Setter Property="Maximum" Value="{Binding ElementName=SCBS, Path=Maximum}"/>
             <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
         </Style>
 

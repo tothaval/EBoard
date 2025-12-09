@@ -2,10 +2,10 @@
 // Stephan Kammel
 // </copyright>
 
-using System.Windows.Controls;
-
 namespace EBoardSDK.Plugins.Elements.EmptyLinear
 {
+    using System.Windows.Controls;
+
     /// <summary>
     /// Interaktionslogik für EmptyLinearView.xaml
     /// </summary>

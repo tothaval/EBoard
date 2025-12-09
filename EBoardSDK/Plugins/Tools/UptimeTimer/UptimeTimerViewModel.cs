@@ -31,8 +31,7 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
     {
         this.ElementScreenIntegrationConstraints = new ElementScreenIntegrationConstraints(ElementInstantiationPolicy.OnePerScreen);
 
-        //Task.Delay(500);
-
+        // Task.Delay(500);
         this.InstantiateProperties();
     }
 
@@ -44,9 +43,17 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
 
     public override PluginCategories PluginCategory => PluginCategories.Tool;
 
-    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+    public override string PluginHeader
+    {
+        get { return this.pluginHeader; }
+        set { this.pluginHeader = value; }
+    }
 
-    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+    public override string PluginName
+    {
+        get { return this.pluginName; }
+        set { this.pluginName = value; }
+    }
 
     public override string ElementPluginName => "Uptimer";
 

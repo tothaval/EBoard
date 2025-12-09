@@ -1,19 +1,17 @@
 ﻿// <copyright file="SoundMixMainView.xaml.cs" company=".">
 // Stephan Kammel
 // </copyright>
+namespace EBoardSDK.Plugins.Addons.SoundMix;
 
 using System.Windows.Controls;
 
-namespace EBoardSDK.Plugins.Addons.SoundMix
+/// <summary>
+/// Interaktionslogik für SoundMixMainView.xaml
+/// </summary>
+public partial class SoundMixMainView : UserControl
 {
-    /// <summary>
-    /// Interaktionslogik für SoundMixMainView.xaml
-    /// </summary>
-    public partial class SoundMixMainView : UserControl
+    public SoundMixMainView()
     {
-        public SoundMixMainView()
-        {
-            this.InitializeComponent();
-        }
+        this.InitializeComponent();
     }
 }

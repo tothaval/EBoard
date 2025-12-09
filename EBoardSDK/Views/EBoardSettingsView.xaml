@@ -1,0 +1,79 @@
+﻿<UserControl x:Class="EBoardSDK.Views.EBoardSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EBoardSDK.Views"
+             xmlns:ut="clr-namespace:EBoardSDK.Utilities"
+             xmlns:vms="clr-namespace:EBoardSDK.ViewModels" 
+             xmlns:esdkCtrl="clr-namespace:EBoardSDK.Controls"
+             xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
+             x:Name="EBoard_EBoardSettings"
+             d:DataContext="{d:DesignInstance Type=vms:EBoardSettingsViewModel}"
+             mc:Ignorable="d" 
+             ClipToBounds="True"
+             d:DesignHeight="450" d:DesignWidth="800"
+             >
+
+    <UserControl.Resources>
+        <Style TargetType="Label">
+            <Setter Property="Foreground" Value="{Binding EBoardViewModel.BrushManagement.Foreground}"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Background="{Binding EBoardViewModel.BrushManagement.Background}"
+            BorderBrush="{Binding EBoardViewModel.BrushManagement.Border}"
+            BorderThickness="{Binding EBoardViewModel.BorderManagement.BorderThickness}"
+            CornerRadius="{Binding EBoardViewModel.BorderManagement.CornerRadius}"
+            Padding="{Binding EBoardViewModel.BorderManagement.Padding}"
+            Margin="{Binding EBoardViewModel.BorderManagement.Margin}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <WrapPanel Orientation="Vertical" Grid.Row="0">
+                <WrapPanel Orientation="Horizontal">
+                    <Label Content="Arrangement Rotation"/>
+                    <Label Content="{Binding ArrangementRotationValue, NotifyOnSourceUpdated=True}"/>
+                </WrapPanel>
+                <Slider Value="{Binding ArrangementRotationValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                   Minimum="-90"
+                   Maximum="90"
+                   Width="361"
+                   SmallChange="1"
+                   LargeChange="5"
+                   Interval="1"
+                   Orientation="Horizontal"/>
+            </WrapPanel>
+
+            <WrapPanel Orientation="Vertical" Grid.Row="1">
+                <WrapPanel Orientation="Horizontal">
+                    <Label Content="Arrangement Offset"
+                  MinWidth="50"/>
+                    <Label Content="{Binding ArrangementOffsetValue, NotifyOnSourceUpdated=True}"
+                      MinWidth="30"/>
+                </WrapPanel>
+                <Slider Value="{Binding ArrangementOffsetValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                   Minimum="-90"
+                   Maximum="90"
+                   Width="361"
+                   SmallChange="1"
+                   LargeChange="5"
+                   Interval="1"
+                   Orientation="Horizontal"/>
+            </WrapPanel>
+
+            <Rectangle StrokeThickness="1" Stroke="{Binding EBoardViewModel.BrushManagement.Border}" HorizontalAlignment="Stretch" Grid.Row="2"/>
+
+            <WrapPanel Orientation="Horizontal" Grid.Row="3">
+                <Button Content="Line" Command="{Binding ArrangeGroupAsLineCommand}" Style="{StaticResource DefaultButtonStyle}"/>
+                <Button Visibility="Hidden" IsEnabled="False" Content="Square" Command="{Binding ArrangeGroupAsSquareCommand}" Style="{StaticResource DefaultButtonStyle}"/>
+                <Button Visibility="Hidden" IsEnabled="False" Content="Random 10x10" Command="{Binding ArrangeGroupAsRandomMatrix10x10Command}" Style="{StaticResource DefaultButtonStyle}"/>
+            </WrapPanel>
+        </Grid>
+    </Border>
+</UserControl>

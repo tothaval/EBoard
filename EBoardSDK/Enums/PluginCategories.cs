@@ -9,6 +9,7 @@ public enum PluginCategories
     Addon,
     Element,
     Shape,
+    Area,
     Tool,
 
     Unkown,

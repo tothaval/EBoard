@@ -38,7 +38,6 @@ public class BrushManagement : IElementBrushes
     }
 
     // store background brush while user control object is highlighted due to selection or due to having focus
-
     public Brush SelectionFallbackBrush
     {
         get

@@ -1,6 +1,8 @@
 namespace EBoardElementPluginMyNote;
 
+using EBoardElementPluginMyNote.ViewModels;
 using EBoardSDK;
+using EBoardSDK.Controls.Area;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins;
 using System.Reflection;
@@ -10,6 +12,11 @@ using System.Windows.Media;
 
 public class MyNoteViewModel : EBoardElementPluginBaseViewModel
 {
+    public NoteViewModel Protocol { get; }
+    public NotesViewModel Notes { get; }
+
+    public AreaViewModel<MyNoteViewModel> Area { get; }
+
     public override PluginCategories PluginCategory => PluginCategories.Element;
 
     public override bool NoDefaultBorders { get; } = false;
@@ -35,6 +42,13 @@ public class MyNoteViewModel : EBoardElementPluginBaseViewModel
     public override Type ElementPluginView => typeof(MyNoteView);
 
     public override Type ElementPluginViewModel => typeof(MyNoteViewModel);
+
+    public MyNoteViewModel()
+    {
+        this.Protocol = new NoteViewModel();
+        this.Notes = new NotesViewModel();
+        this.Area = new AreaViewModel<MyNoteViewModel>();
+    }
 
     public override Task<EBoardFeedbackMessage> Load(string path)
     {

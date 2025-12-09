@@ -15,22 +15,25 @@ namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Models;
 using EBoardSDK.Controls;
 using EBoardSDK.Controls.QuadValueSetup;
+using EBoardSDK.DataSets;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Interfaces.ScreenIntegration;
+using EBoardSDK.Models;
+using EBoardSDK.Plugins;
 using EBoardSDK.SharedMethods;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
-using EBoardSDK.DataSets;
 
 public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage, IEboardIdentity, IDisposable
 {
     private readonly MainViewModel mainViewModel;
+
+    private EBoardSettingsViewModel eBoardSettingsViewModel;
 
     [ObservableProperty]
     private BorderManagement borderManagement;
@@ -80,18 +83,17 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     {
         this.mainViewModel = mainViewModel;
 
+        this.eBoardSettingsViewModel = new EBoardSettingsViewModel(this);
+
         this.brushManagement = new BrushManagement();
 
         this.brushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
     }
 
     public EBoardViewModel(EboardDataSet eboardDataSet, MainViewModel mainViewModel)
+        : this(mainViewModel)
     {
-        this.mainViewModel = mainViewModel;
-
         this.ApplyData(eboardDataSet);
-
-        this.brushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
     }
 
     public IList<ElementInstantiationPolicy>? InstantiationPolicies => [
@@ -99,8 +101,9 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         ElementInstantiationPolicy.Global,
         ElementInstantiationPolicy.OnePerScreen,
         ElementInstantiationPolicy.DefaultScreenTypesOnly,
-        //ElementInstantiationPolicy.Unconstrained,
-        //ElementInstantiationPolicy.ValueNotSet
+
+        // ElementInstantiationPolicy.Unconstrained,
+        // ElementInstantiationPolicy.ValueNotSet
     ];
 
     public IList<EboardScreenType>? ScreenTypes => [
@@ -113,6 +116,8 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     /// built using $"EBoard_{DateTime().Ticks}".
     /// </summary>
     public string EBID => this.eSID;
+
+    public EBoardSettingsViewModel EBoardSettingsViewModel => this.eBoardSettingsViewModel;
 
     public SolidColorBrushSetupViewModel BackgroundBrushSetup { get; set; }
 
@@ -148,6 +153,151 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         }
 
         this.OnPropertyChanged(nameof(this.Elements));
+    }
+
+    public void ArrangeGroupAsLine()
+    {
+        var group = this.Elements.Where(e => e.IsSelected).ToList();
+
+        var selectionArrangementOrigin = new Point(25, 25);
+
+        var rotation = this.EBoardSettingsViewModel.ArrangementRotationValue;
+        var offset = this.EBoardSettingsViewModel.ArrangementOffsetValue;
+        var counter = 1 * group.Count;
+
+        foreach (ElementViewModel item in group)
+        {
+            switch (rotation)
+            {
+                case 0:
+                    item.XPosition = selectionArrangementOrigin.X + (counter * offset);
+                    item.YPosition = selectionArrangementOrigin.Y;
+                    break;
+
+                case 45:
+                    item.XPosition = selectionArrangementOrigin.X + (counter * offset);
+                    item.YPosition = selectionArrangementOrigin.Y + (counter * offset);
+                    break;
+
+                case -45:
+                    item.XPosition = selectionArrangementOrigin.X - (counter * offset);
+                    item.YPosition = selectionArrangementOrigin.Y + (counter * offset);
+                    break;
+
+                case 90:
+                    item.XPosition = selectionArrangementOrigin.X;
+                    item.YPosition = selectionArrangementOrigin.Y + (counter * offset);
+                    break;
+
+                case -90:
+                    item.XPosition = selectionArrangementOrigin.X;
+                    item.YPosition = selectionArrangementOrigin.Y - (counter * offset);
+                    break;
+
+                default:
+                    item.XPosition = selectionArrangementOrigin.X;
+                    item.YPosition = selectionArrangementOrigin.Y;
+                    break;
+            }
+
+            counter--;
+        }
+    }
+
+    public void ArrangeGroupAsLine(ElementViewModel originElement)
+    {
+        var group = this.Elements.Where(e => e.IsSelected && !e.Equals(originElement)).ToList();
+
+        var rotation = this.EBoardSettingsViewModel.ArrangementRotationValue;
+        var offset = this.EBoardSettingsViewModel.ArrangementOffsetValue;
+        var counter = 1 * group.Count;
+
+        foreach (ElementViewModel item in group)
+        {
+            switch (rotation)
+            {
+                case 0:
+                    item.XPosition = originElement.XPosition + (counter * (originElement.ElementView.ActualWidth + offset));
+
+                    item.YPosition = originElement.YPosition;
+                    break;
+
+                case 45:
+                    item.XPosition = originElement.XPosition + (counter * (originElement.ElementView.ActualWidth + offset));
+
+                    item.YPosition = originElement.YPosition + (counter * (originElement.ElementView.ActualHeight + offset));
+                    break;
+
+                case -45:
+                    item.XPosition = originElement.XPosition - (counter * (originElement.ElementView.ActualWidth + offset));
+
+                    item.YPosition = originElement.YPosition + (counter * (originElement.ElementView.ActualHeight + offset));
+                    break;
+
+                case 90:
+                    item.XPosition = originElement.XPosition;
+
+                    item.YPosition = originElement.YPosition + (counter * (originElement.ElementView.ActualHeight + offset));
+                    break;
+
+                case -90:
+                    item.XPosition = originElement.XPosition;
+
+                    item.YPosition = originElement.YPosition - (counter * (originElement.ElementView.ActualHeight + offset));
+                    break;
+
+                default:
+                    item.XPosition = originElement.XPosition;
+
+                    item.YPosition = originElement.YPosition;
+                    break;
+            }
+
+            // draw it again, so that it is correctly arranged as on top
+            originElement.XPosition--;
+            originElement.YPosition--;
+
+            originElement.XPosition++;
+            originElement.YPosition++;
+
+            counter--;
+        }
+    }
+
+    public void ArrangeGroupAsSquare(ElementViewModel? originElement = null)
+    {
+        var group = this.Elements.Where(e => e.IsSelected).ToList();
+
+        if (originElement != null)
+        {
+            group.Remove(originElement);
+        }
+
+        var rotation = this.EBoardSettingsViewModel.ArrangementRotationValue;
+        var offset = this.EBoardSettingsViewModel.ArrangementOffsetValue;
+        var counter = 1 * group.Count;
+
+        foreach (ElementViewModel item in group)
+        {
+        }
+    }
+
+    public void ArrangeGroupAsRandomMatrix10x10(ElementViewModel? originElement = null)
+    {
+        var group = this.Elements.Where(e => e.IsSelected).ToList();
+
+        if (originElement != null)
+        {
+            group.Remove(originElement);
+        }
+
+        var rotation = this.EBoardSettingsViewModel.ArrangementRotationValue;
+        var offset = this.EBoardSettingsViewModel.ArrangementOffsetValue;
+        var counter = 1 * group.Count;
+
+        foreach (ElementViewModel item in group)
+        {
+        }
     }
 
     public void BeginElementSelectionMovement(ElementViewModel elementViewModel)
@@ -214,13 +364,13 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         }
     }
 
-    public void ChangeSelection_RotationAngle(ElementViewModel elementViewModel, int rotationAngleValue)
+    public void ChangeSelection_RotationAngle(ElementViewModel elementViewModel, int rotationValueDelta)
     {
         foreach (ElementViewModel item in this.Elements)
         {
-            if (!item.Equals(elementViewModel) && item.IsSelected)
+            if (item.IsSelected)
             {
-                item.ApplyRotationAngleValue(rotationAngleValue);
+                item.ApplyRotationToGroupSelectedElement(rotationValueDelta);
             }
         }
     }
@@ -302,23 +452,42 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
 
     public int GetElementCount()
     {
-        return this.Elements.Where(x => x.Plugin.PluginCategory != PluginCategories.Shape).ToList().Count;
+        var nonshapecount = this.Elements.Where(x => x?.Plugin?.PluginCategory != PluginCategories.Shape)?.ToList().Count;
+
+        if (nonshapecount == null)
+        {
+            return 0;
+        }
+
+        return (int)nonshapecount;
     }
 
     public int GetShapeCount()
     {
-        return this.Elements.Where(x => x.Plugin.PluginCategory == PluginCategories.Shape).ToList().Count;
+        var nonshapecount = this.Elements.Where(x => x?.Plugin?.PluginCategory == PluginCategories.Shape)?.ToList().Count;
+
+        if (nonshapecount == null)
+        {
+            return 0;
+        }
+
+        return (int)nonshapecount;
     }
 
     public DateTime GetCreatedDate()
     {
-        string cutEBID = this.eSID.Replace("EBoard_", "");
+        string cutEBID = this.eSID.Replace("EBoard_", string.Empty);
 
         long ticks = long.Parse(cutEBID);
 
         DateTime dateTime = new DateTime(ticks);
 
         return dateTime;
+    }
+
+    public IList<EBoardElementPluginBaseViewModel> GetPlugins()
+    {
+        return this.mainViewModel.MainWindowMenuBarVM.FoundPlugins;
     }
 
     public bool ApplyBrush(Brush brush, BrushTargets brushTargets)
@@ -384,7 +553,6 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
 
         this.eSID = eboardDataSet.EBID;
 
-        this.CornerRadiusValue = (int)this.BorderManagement.CornerRadius.TopLeft;
         this.Height = (int)this.BorderManagement.Height;
         this.Width = (int)this.BorderManagement.Width;
 
@@ -523,6 +691,17 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
             if (!item.EID.Equals(elementViewModel.EID) && item.IsSelected)
             {
                 item.StopMovement();
+            }
+        }
+    }
+
+    private void UpdateElementsZIndexProperties(int newEBoardDepth)
+    {
+        if (this.Elements != null && this.Elements.Count > 0)
+        {
+            foreach (ElementViewModel item in this.Elements)
+            {
+                item.CalibrateZSliderValues(newEBoardDepth);
             }
         }
     }
@@ -842,17 +1021,6 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
 
                     break;
                 }
-            }
-        }
-    }
-
-    private void UpdateElementsZIndexProperties(int newEBoardDepth)
-    {
-        if (this.Elements != null && this.Elements.Count > 0)
-        {
-            foreach (ElementViewModel item in this.Elements)
-            {
-                item.CalibrateZSliderValues(newEBoardDepth);
             }
         }
     }

@@ -2,11 +2,11 @@
 // Stephan Kammel
 // </copyright>
 
-using System.IO;
-using System.Xml.Serialization;
-
 namespace EBoardSDK.SharedMethods
 {
+    using System.IO;
+    using System.Xml.Serialization;
+
     public class SharedMethod_Plugins
     {
         public Task<T>? DeserializeConfigFiles<T>(string filepath)

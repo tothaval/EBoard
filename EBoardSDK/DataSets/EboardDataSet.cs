@@ -19,9 +19,9 @@
  */
 namespace EBoardSDK.DataSets;
 
-using EBoardSDK.ViewModels;
 using EBoardSDK.Models;
 using EBoardSDK.Models.DataSets;
+using EBoardSDK.ViewModels;
 using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 

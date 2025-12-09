@@ -2,13 +2,13 @@
 // Stephan Kammel
 // </copyright>
 
-using EBoardSDK.Interfaces;
-using EBoardSDK.Models.DataSets;
-using System.Text.Json.Serialization;
-using System.Xml.Serialization;
-
 namespace EBoardSDK.Models
 {
+    using EBoardSDK.Interfaces;
+    using EBoardSDK.Models.DataSets;
+    using System.Text.Json.Serialization;
+    using System.Xml.Serialization;
+
     public class ElementConfig
     {
         /// <summary>
@@ -16,6 +16,8 @@ namespace EBoardSDK.Models
         /// creation of an element.
         /// </summary>
         public string EID { get; set; } = string.Empty;
+
+        public string ContentFilePath { get; set; } = string.Empty;
 
         public int ID { get; set; } = -1;
 
@@ -32,9 +34,9 @@ namespace EBoardSDK.Models
         /// <summary>
         /// Gets or sets determines if ElementContent is
         /// of type ShapeManagement(false)
-        /// or ContentManagement(true)
+        /// or ContentManagement(true).
         /// </summary>
-        //public bool IsContentNotShape { get; set; }
+        // public bool IsContentNotShape { get; set; }
 
         /// <summary>
         /// a string representation of an assembly, where the element type can be found
