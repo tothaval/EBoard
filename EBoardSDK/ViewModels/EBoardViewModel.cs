@@ -1,7 +1,34 @@
 ﻿// <copyright file="EBoardViewModel.cs" company=".">
 // Stephan Kammel
 // </copyright>
-
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
 /*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  EBoardViewModel
@@ -15,11 +42,8 @@ namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Controls;
-using EBoardSDK.Controls.QuadValueSetup;
-using EBoardSDK.DataSets;
+using EBoardSDK.Controls.FluidUIMenu;
 using EBoardSDK.Enums;
-using EBoardSDK.Interfaces;
 using EBoardSDK.Interfaces.ScreenIntegration;
 using EBoardSDK.Models;
 using EBoardSDK.Plugins;
@@ -29,21 +53,11 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 
-public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage, IEboardIdentity, IDisposable
+public partial class EBoardViewModel : EboardFluidUIBaseViewModel, IEboardIdentity
 {
     private readonly MainViewModel mainViewModel;
 
-    private EBoardSettingsViewModel eBoardSettingsViewModel;
-
-    [ObservableProperty]
-    private BorderManagement borderManagement;
-
-    [ObservableProperty]
-    private BrushManagement brushManagement;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private int cornerRadiusValue;
+    private ScreenControlViewModel eBoardSettingsViewModel;
 
     [ObservableProperty]
     private bool eBoardActive;
@@ -57,43 +71,59 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     private string eSID;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private int height;
-
-    [ObservableProperty]
-    private string imagePath;
-
-    [ObservableProperty]
-    private string imageBorderPath;
-
-    [ObservableProperty]
-    private int heightValue;
-
-    [ObservableProperty]
-    private int widthValue;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(BorderManagement))]
-    private int width;
-
-    [ObservableProperty]
     private ObservableCollection<ElementViewModel> elements = new ObservableCollection<ElementViewModel>();
 
-    public EBoardViewModel(MainViewModel mainViewModel)
+    //public EBoardViewModel(MainViewModel mainViewModel, string escreenId = "-1")
+    //    : base()
+    //{
+    //    this.mainViewModel = mainViewModel;
+
+    //    this.fluidUIMenuViewModel = new FluidUIMenuViewModel(this, fluidUIContextHasStand: false);
+
+    //    this.eBoardSettingsViewModel = new ScreenControlViewModel(this);
+
+    //    this.eSID = escreenId;
+
+    //    if (string.IsNullOrWhiteSpace(this.eSID) || this.eSID.Equals("-1"))
+    //    {
+    //        DateTime dateTime = DateTime.Now;
+
+    //        this.eSID = $"EBoard_{dateTime.Ticks}";
+    //    }
+
+    //    this.FontSizeValue = (int)this.FluidUI.Font.FontSize;
+
+    //    this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
+    //    this.OnPropertyChanged(nameof(this.FluidUI));
+    //}
+
+    public EBoardViewModel(MainViewModel mainViewModel, EboardScreen eboardscreenconfig)
+        : base()
     {
         this.mainViewModel = mainViewModel;
 
-        this.eBoardSettingsViewModel = new EBoardSettingsViewModel(this);
+        this.eSID = eboardscreenconfig.EBID;
+        this.EBoardName = eboardscreenconfig.EBoardName;
+        this.EBoardDepth = eboardscreenconfig.EBoardDepth;
 
-        this.brushManagement = new BrushManagement();
+        eboardscreenconfig?.EBoardScreenContext?.Design?.LoadBrushesFromColorData();
+        this.SetFluidUI(eboardscreenconfig.EBoardScreenContext);
 
-        this.brushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
-    }
+        var helper = new SharedMethod_UI();
+        helper.SetupTitleAndText(
+            this.FluidUI.DataBlock,
+            "Eboard Screen",
+            "you can have more than one eboard screen\n\nopen eboard browser to edit eboard screens\n\nyou can add elements to the visible eboard screen\n\nyou can change this description");
 
-    public EBoardViewModel(EboardDataSet eboardDataSet, MainViewModel mainViewModel)
-        : this(mainViewModel)
-    {
-        this.ApplyData(eboardDataSet);
+        this.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this, fluidUIContextHasStand: false));
+
+        this.eBoardSettingsViewModel = new ScreenControlViewModel(this);
+
+        this.FontSizeValue = (int)this.FluidUI.Font.FontSize;
+
+        this.OnPropertyChanged(nameof(this.Elements));
+        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
+        this.OnPropertyChanged(nameof(this.FluidUI));
     }
 
     public IList<ElementInstantiationPolicy>? InstantiationPolicies => [
@@ -117,23 +147,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     /// </summary>
     public string EBID => this.eSID;
 
-    public EBoardSettingsViewModel EBoardSettingsViewModel => this.eBoardSettingsViewModel;
-
-    public SolidColorBrushSetupViewModel BackgroundBrushSetup { get; set; }
-
-    public SolidColorBrushSetupViewModel ForegroundBrushSetup { get; set; }
-
-    public SolidColorBrushSetupViewModel BorderBrushSetup { get; set; }
-
-    public SolidColorBrushSetupViewModel HighlightBrushSetup { get; set; }
-
-    public QuadValueSetupViewModel CornerRadiusQuadSetup { get; set; }
-
-    public QuadValueSetupViewModel MarginQuadSetup { get; set; }
-
-    public QuadValueSetupViewModel PaddingQuadSetup { get; set; }
-
-    public QuadValueSetupViewModel ThicknessQuadSetup { get; set; }
+    public ScreenControlViewModel EBoardSettingsViewModel => this.eBoardSettingsViewModel;
 
     private static string TxtRemoveAllElementsQuestion => "Clear all elements?";
 
@@ -155,155 +169,20 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         this.OnPropertyChanged(nameof(this.Elements));
     }
 
-    public void ArrangeGroupAsLine()
-    {
-        var group = this.Elements.Where(e => e.IsSelected).ToList();
-
-        var selectionArrangementOrigin = new Point(25, 25);
-
-        var rotation = this.EBoardSettingsViewModel.ArrangementRotationValue;
-        var offset = this.EBoardSettingsViewModel.ArrangementOffsetValue;
-        var counter = 1 * group.Count;
-
-        foreach (ElementViewModel item in group)
-        {
-            switch (rotation)
-            {
-                case 0:
-                    item.XPosition = selectionArrangementOrigin.X + (counter * offset);
-                    item.YPosition = selectionArrangementOrigin.Y;
-                    break;
-
-                case 45:
-                    item.XPosition = selectionArrangementOrigin.X + (counter * offset);
-                    item.YPosition = selectionArrangementOrigin.Y + (counter * offset);
-                    break;
-
-                case -45:
-                    item.XPosition = selectionArrangementOrigin.X - (counter * offset);
-                    item.YPosition = selectionArrangementOrigin.Y + (counter * offset);
-                    break;
-
-                case 90:
-                    item.XPosition = selectionArrangementOrigin.X;
-                    item.YPosition = selectionArrangementOrigin.Y + (counter * offset);
-                    break;
-
-                case -90:
-                    item.XPosition = selectionArrangementOrigin.X;
-                    item.YPosition = selectionArrangementOrigin.Y - (counter * offset);
-                    break;
-
-                default:
-                    item.XPosition = selectionArrangementOrigin.X;
-                    item.YPosition = selectionArrangementOrigin.Y;
-                    break;
-            }
-
-            counter--;
-        }
-    }
-
-    public void ArrangeGroupAsLine(ElementViewModel originElement)
-    {
-        var group = this.Elements.Where(e => e.IsSelected && !e.Equals(originElement)).ToList();
-
-        var rotation = this.EBoardSettingsViewModel.ArrangementRotationValue;
-        var offset = this.EBoardSettingsViewModel.ArrangementOffsetValue;
-        var counter = 1 * group.Count;
-
-        foreach (ElementViewModel item in group)
-        {
-            switch (rotation)
-            {
-                case 0:
-                    item.XPosition = originElement.XPosition + (counter * (originElement.ElementView.ActualWidth + offset));
-
-                    item.YPosition = originElement.YPosition;
-                    break;
-
-                case 45:
-                    item.XPosition = originElement.XPosition + (counter * (originElement.ElementView.ActualWidth + offset));
-
-                    item.YPosition = originElement.YPosition + (counter * (originElement.ElementView.ActualHeight + offset));
-                    break;
-
-                case -45:
-                    item.XPosition = originElement.XPosition - (counter * (originElement.ElementView.ActualWidth + offset));
-
-                    item.YPosition = originElement.YPosition + (counter * (originElement.ElementView.ActualHeight + offset));
-                    break;
-
-                case 90:
-                    item.XPosition = originElement.XPosition;
-
-                    item.YPosition = originElement.YPosition + (counter * (originElement.ElementView.ActualHeight + offset));
-                    break;
-
-                case -90:
-                    item.XPosition = originElement.XPosition;
-
-                    item.YPosition = originElement.YPosition - (counter * (originElement.ElementView.ActualHeight + offset));
-                    break;
-
-                default:
-                    item.XPosition = originElement.XPosition;
-
-                    item.YPosition = originElement.YPosition;
-                    break;
-            }
-
-            // draw it again, so that it is correctly arranged as on top
-            originElement.XPosition--;
-            originElement.YPosition--;
-
-            originElement.XPosition++;
-            originElement.YPosition++;
-
-            counter--;
-        }
-    }
-
-    public void ArrangeGroupAsSquare(ElementViewModel? originElement = null)
-    {
-        var group = this.Elements.Where(e => e.IsSelected).ToList();
-
-        if (originElement != null)
-        {
-            group.Remove(originElement);
-        }
-
-        var rotation = this.EBoardSettingsViewModel.ArrangementRotationValue;
-        var offset = this.EBoardSettingsViewModel.ArrangementOffsetValue;
-        var counter = 1 * group.Count;
-
-        foreach (ElementViewModel item in group)
-        {
-        }
-    }
-
-    public void ArrangeGroupAsRandomMatrix10x10(ElementViewModel? originElement = null)
-    {
-        var group = this.Elements.Where(e => e.IsSelected).ToList();
-
-        if (originElement != null)
-        {
-            group.Remove(originElement);
-        }
-
-        var rotation = this.EBoardSettingsViewModel.ArrangementRotationValue;
-        var offset = this.EBoardSettingsViewModel.ArrangementOffsetValue;
-        var counter = 1 * group.Count;
-
-        foreach (ElementViewModel item in group)
-        {
-        }
-    }
-
     public void BeginElementSelectionMovement(ElementViewModel elementViewModel)
     {
+        if (this.Elements == null || elementViewModel == null)
+        {
+            return;
+        }
+
         foreach (ElementViewModel item in this.Elements)
         {
+            if (item == null || item.IsSelected == false)
+            {
+                continue;
+            }
+
             if (!item.Equals(elementViewModel))
             {
                 item.BeginMovement(elementViewModel);
@@ -311,99 +190,125 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         }
     }
 
-    public void ChangeElementBackgroundToImage(BrushTargets brushTargets, string path)
-    {
-        this.SetImageToBrushTarget(brushTargets, path);
-    }
+    //public void Apply_FluidUIDesignBrushTargetToImage(BrushTargets brushTargets, string path)
+    //{
+    //    this.SetImageToBrushTarget(brushTargets, path);
+    //}
 
     public void ChangeSelection_CornerRadius(ElementViewModel elementViewModel, QuadValue<int> cornerRadius)
     {
+        if (this.Elements == null || elementViewModel == null)
+        {
+            return;
+        }
+
         foreach (ElementViewModel item in this.Elements)
         {
-            if (item.Equals(elementViewModel))
+            if (item == null || item.IsSelected == false || item.EID.Equals(elementViewModel.EID))
             {
                 continue;
             }
 
             if (item.IsSelected)
             {
-                item.Apply_CornerRadiusValue(cornerRadius);
+                item.FluidUIMenuViewModel.FluidUISizeSetupViewModel.Apply_FluidUISizeQuadValue(cornerRadius, BorderTargets.CornerRadius);
             }
         }
     }
 
     public void ChangeSelection_BackgroundBrush(ElementViewModel elementViewModel, Brush brush)
     {
+        if (this.Elements == null || elementViewModel == null)
+        {
+            return;
+        }
+
         foreach (ElementViewModel item in this.Elements)
         {
-            if (item.Equals(elementViewModel))
+            if (item == null || item.IsSelected == false || item.EID.Equals(elementViewModel.EID))
             {
                 continue;
             }
 
             if (item.IsSelected)
             {
-                item.ApplyBackgroundBrush(brush);
+                item.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Apply_FluidUIDesignBrush(brush, BrushTargets.Background);
             }
         }
     }
 
     public void ChangeSelection_Height(ElementViewModel elementViewModel, int heightValue)
     {
+        if (this.Elements == null || elementViewModel == null)
+        {
+            return;
+        }
+
         foreach (ElementViewModel item in this.Elements)
         {
-            if (item.Equals(elementViewModel))
+            if (item == null || item.IsSelected == false || item.EID.Equals(elementViewModel.EID))
             {
                 continue;
             }
 
             if (item.IsSelected)
             {
-                item.Apply_HeightValue(heightValue);
+                item.FluidUIMenuViewModel.FluidUISizeSetupViewModel.Apply_FluidUISizeHeight(heightValue);
             }
         }
     }
 
     public void ChangeSelection_RotationAngle(ElementViewModel elementViewModel, int rotationValueDelta)
     {
+        if (this.Elements == null || elementViewModel == null)
+        {
+            return;
+        }
+
         foreach (ElementViewModel item in this.Elements)
         {
-            if (item.IsSelected)
+            if (item == null || item.IsSelected == false || item.EID.Equals(elementViewModel.EID))
             {
-                item.ApplyRotationToGroupSelectedElement(rotationValueDelta);
+                continue;
             }
+
+            item.ApplyRotationToGroupSelectedElement(rotationValueDelta);
         }
     }
 
     public void ChangeSelection_WidthValue(ElementViewModel elementViewModel, int widthValue)
     {
+        if (this.Elements == null || elementViewModel == null)
+        {
+            return;
+        }
+
         foreach (ElementViewModel item in this.Elements)
         {
-            if (item.Equals(elementViewModel))
+            if (item == null || item.IsSelected == false || item.EID.Equals(elementViewModel.EID))
             {
                 continue;
             }
 
-            if (item.IsSelected)
-            {
-                item.ApplyWidthValue(widthValue);
-            }
+            item.FluidUIMenuViewModel.FluidUISizeSetupViewModel.Apply_FluidUISizeWidth(widthValue);
         }
     }
 
     public void ChangeSelection_ZIndex(ElementViewModel elementViewModel, int zIndexValue)
     {
+        if (this.Elements == null || elementViewModel == null)
+        {
+            return;
+        }
+
         foreach (ElementViewModel item in this.Elements)
         {
-            if (item.Equals(elementViewModel))
+            if (item == null || item.IsSelected == false || item.EID.Equals(elementViewModel.EID))
             {
                 continue;
             }
 
-            if (item.IsSelected)
-            {
-                item.ApplyZIndexValue(zIndexValue);
-            }
+            item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ApplyZIndexValue(zIndexValue);
         }
     }
 
@@ -430,19 +335,6 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
                 item.Select();
             }
         }
-    }
-
-    public void Dispose()
-    {
-        this.BrushManagement.PropertyChangedEvent -= this.BrushManagement_PropertyChangedEvent;
-
-        this.MarginQuadSetup.PropertyChanged -= this.MarginQuadSetup_PropertyChanged;
-
-        this.PaddingQuadSetup.PropertyChanged -= this.PaddingQuadSetup_PropertyChanged;
-
-        this.ThicknessQuadSetup.PropertyChanged -= this.ThicknessQuadSetup_PropertyChanged;
-
-        GC.SuppressFinalize(this);
     }
 
     public int GetContainerCount()
@@ -490,157 +382,29 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         return this.mainViewModel.MainWindowMenuBarVM.FoundPlugins;
     }
 
-    public bool ApplyBrush(Brush brush, BrushTargets brushTargets)
-    {
-        try
-        {
-            switch (brushTargets)
-            {
-                case BrushTargets.Background:
-                    this.BrushManagement.Background = brush;
-
-                    if (brush.GetType() == typeof(ImageBrush) && this.BackgroundBrushSetup != null)
-                    {
-                        this.BackgroundBrushSetup.ColorStringValue = "imagebrush";
-                    }
-
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Background));
-                    break;
-
-                case BrushTargets.Border:
-                    this.BrushManagement.Border = brush;
-
-                    if (brush.GetType() == typeof(ImageBrush) && this.BorderBrushSetup != null)
-                    {
-                        this.BorderBrushSetup.ColorStringValue = "imagebrush";
-                    }
-
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Border));
-                    break;
-                case BrushTargets.Foreground:
-                    this.BrushManagement.Foreground = brush;
-
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Foreground));
-                    break;
-                case BrushTargets.Highlight:
-                    this.BrushManagement.Highlight = brush;
-
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Highlight));
-                    break;
-                default:
-                    break;
-            }
-
-            this.OnPropertyChanged(nameof(this.BrushManagement));
-
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-    }
-
-    public void ApplyData(EboardDataSet eboardDataSet)
-    {
-        this.BorderManagement = new BorderManagement(eboardDataSet.BorderDataSet);
-        this.BrushManagement = new BrushManagement(eboardDataSet.BrushDataSet);
-
-        this.Elements = eboardDataSet.Elements;
-
-        this.EBoardName = eboardDataSet.EBoardName;
-        this.EBoardDepth = eboardDataSet.EBoardDepth;
-
-        this.eSID = eboardDataSet.EBID;
-
-        this.Height = (int)this.BorderManagement.Height;
-        this.Width = (int)this.BorderManagement.Width;
-
-        if (this.eSID == null || this.eSID.Equals("-1"))
-        {
-            DateTime dateTime = DateTime.Now;
-
-            this.eSID = $"EBoard_{dateTime.Ticks}";
-        }
-
-        this.ApplyBrush(this.BrushManagement.Background, BrushTargets.Background);
-        this.ApplyBrush(this.BrushManagement.Foreground, BrushTargets.Foreground);
-        this.ApplyBrush(this.BrushManagement.Border, BrushTargets.Border);
-        this.ApplyBrush(this.BrushManagement.Highlight, BrushTargets.Highlight);
-
-        var helper = new SharedMethod_UI();
-
-        this.BackgroundBrushSetup = helper.BuildSolidColorBrushSetup(this.BrushManagement, BrushTargets.Background, this.SetColorValueAsBackground);
-        this.ForegroundBrushSetup = helper.BuildSolidColorBrushSetup(this.BrushManagement, BrushTargets.Foreground, this.SetColorValueAsForeground);
-        this.BorderBrushSetup = helper.BuildSolidColorBrushSetup(this.BrushManagement, BrushTargets.Border, this.SetColorValueAsBorder);
-        this.HighlightBrushSetup = helper.BuildSolidColorBrushSetup(this.BrushManagement, BrushTargets.Highlight, this.SetColorValueAsHighlight);
-
-        this.CornerRadiusQuadSetup = helper.BuildQuadValueSetup(
-                new QuadValue<int>()
-                {
-                    Value1 = (int)this.BorderManagement.CornerRadius.TopLeft,
-                    Value2 = (int)this.BorderManagement.CornerRadius.TopRight,
-                    Value3 = (int)this.BorderManagement.CornerRadius.BottomRight,
-                    Value4 = (int)this.BorderManagement.CornerRadius.BottomLeft,
-                },
-                this.ResetCorners,
-                this.BrushManagement);
-
-        this.CornerRadiusQuadSetup.PropertyChanged += this.CornerRadiusQuadSetup_PropertyChanged;
-
-        this.PaddingQuadSetup = helper.BuildQuadValueSetup(
-            new QuadValue<int>()
-            {
-                Value1 = (int)this.BorderManagement.Padding.Left,
-                Value2 = (int)this.BorderManagement.Padding.Top,
-                Value3 = (int)this.BorderManagement.Padding.Right,
-                Value4 = (int)this.BorderManagement.Padding.Bottom,
-            },
-            this.ResetPadding,
-            this.BrushManagement);
-
-        this.PaddingQuadSetup.PropertyChanged += this.PaddingQuadSetup_PropertyChanged;
-
-        this.MarginQuadSetup = helper.BuildQuadValueSetup(
-            new QuadValue<int>()
-            {
-                Value1 = (int)this.BorderManagement.Margin.Left,
-                Value2 = (int)this.BorderManagement.Margin.Top,
-                Value3 = (int)this.BorderManagement.Margin.Right,
-                Value4 = (int)this.BorderManagement.Margin.Bottom,
-            },
-            this.ResetThickness,
-            this.BrushManagement);
-
-        this.MarginQuadSetup.PropertyChanged += this.MarginQuadSetup_PropertyChanged;
-
-        this.ThicknessQuadSetup = helper.BuildQuadValueSetup(
-            new QuadValue<int>()
-            {
-                Value1 = (int)this.BorderManagement.BorderThickness.Left,
-                Value2 = (int)this.BorderManagement.BorderThickness.Top,
-                Value3 = (int)this.BorderManagement.BorderThickness.Right,
-                Value4 = (int)this.BorderManagement.BorderThickness.Bottom,
-            },
-            this.ResetMargin,
-            this.BrushManagement);
-
-        this.ThicknessQuadSetup.PropertyChanged += this.ThicknessQuadSetup_PropertyChanged;
-    }
-
     public void MoveElementSelection(ElementViewModel elementViewModel, Point newPosition)
     {
+        if (this.Elements == null || elementViewModel == null)
+        {
+            return;
+        }
+
         foreach (ElementViewModel item in this.Elements)
         {
-            if (item.EID.Equals(elementViewModel.EID))
+            if (item == null || item.IsSelected == false)
             {
                 continue;
             }
 
-            if (item.IsSelected)
+            if (item.EID != null && elementViewModel.EID != null)
             {
-                item.MoveXY(elementViewModel, newPosition);
+                if (item.EID.Equals(elementViewModel.EID))
+                {
+                    continue;
+                }
             }
+
+            item.MoveXY(elementViewModel, newPosition);
         }
 
         this.OnPropertyChanged(nameof(this.Elements));
@@ -648,7 +412,10 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
 
     public void MoveLastClickedElement(ElementViewModel elementViewModel)
     {
-        this.Elements.Move(this.Elements.IndexOf(elementViewModel), this.Elements.Count - 1);
+        if (this.Elements.Count > 1)
+        {
+            this.Elements.Move(this.Elements.IndexOf(elementViewModel), this.Elements.Count - 1);
+        }
     }
 
     public void RemoveElement(ElementViewModel elementViewModel)
@@ -663,8 +430,6 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         }
 
         this.Elements.Remove(elementViewModel);
-
-        this.OnPropertyChanged(nameof(this.Elements));
 
         List<ElementViewModel> selectedElements = new List<ElementViewModel>();
 
@@ -684,10 +449,26 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         this.OnPropertyChanged(nameof(this.Elements));
     }
 
+    partial void OnElementsChanged(ObservableCollection<ElementViewModel>? oldValue, ObservableCollection<ElementViewModel> newValue)
+    {
+        var outdatedbadcrap = oldValue;
+        var replacementbadcrapforoldcrap = newValue;
+    }
+
     public void StopElementSelectionMovement(ElementViewModel elementViewModel)
     {
+        if (this.Elements == null || elementViewModel == null)
+        {
+            return;
+        }
+
         foreach (ElementViewModel item in this.Elements)
         {
+            if (item == null || item.IsSelected == false)
+            {
+                continue;
+            }
+
             if (!item.EID.Equals(elementViewModel.EID) && item.IsSelected)
             {
                 item.StopMovement();
@@ -701,137 +482,14 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
         {
             foreach (ElementViewModel item in this.Elements)
             {
-                item.CalibrateZSliderValues(newEBoardDepth);
+                item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.CalibrateZSliderValues(newEBoardDepth);
             }
         }
     }
 
-    private void CornerRadiusQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        this.BorderManagement.CornerRadius = new CornerRadius(
-            this.CornerRadiusQuadSetup.QuadValue.Value1,
-            this.CornerRadiusQuadSetup.QuadValue.Value2,
-            this.CornerRadiusQuadSetup.QuadValue.Value3,
-            this.CornerRadiusQuadSetup.QuadValue.Value4);
-
-        this.OnPropertyChanged(nameof(this.BorderManagement));
-    }
-
-    partial void OnCornerRadiusValueChanged(int value)
-    {
-        BorderManagement.CornerRadius = new CornerRadius(value);
-    }
-
-    partial void OnHeightValueChanged(int value)
-    {
-        if (this.BorderManagement.Height != value)
-        {
-            this.BorderManagement.Height = value;
-        }
-
-        OnPropertyChanged(nameof(BorderManagement));
-        OnPropertyChanged(nameof(BorderManagement.Height));
-    }
-
     partial void OnEBoardDepthChanged(int value)
     {
-        UpdateElementsZIndexProperties(value);
-    }
-
-    partial void OnHeightChanged(int value)
-    {
-        BorderManagement.Height = value;
-    }
-
-    partial void OnImageBorderPathChanged(string value)
-    {
-        ChangeElementBackgroundToImage(BrushTargets.Border, value);
-    }
-
-    partial void OnImagePathChanged(string value)
-    {
-        ChangeElementBackgroundToImage(BrushTargets.Background, value);
-    }
-
-    partial void OnWidthChanged(int value)
-    {
-        BorderManagement.Width = value;
-    }
-
-    partial void OnWidthValueChanged(int value)
-    {
-        if (this.BorderManagement.Width != value)
-        {
-            this.BorderManagement.Width = value;
-        }
-
-        OnPropertyChanged(nameof(BorderManagement));
-        OnPropertyChanged(nameof(BorderManagement.Width));
-    }
-
-    private void BrushManagement_PropertyChangedEvent()
-    {
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    private void MarginQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        this.BorderManagement.Margin = new Thickness(
-            this.MarginQuadSetup.QuadValue.Value1,
-            this.MarginQuadSetup.QuadValue.Value2,
-            this.MarginQuadSetup.QuadValue.Value3,
-            this.MarginQuadSetup.QuadValue.Value4);
-
-        this.OnPropertyChanged(nameof(this.BorderManagement));
-    }
-
-    private void PaddingQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        this.BorderManagement.Padding = new Thickness(
-            this.PaddingQuadSetup.QuadValue.Value1,
-            this.PaddingQuadSetup.QuadValue.Value2,
-            this.PaddingQuadSetup.QuadValue.Value3,
-            this.PaddingQuadSetup.QuadValue.Value4);
-
-        this.OnPropertyChanged(nameof(this.BorderManagement));
-    }
-
-    private void ThicknessQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        this.BorderManagement.BorderThickness = new Thickness(
-            this.ThicknessQuadSetup.QuadValue.Value1,
-            this.ThicknessQuadSetup.QuadValue.Value2,
-            this.ThicknessQuadSetup.QuadValue.Value3,
-            this.ThicknessQuadSetup.QuadValue.Value4);
-
-        this.OnPropertyChanged(nameof(this.BorderManagement));
-    }
-
-    private bool SetImageToBrushTarget(BrushTargets brushTargets, string path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            return false;
-        }
-
-        Brush brush = new ImageBrush();
-
-        switch (brushTargets)
-        {
-            case BrushTargets.Background:
-                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.BrushManagement.Background, path);
-                break;
-            case BrushTargets.Border:
-                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.BrushManagement.Border, path);
-                break;
-            case BrushTargets.Foreground:
-            case BrushTargets.Highlight:
-                break;
-            default:
-                break;
-        }
-
-        return (bool)this.ApplyBrush(brush, brushTargets);
+        this.UpdateElementsZIndexProperties(value);
     }
 
     [RelayCommand]
@@ -839,13 +497,7 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     {
         if (this.mainViewModel is not null)
         {
-            MessageBoxResult result = MessageBox.Show(TxtRemoveEboardQuestion, TxtRemoveEboardTitle, MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.No)
-            {
-                return;
-            }
-
-            this.mainViewModel.EBoardBrowserViewModel.RemoveSelectedEBoard();
+            this.mainViewModel.EBoardBrowserViewModel.RemoveSelectedEBoard(this);
         }
     }
 
@@ -853,114 +505,6 @@ public partial class EBoardViewModel : ObservableObject, IElementBackgroundImage
     private void LeftClick()
     {
         this.DeselectElements();
-    }
-
-    [RelayCommand]
-    private void ResetCorners()
-    {
-        this.CornerRadiusQuadSetup.All = 0;
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    [RelayCommand]
-    private void ResetImageBorder()
-    {
-        this.ImageBorderPath = string.Empty;
-
-        this.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, BrushTargets.Border);
-    }
-
-    [RelayCommand]
-    private void ResetImage()
-    {
-        this.ImagePath = string.Empty;
-
-        this.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, BrushTargets.Background);
-    }
-
-    [RelayCommand]
-    private void ResetMargin()
-    {
-        this.MarginQuadSetup.All = 0;
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    [RelayCommand]
-    private void ResetPadding()
-    {
-        this.PaddingQuadSetup.All = 0;
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    [RelayCommand]
-    private void ResetThickness()
-    {
-        this.ThicknessQuadSetup.All = 0;
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    [RelayCommand]
-    private void ResetSize()
-    {
-        this.BorderManagement.Width = double.NaN;
-        this.BorderManagement.Height = double.NaN;
-
-        this.SetElementSizeDisplayValue();
-
-        this.OnPropertyChanged(nameof(this.BorderManagement));
-    }
-
-    [RelayCommand]
-    private void SetColorValueAsBackground()
-    {
-        this.ApplyBrush(this.BackgroundBrushSetup.ColorBrush, BrushTargets.Background);
-    }
-
-    [RelayCommand]
-    private void SetColorValueAsForeground()
-    {
-        this.ApplyBrush(this.ForegroundBrushSetup.ColorBrush, BrushTargets.Foreground);
-    }
-
-    [RelayCommand]
-    private void SetColorValueAsBorder()
-    {
-        this.ApplyBrush(this.BorderBrushSetup.ColorBrush, BrushTargets.Border);
-    }
-
-    [RelayCommand]
-    private void SetColorValueAsHighlight()
-    {
-        this.ApplyBrush(this.HighlightBrushSetup.ColorBrush, BrushTargets.Highlight);
-    }
-
-    [RelayCommand]
-    private void SetImage()
-    {
-        this.ImagePath = new SharedMethod_UI().SetBackgroundImage(this.ImagePath);
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    [RelayCommand]
-    private void SetImageBorder()
-    {
-        this.ImageBorderPath = new SharedMethod_UI().SetBackgroundImage(this.ImageBorderPath);
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    private void SetElementSizeDisplayValue()
-    {
-        this.widthValue = new SharedMethod_UI().ResetSizeDisplayValue(this.BorderManagement.Width);
-        this.heightValue = new SharedMethod_UI().ResetSizeDisplayValue(this.BorderManagement.Height);
-
-        this.OnPropertyChanged(nameof(this.WidthValue));
-        this.OnPropertyChanged(nameof(this.HeightValue));
     }
 
     [RelayCommand]

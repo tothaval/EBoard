@@ -1,7 +1,34 @@
 ﻿// <copyright file="EBoardElementPluginBaseViewModel.cs" company=".">
 // Stephan Kammel
 // </copyright>
-
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
 namespace EBoardSDK.Plugins;
 
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -24,40 +51,6 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
     private EBoardViewModel eBoardViewModel;
 
     private ElementViewModel elementViewModel;
-
-    protected BorderManagement borderManagement = new();
-
-    protected BrushManagement brushManagement = new();
-
-    public BorderManagement BorderManagement
-    {
-        get
-        {
-            return this.borderManagement;
-        }
-
-        set
-        {
-            this.borderManagement = value;
-            this.OnPropertyChanged(nameof(this.BorderManagement));
-            this.OnPropertyChanged(nameof(this.Plugin));
-        }
-    }
-
-    public BrushManagement BrushManagement
-    {
-        get
-        {
-            return this.brushManagement;
-        }
-
-        set
-        {
-            this.brushManagement = value;
-            this.OnPropertyChanged(nameof(this.BrushManagement));
-            this.OnPropertyChanged(nameof(this.Plugin));
-        }
-    }
 
     public abstract Assembly? ElementPluginAssembly { get; }
 
@@ -88,53 +81,6 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
     public EBoardViewModel EBoardViewModel => this.eBoardViewModel;
 
     public ElementViewModel ElementViewModel => this.elementViewModel;
-
-    public bool ApplyBrush(Brush brush, BrushTargets brushTargets)
-    {
-        try
-        {
-            switch (brushTargets)
-            {
-                case BrushTargets.Background:
-                    this.BrushManagement.Background = brush;
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Background));
-
-                    break;
-                case BrushTargets.Border:
-                    this.BrushManagement.Border = brush;
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Border));
-                    break;
-                case BrushTargets.Foreground:
-                    this.BrushManagement.Foreground = brush;
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Foreground));
-                    break;
-                case BrushTargets.Highlight:
-                    this.BrushManagement.Highlight = brush;
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Highlight));
-                    break;
-                default:
-                    break;
-            }
-
-            this.OnPropertyChanged(nameof(this.BrushManagement));
-            this.OnPropertyChanged(nameof(this.Plugin));
-
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-    }
-
-    public bool ApplyRedraw()
-    {
-        this.OnPropertyChanged(nameof(this.BorderManagement));
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-        this.OnPropertyChanged(nameof(this.Plugin));
-
-        return true;
-    }
 
     public async Task<bool> Initialize()
     {
@@ -167,8 +113,6 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
         catch (Exception ex)
         {
             Log.Error(ex.Message);
-
-            // throw;
         }
 
         return false;
@@ -178,9 +122,34 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
 
     public abstract Task<EBoardFeedbackMessage> Save(string path);
 
+    /// <summary>
+    /// use this in IPlugin deriving viewmodel to reload certain stuff, that couldn't load.
+    /// i am not that familiar with Activator.CreateInstance overloads yet to know what i am doing,
+    /// that is why i stick to empty constructors until that changes.
+    ///
+    /// when only an empty constructor is used, it can be that due to instantiaton time or missing object
+    /// availability, that at the time the constructor is initiated certain data or viewmodels can not be
+    /// found or accessed, or due to the plugin architecture.
+    ///
+    /// if you override this and make it so that before the call all data is given to the object,
+    /// you can circumvent that issue.
+    ///
+    /// so far this is needed only in edge cases.
+    /// </summary>
+    public virtual void RefreshInitialization()
+    {
+
+    }
+
     public void SetEBoardAndElementViewModel(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel)
     {
         this.eBoardViewModel = eBoardViewModel;
         this.elementViewModel = elementViewModel;
+
+        this.OnPropertyChanged(nameof(this.EBoardViewModel));
+        this.OnPropertyChanged(nameof(this.ElementViewModel));
+        this.OnPropertyChanged(nameof(this.Plugin));
     }
 }
+
+// EOF

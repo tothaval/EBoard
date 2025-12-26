@@ -1,10 +1,48 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<!--
+// <copyright file="DataTemplate.xaml" company=".">
+// Stephan Kammel
+// </copyright>
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:eboard="clr-namespace:EBoardSDK"
                     xmlns:vms="clr-namespace:EBoardSDK.ViewModels"
                     xmlns:views="clr-namespace:EBoardSDK.Views"
-                    xmlns:esdkctrl_quadsetup ="clr-namespace:EBoardSDK.Controls.QuadValueSetup"                    
-                    xmlns:esdkctrl ="clr-namespace:EBoardSDK.Controls"
+                    xmlns:esdkctrl_quadsetup ="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
+                    xmlns:FU_DB ="clr-namespace:EBoardSDK.Controls.FluidUIDataBlock"
+                    xmlns:FU_DBit ="clr-namespace:EBoardSDK.Controls.FluidUIDataBlock.FluidUIIndexText"
+                    xmlns:FU_DE ="clr-namespace:EBoardSDK.Controls.FluidUIDesign"
+                    xmlns:FU_FO ="clr-namespace:EBoardSDK.Controls.FluidUIFont"
+                    xmlns:FU_SI ="clr-namespace:EBoardSDK.Controls.FluidUISize"
+                    xmlns:FU_ST ="clr-namespace:EBoardSDK.Controls.FluidUIStand"
                     xmlns:esdkctrl_area ="clr-namespace:EBoardSDK.Controls.Area">
 
     <DataTemplate DataType="{x:Type eboard:MainViewModel}">
@@ -23,16 +61,16 @@
         <views:EBoardBrowserView/>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type vms:EBoardSettingsViewModel}">
-        <views:EBoardSettingsView/>
+    <DataTemplate DataType="{x:Type vms:ScreenControlViewModel}">
+        <views:ScreenControlView/>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type vms:EBoardViewModel}">
         <views:EBoardView/>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type esdkctrl:SolidColorBrushSetupViewModel}">
-        <esdkctrl:SolidColorBrushSetup/>
+    <DataTemplate DataType="{x:Type vms:ElementViewModel}">
+        <views:ElementView/>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type esdkctrl_quadsetup:QuadValueSetupViewModel}">
@@ -51,8 +89,29 @@
         <esdkctrl_area:AreaVerticalOuterView/>
     </DataTemplate>
 
-    <DataTemplate DataType="vms:ElementViewModel">
-        <views:ElementView/>
+    <DataTemplate DataType="{x:Type FU_DB:FluidUIDataBlockSetupViewModel}">
+        <FU_DB:FluidUIDataBlockSetupView/>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type FU_DBit:FluidUIIndexTextViewModel}">
+        <FU_DBit:FluidUIIndexTextView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type FU_DE:FluidUIDesignSetupViewModel}">
+        <FU_DE:FluidUIDesignSetupView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type FU_FO:FluidUIFontSetupViewModel}">
+        <FU_FO:FluidUIFontSetupView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type FU_SI:FluidUISizeSetupViewModel}">
+        <FU_SI:FluidUISizeSetupView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type FU_ST:FluidUIStandSetupViewModel}">
+        <FU_ST:FluidUIStandSetupView/>
+    </DataTemplate>
 </ResourceDictionary>
+
+<!-- EOF -->

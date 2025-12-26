@@ -1,7 +1,34 @@
 ﻿// <copyright file="EBoardBrowserViewModel.cs" company=".">
 // Stephan Kammel
 // </copyright>
-
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
 /*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  EBoardBrowserViewModel
@@ -15,18 +42,14 @@ namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Controls;
-using EBoardSDK.Controls.QuadValueSetup;
-using EBoardSDK.Enums;
-using EBoardSDK.Interfaces;
+using EBoardSDK.Controls.FluidUIMenu;
 using EBoardSDK.Models;
 using EBoardSDK.SharedMethods;
 using EBoardSDK.Utilities.Factories;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Media;
 
-public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgroundImage
+public partial class EBoardBrowserViewModel : EboardFluidUIBaseViewModel
 {
     private readonly MainViewModel mainViewModel;
 
@@ -52,12 +75,6 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
     private double newEBoardWidth = 720;
 
     [ObservableProperty]
-    private BorderManagement borderManagement;
-
-    [ObservableProperty]
-    private BrushManagement brushManagement;
-
-    [ObservableProperty]
     private int eBoardCount;
 
     [ObservableProperty]
@@ -69,38 +86,32 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
     private ObservableCollection<EBoardViewModel> eboards;
 
     [ObservableProperty]
-    private string imagePath;
-
-    [ObservableProperty]
-    private string imageBorderPath;
-
-    [ObservableProperty]
     private EBoardViewModel selectedEBoard;
 
-    public EBoardBrowserViewModel() => this.InstantiateProperties();
-
     public EBoardBrowserViewModel(MainViewModel mainViewModel)
+        : base()
     {
         this.mainViewModel = mainViewModel;
 
-        this.InstantiateProperties();
+        mainViewModel.EBoardConfig?.EBoardBrowserViewContext?.Design?.LoadBrushesFromColorData();
+
+        this.SetFluidUI(mainViewModel.EBoardConfig.EBoardBrowserViewContext);
+
+        var helper = new SharedMethod_UI();
+        helper.SetupTitleAndText(
+            this.FluidUI.DataBlock,
+            "Eboard Browser",
+            "Use this browser to:\n\n-> navigate eboard screens\n-> add, edit or delete eboard screens\n\n\nyou can change this description");
+
+        this.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this, fluidUIContextHasStand: false, fluidUIContextHasArea: false));
+
+        this.FontSizeValue = (int)this.FluidUI.Font.FontSize;
+
+        this.EBoards = new ObservableCollection<EBoardViewModel>();
+
+        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
+        this.OnPropertyChanged(nameof(this.FluidUI));
     }
-
-    public SolidColorBrushSetupViewModel BackgroundBrushSetup { get; set; }
-
-    public SolidColorBrushSetupViewModel ForegroundBrushSetup { get; set; }
-
-    public SolidColorBrushSetupViewModel BorderBrushSetup { get; set; }
-
-    public SolidColorBrushSetupViewModel HighlightBrushSetup { get; set; }
-
-    public QuadValueSetupViewModel CornerRadiusQuadSetup { get; set; }
-
-    public QuadValueSetupViewModel MarginQuadSetup { get; set; }
-
-    public QuadValueSetupViewModel PaddingQuadSetup { get; set; }
-
-    public QuadValueSetupViewModel ThicknessQuadSetup { get; set; }
 
     public ObservableCollection<EBoardViewModel> EBoards
     {
@@ -130,14 +141,11 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         if (eBoardViewModel != null)
         {
             this.EBoards.Add(eBoardViewModel);
+
+            this.EBoardCount = this.EBoards.Count;
         }
 
         return Task.CompletedTask;
-    }
-
-    public void ChangeElementBackgroundToImage(BrushTargets brushTargets, string path)
-    {
-        this.SetImageToBrushTarget(brushTargets, path);
     }
 
     public IList<EBoardSDK.Models.EboardScreen> GetScreenData()
@@ -147,7 +155,7 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         this.EBoards.Select(x => x).ToList().ForEach(
             escreen =>
             {
-                IList<ElementConfig> elementConfigs = [];
+                ObservableCollection<ElementConfig> elementConfigs = [];
 
                 escreen.Elements.Select(x => x).ToList().ForEach(
                     element =>
@@ -167,16 +175,14 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
                             PluginType = element.Plugin.GetType().FullName,
                             AssemblyName = element.Plugin.GetType().AssemblyQualifiedName,
 
-                            BorderDataSet = new EBoardSDK.Models.DataSets.BorderDataSet(element.Plugin.BorderManagement),
-                            BrushDataSet = new EBoardSDK.Models.DataSets.BrushDataSet(element.Plugin.BrushManagement),
-                            PlacementDataSet = new EBoardSDK.Models.DataSets.PlacementDataSet(element.PlacementManager),
+                            ElementContext = (FluidUIContext)element.FluidUI,
                         });
                     });
 
                 eboardScreens.Add(new EboardScreen()
                 {
-                    BorderDataSet = new EBoardSDK.Models.DataSets.BorderDataSet(escreen.BorderManagement),
-                    BrushDataSet = new EBoardSDK.Models.DataSets.BrushDataSet(escreen.BrushManagement),
+                    EBoardScreenContext = (FluidUIContext)escreen.FluidUI,
+
                     EBID = escreen.EBID,
                     ID = this.EBoards.IndexOf(escreen),
                     EBoardDepth = escreen.EBoardDepth,
@@ -204,49 +210,8 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         this.EBoards.Add(eBoardViewModel);
 
         this.SelectedEBoard = this.EBoards.Last();
+
         this.RefreshEBoardParameters();
-    }
-
-    private bool SetImageToBrushTarget(BrushTargets brushTargets, string path)
-    {
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            return false;
-        }
-
-        Brush brush = new ImageBrush();
-
-        switch (brushTargets)
-        {
-            case BrushTargets.Background:
-                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.BrushManagement.Background, path);
-
-                this.OnPropertyChanged(nameof(this.BrushManagement));
-                break;
-            case BrushTargets.Border:
-                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.BrushManagement.Border, path);
-
-                this.OnPropertyChanged(nameof(this.BrushManagement));
-                this.OnPropertyChanged(nameof(this.BrushManagement.Border));
-                break;
-            case BrushTargets.Foreground:
-            case BrushTargets.Highlight:
-                break;
-            default:
-                break;
-        }
-
-        return this.ApplyBrush(brush, brushTargets);
-    }
-
-    partial void OnImageBorderPathChanged(string value)
-    {
-        ChangeElementBackgroundToImage(BrushTargets.Border, value);
-    }
-
-    partial void OnImagePathChanged(string value)
-    {
-        ChangeElementBackgroundToImage(BrushTargets.Background, value);
     }
 
     partial void OnSelectedEBoardChanging(EBoardViewModel? oldValue, EBoardViewModel newValue)
@@ -314,264 +279,6 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         }
     }
 
-    private void InstantiateProperties()
-    {
-        this.BorderManagement = new BorderManagement();
-        this.BrushManagement = new BrushManagement();
-
-        if (this.mainViewModel?.EBoardConfig?.EBVBorderDataSet != null)
-        {
-            this.BorderManagement = new BorderManagement(this.mainViewModel.EBoardConfig.EBVBorderDataSet);
-        }
-
-        if (this.mainViewModel?.EBoardConfig?.EBVBrushDataSet != null)
-        {
-            this.BrushManagement = new BrushManagement(this.mainViewModel.EBoardConfig.EBVBrushDataSet);
-        }
-
-        this.EBoards = new ObservableCollection<EBoardViewModel>();
-
-        var helper = new SharedMethod_UI();
-
-        this.BackgroundBrushSetup = helper.BuildSolidColorBrushSetup(this.BrushManagement, BrushTargets.Background, this.SetColorValueAsBackground);
-        this.ForegroundBrushSetup = helper.BuildSolidColorBrushSetup(this.BrushManagement, BrushTargets.Foreground, this.SetColorValueAsForeground);
-        this.BorderBrushSetup = helper.BuildSolidColorBrushSetup(this.BrushManagement, BrushTargets.Border, this.SetColorValueAsBorder);
-        this.HighlightBrushSetup = helper.BuildSolidColorBrushSetup(this.BrushManagement, BrushTargets.Highlight, this.SetColorValueAsHighlight);
-
-        this.ApplyBrush(this.BrushManagement.Background, BrushTargets.Background);
-        this.ApplyBrush(this.BrushManagement.Foreground, BrushTargets.Foreground);
-        this.ApplyBrush(this.BrushManagement.Border, BrushTargets.Border);
-        this.ApplyBrush(this.BrushManagement.Highlight, BrushTargets.Highlight);
-
-        this.CornerRadiusQuadSetup = helper.BuildQuadValueSetup(
-                new QuadValue<int>()
-                {
-                    Value1 = (int)this.BorderManagement.CornerRadius.TopLeft,
-                    Value2 = (int)this.BorderManagement.CornerRadius.TopRight,
-                    Value3 = (int)this.BorderManagement.CornerRadius.BottomRight,
-                    Value4 = (int)this.BorderManagement.CornerRadius.BottomLeft,
-                },
-                this.ResetCorners,
-                this.BrushManagement);
-
-        this.CornerRadiusQuadSetup.PropertyChanged += this.CornerRadiusQuadSetup_PropertyChanged;
-
-        this.PaddingQuadSetup = helper.BuildQuadValueSetup(
-            new QuadValue<int>()
-            {
-                Value1 = (int)this.BorderManagement.Padding.Left,
-                Value2 = (int)this.BorderManagement.Padding.Top,
-                Value3 = (int)this.BorderManagement.Padding.Right,
-                Value4 = (int)this.BorderManagement.Padding.Bottom,
-            },
-            this.ResetPadding,
-            this.BrushManagement);
-
-        this.PaddingQuadSetup.PropertyChanged += this.PaddingQuadSetup_PropertyChanged;
-
-        this.MarginQuadSetup = helper.BuildQuadValueSetup(
-            new QuadValue<int>()
-            {
-                Value1 = (int)this.BorderManagement.Margin.Left,
-                Value2 = (int)this.BorderManagement.Margin.Top,
-                Value3 = (int)this.BorderManagement.Margin.Right,
-                Value4 = (int)this.BorderManagement.Margin.Bottom,
-            },
-            this.ResetThickness,
-            this.BrushManagement);
-
-        this.MarginQuadSetup.PropertyChanged += this.MarginQuadSetup_PropertyChanged;
-
-        this.ThicknessQuadSetup = helper.BuildQuadValueSetup(
-            new QuadValue<int>()
-            {
-                Value1 = (int)this.BorderManagement.BorderThickness.Left,
-                Value2 = (int)this.BorderManagement.BorderThickness.Top,
-                Value3 = (int)this.BorderManagement.BorderThickness.Right,
-                Value4 = (int)this.BorderManagement.BorderThickness.Bottom,
-            },
-            this.ResetMargin,
-            this.BrushManagement);
-
-        this.ThicknessQuadSetup.PropertyChanged += this.ThicknessQuadSetup_PropertyChanged;
-
-        this.BrushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    private void BrushManagement_PropertyChangedEvent()
-    {
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    private void CornerRadiusQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        this.BorderManagement.CornerRadius = new CornerRadius(
-            this.CornerRadiusQuadSetup.QuadValue.Value1,
-            this.CornerRadiusQuadSetup.QuadValue.Value2,
-            this.CornerRadiusQuadSetup.QuadValue.Value3,
-            this.CornerRadiusQuadSetup.QuadValue.Value4);
-
-        this.OnPropertyChanged(nameof(this.BorderManagement));
-    }
-
-    private void ThicknessQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        this.BorderManagement.BorderThickness = new Thickness(
-            this.ThicknessQuadSetup.QuadValue.Value1,
-            this.ThicknessQuadSetup.QuadValue.Value2,
-            this.ThicknessQuadSetup.QuadValue.Value3,
-            this.ThicknessQuadSetup.QuadValue.Value4);
-
-        this.OnPropertyChanged(nameof(this.BorderManagement));
-    }
-
-    private void PaddingQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        this.BorderManagement.Padding = new Thickness(
-            this.PaddingQuadSetup.QuadValue.Value1,
-            this.PaddingQuadSetup.QuadValue.Value2,
-            this.PaddingQuadSetup.QuadValue.Value3,
-            this.PaddingQuadSetup.QuadValue.Value4);
-
-        this.OnPropertyChanged(nameof(this.BorderManagement));
-    }
-
-    private void MarginQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        this.BorderManagement.Margin = new Thickness(
-            this.MarginQuadSetup.QuadValue.Value1,
-            this.MarginQuadSetup.QuadValue.Value2,
-            this.MarginQuadSetup.QuadValue.Value3,
-            this.MarginQuadSetup.QuadValue.Value4);
-
-        this.OnPropertyChanged(nameof(this.BorderManagement));
-    }
-
-    [RelayCommand]
-    private void ResetCorners()
-    {
-        this.CornerRadiusQuadSetup.All = 0;
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    [RelayCommand]
-    private void ResetImageBorder()
-    {
-        this.ImageBorderPath = string.Empty;
-
-        this.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, BrushTargets.Border);
-    }
-
-    [RelayCommand]
-    private void ResetImage()
-    {
-        this.ImagePath = string.Empty;
-
-        this.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, BrushTargets.Background);
-    }
-
-    [RelayCommand]
-    private void ResetMargin()
-    {
-        this.MarginQuadSetup.All = 0;
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    [RelayCommand]
-    private void ResetPadding()
-    {
-        this.PaddingQuadSetup.All = 0;
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    [RelayCommand]
-    private void ResetThickness()
-    {
-        this.ThicknessQuadSetup.All = 0;
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    [RelayCommand]
-    private void SetColorValueAsBackground()
-    {
-        this.ApplyBrush(this.BackgroundBrushSetup.ColorBrush, BrushTargets.Background);
-    }
-
-    [RelayCommand]
-    private void SetColorValueAsForeground()
-    {
-        this.ApplyBrush(this.ForegroundBrushSetup.ColorBrush, BrushTargets.Foreground);
-    }
-
-    [RelayCommand]
-    private void SetColorValueAsBorder()
-    {
-        this.ApplyBrush(this.BorderBrushSetup.ColorBrush, BrushTargets.Border);
-    }
-
-    [RelayCommand]
-    private void SetColorValueAsHighlight()
-    {
-        this.ApplyBrush(this.HighlightBrushSetup.ColorBrush, BrushTargets.Highlight);
-    }
-
-    public bool ApplyBrush(Brush brush, BrushTargets brushTargets)
-    {
-        try
-        {
-            switch (brushTargets)
-            {
-                case BrushTargets.Background:
-                    this.BrushManagement.Background = brush;
-
-                    if (brush.GetType() == typeof(ImageBrush) && this.BackgroundBrushSetup != null)
-                    {
-                        this.BackgroundBrushSetup.ColorStringValue = "imagebrush";
-                    }
-
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Background));
-                    break;
-
-                case BrushTargets.Border:
-                    this.BrushManagement.Border = brush;
-
-                    if (brush.GetType() == typeof(ImageBrush) && this.BorderBrushSetup != null)
-                    {
-                        this.BorderBrushSetup.ColorStringValue = "imagebrush";
-                    }
-
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Border));
-                    break;
-                case BrushTargets.Foreground:
-                    this.BrushManagement.Foreground = brush;
-
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Foreground));
-                    break;
-                case BrushTargets.Highlight:
-                    this.BrushManagement.Highlight = brush;
-
-                    this.OnPropertyChanged(nameof(this.BrushManagement.Highlight));
-                    break;
-                default:
-                    break;
-            }
-
-            this.OnPropertyChanged(nameof(this.BrushManagement));
-
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-    }
-
     [RelayCommand]
     private void DeleteAllScreens()
     {
@@ -593,7 +300,12 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         this.SelectedEBoard?.Clear();
     }
 
-    public void RemoveSelectedEBoard()
+    public void RefreshEboardData()
+    {
+        this.RefreshEBoardParameters();
+    }
+
+    public void RemoveSelectedEBoard(EBoardViewModel eBoardViewModel = null)
     {
         string question = TxtRemoveEboardQuestion;
         string title = TxtRemoveEboardTitle;
@@ -604,8 +316,13 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
             return;
         }
 
-        this.SelectedEBoard.Dispose();
+        if (eBoardViewModel != null)
+        {
+            this.SelectedEBoard = eBoardViewModel;
+        }
+
         this.EBoards.Remove(this.SelectedEBoard);
+        this.SelectedEBoard?.Dispose();
 
         if (this.EBoards.Count > 0 && result == MessageBoxResult.Yes)
         {
@@ -619,8 +336,8 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         {
             this.EBoardName = this.SelectedEBoard.EBoardName;
             this.EBoardDepth = this.SelectedEBoard.EBoardDepth;
-            this.NewEBoardHeight = this.SelectedEBoard.BorderManagement.Height;
-            this.NewEBoardWidth = this.SelectedEBoard.BorderManagement.Width;
+            this.NewEBoardHeight = this.SelectedEBoard.FluidUI.Size.Height;
+            this.NewEBoardWidth = this.SelectedEBoard.FluidUI.Size.Width;
             this.SelectedEBoard.EBoardActive = true;
 
             this.CurrentSelectionID = this.EBoards.IndexOf(this.SelectedEBoard) + 1;
@@ -650,22 +367,6 @@ public partial class EBoardBrowserViewModel : ObservableObject, IElementBackgrou
         this.EBoardContainerCount = this.SelectedEBoard.GetContainerCount();
         this.EBoardElementCount = this.SelectedEBoard.GetElementCount();
         this.EBoardShapeCount = this.SelectedEBoard.GetShapeCount();
-    }
-
-    [RelayCommand]
-    private void SetImage()
-    {
-        this.ImagePath = new SharedMethod_UI().SetBackgroundImage(this.ImagePath);
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
-
-    [RelayCommand]
-    private void SetImageBorder()
-    {
-        this.ImageBorderPath = new SharedMethod_UI().SetBackgroundImage(this.ImageBorderPath);
-
-        this.OnPropertyChanged(nameof(this.BrushManagement));
     }
 }
 
