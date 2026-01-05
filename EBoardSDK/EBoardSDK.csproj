@@ -76,6 +76,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controls\FluidUIDataBlock\FluidUIKeyText\" />
     <Folder Include="Plugins\Addons\Snake\" />
   </ItemGroup>
 

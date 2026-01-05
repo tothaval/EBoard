@@ -1,5 +1,24 @@
 2025|12|09 this readme is outdated, anything from here until the end of this addition, which is marked by the same date, is new information, beyond information will be updated in the future. <br><br>
 
+changes in current version will break previous configurations<br><br>
+i refactored major parts of the views and viewmodels most important to eboard, renamed a bunch of stuff and so on
+ <br><br>
+you will definetly need to recompile and adapt any plugins again. 
+ <br><br>
+given the new config save structure old values will have to be copied into the new files if you want to keep your previous settings.
+ <br><br>
+area elements like soundmix and mynote save and load correct now
+ <br><br>
+added font setup options, fixed some bugs and reorganized menu structure. everything connected to context area changes can now be found under FluidUI
+ <br><br>
+ updated the top of this readme, added a license.md 
+<br><br>
+
+end of update 2025|12|09.
+ <br><br> <br><br> <br><br>
+
+2025|12|09 this readme is outdated, anything from here until the end of this addition, which is marked by the same date, is new information, beyond information will be updated in the future. <br><br>
+
 changes in current version may break previous configurations<br><br>
 
 it is now possible to include new plugins via the basic build in plugin architecture by copying a proper

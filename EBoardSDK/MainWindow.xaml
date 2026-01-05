@@ -1,28 +1,67 @@
-﻿<Window x:Class="EBoardSDK.MainWindow"
+﻿<!--
+// <copyright file="MainWindow.xaml" company=".">
+// Stephan Kammel
+// </copyright>
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
+-->
+<Window x:Class="EBoardSDK.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vms="clr-namespace:EBoardSDK.ViewModels"
         xmlns:m="clr-namespace:EBoardSDK"
-             xmlns:ut="clr-namespace:EBoardSDK.Utilities"
-             xmlns:esdkCtrl="clr-namespace:EBoardSDK.Controls"
-             xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
+        xmlns:ut="clr-namespace:EBoardSDK.Utilities"
+        xmlns:esdkfuim="clr-namespace:EBoardSDK.Controls.FluidUIMenu"
+        xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
         xmlns:views="clr-namespace:EBoardSDK.Views"
         d:DataContext="{d:DesignInstance Type=m:MainViewModel}"
+        FontSize="{Binding FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
+        FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
+        FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
         
         x:Name="EboardMainWindow"
         mc:Ignorable="d"
         Title="EBoard 2024"
+        AllowDrop="True"
         AllowsTransparency="True"
         WindowStyle="None"
         WindowStartupLocation="Manual"
         ResizeMode="CanResizeWithGrip"
         SizeToContent="Manual"
         
+        ScrollViewer.VerticalScrollBarVisibility="Auto"
+        
         Background="Transparent"
         
-        Foreground="{Binding BrushManagement.Foreground, NotifyOnSourceUpdated=True}"        
+        Foreground="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"        
                 
         MouseLeftButtonDown="EboardMainWindow_MouseLeftButtonDown"
         MouseLeftButtonUp="EboardMainWindow_MouseLeftButtonUp"
@@ -30,54 +69,92 @@
         >
 
     <Window.Resources>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+        </Style>
 
-        <BooleanToVisibilityConverter x:Key="btvc"/>
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="Padding" Value="0 0 10 0"/>
+        </Style>
 
-        <DataTemplate DataType="{x:Type vms:MainWindowMenuBarViewModel}">
-            <views:MainWindowMenuBar/>
-        </DataTemplate>
-        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
-            <Setter Property="BorderBrush" Value="{Binding BrushManagement.Border}"/>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="TextBlock.Foreground" Value="{Binding BrushManagement.Foreground}"/>
-            <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
-            <Setter Property="Background" Value="{Binding BrushManagement.Background}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="DefaultButtonBorder"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="3"                            
+                          CornerRadius="5" 
+                          MinWidth="50"
+                          MinHeight="25"
+                          Margin="5"
+                          Padding="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
 
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="{Binding BrushManagement.Highlight}"/>
+                    <Setter Property="Background" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
                 </Trigger>
 
                 <Trigger Property="IsMouseOver" Value="False">
-                    <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <BooleanToVisibilityConverter x:Key="btvc"/>
+
+        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+            <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Highlight}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}" x:Key="sub">
-            <Setter Property="BorderBrush" Value="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="TextBlock.Foreground" Value="{Binding BrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="Background" Value="{Binding BrushManagement.Background, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="Background" Value="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
         </Style>
 
-        <Style TargetType="Label" >
-            <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
+        <Style TargetType="Grid">
             <Setter Property="Background" Value="Transparent"/>
-        </Style>
-
-        <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}" x:Key="MenuButtonStyle">
-            <Setter Property="Foreground" Value="{Binding BrushManagement.Foreground}"/>
-            <Setter Property="Background" Value="{Binding BrushManagement.Background}"/>
-            <Setter Property="BorderBrush" Value="{Binding BrushManagement.Border}"/>
         </Style>
     </Window.Resources>
 
     <WindowChrome.WindowChrome>
         <WindowChrome
             CaptionHeight="1"  
-            CornerRadius ="{Binding BorderManagement.CornerRadius, NotifyOnSourceUpdated=True}"
+            CornerRadius ="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"
             ResizeBorderThickness="25"         
             GlassFrameThickness="0"            
             >
@@ -86,168 +163,66 @@
 
     <Grid ClipToBounds="True">
         <Border 
-            Background="{Binding BrushManagement.Background}"
-            BorderBrush="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"
-            BorderThickness="{Binding BorderManagement.BorderThickness, NotifyOnSourceUpdated=True}"
-            CornerRadius="{Binding BorderManagement.CornerRadius, NotifyOnSourceUpdated=True}"
-            Margin="{Binding BorderManagement.Margin, NotifyOnSourceUpdated=True}"
-            Padding="{Binding BorderManagement.Padding, NotifyOnSourceUpdated=True}"
+            Background="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"
+            BorderBrush="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"
+            BorderThickness="{Binding FluidUI.Size.BorderThickness, NotifyOnSourceUpdated=True}"
+            CornerRadius="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"
+            Margin="{Binding FluidUI.Size.Margin, NotifyOnSourceUpdated=True}"
+            Padding="{Binding FluidUI.Size.Padding, NotifyOnSourceUpdated=True}"
             x:Name="Border_MainWindow"
             ClipToBounds="True"
-            
-                Width="{Binding BorderManagement.Width, NotifyOnSourceUpdated=True}"
-                Height="{Binding BorderManagement.Height, NotifyOnSourceUpdated=True}" >
+            Width="{Binding FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
+            Height="{Binding FluidUI.Size.Height, NotifyOnSourceUpdated=True}" >
 
             <Border.Resources>
                 <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItem}">
-                    <Setter Property="BorderBrush" Value="{Binding BrushManagement.Border}"/>
+                    <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
                     <Setter Property="BorderThickness" Value="5"/>
-                    <Setter Property="TextBlock.Foreground" Value="{Binding BrushManagement.Foreground}"/>
-                    <Setter Property="Background" Value="{Binding BrushManagement.Background}"/>
+                    <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+                    <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
                 </Style>
             </Border.Resources>
 
-            <Border.ContextMenu >
-                <ContextMenu Background="{Binding BrushManagement.Background}"
-                             BorderBrush="{Binding BrushManagement.Border}"
-                             Style="{StaticResource ContextMenuStyle}">
+            <Border.InputBindings>
+                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding MainControlsVisibilityChangeCommand}"/>
+            </Border.InputBindings>
+            
+            <Border.ToolTip>
+                <ToolTip Content="{Binding FluidUI.DataBlock.Text,NotifyOnSourceUpdated=True}"
+                         Background="{Binding FluidUI.Design.Background}"
+                         BorderBrush="{Binding FluidUI.Design.Border}"
+                         BorderThickness="2"
+                         Padding="{Binding FluidUI.Size.Padding}"
+                         Foreground="{Binding FluidUI.Design.Foreground}"
+                         FontSize="{Binding FluidUI.Font.FontSize}"
+                         FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
+                         FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}">
+                </ToolTip>
+            </Border.ToolTip>
 
-                    <Label Content="MainWindow" Background="Transparent" Foreground="{Binding BrushManagement.Foreground}"/>
+            <Border.ContextMenu >
+                <ContextMenu Background="{Binding FluidUI.Design.Background}"
+                         BorderBrush="{Binding FluidUI.Design.Border}"
+                         Style="{StaticResource ContextMenuStyle}">
+                    <TextBlock Text="{Binding FluidUI.DataBlock.Title, NotifyOnSourceUpdated=True}"/>
 
                     <MenuItem Header="Data" Style="{StaticResource menuitem}">
-                        <MenuItem Header="Save Path" Command="{Binding SetSavePathCommand}" Style="{StaticResource menuitem}"/>
-                        <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
+                        <MenuItem Header="Save Path" Command="{Binding SetSavePathCommand}"
+                                  Style="{StaticResource menuitem}"/>
                     </MenuItem>
 
-                    <MenuItem Header="Size" Style="{StaticResource menuitem}">
-                        <MenuItem Header="Dimensions" Style="{StaticResource menuitem}">
-                            <MenuItem Header="Area" Style="{StaticResource menuitem}">
-                                <WrapPanel Orientation="Horizontal">
-                                    <Label Content="Width"
-                                           MinWidth="50"/>
-                                    <Label Content="{Binding WidthValue, NotifyOnSourceUpdated=True}"
-                               MinWidth="35"/>
-                                    <Slider Value="{Binding WidthValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="120"
-                            Maximum="2048"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-                                </WrapPanel>
+                    <esdkfuim:FluidUIMenuView DataContext="{Binding FluidUIMenuViewModel, NotifyOnSourceUpdated=True}"
+                                              Style="{StaticResource menuitem}"/>
 
-                                <WrapPanel Orientation="Horizontal">
-                                    <Label Content="Height"
-                                           MinWidth="50"/>
-                                    <Label Content="{Binding HeightValue, StringFormat=d0, NotifyOnSourceUpdated=True}"
-                               MinWidth="35"/>
-                                    <Slider Value="{Binding HeightValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="120"
-                            Maximum="1024"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-                                </WrapPanel>
-
-                                <MenuItem Header="Reset Size" Style="{StaticResource menuitem}"
-                              Command="{Binding ResetSizeCommand}"
-                              />
-                            </MenuItem>
-
-                            <MenuItem Header="Margin" Style="{StaticResource menuitem}">
-                                <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding MarginQuadSetup}"
-                                                                      ButtonStyle="{StaticResource MenuButtonStyle}"
-                                                                      Maximum="25"
-                                                                  Value1="Left"
-                                                                  Value2="Top"
-                                                                  Value3="Right"
-                                                                  Value4="Bottom"
-                                                                  OKCommand="{Binding ResetMarginCommand}"/>
-                            </MenuItem>
-
-                            <MenuItem Header="Padding" Style="{StaticResource menuitem}">
-                                <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding PaddingQuadSetup}"
-                                                                      ButtonStyle="{StaticResource MenuButtonStyle}"
-                                                                  Maximum="25"
-                                                                  Value1="Left"
-                                                                  Value2="Top"
-                                                                  Value3="Right"
-                                                                  Value4="Bottom"
-                                                                  OKCommand="{Binding ResetPaddingCommand}"/>
-                            </MenuItem>
-
-                            <MenuItem Header="Thickness" Style="{StaticResource menuitem}">
-                                <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding ThicknessQuadSetup}"
-                                                                      ButtonStyle="{StaticResource MenuButtonStyle}"
-                                                                  Maximum="100"
-                                                                  Value1="Left"
-                                                                  Value2="Top"
-                                                                  Value3="Right"
-                                                                  Value4="Bottom"
-                                                                  OKCommand="{Binding ResetThicknessCommand}"/>
-                            </MenuItem>
-
-                        </MenuItem>
-
-                        <MenuItem Header="Corners" Style="{StaticResource menuitem}">
-                            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding CornerRadiusQuadSetup}"
-                                                                      ButtonStyle="{StaticResource MenuButtonStyle}"
-                                                                  Maximum="100"
-                                                                  Value1="TopLeft"
-                                                                  Value2="TopRight"
-                                                                  Value3="BottomRight"
-                                                                  Value4="BottomLeft"
-                                                                  OKCommand="{Binding ResetCornersCommand}"/>
-                        </MenuItem>
-                    </MenuItem>
-
-                    <MenuItem Header="Design" Style="{StaticResource menuitem}">
-
-                        <MenuItem Header="Colors" Style="{StaticResource menuitem}">
-                            <MenuItem Header="Background" Style="{StaticResource menuitem}">
-                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BackgroundBrushSetup}"
-                                                               ButtonStyle="{StaticResource MenuButtonStyle}"/>
-                            </MenuItem>
-
-                            <MenuItem Header="Foreground" Style="{StaticResource menuitem}">
-                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding ForegroundBrushSetup}"
-                                                               ButtonStyle="{StaticResource MenuButtonStyle}"/>
-                            </MenuItem>
-
-                            <MenuItem Header="Border" Style="{StaticResource menuitem}">
-                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding BorderBrushSetup}"
-                                                               ButtonStyle="{StaticResource MenuButtonStyle}"/>
-                            </MenuItem>
-
-                            <MenuItem Header="Highlight" Style="{StaticResource menuitem}">
-                                <esdkCtrl:SolidColorBrushSetup DataContext="{Binding HighlightBrushSetup}"
-                                                               ButtonStyle="{StaticResource MenuButtonStyle}"/>
-                            </MenuItem>
-                        </MenuItem>
-
-                        <MenuItem Header="Image" Style="{StaticResource menuitem}">
-                            <MenuItem Header="Background" Command="{Binding SetImageCommand}" Style="{StaticResource menuitem}"/>
-                            <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
-                            <MenuItem Header="Border" Command="{Binding SetImageBorderCommand}" Style="{StaticResource menuitem}"/>
-                            <!--<MenuItem Header="Background" Command="{Binding SetImageCommand}"/>-->
-
-                        </MenuItem>
-
-                        <MenuItem Header="Reset" Style="{StaticResource menuitem}">
-                            <MenuItem Header="Background" Command="{Binding ResetImageCommand}" Style="{StaticResource menuitem}"/>
-                            <MenuItem Header="Border" Command="{Binding ResetImageBorderCommand}" Style="{StaticResource menuitem}"/>
-                        </MenuItem>
-
-                    </MenuItem>
-
-                    <MenuItem Header="{DynamicResource EboardMainWindowMaximizeContextMenuHeader}" Style="{StaticResource menuitem}"
+                    <MenuItem Header="{DynamicResource MaximizeContextMenuItemHeader}" Style="{StaticResource menuitem}"
                           Click="MenuItem_Click"/>
 
                     <MenuItem Header="Minimize" Style="{StaticResource menuitem}"
                           Click="Minimize_Click"/>
+
+                    <MenuItem Header="Toggle Menus" Style="{StaticResource menuitem}"
+                              Command="{Binding SwitchMenuVisibilityCommand}"
+                              />
 
                     <MenuItem Header="Close" Command="{Binding CloseCommand}" Style="{StaticResource menuitem}"/>
 
@@ -264,7 +239,6 @@
                     <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto" />
-
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
@@ -276,35 +250,42 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="{Binding Title}"
-                           Foreground="{Binding BrushManagement.Foreground, NotifyOnSourceUpdated=True}"
-                           FontSize="28"
+                <TextBlock Text="{Binding FluidUI.DataBlock.Title}"
+                           Visibility="{Binding MainControlsVisible, Converter={StaticResource btvc}}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Top"
                            Grid.Row="0"
                            Grid.Column="0"
-                           Grid.ColumnSpan="4"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
+                           Grid.ColumnSpan="4"/>
 
                 <!--<Border Name="mask"
                         Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
                         CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"
                         Grid.ColumnSpan="3"
-                        Grid.RowSpan="4"
-         />-->
+                        Grid.RowSpan="4"/>-->
 
-                <views:MainWindowMenuBar Grid.Row="1"
-                                     Grid.Column="0"
-                                         Grid.ColumnSpan="2"
-                                     DataContext="{Binding MainWindowMenuBarVM}" Margin="10 0 0 0"/>
+                <Border Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Visibility="{Binding MainControlsVisible, Converter={StaticResource btvc}}">
+                    <views:MainWindowMenuBar DataContext="{Binding MainWindowMenuBarVM}" Margin="10 0 0 0"/>
+                </Border>
 
-                <views:MainWindowLogoutBar Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" Margin="0 0 0 0"
-                                           DataContext="{Binding MainWindowLogoutBarVM}"
-                                           HorizontalContentAlignment="Stretch"/>
+                <Border Grid.Row="1"
+                        Grid.Column="2"
+                        Grid.ColumnSpan="2"
+                        Margin="0 0 0 0"
+                        Visibility="{Binding MainControlsVisible, Converter={StaticResource btvc}}">
+                    <views:MainWindowLogoutBar DataContext="{Binding MainWindowLogoutBarVM}"
+                                               HorizontalContentAlignment="Stretch"/>
+                </Border>
 
+        <!-- eboard browser switch -->
                 <Grid Grid.Row="2"
                       Grid.Column="0"
                       Grid.ColumnSpan="4"                      
-                      Background="Transparent">
+                      Background="Transparent"
+                      Visibility="{Binding MainControlsVisible, Converter={StaticResource btvc}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
@@ -316,81 +297,73 @@
                     <Grid.ToolTip>
                         <ToolTip Background="Transparent"
                                 BorderBrush="Transparent"
+                                 FontSize="{Binding FluidUI.Font.FontSize}"
                                 BorderThickness="0">
-                            <Border Background="{Binding BrushManagement.Background}"
-                                BorderBrush="{Binding BrushManagement.Border}"
+                            <Border Background="{Binding FluidUI.Design.Background}"
+                                BorderBrush="{Binding FluidUI.Design.Border}"
                                 BorderThickness="3"
                                 CornerRadius="3">
-                                <TextBlock Margin="3"
-                               Background="Transparent"
-                               Foreground="{Binding BrushManagement.Foreground}"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center">
-                    <Run Text="Eboard: "/>
-                    <Run Text="{Binding SelectedEBoard.EBoardName}"/>
-                    <Run Text="{Binding EBoardBrowserViewModel.CurrentSelectionID, NotifyOnSourceUpdated=True}"/>
-                    <Run Text="/"/>
-                    <Run Text="{Binding EBoardBrowserViewModel.EBoardCount, NotifyOnSourceUpdated=True}"/>
+                                <TextBlock Margin="3">
+                                    <Run Text="Eboard: "/>   
+                                    <Run Text="{Binding EBoardBrowserViewModel.SelectedEBoard.FluidUI.DataBlock.Title}"/>
+                                    <LineBreak/>
+                                    <Run Text="{Binding EBoardBrowserViewModel.CurrentSelectionID, NotifyOnSourceUpdated=True}"/>
+                                    <Run Text="/"/>
+                                    <Run Text="{Binding EBoardBrowserViewModel.EBoardCount, NotifyOnSourceUpdated=True}"/>
                                 </TextBlock>
                             </Border>
                         </ToolTip>
                     </Grid.ToolTip>
 
                     <Button Content="|&lt;&lt;" Command="{Binding FirstEboardCommand}"
-                            Style="{StaticResource DefaultButtonStyle}"
                             Grid.Column="0"/>
 
                     <Button Content="&lt;" Command="{Binding PrevEboardCommand}"
-                         Style="{StaticResource DefaultButtonStyle}"
                          Grid.Column="1"/>
 
-                    <TextBox Text="{Binding EBoardBrowserViewModel.SelectedEBoard.EBoardName}"
+                    <TextBox Text="{Binding EBoardBrowserViewModel.SelectedEBoard.FluidUI.DataBlock.Title}"
+                             HorizontalAlignment="Center"
+                             HorizontalContentAlignment="Center"
                              Grid.Column="2"
-                         Foreground="{Binding BrushManagement.Foreground}"
-                         Margin="10 0 0 10"
-                         Background="Transparent"
-                         BorderThickness="0"
-                           FontSize="28"
-                    
-                         HorizontalAlignment="Center"/>
+                             BorderThickness="0"/>
 
                     <Button Content="&gt;" Command="{Binding NextEboardCommand}"
-                           Style="{StaticResource DefaultButtonStyle}"
                             Grid.Column="3"/>
 
                     <Button Content="&gt;&gt;|" Command="{Binding LastEboardCommand}"
-                            Style="{StaticResource DefaultButtonStyle}"
                             Grid.Column="4"/>
                 </Grid>
+
+                <!-- selected eboard screen -->
                 <ScrollViewer HorizontalScrollBarVisibility="Auto"
                                   VerticalScrollBarVisibility="Auto"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Top"
                             Grid.Row="3" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="4"
                           CanContentScroll="True">
-                    <ContentControl Content="{Binding EBoardBrowserViewModel.SelectedEBoard}"
-                            HorizontalContentAlignment="Stretch"
-                            VerticalContentAlignment="Stretch"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            />
+                    <views:EBoardView DataContext="{Binding EBoardBrowserViewModel.SelectedEBoard, NotifyOnSourceUpdated=True}"/>
                 </ScrollViewer>
 
+                <!-- eboard browser und screen settings  -->
                 <Border Grid.Row="2"
                         Grid.RowSpan="2"
-                        Grid.Column="0">
+                        Grid.ColumnSpan="3"
+                        Grid.Column="0"
+                        Visibility="{Binding MainControlsVisible, Converter={StaticResource btvc}}"
+                        HorizontalAlignment="Left">
                     <Grid>
                         <Border Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
                             Converter={StaticResource btvc},
                             NotifyOnSourceUpdated=True,
                             NotifyOnTargetUpdated=True}">
-                            <views:EBoardBrowserView DataContext="{Binding EBoardBrowserViewModel}"/>
+                            <views:EBoardBrowserView Content="{Binding EBoardBrowserViewModel}"/>
                         </Border>
+                        
                         <Border Visibility="{Binding MainWindowMenuBarVM.EBoardSettingsSwitch,
                             Converter={StaticResource btvc},
                             NotifyOnSourceUpdated=True,
                             NotifyOnTargetUpdated=True}">
-                            <views:EBoardSettingsView DataContext="{Binding EBoardBrowserViewModel.SelectedEBoard.EBoardSettingsViewModel}"/>
+                            <views:ScreenControlView DataContext="{Binding EBoardBrowserViewModel.SelectedEBoard.EBoardSettingsViewModel}"/>
                         </Border>
                     </Grid>
                 </Border>
@@ -398,3 +371,5 @@
         </Border>
     </Grid>
 </Window>
+
+<!-- EOF -->

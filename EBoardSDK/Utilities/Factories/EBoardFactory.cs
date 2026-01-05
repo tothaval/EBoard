@@ -1,12 +1,37 @@
 ﻿// <copyright file="EBoardFactory.cs" company=".">
 // Stephan Kammel
 // </copyright>
-
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
 namespace EBoardSDK.Utilities.Factories;
 
-using EBoardSDK.DataSets;
 using EBoardSDK.Models;
-using EBoardSDK.Models.DataSets;
 using EBoardSDK.Plugins;
 using EBoardSDK.ViewModels;
 using Serilog;
@@ -18,58 +43,20 @@ public static class EBoardFactory
 {
     public static EBoardViewModel GetEBoardViewModelByEBoardDataSet(EboardScreen eboardScreen, MainViewModel mainViewModel)
     {
-        var eBoardViewModel = new EBoardViewModel(mainViewModel);
-
-        var eboardDataSet = ScreenToDataSetMapper(eboardScreen, eBoardViewModel);
-
-        eBoardViewModel.ApplyData(eboardDataSet);
-
-        return eBoardViewModel;
-    }
-
-    public static EboardScreen GetNewEboardScreen(string name, int depth, double width, double height)
-    {
-        return new EboardScreen
+        if (eboardScreen.EBoardScreenContext == null)
         {
-            EBID = $"EBoard_{DateTime.Now.Ticks}",
-            EBoardName = name,
-            EBoardDepth = depth,
-            BorderDataSet = new BorderDataSet(new BorderManagement() { Width = width, Height = height }),
-            BrushDataSet = new BrushDataSet(new BrushManagement()),
-        };
-    }
+            eboardScreen.EBoardScreenContext = new FluidUIContext();
+            eboardScreen.EBoardScreenContext.SetInitialValues();
+        }
 
-    public static EboardDataSet GetNewEBoardDataSet()
-    {
-        EboardDataSet eboardDataSet = new EboardDataSet
-        {
-            EBID = $"EBoard_{DateTime.Now.Ticks}",
-            EBoardName = "new eboard",
-            EBoardDepth = 100,
-            BorderDataSet = new BorderDataSet(new BorderManagement() { Width = 640, Height = 320 }),
-            BrushDataSet = new BrushDataSet(new BrushManagement()),
-        };
+        var eBoardViewModel = new EBoardViewModel(mainViewModel, eboardScreen);
 
-        return eboardDataSet;
-    }
-
-    private static EboardDataSet ScreenToDataSetMapper(EboardScreen eboardScreen, EBoardViewModel eBoardViewModel)
-    {
         ObservableCollection<ElementViewModel> elementViewModels = [];
 
         eboardScreen.Elements.Select(x => x).ToList().ForEach(
         async element =>
         {
-            var eds = new ElementDataSet()
-            {
-                EID = element.EID,
-                PluginHeader = element.PluginHeader,
-                PluginType = element.PluginName,
-
-                BorderDataSet = element.BorderDataSet,
-                BrushDataSet = element.BrushDataSet,
-                PlacementDataSet = element.PlacementDataSet,
-            };
+            ElementViewModel elementViewModel = new ElementViewModel(eBoardViewModel, element);
 
             Type? type_PluginViewModel = Type.GetType(element.AssemblyName);
 
@@ -79,7 +66,9 @@ public static class EBoardFactory
 
                 if (externalPlugin != null)
                 {
-                    eds.Plugin = externalPlugin;
+                    externalPlugin.SetEBoardAndElementViewModel(eBoardViewModel, elementViewModel);
+
+                    externalPlugin.RefreshInitialization();
 
                     externalPlugin.PluginHeader = element.PluginHeader;
 
@@ -87,7 +76,7 @@ public static class EBoardFactory
 
                     if (!string.IsNullOrWhiteSpace(contentPath))
                     {
-                        await eds.Plugin.Load(contentPath);
+                        await externalPlugin.Load(contentPath);
                     }
 
                     try
@@ -95,6 +84,8 @@ public static class EBoardFactory
                         var app = Application.Current;
 
                         app?.Resources?.MergedDictionaries?.Add(externalPlugin.ResourceDictionary);
+
+                        elementViewModel.Plugin = externalPlugin;
                     }
                     catch (IOException ioex)
                     {
@@ -113,24 +104,29 @@ public static class EBoardFactory
                 }
             }
 
-            var elementViewModel = new ElementViewModel();
-
-            elementViewModel.ApplyData(eBoardViewModel, eds);
-
             elementViewModel.Redraw();
 
             elementViewModels.Add(elementViewModel);
         });
 
-        return new EboardDataSet()
-        {
-            EBID = eboardScreen.EBID,
-            EBoardName = eboardScreen.EBoardName,
-            EBoardDepth = eboardScreen.EBoardDepth,
-            BorderDataSet = eboardScreen.BorderDataSet,
-            BrushDataSet = eboardScreen.BrushDataSet,
+        eBoardViewModel.Elements = elementViewModels;
 
-            Elements = elementViewModels,
+        return eBoardViewModel;
+    }
+
+    public static EboardScreen GetNewEboardScreen(string name, int depth, double width, double height)
+    {
+        var fluidui = new FluidUIContext();
+        fluidui.SetInitialValues();
+        fluidui.Size.Width = width;
+        fluidui.Size.Height = height;
+
+        return new EboardScreen
+        {
+            EBID = $"EBoard_{DateTime.Now.Ticks}",
+            EBoardName = name,
+            EBoardDepth = depth,
+            EBoardScreenContext = fluidui,
         };
     }
 }

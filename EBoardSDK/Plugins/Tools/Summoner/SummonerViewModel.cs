@@ -1,14 +1,40 @@
 ﻿// <copyright file="SummonerViewModel.cs" company=".">
 // Stephan Kammel
 // </copyright>
-
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
 namespace EBoardSDK.Plugins.Tools.Summoner;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
-using EBoardSDK.Models;
 using EBoardSDK.Plugins.Elements.StandardText;
 using EBoardSDK.SharedMethods;
 using System.Reflection;
@@ -37,7 +63,7 @@ using System.Windows.Media;
 /// 
 /// also, elementviewmodel oder datei, was werde ich tun?
 /// </summary>
-public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElementBackgroundImage
+public partial class SummonerViewModel : EBoardElementPluginBaseViewModel
 {
     [ObservableProperty]
     private string userCommandString = ">";
@@ -123,9 +149,9 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     }
 
     /// <summary>
-    /// Gets or sets until a real brushManagement architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real fluidUIDesign architecture is implemented, this serves as a mockup solution
     ///
-    /// a real brushManagement architecture should check a folder for certain files or a file, in which
+    /// a real fluidUIDesign architecture should check a folder for certain files or a file, in which
     /// data on plugins is stored, then all that data needs to be loaded and instanciated if
     /// necessary during app start
     ///
@@ -134,12 +160,12 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     public List<string> PluginsCategoryElements { get; set; } = ["StandardText"];
 
     /// <summary>
-    /// Gets or sets until a real brushManagement architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real fluidUIDesign architecture is implemented, this serves as a mockup solution
     /// </summary>
     public List<string> PluginsCategoryShapes { get; set; } = ["Ellipse", "Rectangle"];
 
     /// <summary>
-    /// Gets or sets until a real brushManagement architecture is implemented, this serves as a mockup solution
+    /// Gets or sets until a real fluidUIDesign architecture is implemented, this serves as a mockup solution
     /// </summary>
     public List<string> PluginsCategoryTools { get; set; } = [
         "SessionUptimeClock", "EmptyLinear", "EmptyRadial", "Summoner", "Uptime"];
@@ -186,7 +212,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     {
         if (this.ImagePath != null && this.ImagePath != string.Empty)
         {
-            this.Summonee?.ApplyBrush(new SharedMethod_UI().ChangeBackgroundToImage(this.Summonee.BrushManagement.Background, this.ImagePath), Enums.BrushTargets.Background);
+            this.Summonee?.ElementViewModel.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Apply_FluidUIDesignBrush(new SharedMethod_UI().ChangeBackgroundToImage(this.Summonee.ElementViewModel.FluidUI.Design.Background, this.ImagePath), Enums.BrushTargets.Background);
         }
     }
 
@@ -230,6 +256,8 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
                     if (plugin != null)
                     {
+                        plugin.SetEBoardAndElementViewModel(this.EBoardViewModel, this.ElementViewModel);
+
                         this.Summonee = plugin;
 
                         // resource dictionary muss ggf. noch genutzt werden wegen datatemplates
@@ -238,7 +266,7 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
                 }
             }
 
-            this.Summonee = new StandardTextViewModel() { Text = $"unknown brushManagement '{command}' called" };
+            this.Summonee = new StandardTextViewModel() { Text = $"unknown fluidUIDesign '{command}' called" };
             return;
         }
 
@@ -247,8 +275,6 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
     private void InstantiateProperties()
     {
-        this.BorderManagement = new BorderManagement();
-        this.BrushManagement = new BrushManagement();
     }
 
     public override Task<EBoardFeedbackMessage> Load(string path)
@@ -282,13 +308,13 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
     {
         this.ImagePath = string.Empty;
 
-        this.Summonee.ApplyBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, Enums.BrushTargets.Background);
+        this.Summonee.ElementViewModel.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Apply_FluidUIDesignBrush(new SharedMethod_UI().ImagePathErrorDefaultBrush, Enums.BrushTargets.Background);
     }
 
     [RelayCommand]
     private void SetImage()
     {
-        this.ImagePath = new SharedMethod_UI().SetBackgroundImage(this.ImagePath);
+        this.ImagePath = new SharedMethod_UI().UserSelectImage(this.ImagePath);
     }
 
     private void UpdateContentHeight(int height)
@@ -324,4 +350,6 @@ public partial class SummonerViewModel : EBoardElementPluginBaseViewModel, IElem
 
         // this.Width = double.NaN;
     }
-}// EOF
+}
+
+// EOF

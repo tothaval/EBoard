@@ -1,0 +1,133 @@
+﻿<!--
+// <copyright file="FluidUIDesignSetupView.xaml" company=".">
+// Stephan Kammel
+// </copyright>
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
+-->
+<MenuItem x:Class="EBoardSDK.Controls.FluidUIDesign.FluidUIDesignSetupView"
+          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+          xmlns:local="clr-namespace:EBoardSDK.Controls.FluidUIDesign"
+          xmlns:bs="clr-namespace:EBoardSDK.Controls.BrushSetup"
+          xmlns:linear="clr-namespace:EBoardSDK.Controls.BrushSetup.LinearBrushSetup"
+          xmlns:radial="clr-namespace:EBoardSDK.Controls.BrushSetup.RadialBrushSetup"
+          xmlns:solid="clr-namespace:EBoardSDK.Controls.BrushSetup.SolidBrushSetup"
+             d:DataContext="{d:DesignInstance Type=local:FluidUIDesignSetupViewModel}"
+          mc:Ignorable="d" 
+          d:DesignHeight="450" d:DesignWidth="800">
+
+    <MenuItem.Resources>
+        <DataTemplate DataType="{x:Type bs:BrushSetupViewModel}">
+            <bs:BrushSetupView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type linear:LinearBrushSetupViewModel}">
+            <linear:LinearBrushSetupView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type radial:RadialBrushSetupViewModel}">
+            <radial:RadialBrushSetupView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type solid:SolidBrushSetupViewModel}">
+            <solid:SolidBrushSetupView/>
+        </DataTemplate>
+
+        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
+            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Background}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Highlight}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}" x:Key="sub">
+            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding ViewModel.FluidUIDesign.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+        </Style>
+
+        <Style TargetType="Label" >
+            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}" x:Key="MenuButtonStyle">
+            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border}"/>
+        </Style>
+    </MenuItem.Resources>
+    <MenuItem Header="Colors" Style="{StaticResource menuitem}"
+                  StaysOpenOnClick="True">
+        <bs:BrushSetupView DataContext="{Binding BackgroundBS, NotifyOnSourceUpdated=True}"
+                                   Style="{StaticResource menuitem}"
+                                 Header="Background"
+                                   StaysOpenOnClick="True"/>
+
+        <bs:BrushSetupView DataContext="{Binding ForegroundBS, NotifyOnSourceUpdated=True}"
+                                 Header="Foreground"
+                                 Style="{StaticResource menuitem}"
+                                 StaysOpenOnClick="True"/>
+
+        <bs:BrushSetupView DataContext="{Binding BorderBS, NotifyOnSourceUpdated=True}"
+                                 Header="Border"
+                                 Style="{StaticResource menuitem}"
+                                 StaysOpenOnClick="True"/>
+
+        <bs:BrushSetupView DataContext="{Binding HighlightBS, NotifyOnSourceUpdated=True}"
+                                 Header="Highlight"
+                                 Style="{StaticResource menuitem}"
+                                 StaysOpenOnClick="True"/>
+    </MenuItem>
+
+    <MenuItem Header="Reset" Style="{StaticResource menuitem}">
+        <MenuItem Header="Background" Command="{Binding ViewModel.ResetImageCommand}" Style="{StaticResource menuitem}"/>
+        <MenuItem Header="Foreground" Command="{Binding ViewModel.ResetForegroundImageCommand}" Style="{StaticResource menuitem}"/>
+        <MenuItem Header="Border" Command="{Binding ViewModel.ResetImageBorderCommand}" Style="{StaticResource menuitem}"/>
+        <MenuItem Header="Highlight" Command="{Binding ViewModel.ResetHighlightImageCommand}" Style="{StaticResource menuitem}"/>
+    </MenuItem>
+</MenuItem>
+
+<!-- EOF -->

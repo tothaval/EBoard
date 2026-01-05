@@ -1,10 +1,37 @@
 ﻿// <copyright file="ElementView.xaml.cs" company=".">
 // Stephan Kammel
 // </copyright>
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
 namespace EBoardSDK.Views;
 
 using EBoardSDK.ViewModels;
-using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -80,35 +107,56 @@ public partial class ElementView : UserControl
     public ElementView()
     {
         this.InitializeComponent();
+
+        this.SetPlacement();
     }
 
-    private void ElementViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    public void SetPlacement()
     {
-        this.UpdatePlacement();
+        if (this.DataContext != null)
+        {
+            this._ElementViewModel = (ElementViewModel)this.DataContext;
+
+            this._ElementViewModel.SetView(this);
+        }
+
+        if (this._ElementViewModel != null)
+        {
+            this.X = this._ElementViewModel.FluidUI.Stand.Position.X;
+            this.Y = this._ElementViewModel.FluidUI.Stand.Position.Y;
+            this.Z = this._ElementViewModel.FluidUI.Stand.Z;
+
+            Canvas.SetLeft(this._VisualParent, this.X);
+            Canvas.SetTop(this._VisualParent, this.Y);
+            Panel.SetZIndex(this._VisualParent, this.Z);
+
+            this.ElementBorder.RenderTransformOrigin = this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.TransformOriginPoint;
+            this.ElementBorder.RenderTransform = this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.RotateTransformValue;
+        }
     }
 
-    private void UpdatePlacement()
+    public void UpdatePlacement()
     {
         this.X = Canvas.GetLeft(this._VisualParent);
 
         this.Y = Canvas.GetTop(this._VisualParent);
 
-        if (Panel.GetZIndex(this._VisualParent) != this._ElementViewModel.ZIndexValue)
+        if (Panel.GetZIndex(this._VisualParent) != this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue)
         {
-            Panel.SetZIndex(this._VisualParent, this._ElementViewModel.ZIndexValue);
+            Panel.SetZIndex(this._VisualParent, this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue);
         }
 
-        this._ElementViewModel.XMaximumValue = (int)this._Canvas.ActualWidth;
-        this._ElementViewModel.YMaximumValue = (int)this._Canvas.ActualHeight;
+        this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XMaximumValue = (int)this._Canvas.ActualWidth;
+        this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YMaximumValue = (int)this._Canvas.ActualHeight;
     }
 
     private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (!Keyboard.IsKeyDown(Key.LeftCtrl) || !Keyboard.IsKeyDown(Key.RightCtrl))
         {
-            this.Z = this._ElementViewModel.ZIndexValue;
+            this.Z = this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue;
 
-            if (this.Z < this._ElementViewModel.ZMaximumValue && this.Z != this.fallbackZ)
+            if (this.Z < this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZMaximumValue && this.Z != this.fallbackZ)
             {
                 this.fallbackZ = this.Z;
             }
@@ -118,7 +166,7 @@ public partial class ElementView : UserControl
 
             this._Position = e.GetPosition(this._VisualParent);
 
-            this._ElementViewModel.EBoardViewModel.BeginElementSelectionMovement(this._ElementViewModel);
+            this._ElementViewModel.EBoardViewModel?.BeginElementSelectionMovement(this._ElementViewModel);
 
             this.oldMousePosition = e.GetPosition(this._Canvas);
 
@@ -154,7 +202,7 @@ public partial class ElementView : UserControl
             Canvas.SetTop(this._VisualParent, y);
 
             Panel.SetZIndex(this._VisualParent, 1000);
-            this._ElementViewModel.ZIndexValue = 1000;
+            this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue = 1000;
 
             Point delta = (Point)(this.oldMousePosition - canvasRelativePosition);
 
@@ -176,18 +224,19 @@ public partial class ElementView : UserControl
 
             this.Y = Canvas.GetTop(this._VisualParent);
 
-            this._Position = new Point(this.X, this.Y);
+            this._ElementViewModel.FluidUI.Stand.Position = new Point(this.X, this.Y);
 
-            this._ElementViewModel.PlacementManager.Position = new Point(this.X, this.Y);
+            this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = this.X;
+            this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = this.Y;
 
-            if (this.Z > this._ElementViewModel.ZMaximumValue)
+            if (this.Z > this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZMaximumValue)
             {
                 this.Z = this.fallbackZ;
-                this._ElementViewModel.ZIndexValue = this.fallbackZ;
+                this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue = this.fallbackZ;
             }
             else
             {
-                this._ElementViewModel.ZIndexValue = this.Z;
+                this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue = this.Z;
             }
 
             Panel.SetZIndex(this._VisualParent, this.Z);
@@ -211,11 +260,18 @@ public partial class ElementView : UserControl
 
         this._ElementViewModel = (ElementViewModel)this.DataContext;
 
-        this._ElementViewModel.PropertyChanged += this.ElementViewModel_PropertyChanged;
-
         this._ElementViewModel.SetView(this);
 
-        this.UpdatePlacement();
+        this.X = this._ElementViewModel.FluidUI.Stand.Position.X;
+        this.Y = this._ElementViewModel.FluidUI.Stand.Position.Y;
+        this.Z = this._ElementViewModel.FluidUI.Stand.Z;
+
+        Canvas.SetLeft(this._VisualParent, this.X);
+        Canvas.SetTop(this._VisualParent, this.Y);
+        Panel.SetZIndex(this._VisualParent, this.Z);
+
+        this.ElementBorder.RenderTransformOrigin = this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.TransformOriginPoint;
+        this.ElementBorder.RenderTransform = this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.RotateTransformValue;
     }
 
     private void Element_Unloaded(object sender, RoutedEventArgs e)
@@ -226,12 +282,14 @@ public partial class ElementView : UserControl
     {
         if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
         {
-            this._ElementViewModel.ApplyRotationAngleValueByMouseWheel(e.Delta);
+            this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ApplyRotationAngleValueByMouseWheel(e.Delta);
 
             return;
         }
 
-        this._ElementViewModel.ApplyZIndexValueByMouseWheel(e.Delta);
+        this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ApplyZIndexValueByMouseWheel(e.Delta);
+
+        this.UpdatePlacement();
     }
 
     private void Border_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
@@ -287,8 +345,8 @@ public partial class ElementView : UserControl
 
             y = canvasRelativePosition.Y - this._Position.Y;
 
-            this._ElementViewModel.WidthValue = (int)x;
-            this._ElementViewModel.HeightValue = (int)y;
+            this._ElementViewModel.Width = (int)x;
+            this._ElementViewModel.Height = (int)y;
 
             this.oldMousePosition = canvasRelativePosition;
         }

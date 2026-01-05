@@ -1,17 +1,46 @@
 ﻿// <copyright file="Runner.cs" company=".">
 // Stephan Kammel
 // </copyright>
-
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
 namespace EBoardSDK;
 
 using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardConfigManager.Models;
 using EBoardSDK.Models;
+using EBoardSDK.SharedMethods;
 using EBoardSDK.ViewModels;
 using Serilog;
 using System.IO;
 using System.Windows;
+using System.Windows.Media;
 using SplashScreen = EBoardSDK.Views.SplashScreen;
 
 public class Runner
@@ -101,7 +130,12 @@ public class Runner
         this.CreateLogEventAsync("applying data");
         this.mainViewModel.SetScreenData(screens);
 
-        MainWindow mainWindow = new MainWindow(this.mainViewModel);
+        MainWindow mainWindow = new MainWindow(this.mainViewModel)
+        {
+            AllowsTransparency = true,
+            Background = new SolidColorBrush(Colors.Transparent),
+            WindowStyle = WindowStyle.None,
+        };
 
         this.CreateLogEventAsync("finalizing startup");
         _ = await this.EBoardConfigInitialization(mainWindow, config);
@@ -138,6 +172,11 @@ public class Runner
 
         var eboardFolderPath = Path.Combine(this.DataLocations.EBoardDataPath, DataLocations.EBoardScreenDataPath);
         var screenfolders = Loader.GetDirectories(eboardFolderPath);
+
+        if (screenfolders == null || screenfolders.Count == 0)
+        {
+            return eboardScreens;
+        }
 
         foreach (var screenfolder in screenfolders)
         {
@@ -193,11 +232,26 @@ public class Runner
 
             this.mainViewModel.MainWindowMenuBarVM.EBoardBrowserSwitch = eboardConfig.EBoardBrowserSwitch;
 
-            mainWindow.Left = eboardConfig.PlacementDataSet.Position.X;
-            mainWindow.Top = eboardConfig.PlacementDataSet.Position.Y;
+            if (eboardConfig.EBoardContext == null)
+            {
+                eboardConfig.EBoardContext = new FluidUIContext();
+                eboardConfig.EBoardContext.SetInitialValues();
+            }
 
-            mainWindow.Width = eboardConfig.BorderDataSet.Width;
-            mainWindow.Height = eboardConfig.BorderDataSet.Height;
+            if (eboardConfig.EBoardBrowserViewContext == null)
+            {
+                eboardConfig.EBoardBrowserViewContext = new FluidUIContext();
+                eboardConfig.EBoardBrowserViewContext.SetInitialValues();
+            }
+
+            var helper = new SharedMethod_UI();
+
+            mainWindow.Left = eboardConfig.EBoardContext.Stand.Position.X;
+            mainWindow.Top = eboardConfig.EBoardContext.Stand.Position.Y;
+
+            mainWindow.Width = helper.ConvertNegativeSizeValuesToNaN(eboardConfig.EBoardContext.Size.Width);
+            mainWindow.Height = helper.ConvertNegativeSizeValuesToNaN(eboardConfig.EBoardContext.Size.Height);
+
         }
 
         return Task.FromResult(eboardConfig);

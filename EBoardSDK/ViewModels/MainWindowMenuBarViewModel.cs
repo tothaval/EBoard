@@ -1,7 +1,34 @@
 ﻿// <copyright file="MainWindowMenuBarViewModel.cs" company=".">
 // Stephan Kammel
 // </copyright>
-
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may 
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial 
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
 /*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
  *
  *  MainWindowMenuBarViewModel
@@ -13,15 +40,14 @@ namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.DataSets;
 using EBoardSDK.Interfaces;
-using EBoardSDK.Models;
+using EBoardSDK.Interfaces.FluidUIDesign;
+using EBoardSDK.Interfaces.FluidUIText;
 using EBoardSDK.Plugins;
-using EBoardSDK.Utilities.Factories;
 using Serilog;
 using System.IO;
 using System.Windows;
-using System.Xml.Linq;
+using System.Windows.Media;
 
 /// <summary>
 /// TODO:
@@ -33,7 +59,8 @@ using System.Xml.Linq;
 /// </summary>
 public partial class MainWindowMenuBarViewModel : ObservableObject
 {
-    private readonly BrushManagement brushManagement;
+    private readonly IFluidUIDesignModel brushManagement;
+    private readonly IFluidUIFontModel fontManagement;
 
     [ObservableProperty]
     private bool eBoardBrowserSwitch;
@@ -61,26 +88,43 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
     [ObservableProperty]
     private IList<EBoardElementPluginBaseViewModel> foundPlugins = [];
 
-    private BrushManagement screenBrushManagement;
+    private IFluidUIDesignModel screenBrushManagement;
+    private IFluidUIFontModel screenFontManagement;
 
     public MainWindowMenuBarViewModel(MainViewModel mainViewModel, EBoardSDK.Models.EboardConfig eboardConfig)
     {
         this.mainViewModel = mainViewModel;
-        this.brushManagement = mainViewModel.EBoardBrowserViewModel.BrushManagement;
-        this.screenBrushManagement = this.mainViewModel.BrushManagement;
+        this.brushManagement = mainViewModel.EBoardBrowserViewModel.FluidUI.Design;
+        this.screenBrushManagement = this.mainViewModel.FluidUI.Design;
+
+        this.fontManagement = mainViewModel.EBoardBrowserViewModel.FluidUI.Font;
+        this.screenFontManagement = this.mainViewModel.FluidUI.Font;
 
         this.mainViewModel.EBoardBrowserViewModel.PropertyChanged += this.EBoardBrowserViewModel_PropertyChanged;
-        this.brushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
+        //this.brushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
 
         this.InstallEboardPlugins(SDKPluginManager.SDKPlugins);
 
         this.InstallEboardPlugins(eboardConfig.ElementPlugins);
     }
 
-    private void BrushManagement_PropertyChangedEvent()
-    {
-        this.OnPropertyChanged(nameof(this.BrushManagement));
-    }
+    public IFluidUIDesignModel BrushManagement => this.brushManagement;
+
+    public IFluidUIDesignModel ScreenBrushManagement => this.screenBrushManagement;
+
+    public IFluidUIFontModel FontManagement => this.fontManagement;
+
+    public IFluidUIFontModel ScreenFontManagement => this.screenFontManagement;
+
+    public MainViewModel MainViewModel => this.mainViewModel;
+
+    public EBoardBrowserViewModel EBoardBrowserViewModel => this.MainViewModel.EBoardBrowserViewModel;
+
+    //private void BrushManagement_PropertyChangedEvent()
+    //{
+    //    this.OnPropertyChanged(nameof(this.BrushManagement));
+    //    this.OnPropertyChanged(nameof(this.ScreenBrushManagement));
+    //}
 
     private void EBoardBrowserViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
@@ -91,14 +135,26 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
                 this.ScreenBrushManagement.PropertyChangedEvent -= this.ScreenBrushManagement_PropertyChangedEvent;
             }
 
-            this.screenBrushManagement = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.BrushManagement;
+            if (this.ScreenFontManagement != null)
+            {
+                this.ScreenFontManagement.PropertyChangedEvent -= this.ScreenFontManagement_PropertyChangedEvent;
+            }
+
+            this.screenBrushManagement = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.FluidUI.Design;
+            this.screenFontManagement = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.FluidUI.Font;
 
             if (this.ScreenBrushManagement != null)
             {
                 this.ScreenBrushManagement.PropertyChangedEvent += this.ScreenBrushManagement_PropertyChangedEvent;
             }
 
+            if (this.ScreenFontManagement != null)
+            {
+                this.ScreenFontManagement.PropertyChangedEvent += this.ScreenFontManagement_PropertyChangedEvent; ;
+            }
+
             this.OnPropertyChanged(nameof(this.ScreenBrushManagement));
+            this.OnPropertyChanged(nameof(this.ScreenFontManagement));
         }
     }
 
@@ -123,13 +179,10 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
         this.OnPropertyChanged(nameof(this.ScreenBrushManagement));
     }
 
-    public BrushManagement BrushManagement => this.brushManagement;
-
-    public BrushManagement ScreenBrushManagement => this.screenBrushManagement;
-
-    public MainViewModel MainViewModel => this.mainViewModel;
-
-    public EBoardBrowserViewModel EBoardBrowserViewModel => this.MainViewModel.EBoardBrowserViewModel;
+    private void ScreenFontManagement_PropertyChangedEvent()
+    {
+        this.OnPropertyChanged(nameof(this.ScreenFontManagement));
+    }
 
     private void InstallEboardPlugins(IList<EBoardElementPluginBaseViewModel> elements)
     {
@@ -216,57 +269,73 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
             var selectedEboard = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard;
 
             var p = s as Type;
-            var plugin = Activator.CreateInstance(p) as IPlugin;
 
-            var pt = plugin?.GetType();
-
-            var interfaces = plugin?.GetType().GetInterfaces();
-
-            if (selectedEboard != null &&
-                plugin != null &&
-                interfaces != null &&
-                interfaces.Any(x => x.Name.Equals(nameof(IPlugin))))
+            if (selectedEboard != null && p != null)
             {
-                IElementDataSet newElementDataSet = new ElementDataSet();
+                var elementViewModel = new ElementViewModel(selectedEboard);
 
-                newElementDataSet = ElementDataSetFactory.GetElementDataSet(
-                    plugin: plugin);
-
-                var screenpolicies = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.InstantiationPolicies;
-
-                if (screenpolicies == null || screenpolicies.Contains(EBoardSDK.Enums.ElementInstantiationPolicy.ValueNotSet))
+                if (Activator.CreateInstance(p) is IPlugin plugin)
                 {
-                    return;
-                }
+                    plugin.SetEBoardAndElementViewModel(selectedEboard, elementViewModel);
 
-                if (newElementDataSet.Plugin.ElementScreenIntegrationConstraints == null)
-                {
-                    return;
-                }
+                    var interfaces = plugin?.GetType().GetInterfaces();
 
-                if (newElementDataSet.Plugin.ElementScreenIntegrationConstraints.InstantiationPolicy == EBoardSDK.Enums.ElementInstantiationPolicy.OnePerScreen)
-                {
-                    bool exists = false;
-
-                    selectedEboard.Elements.ToList().ForEach(element =>
+                    if (interfaces != null &&
+                        interfaces.Any(x => x.Name.Equals(nameof(IPlugin))))
                     {
-                        if (element.Plugin.ElementPluginViewModel.Equals(newElementDataSet.Plugin.ElementPluginViewModel))
+                        var screenpolicies = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.InstantiationPolicies;
+
+                        if (screenpolicies == null || screenpolicies.Contains(EBoardSDK.Enums.ElementInstantiationPolicy.ValueNotSet))
                         {
-                            exists = true;
+                            return;
                         }
-                    });
 
-                    if (exists)
-                    {
-                        return;
+                        if (plugin.ElementScreenIntegrationConstraints == null)
+                        {
+                            return;
+                        }
+
+                        if (plugin.ElementScreenIntegrationConstraints.InstantiationPolicy == EBoardSDK.Enums.ElementInstantiationPolicy.OnePerScreen)
+                        {
+                            bool exists = false;
+
+                            selectedEboard.Elements.ToList().ForEach(element =>
+                            {
+                                if (element.Plugin.ElementPluginViewModel.Equals(plugin.ElementPluginViewModel))
+                                {
+                                    exists = true;
+                                }
+                            });
+
+                            if (exists)
+                            {
+                                return;
+                            }
+                        }
+
+                        if (plugin.PluginCategory == Enums.PluginCategories.Shape)
+                        {
+                            elementViewModel.FluidUI.Design.Background = new SolidColorBrush(Colors.Transparent);
+                            elementViewModel.FluidUI.Design.Foreground = new SolidColorBrush(Colors.Transparent);
+                            elementViewModel.FluidUI.Design.Border = new SolidColorBrush(Colors.Transparent);
+
+                            elementViewModel.FluidUI.Size.Margin = new Thickness(0);
+                            elementViewModel.FluidUI.Size.Padding = new Thickness(0);
+                            elementViewModel.FluidUI.Size.BorderThickness = new Thickness(0);
+                            elementViewModel.FluidUI.Size.CornerRadius = new CornerRadius(0);
+
+                            elementViewModel.Redraw();
+                        }
+
+                        elementViewModel.Plugin = plugin;
+
+                        elementViewModel.Plugin.SetEBoardAndElementViewModel(selectedEboard, elementViewModel);
+
+                        elementViewModel.Plugin.RefreshInitialization();
+
+                        this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(elementViewModel);
                     }
                 }
-
-                ElementViewModel element = new ElementViewModel(
-                    this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard,
-                    newElementDataSet);
-
-                this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(element);
             }
         }
     }
