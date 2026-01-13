@@ -164,7 +164,7 @@
                    Margin="10 0"
                    MinWidth="100"
                    HorizontalAlignment="Stretch"
-                   Stroke="{Binding BrushManagement.Border, NotifyOnSourceUpdated=True}"
+                   Stroke="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"
                    StrokeThickness="1"
                    Grid.Column="1"
                    Grid.Row="0"/>

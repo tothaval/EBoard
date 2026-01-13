@@ -42,17 +42,7 @@ using System.Windows.Media;
 
 public interface IFluidUIDesignSetup : IFluidUIChangedAction
 {
-    public bool Apply_FluidUIDesignBrush(Brush brush, BrushTargets brushTargets);
-
-    public void Apply_FluidUIDesignBrushTargetToImage(BrushTargets brushTargets, string path);
-
-    public void Reset_FluidUIDesignBrush(BrushTargets brushTargets);
-
-    public void SetUserChosenImagePath(BrushTargets brushTargets);
-
-    public void SwitchBorderToHighlight();
-
-    public void SwitchBorderToBorder();
+    public bool ApplyBrush(Brush brush, BrushTargets brushTargets);
 }
 
 // EOF

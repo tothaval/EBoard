@@ -39,12 +39,16 @@
                     xmlns:esdkctrl_quadsetup ="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
                     xmlns:FU_DB ="clr-namespace:EBoardSDK.Controls.FluidUIDataBlock"
                     xmlns:FU_DBit ="clr-namespace:EBoardSDK.Controls.FluidUIDataBlock.FluidUIIndexText"
+                    xmlns:FU_DBkt ="clr-namespace:EBoardSDK.Controls.FluidUIDataBlock.FluidUIKeyText"
                     xmlns:FU_DE ="clr-namespace:EBoardSDK.Controls.FluidUIDesign"
                     xmlns:FU_FO ="clr-namespace:EBoardSDK.Controls.FluidUIFont"
+                    xmlns:FU_ME ="clr-namespace:EBoardSDK.Controls.FluidUIMenu"
                     xmlns:FU_SI ="clr-namespace:EBoardSDK.Controls.FluidUISize"
                     xmlns:FU_ST ="clr-namespace:EBoardSDK.Controls.FluidUIStand"
-                    xmlns:esdkctrl_area ="clr-namespace:EBoardSDK.Controls.Area">
+                    xmlns:esdkctrl_area ="clr-namespace:EBoardSDK.Controls.Area"
+                    xmlns:ScreenSetup ="clr-namespace:EBoardSDK.Controls.ScreenSetup">
 
+    <!--#region Views -->
     <DataTemplate DataType="{x:Type eboard:MainViewModel}">
         <eboard:MainWindow/>
     </DataTemplate>
@@ -72,11 +76,9 @@
     <DataTemplate DataType="{x:Type vms:ElementViewModel}">
         <views:ElementView/>
     </DataTemplate>
-
-    <DataTemplate DataType="{x:Type esdkctrl_quadsetup:QuadValueSetupViewModel}">
-        <esdkctrl_quadsetup:QuadValueSetupView/>
-    </DataTemplate>
-
+    <!--#endregion-->
+    
+    <!--#region Controls/Area-->
     <DataTemplate DataType="{x:Type esdkctrl_area:AreaViewModel`1}">
         <esdkctrl_area:AreaView/>
     </DataTemplate>
@@ -88,7 +90,9 @@
     <DataTemplate DataType="{x:Type esdkctrl_area:AreaVerticalOuterViewModel`1}">
         <esdkctrl_area:AreaVerticalOuterView/>
     </DataTemplate>
+    <!--#endregion-->
 
+    <!--#region Controls/FluidUIDataBlock-->
     <DataTemplate DataType="{x:Type FU_DB:FluidUIDataBlockSetupViewModel}">
         <FU_DB:FluidUIDataBlockSetupView/>
     </DataTemplate>
@@ -97,21 +101,68 @@
         <FU_DBit:FluidUIIndexTextView/>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type FU_DBit:QuadFluidUIIndexTextViewModel}">
+        <FU_DBit:QuadFluidUIIndexTextView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type FU_DBkt:FluidUIKeyTextViewModel}">
+        <FU_DBkt:FluidUIKeyTextView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type FU_DBkt:QuadFluidUIKeyTextViewModel}">
+        <FU_DBkt:QuadFluidUIKeyTextView/>
+    </DataTemplate>
+    <!--#endregion-->
+    
+    <!--#region Controls/FluidUIDesign-->
     <DataTemplate DataType="{x:Type FU_DE:FluidUIDesignSetupViewModel}">
         <FU_DE:FluidUIDesignSetupView/>
     </DataTemplate>
+    <!--#endregion-->
 
+    <!--#region Controls/FluidUIFont-->
     <DataTemplate DataType="{x:Type FU_FO:FluidUIFontSetupViewModel}">
         <FU_FO:FluidUIFontSetupView/>
     </DataTemplate>
+    <!--#endregion-->
 
+    <!--#region Controls/FluidUIMenu-->
+    <DataTemplate DataType="{x:Type FU_ME:FluidUIMenuViewModel}">
+        <FU_ME:FluidUIMenuView/>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type FU_ME:FluidUISelectionViewModel}">
+        <FU_ME:FluidUISelectionView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type FU_ME:PluginSelectionViewModel}">
+        <FU_ME:PluginSelectionView/>
+    </DataTemplate>
+    <!--#endregion-->
+
+    <!--#region Controls/FluidUISize-->
     <DataTemplate DataType="{x:Type FU_SI:FluidUISizeSetupViewModel}">
         <FU_SI:FluidUISizeSetupView/>
     </DataTemplate>
+    <!--#endregion-->
 
+    <!--#region Controls/FluidUIStand-->
     <DataTemplate DataType="{x:Type FU_ST:FluidUIStandSetupViewModel}">
         <FU_ST:FluidUIStandSetupView/>
     </DataTemplate>
+    <!--#endregion-->
+
+    <!--#region Controls/QuadValueSetup -->
+    <DataTemplate DataType="{x:Type esdkctrl_quadsetup:QuadValueSetupViewModel}">
+        <esdkctrl_quadsetup:QuadValueSetupView/>
+    </DataTemplate>
+    <!--#endregion-->
+    
+    <!--#region Controls/ScreenSetup -->
+    <DataTemplate DataType="{x:Type ScreenSetup:ScreenSetupViewModel}">
+        <ScreenSetup:ScreenSetupView/>
+    </DataTemplate>
+    <!--#endregion-->
 </ResourceDictionary>
 
 <!-- EOF -->

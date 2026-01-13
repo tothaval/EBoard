@@ -39,7 +39,6 @@
              xmlns:local="clr-namespace:EBoardSDK.Views"
              xmlns:vms="clr-namespace:EBoardSDK.ViewModels"
              d:DataContext="{d:DesignInstance Type=vms:EBoardViewModel}"
-             xmlns:ut="clr-namespace:EBoardSDK.Utilities"
              xmlns:esdkfuim="clr-namespace:EBoardSDK.Controls.FluidUIMenu"
              xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
              x:Name="EBoard_Board"
@@ -49,7 +48,8 @@
              FontSize="{Binding FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
              FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
              FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
-             Foreground="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"                                                                
+             Foreground="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
+             Opacity="{Binding FluidUI.Design.Opacity, NotifyOnSourceUpdated=True}"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
@@ -74,16 +74,16 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="DefaultButtonBorder"
-                          Background="{TemplateBinding Background}"
-                          BorderBrush="{TemplateBinding BorderBrush}"
-                          BorderThickness="3"                            
-                          CornerRadius="5" 
-                          MinWidth="50"
-                          MinHeight="25"
-                          Margin="5"
-                          Padding="5">
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="3"                            
+                                CornerRadius="5" 
+                                MinWidth="50"
+                                MinHeight="25"
+                                Margin="5"
+                                Padding="5">
                             <ContentPresenter HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"/>
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -101,11 +101,11 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
             <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
             <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="TextBlock.Foreground" Value="{Binding FluidUIDesign.Foreground}"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
             <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
             <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
 
@@ -122,10 +122,18 @@
 
         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}" x:Key="sub">
             <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
             <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Background" Value="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+        </Style>
+
+        <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTip}">
+            <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+            <Setter Property="FontSize" Value="{Binding FluidUI.Font.FontSize}"/>
+            <Setter Property="FontFamily" Value="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
         </Style>
     </UserControl.Resources>
 
@@ -137,39 +145,29 @@
                 Background="{Binding FluidUI.Design.Background}"
                 BorderBrush="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"
                 BorderThickness="{Binding FluidUI.Size.BorderThickness, NotifyOnSourceUpdated=True}"
-                CornerRadius="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"
-                >
+                CornerRadius="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}">
+
+            <Border.ToolTip>
+                <ToolTip Content="{Binding FluidUI.DataBlock.Text,NotifyOnSourceUpdated=True}"
+                         Visibility="{Binding FluidUI.DataBlock.ShowToolTip, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}"/>
+            </Border.ToolTip>
 
             <Border.Resources>
                 <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItem}">
                     <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
-                    <Setter Property="BorderThickness" Value="5"/>
-                    <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+                    <Setter Property="BorderThickness" Value="3"/>
                     <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
                 </Style>
             </Border.Resources>
             
-            <Border.ToolTip>
-                <ToolTip Content="{Binding FluidUI.DataBlock.Text,NotifyOnSourceUpdated=True}"
-                         Background="{Binding FluidUI.Design.Background}"
-                         BorderBrush="{Binding FluidUI.Design.Border}"
-                         BorderThickness="2"
-                         Padding="{Binding FluidUI.Size.Padding}"
-                         Foreground="{Binding FluidUI.Design.Foreground}"
-                         FontSize="{Binding FluidUI.Font.FontSize}"
-                         FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
-                         FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}">
-                </ToolTip>
-            </Border.ToolTip>
-
             <Border.ContextMenu >
                 <ContextMenu Background="{Binding FluidUI.Design.Background}"
-                         BorderBrush="{Binding FluidUI.Design.Border}"
-                         Style="{StaticResource ContextMenuStyle}">
+                             BorderBrush="{Binding FluidUI.Design.Border}"
+                             Style="{StaticResource ContextMenuStyle}">
                     <TextBlock Text="{Binding FluidUI.DataBlock.Title,NotifyOnSourceUpdated=True}"/>
 
                     <MenuItem Header="EBoard Switch" Style="{StaticResource menuitem}">
-                        <WrapPanel Orientation="Horizontal" Background="Transparent" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <UniformGrid Background="Transparent" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <MenuItem Header="First"
                                       Command="{Binding SwitchToEboardCommand}"
                                       CommandParameter="First"
@@ -178,9 +176,6 @@
                                       Command="{Binding SwitchToEboardCommand}"
                                       CommandParameter="Last"
                                       Style="{StaticResource menuitem}"/>
-                        </WrapPanel>
-
-                        <WrapPanel Orientation="Horizontal" Background="Transparent" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <MenuItem Header="Prev"
                                       Command="{Binding SwitchToEboardCommand}"
                                       CommandParameter="Prev"
@@ -189,79 +184,55 @@
                                       Command="{Binding SwitchToEboardCommand}"
                                       CommandParameter="Next"
                                       Style="{StaticResource menuitem}"/>
-                        </WrapPanel>
+                        </UniformGrid>
                     </MenuItem>
 
                     <esdkfuim:FluidUIMenuView DataContext="{Binding FluidUIMenuViewModel, NotifyOnSourceUpdated=True}"
                                               Style="{StaticResource menuitem}"/>
 
                     <MenuItem Header="Delete" Command="{Binding DeleteEBoardCommand}" Style="{StaticResource menuitem}"/>
-
                 </ContextMenu>
             </Border.ContextMenu>
 
             <Border.InputBindings>
                 <MouseBinding Command="{Binding LeftClickCommand}" Gesture="LeftClick" />
             </Border.InputBindings>
-            
-            <Grid>
-                <!--<Border Name="mask"
+
+            <!--<Border Name="mask"
                     Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
                     CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"      
                     />-->
 
-                <Grid
-                    Width="{Binding FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
-                    Height="{Binding FluidUI.Size.Height, NotifyOnSourceUpdated=True}">
-                    
-                    <!--<Grid.OpacityMask>
+            <!--<Grid.OpacityMask>
                         <VisualBrush Visual="{Binding ElementName=mask}"/>
                     </Grid.OpacityMask>-->
 
-                    <ItemsControl ItemsSource="{Binding Elements}"
+            <ItemsControl ItemsSource="{Binding Elements}"
                                   HorizontalAlignment="Stretch"
                                   VerticalAlignment="Stretch"
                                   ClipToBounds="True"
+                                  Width="{Binding FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
+                                  Height="{Binding FluidUI.Size.Height, NotifyOnSourceUpdated=True}"
                                   MinWidth="200"
                                   MinHeight="200"
                                   AllowDrop="True"
                                   Background="Transparent"
                                   x:Name="ScreenControl">
-                        
-                        <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                                    <Canvas AllowDrop="True"
-                                    ClipToBounds="True"
-                                    SnapsToDevicePixels="True"
-                                    Width="{Binding FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
-                                    Height="{Binding FluidUI.Size.Height, NotifyOnSourceUpdated=True}"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemContainerStyle>
-                        <Style>
-                            <Setter Property="Canvas.Left"
-                                Value="{Binding XPosition, Mode=TwoWay,
-                            NotifyOnSourceUpdated=True}"/>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas AllowDrop="True"
+                                ClipToBounds="True"
+                                SnapsToDevicePixels="True"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-                            <Setter Property="Canvas.Top"
-                                Value="{Binding YPosition, Mode=TwoWay,
-                            NotifyOnSourceUpdated=True}"/>
-
-                            <Setter Property="Panel.ZIndex"
-                                Value="{Binding PlacementManager.Z, Mode=TwoWay,
-                            NotifyOnSourceUpdated=True}"/>
-                        </Style>
-                    </ItemsControl.ItemContainerStyle>
-
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="vms:ElementViewModel">
-                            <local:ElementView/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                </Grid>
-            </Grid>            
-    </Border>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="vms:ElementViewModel">
+                        <local:ElementView/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
     </Grid>
 </UserControl>
 

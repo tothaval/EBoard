@@ -32,7 +32,9 @@
 namespace EBoardSDK.Controls.FluidUIFont;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Interfaces.FluidUIText;
+using EBoardSDK.Models.FluidUIFont;
 using EBoardSDK.ViewModels;
 using System;
 using System.Windows;
@@ -42,16 +44,29 @@ using FontFamily = System.Windows.Media.FontFamily;
 public partial class FluidUIFontSetupViewModel : ObservableObject, IFluidUIFontSetup
 {
     private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIFontManager fluidUIFontManager;
 
     [ObservableProperty]
     private FontFamily fontFamily;
 
+    [ObservableProperty]
+    private int fontSizeValue;
+
+    [ObservableProperty]
+    private FontWeight fontWeight;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIFontSetupViewModel"/> class.
+    /// </summary>
+    /// <param name="eboardFluidUIBaseViewModel"></param>
     public FluidUIFontSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
-        this.FontFamily = new FontFamily(this.ViewModel.FluidUI.Font.FontFamilyName);
+        this.fluidUIFontManager = new FluidUIFontManager(this.ViewModel);
 
-        this.ViewModel.FluidUI.Font.PropertyChangedEvent += this.Font_PropertyChangedEvent;
+        this.FontFamily = this.fluidUIFontManager.GetFontFamily();
+        this.FontSizeValue = this.fluidUIFontManager.GetFontSize();
+        this.FontWeight = this.fluidUIFontManager.GetFontWeight();
     }
 
     public event Action? PropertyChangedEvent;
@@ -80,7 +95,7 @@ public partial class FluidUIFontSetupViewModel : ObservableObject, IFluidUIFontS
 
     public void ApplyFontSize(int fontSize)
     {
-        this.ViewModel.FluidUI.Font.FontSize = fontSize;
+        this.fluidUIFontManager.SetFontSize(fontSize);
 
         this.OnPropertyChanged(nameof(this.ViewModel.FluidUI));
     }
@@ -89,34 +104,47 @@ public partial class FluidUIFontSetupViewModel : ObservableObject, IFluidUIFontS
     {
     }
 
+    public void ResetFont()
+    {
+        this.fluidUIFontManager.ResetFont();
+
+        this.FontFamily = this.fluidUIFontManager.GetFontFamily();
+        this.FontSizeValue = this.fluidUIFontManager.GetFontSize();
+        this.FontWeight = this.fluidUIFontManager.GetFontWeight();
+
+        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontFamilyName));
+        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontFamily));
+        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontSize));
+        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontSizeDisplay));
+        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font));
+        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI));
+        this.OnPropertyChanged(nameof(this.ViewModel));
+    }
+
     public void SetInitialValues()
     {
     }
 
     partial void OnFontFamilyChanged(FontFamily value)
     {
-        this.ViewModel.FluidUI.Font.FontFamily = value;
-
-        this.PropertyChangedEvent?.Invoke();
-
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontFamilyName));
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontFamily));
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font));
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI));
-        this.OnPropertyChanged(nameof(this.ViewModel));
-        this.OnPropertyChanged(nameof(this.FontFamily));
+        this.fluidUIFontManager.SetFontFamily(value);
     }
 
-    private void Font_PropertyChangedEvent()
+    partial void OnFontWeightChanged(FontWeight value)
     {
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontWeight));
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontSize));
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontSizeDisplay));
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontFamilyName));
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Font.FontFamily));
+        this.fluidUIFontManager.SetFontWeight(value);
+    }
 
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI));
-        this.OnPropertyChanged(nameof(this.FontFamily));
+    [RelayCommand]
+    private void ApplyFontSize()
+    {
+        this.ApplyFontSize(this.FontSizeValue);
+    }
+
+    [RelayCommand]
+    protected void Reset()
+    {
+        this.ResetFont();
     }
 }
 

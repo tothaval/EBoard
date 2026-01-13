@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Elements.Protocol;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für ProtocolView.xaml
+/// Interaktionslogik für ProtocolView.xaml.
 /// </summary>
 public partial class ProtocolView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProtocolView"/> class.
+    /// </summary>
     public ProtocolView()
     {
         this.InitializeComponent();

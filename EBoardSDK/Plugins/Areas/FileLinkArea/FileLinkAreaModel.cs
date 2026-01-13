@@ -32,23 +32,28 @@
 namespace EBoardSDK.Plugins.Areas.FileLinkArea;
 
 using EBoardSDK.Plugins.Elements.Link;
-using System;
 using System.Collections.Generic;
-using System.Xml.Serialization;
+using System.Text.Json.Serialization;
 
-[Serializable]
-public class FileLinkAreaModel
+internal class FileLinkAreaModel
 {
-    [XmlIgnore]
+    [JsonIgnore]
     private readonly FileLinkAreaViewModel fileLinkAreaViewModel;
 
-    public List<List<LinkModel>> Links { get; set; }
+    internal List<List<LinkModel>> Links { get; set; }
 
-    public FileLinkAreaModel()
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileLinkAreaModel"/> class.
+    /// </summary>
+    internal FileLinkAreaModel()
     {
     }
 
-    public FileLinkAreaModel(FileLinkAreaViewModel fileLinkAreaViewModel)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileLinkAreaModel"/> class.
+    /// </summary>
+    /// <param name="fileLinkAreaViewModel"></param>
+    internal FileLinkAreaModel(FileLinkAreaViewModel fileLinkAreaViewModel)
     {
         this.fileLinkAreaViewModel = fileLinkAreaViewModel;
         this.Links = new();

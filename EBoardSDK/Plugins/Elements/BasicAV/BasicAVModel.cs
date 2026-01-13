@@ -40,10 +40,17 @@ public class BasicAVModel
     [XmlIgnore]
     private readonly BasicAVMainViewModel basicAVMainViewModel;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BasicAVModel"/> class.
+    /// </summary>
     public BasicAVModel()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BasicAVModel"/> class.
+    /// </summary>
+    /// <param name="basicAVMainViewModel"></param>
     public BasicAVModel(BasicAVMainViewModel basicAVMainViewModel)
     {
         this.basicAVMainViewModel = basicAVMainViewModel;

@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Elements.EmptyRadial;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für EmptyRadialView.xaml
+/// Interaktionslogik für EmptyRadialView.xaml.
 /// </summary>
 public partial class EmptyRadialView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EmptyRadialView"/> class.
+    /// </summary>
     public EmptyRadialView()
     {
         this.InitializeComponent();

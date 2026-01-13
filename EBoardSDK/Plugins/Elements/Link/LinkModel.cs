@@ -1,6 +1,8 @@
 ﻿// <copyright file="LinkModel.cs" company=".">
 // Stephan Kammel
 // </copyright>
+using EBoardSDK.Enums;
+
 /// license
 ///
 /// <b>ad-hoc license terms eboard prototype</b><br>
@@ -38,14 +40,24 @@ public class LinkModel
 
     public string LinkTargetPath { get; set; }
 
+    public LinkTargets LinkTarget { get; set; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LinkModel"/> class.
+    /// </summary>
     public LinkModel()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LinkModel"/> class.
+    /// </summary>
+    /// <param name="linkViewModel"></param>
     public LinkModel(LinkViewModel linkViewModel)
     {
         this.LinkTargetName = linkViewModel.LinkTargetName ?? string.Empty;
         this.LinkTargetPath = linkViewModel.LinkTargetPath ?? string.Empty;
+        this.LinkTarget = linkViewModel.LinkTargetType;
     }
 }
 

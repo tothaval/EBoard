@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.BrushSetup;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für BrushSetupView.xaml
+/// Interaktionslogik für BrushSetupView.xaml.
 /// </summary>
 public partial class BrushSetupView : MenuItem
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrushSetupView"/> class.
+    /// </summary>
     public BrushSetupView()
     {
         this.InitializeComponent();

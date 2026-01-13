@@ -33,60 +33,151 @@ namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
+using EBoardSDK.Controls.FluidUIMenu;
+using EBoardSDK.Interfaces;
+using EBoardSDK.Models;
 using EBoardSDK.Plugins;
 using System;
 using System.Windows;
+using System.Windows.Media;
 
 public abstract partial class ShapeBaseViewModel : EBoardElementPluginBaseViewModel, IDisposable
 {
-    private EboardFluidUIBaseViewModel fluidUIViewModel;
+    private EboardFluidUIBaseViewModel viewModel = new();
 
-    public EboardFluidUIBaseViewModel FluidUIViewModel => this.fluidUIViewModel;
+    private FluidUIMenuViewModel fluidUIMenuViewModel;
 
     [ObservableProperty]
     private double strokeThickness = 1.0;
 
-    public void SetFluidUIViewModel(EboardFluidUIBaseViewModel fluidUIViewModel)
-    {
-        this.fluidUIViewModel = fluidUIViewModel;
+    [ObservableProperty]
+    private int duplicationCount = 1;
 
-        this.FluidUIViewModel.FluidUI.Apply_FluidUI();
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ShapeBaseViewModel"/> class.
+    /// </summary>
+    protected ShapeBaseViewModel()
+    {
+    }
+
+    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+
+    public FluidUIMenuViewModel? FluidUIMenuViewModel => this.fluidUIMenuViewModel;
+
+    public override void RefreshInitialization()
+    {
+        if (this.ElementViewModel != null)
+        {
+            this.SetFluidUIViewModel(this.ViewModel ?? new EboardFluidUIBaseViewModel());
+
+            this.ViewModel?.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this.ViewModel, this.ElementViewModel, this.ElementViewModel?.EBoardViewModel, fluidUIContextHasStand: true));
+
+            this.ElementViewModel?.Redraw();
+
+            this.OnPropertyChanged(nameof(this.ElementViewModel));
+            this.OnPropertyChanged(nameof(this.ViewModel));
+            this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
+        }
+    }
+
+    public void SetFluidUIContext(IFluidUIContext fluidUIContext)
+    {
+        if (this.ViewModel == null)
+        {
+            this.viewModel = new();
+            this.OnPropertyChanged(nameof(this.ViewModel));
+        }
+
+        this.ViewModel?.SetFluidUI(fluidUIContext);
+        this.ViewModel?.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this.ViewModel, this.ElementViewModel, this.ElementViewModel?.EBoardViewModel, fluidUIContextHasStand: true));
+
+        this.OnPropertyChanged(nameof(this.ElementViewModel));
+        this.OnPropertyChanged(nameof(this.ViewModel));
+        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
+    }
+
+    public void SetFluidUIViewModel(EboardFluidUIBaseViewModel? fluidUIViewModel)
+    {
+        this.viewModel = fluidUIViewModel ?? new EboardFluidUIBaseViewModel();
 
         if (this.ElementViewModel != null)
         {
-            this.ElementViewModel.FluidUI.Size.Margin = new Thickness(0);
-            this.ElementViewModel.FluidUI.Size.Padding = new Thickness(0);
+            if (this.ElementViewModel.FluidUI.Design != null)
+            {
+                this.ElementViewModel.FluidUI.Design.Background = new SolidColorBrush(Colors.Transparent);
+                this.ElementViewModel.FluidUI.Design.Foreground = new SolidColorBrush(Colors.Transparent);
+                this.ElementViewModel.FluidUI.Design.Border = new SolidColorBrush(Colors.Transparent);
+            }
+
+            if (this.ElementViewModel.FluidUI.Size != null)
+            {
+                this.ElementViewModel.FluidUI.Size.Margin = new Thickness(0);
+                this.ElementViewModel.FluidUI.Size.Padding = new Thickness(0);
+                this.ElementViewModel.FluidUI.Size.BorderThickness = new Thickness(0);
+                this.ElementViewModel.FluidUI.Size.CornerRadius = new CornerRadius(0);
+            }
+
+            if (this.ViewModel != null && this.ViewModel.FluidUI.Size != null)
+            {
+                this.ViewModel.FluidUI.Size.Margin = new Thickness(0);
+                this.ViewModel.FluidUI.Size.Padding = new Thickness(0);
+                this.ViewModel.FluidUI.Size.CornerRadius = new CornerRadius(0);
+            }
+
             this.ElementViewModel.Redraw();
         }
 
-        this.FluidUIViewModel.FluidUI.Size.Margin = new Thickness(0);
-        this.FluidUIViewModel.FluidUI.Size.Padding = new Thickness(0);
-
-        //this.FluidUIViewModel.FluidUI.Size.PropertyChangedEvent += this.Size_PropertyChangedEvent; ;
-        //this.FluidUIViewModel.FluidUI.Design.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
-
-        this.OnPropertyChanged(nameof(this.FluidUIViewModel.FluidUI.Size));
+        this.OnPropertyChanged(nameof(this.ElementViewModel));
+        this.OnPropertyChanged(nameof(this.ViewModel));
+        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
     }
-
-    //private void Size_PropertyChangedEvent()
-    //{
-    //    this.StrokeThickness = this.FluidUIViewModel.FluidUI.Size.BorderThickness.Top;
-    //}
-
-    //private void BrushManagement_PropertyChangedEvent()
-    //{
-    //    this.ElementViewModel.FluidUI.Design.Highlight = this.FluidUIViewModel.FluidUI.Design.Highlight;
-
-    //    this.ElementViewModel.FluidUI.Size.Margin = new Thickness(0);
-    //    this.ElementViewModel.FluidUI.Size.Padding = new Thickness(0);
-
-    //    this.ElementViewModel.Redraw();
-    //}
 
     public void Dispose()
     {
-        //this.FluidUIViewModel.FluidUI.Design.PropertyChangedEvent -= this.BrushManagement_PropertyChangedEvent;
-        //this.FluidUIViewModel.FluidUI.Size.PropertyChangedEvent -= this.Size_PropertyChangedEvent;
+    }
+
+    public override async Task<EBoardFeedbackMessage> Load(string path)
+    {
+        try
+        {
+            var data = await Loader.LoadJsonFile<FluidUIContext>(path);
+
+            if (data != null)
+            {
+                var fluidUIViewModel = new EboardFluidUIBaseViewModel();
+                data.Design?.LoadBrushesFromColorData();
+                fluidUIViewModel.SetFluidUI(data);
+
+                this.SetFluidUIViewModel(fluidUIViewModel);
+
+                this.RefreshInitialization();
+
+                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
+            }
+        }
+        catch (Exception ex)
+        {
+            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
+        }
+
+        return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = string.Empty };
+    }
+
+    public override async Task<EBoardFeedbackMessage> Save(string path)
+    {
+        EBoardFeedbackMessage? serializationResult = null;
+
+        var model = this.ViewModel.FluidUI;
+
+        var result = Saver.SaveJsonFile(path, model);
+
+        return new EBoardFeedbackMessage()
+        {
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
     }
 
     [RelayCommand]
@@ -95,6 +186,15 @@ public abstract partial class ShapeBaseViewModel : EBoardElementPluginBaseViewMo
         if (this.ElementViewModel != null)
         {
             this.ElementViewModel.EBoardViewModel.RemoveElement(this.ElementViewModel);
+        }
+    }
+
+    [RelayCommand]
+    private void DuplicateNTimes()
+    {
+        if (this.EBoardViewModel != null)
+        {
+            this.ElementViewModel.EBoardViewModel.GetWindowMenuBarViewModel().InvokePluginNTimes(this.ElementPluginViewModel, this.DuplicationCount);
         }
     }
 }

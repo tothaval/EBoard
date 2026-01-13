@@ -38,6 +38,9 @@ using System.Windows;
 /// </summary>
 public partial class SplashScreen : Window
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SplashScreen"/> class.
+    /// </summary>
     public SplashScreen()
     {
         this.InitializeComponent();

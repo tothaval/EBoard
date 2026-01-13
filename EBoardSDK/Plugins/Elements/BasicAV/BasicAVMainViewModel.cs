@@ -33,8 +33,9 @@ namespace EBoardSDK.Plugins.Elements.BasicAV;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
-using EBoardSDK.SharedMethods;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -85,33 +86,18 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     private double volume;
 
     [ObservableProperty]
-    private MediaElement media;
+    private MediaElement? media;
 
     private string pluginHeader = "BasicAV player";
 
     private string pluginName = "BasicAV";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BasicAVMainViewModel"/> class.
+    /// </summary>
     public BasicAVMainViewModel()
     {
-        //this.BrushManagement ??= new BrushManagement();
-        //this.BorderManagement ??= new BorderManagement();
-
-        this.PluginLogo ??= new ImageBrush();
-
         this.Volume = 0.5;
-
-        this.Media = new MediaElement()
-        {
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch,
-            LoadedBehavior = MediaState.Manual,
-            Stretch = Stretch.UniformToFill,
-            AllowDrop = true,
-            Focusable = false,
-            StretchDirection = StretchDirection.Both,
-            IsManipulationEnabled = false,
-            IsHitTestVisible = false,
-        };
 
         DispatcherTimer timer = new DispatcherTimer();
         timer.Interval = TimeSpan.FromSeconds(0.5);
@@ -121,18 +107,21 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
 
     private void Timer_Tick(object? sender, EventArgs e)
     {
-        if (this.Media.Source != null
-            && this.Media.NaturalDuration.HasTimeSpan
-            && !this.userIsDraggingSlider)
+        if (this.Media != null)
         {
-            this.PlayTimeSpan = this.Media.Position.TotalSeconds;
-            this.MaximumPlayTime = this.Media.NaturalDuration.TimeSpan.TotalSeconds;
+            if (this.Media.Source != null
+                && this.Media.NaturalDuration.HasTimeSpan
+                && !this.userIsDraggingSlider)
+            {
+                this.PlayTimeSpan = this.Media.Position.TotalSeconds;
+                this.MaximumPlayTime = this.Media.NaturalDuration.TimeSpan.TotalSeconds;
+            }
         }
     }
 
     public override PluginCategories PluginCategory => PluginCategories.Element;
 
-    public override ImageBrush PluginLogo { get; set; }
+    public override ImageBrush PluginLogo { get; set; } = new();
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
 
@@ -149,8 +138,6 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
         get { return this.pluginName; }
         set { this.pluginName = value; }
     }
-
-    public override string ElementPluginName => "BasicAV";
 
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
@@ -178,10 +165,13 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
 
                     if (fileInfo.Exists)
                     {
-                        this.Media.Source = new Uri(this.Filepath);
-                        this.Media.Position = TimeSpan.FromSeconds(basicAVModel.PlayTimeSpan);
-                        this.MaximumPlayTime = this.Media.NaturalDuration.TimeSpan.TotalSeconds;
-                        this.PlayTimeSpan = basicAVModel.PlayTimeSpan;
+                        if (this.Media != null)
+                        {
+                            this.Media.Source = new Uri(this.Filepath);
+                            this.Media.Position = TimeSpan.FromSeconds(basicAVModel.PlayTimeSpan);
+                            this.MaximumPlayTime = this.Media.NaturalDuration.TimeSpan.TotalSeconds;
+                            this.PlayTimeSpan = basicAVModel.PlayTimeSpan;
+                        }
                     }
                 }
 
@@ -200,11 +190,14 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     {
         try
         {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<BasicAVModel>(path)!;
+            var data = await Loader.LoadJsonFile<BasicAVModel>(path)!;
 
-            if (this.InsertBasicAVModel(data))
+            if (data != null)
             {
-                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
+                if (this.InsertBasicAVModel(data))
+                {
+                    return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
+                }
             }
         }
         catch (Exception ex)
@@ -221,14 +214,13 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
 
         EBoardFeedbackMessage? serializationResult = null;
 
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
+        var result = Saver.SaveJsonFile(path, model);
 
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        return new EBoardFeedbackMessage()
         {
-            // TODO do stuff
-        }
-
-        return serializationResult!;
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
     }
 
     public void StatusBarDragCompleted()
@@ -244,7 +236,7 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     public void StatusBarDragStart()
     {
         this.userIsDraggingSlider = true;
-        this.Media.Pause();
+        this.Media?.Pause();
     }
 
     partial void OnPlayTimeSpanChanged(double value)
@@ -277,7 +269,7 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     {
         if (this.mediaPlayerIsPlaying)
         {
-            this.Media.Pause();
+            this.Media?.Pause();
         }
     }
 
@@ -302,9 +294,21 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
             "All files (*.*)|*.*";
         if (openFileDialog.ShowDialog() == true)
         {
-            this.Media.Source = new Uri(openFileDialog.FileName);
-            this.Filepath = openFileDialog.FileName;
-            this.FileName = openFileDialog.SafeFileName;
+            if (this.Media == null)
+            {
+                this.Media = new MediaElement()
+                {
+                    LoadedBehavior = MediaState.Manual,
+                    UnloadedBehavior = MediaState.Manual,
+                };
+            }
+
+            if (this.Media != null)
+            {
+                this.Media.Source = new Uri(openFileDialog.FileName);
+                this.Filepath = openFileDialog.FileName;
+                this.FileName = openFileDialog.SafeFileName;
+            }
         }
     }
 
@@ -313,7 +317,7 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     {
         if (this.mediaPlayerIsPlaying)
         {
-            this.Media.Stop();
+            this.Media?.Stop();
             this.mediaPlayerIsPlaying = false;
         }
     }

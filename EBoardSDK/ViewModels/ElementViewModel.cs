@@ -43,8 +43,10 @@ using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Controls.FluidUIMenu;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
-using EBoardSDK.SharedMethods;
-using EBoardSDK.Utilities;
+using EBoardSDK.Models.FluidUIDesign;
+using EBoardSDK.Models.FluidUISize;
+using EBoardSDK.Models.FluidUIStand;
+using EBoardSDK.Plugins.Tools.Coordinates;
 using EBoardSDK.Views;
 using System.Windows;
 using System.Windows.Controls;
@@ -52,7 +54,7 @@ using System.Windows.Controls;
 /// <summary>
 /// TODO: refactoring to further reduce code towards the necessary minimum and nothing more.
 ///
-/// update minium(minus?) and maximum values for x, y and z upon valuechange in eboardviewmodel
+/// update minium(minus?) and maximum values for x, y and z upon valuechange in eboardviewmodel.
 ///
 /// </summary>
 public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSelection
@@ -64,39 +66,27 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
     private ElementView elementView;
 
     [ObservableProperty]
+    private bool menuIsOpening = true;
+
+    [ObservableProperty]
     private bool isSelected = false;
 
-    private ArrangeSelectedElements arrangeSelectedElements;
+    [ObservableProperty]
+    private IPlugin plugin;
 
-    //public ElementViewModel()
-    //    : base()
-    //{
-    //    this.fluidUIMenuViewModel = new FluidUIMenuViewModel(this, eBoardViewModel: this.eBoardViewModel, fluidUIContextHasStand: true);
-
-    //    this.arrangeSelectedElements = new ArrangeSelectedElements();
-
-    //    if (this.EID == null || this.EID.Equals("-1"))
-    //    {
-    //        DateTime dateTime = DateTime.Now;
-
-    //        this.eID = $"Element_{dateTime.Ticks}";
-    //        this.OnPropertyChanged(nameof(this.EID));
-    //    }
-
-    //    this.FontSizeValue = (int)this.FluidUI.Font.FontSize;
-
-    //    this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
-    //    this.OnPropertyChanged(nameof(this.FluidUI));
-    //}
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElementViewModel"/> class.
+    /// </summary>
+    /// <param name="eBoardViewModel"></param>
     public ElementViewModel(EBoardViewModel eBoardViewModel)
         : base()
     {
         this.eBoardViewModel = eBoardViewModel;
 
-        this.fluidUIMenuViewModel = new FluidUIMenuViewModel(this, eBoardViewModel: this.eBoardViewModel, fluidUIContextHasStand: true);
+        this.CreateFluidUIMenuViewModel();
 
-        this.arrangeSelectedElements = new ArrangeSelectedElements();
+        var manager = new FluidUISizeManager(this);
+        manager.Reset();
 
         if (this.eID == null || this.eID.Equals("-1"))
         {
@@ -106,20 +96,19 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
             this.OnPropertyChanged(nameof(this.EID));
         }
 
-        var helper = new SharedMethod_UI();
-        helper.SetupTitleAndText(
-            this.FluidUI.DataBlock,
-            "Element",
-            $"elements can be changed, moved and selected\n\nthis element contains the {this.Plugin?.PluginName} plugin\n\nyou can change this description");
+        this.SetSize();
 
-        this.FontSizeValue = (int)this.FluidUI.Font.FontSize;
-
-        this.SetElementSizeDisplayValue();
+        this.TriggerRedraw();
 
         this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
         this.OnPropertyChanged(nameof(this.FluidUI));
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElementViewModel"/> class.
+    /// </summary>
+    /// <param name="eBoardViewModel"></param>
+    /// <param name="elementConfig"></param>
     public ElementViewModel(EBoardViewModel eBoardViewModel, ElementConfig elementConfig)
         : base()
     {
@@ -127,21 +116,13 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
 
         elementConfig?.ElementContext?.Design?.LoadBrushesFromColorData();
 
-        this.SetFluidUI(elementConfig.ElementContext);
+        if (elementConfig != null)
+        {
+            this.SetFluidUI(elementConfig.ElementContext);
+            this.ApplyData(elementConfig);
+        }
 
-        var helper = new SharedMethod_UI();
-        helper.SetupTitleAndText(
-            this.FluidUI.DataBlock,
-            "Element",
-            $"elements can be changed, moved and selected\n\nthis element contains the {this.Plugin?.PluginName} plugin\n\nyou can change this description");
-
-        this.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this, eBoardViewModel: this.eBoardViewModel, fluidUIContextHasStand: true));
-
-        this.arrangeSelectedElements = new ArrangeSelectedElements();
-
-        this.FontSizeValue = (int)this.FluidUI.Font.FontSize;
-
-        this.ApplyData(elementConfig);
+        this.CreateFluidUIMenuViewModel();
 
         if (this.eID == null || this.eID.Equals("-1"))
         {
@@ -151,9 +132,11 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
             this.OnPropertyChanged(nameof(this.EID));
         }
 
-        this.SetElementSizeDisplayValue();
+        this.SetSize();
 
-        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
+        this.TriggerRedraw();
+
+        this.OnPropertyChanged(nameof(this.FluidUI.DataBlock.Title));
         this.OnPropertyChanged(nameof(this.FluidUI));
     }
 
@@ -162,8 +145,6 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
     public EBoardViewModel EBoardViewModel => this.eBoardViewModel;
 
     public ElementView ElementView => this.elementView;
-
-    public IPlugin Plugin { get; set; }
 
     public void ApplyData(ElementConfig elementConfig)
     {
@@ -174,29 +155,42 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
 
     public void ApplyRotationToGroupSelectedElement(int rotationValueDelta)
     {
-        this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.IsRotating = true;
+        var manager = new FluidUIStandManager(this);
 
-        this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.RotationAngleValue += rotationValueDelta;
+        var nextangle = manager.GetAngle() + rotationValueDelta;
+
+        manager.SetAngle(nextangle);
     }
 
     public void BeginMovement(ElementViewModel elementViewModel)
     {
-        this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = this.ElementView.X;
-        this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = this.ElementView.Y;
+        if (this.ElementView != null)
+        {
+            var manager = new FluidUIStandManager(this);
 
-        this.FluidUI.Stand.Position = new Point(this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition, this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition);
+            manager.SetPosition(this.ElementView.Position);
+        }
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        this.Plugin?.Dispose();
     }
 
     public void MoveXY(ElementViewModel elementViewModel, Point deltaPosition)
     {
-        if (this.elementView != null)
+        if (this.ElementView != null)
         {
+            var manager = new FluidUIStandManager(this);
+
             double x, y;
 
-            x = this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition - deltaPosition.X;
-            y = this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition - deltaPosition.Y;
+            x = manager.GetPosition().X - deltaPosition.X;
+            y = manager.GetPosition().Y - deltaPosition.Y;
 
-            this.FluidUI.Stand.Position = new Point(x, y);
+            manager.SetPosition(x, y);
 
             Canvas.SetLeft(this.ElementView.VisualParent, x);
             Canvas.SetTop(this.ElementView.VisualParent, y);
@@ -216,8 +210,7 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
         this.OnPropertyChanged(nameof(this.Plugin));
     }
 
-    [RelayCommand]
-    public void Select()
+    public void SelectElement()
     {
         this.IsSelected = !this.IsSelected;
 
@@ -226,20 +219,16 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
 
     public bool SelectionChange(bool isSelected)
     {
+        var manager = new FluidUIDesignManager(this);
+
         if (isSelected)
         {
-            this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.SwitchBorderToHighlight();
-
-            this.OnPropertyChanged(nameof(this.FluidUI));
-            this.OnPropertyChanged(nameof(this.Plugin));
+            manager.SwitchBorderToHighlight();
 
             return true;
         }
 
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.SwitchBorderToBorder();
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-        this.OnPropertyChanged(nameof(this.Plugin));
+        manager.SwitchBorderToBorder();
 
         return false;
     }
@@ -247,31 +236,82 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
     public void SetView(ElementView elementView)
     {
         this.elementView = elementView;
+
+        if (this.Plugin != null)
+        {
+            this.Plugin.ViewWasSet();
+        }
     }
 
+    // trigggered for selection movement endpoint
     public void StopMovement()
     {
-        this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = Canvas.GetLeft(this.elementView.VisualParent);
-        this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = Canvas.GetTop(this.elementView.VisualParent);
+        var manager = new FluidUIStandManager(this);
 
-        this.FluidUI.Stand.Position = new Point(this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition, this.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition);
-    }
+        double x, y;
+        int z;
 
-    public override void TriggerRedraw()
-    {
-        if (this.ElementView != null)
-        {
-            this.ElementView.X = this.FluidUI.Stand.Position.X;
-            this.ElementView.Y = this.FluidUI.Stand.Position.Y;
-            this.ElementView.Z = this.FluidUI.Stand.Z;
+        x = this.ElementView.X;
+        y = this.ElementView.Y;
+        z = this.ElementView.Z;
 
-            this.ElementView.SetPlacement();
-        }
+        manager.SetPosition(x, y);
+        manager.SetZ(z);
+
+        this.FluidUIMenuViewModel?.FluidUIStandSetupViewModel?.ApplyFluidUIStandValues();
     }
 
     public void WasLastActive()
     {
-        this.eBoardViewModel?.MoveLastClickedElement(this);
+        this.eBoardViewModel?.MoveLastClickedElementToEndOfList(this);
+    }
+
+    internal override void CreateFluidUIMenuViewModel()
+    {
+        this.fluidUIMenuViewModel?.Dispose();
+
+        if (this.fluidUIMenuViewModel == null)
+        {
+            this.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this, eBoardViewModel: this.eBoardViewModel, fluidUIContextHasStand: true));
+        }
+
+        this.FluidUIMenuViewModel.CreateViewModels();
+    }
+
+    internal override void TriggerRedraw()
+    {
+        if (this.ElementView != null)
+        {
+            this.ElementView.SetPlacement();
+        }
+    }
+
+    internal override void UpdateStand()
+    {
+        base.UpdateStand();
+
+        if (this.Plugin != null)
+        {
+            var coords = this.Plugin as CoordinatesViewModel;
+
+            if (coords != null)
+            {
+                coords.ChangeXYCoord();
+            }
+        }
+
+    }
+
+    partial void OnMenuIsOpeningChanging(bool value)
+    {
+        if (value)
+        {
+            this.CreateFluidUIMenuViewModel();
+        }
+        else
+        {
+            this.DeleteFluidUIMenuViewModel();
+        }
     }
 
     private void ChangeSelection_CornerRadiusValue(QuadValue<int> cornerRadius)
@@ -299,6 +339,11 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
         this.eBoardViewModel?.ChangeSelection_ZIndex(this, zIndexValue);
     }
 
+    partial void OnPluginChanged(IPlugin value)
+    {
+        this.OnPropertyChanged(nameof(this.FluidUI));
+    }
+
     [RelayCommand]
     private void DeleteElement(object s)
     {
@@ -306,21 +351,9 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
     }
 
     [RelayCommand]
-    private void ArrangeGroupAsLine()
+    private void Select()
     {
-        this.arrangeSelectedElements.ArrangeGroupAsLine(this.EBoardViewModel);
-    }
-
-    [RelayCommand]
-    private void ArrangeGroupAsSquare()
-    {
-        this.arrangeSelectedElements.ArrangeGroupAsSquare(this.EBoardViewModel);
-    }
-
-    [RelayCommand]
-    private void ArrangeGroupAsRandomMatrix10x10()
-    {
-        this.arrangeSelectedElements.ArrangeGroupAsRandomMatrix10x10(this.EBoardViewModel);
+        this.SelectElement();
     }
 }
 

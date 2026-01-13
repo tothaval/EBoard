@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.Area;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für AreaVerticalOuterView.xaml
+/// Interaktionslogik für AreaVerticalOuterView.xaml.
 /// </summary>
 public partial class AreaVerticalOuterView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaVerticalOuterView"/> class.
+    /// </summary>
     public AreaVerticalOuterView()
     {
         this.InitializeComponent();

@@ -51,15 +51,10 @@ public partial class DateTimePicker : UserControl
     public int Month
     {
         get { return (int)GetValue(MonthProperty); }
-        set { SetValue(MonthProperty, value); Test(); }
+        set { SetValue(MonthProperty, value); }
     }
     public static readonly DependencyProperty MonthProperty =
         DependencyProperty.Register("Month", typeof(int), typeof(DateTimePicker), new PropertyMetadata(1));
-
-    public void Test()
-    {
-        MessageBox.Show("Test");
-    }
 
     public int Day
     {

@@ -41,6 +41,10 @@ public class QuadValue<T>
 
     public T Value4 { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuadValue{T}"/> class.
+    /// </summary>
+    /// <param name="value"></param>
     public QuadValue(T value)
     {
         this.Value1 = value;
@@ -49,6 +53,13 @@ public class QuadValue<T>
         this.Value4 = value;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuadValue{T}"/> class.
+    /// </summary>
+    /// <param name="v1"></param>
+    /// <param name="v2"></param>
+    /// <param name="v3"></param>
+    /// <param name="v4"></param>
     public QuadValue(T v1, T v2, T v3, T v4)
     {
         this.Value1 = v1;
@@ -57,12 +68,23 @@ public class QuadValue<T>
         this.Value4 = v4;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuadValue{T}"/> class.
+    /// </summary>
     public QuadValue()
     {
-        this.Value1 = default;
-        this.Value2 = default;
-        this.Value3 = default;
-        this.Value4 = default;
+        this.Value1 = Activator.CreateInstance<T>();
+        this.Value2 = Activator.CreateInstance<T>();
+        this.Value3 = Activator.CreateInstance<T>();
+        this.Value4 = Activator.CreateInstance<T>();
+    }
+
+    public void SetValueToAll(T value)
+    {
+        this.Value1 = value;
+        this.Value2 = value;
+        this.Value3 = value;
+        this.Value4 = value;
     }
 }
 

@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Tools.Uptime;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für UptimeTimerView.xaml
+/// Interaktionslogik für UptimeTimerView.xaml.
 /// </summary>
 public partial class UptimeView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UptimeView"/> class.
+    /// </summary>
     public UptimeView()
     {
         this.InitializeComponent();

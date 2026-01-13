@@ -65,7 +65,7 @@ public class ElementConfig
     public FluidUIContext ElementContext { get; set; }
 
     /// <summary>
-    /// a string representation of an assembly, where the element type can be found
+    /// a string representation of an assembly, where the element type can be found.
     /// </summary>
     public string PluginHeader { get; set; } = string.Empty;
 

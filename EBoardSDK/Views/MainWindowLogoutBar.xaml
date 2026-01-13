@@ -44,7 +44,7 @@
              FontWeight="{Binding MainViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <UserControl.Resources>
         <Style TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
@@ -83,24 +83,33 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
     </UserControl.Resources>
-    
+
     <Grid HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
+        <Button Content="{Binding TxtManual}"
+                Command="{Binding InvokeOrShowManualCommand}"                    
+                Grid.Column="0"/>
+
+        <Button Content="{Binding TxtAbout}"
+                Command="{Binding InvokeOrShowAboutCommand}"                    
+                Grid.Column="1"/>
+
         <Button Content="{Binding TxtShutDownMachine}"
                 Command="{Binding ShutDownCommand}"
-                Grid.Column="0"
+                Grid.Column="2"
                 HorizontalAlignment="Stretch"/>
-            
-            <Button Content="{Binding TxtExitEboard}"
-                    Command="{Binding CloseCommand}"
-                    
-                    Grid.Column="1"/>            
+
+        <Button Content="{Binding TxtExitEboard}"
+                Command="{Binding CloseCommand}"                    
+                Grid.Column="3"/>
     </Grid>
 </UserControl>
 

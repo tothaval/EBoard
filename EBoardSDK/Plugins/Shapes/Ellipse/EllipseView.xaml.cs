@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Shapes.Ellipse;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für EllipseView.xaml
+/// Interaktionslogik für EllipseView.xaml.
 /// </summary>
 public partial class EllipseView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EllipseView"/> class.
+    /// </summary>
     public EllipseView()
     {
         this.InitializeComponent();

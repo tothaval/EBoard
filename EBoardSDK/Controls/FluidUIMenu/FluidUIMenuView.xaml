@@ -37,7 +37,7 @@
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
           xmlns:local="clr-namespace:EBoardSDK.Controls.FluidUIMenu"
-          xmlns:ut="clr-namespace:EBoardSDK.Utilities"
+          xmlns:sm="clr-namespace:EBoardSDK.SharedMethods"
           xmlns:bs="clr-namespace:EBoardSDK.Controls.BrushSetup"
           xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
           xmlns:fluidUIDataBlock="clr-namespace:EBoardSDK.Controls.FluidUIDataBlock"
@@ -46,7 +46,6 @@
           xmlns:fluidUISize="clr-namespace:EBoardSDK.Controls.FluidUISize"
           xmlns:fluidUIStand="clr-namespace:EBoardSDK.Controls.FluidUIStand"
           xmlns:views="clr-namespace:EBoardSDK.Views"
-          xmlns:conv="clr-namespace:EBoardSDK.SharedMethods"
           d:DataContext="{d:DesignInstance Type=local:FluidUIMenuViewModel}"
           FontSize="{Binding ViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
           FontFamily="{Binding ViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
@@ -54,14 +53,14 @@
           Header="FluidUI"
           x:Name="FluidUISetupView"
           mc:Ignorable="d"
-          d:DesignHeight="450" d:DesignWidth="800">
+          d:DesignHeight="450" d:DesignWidth="800"
+          StaysOpenOnClick="True">
 
     <MenuItem.Resources>
-        <conv:BooleanToVisibilityCollapsedConverter x:Key="booltocolconv"/>
+        <sm:BooleanToVisibilityCollapsedConverter x:Key="VisibilityToCollapsed"/>
 
         <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border}"/>
-            <Setter Property="BorderThickness" Value="3"/>
             <Setter Property="TextBlock.Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
             <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Background}"/>
@@ -79,7 +78,6 @@
 
         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}" x:Key="sub">
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
             <Setter Property="TextBlock.Foreground" Value="{Binding ViewModel.FluidUIDesign.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
@@ -116,7 +114,7 @@
     <fluidUIStand:FluidUIStandSetupView DataContext="{Binding FluidUIStandSetupViewModel}"
                                         Style="{StaticResource menuitem}"
                                         Header="Stand"
-                                        Visibility="{Binding FluidUIContextHasStand, Converter={StaticResource booltocolconv}}"/>
+                                        Visibility="{Binding FluidUIContextHasStand, Converter={StaticResource VisibilityToCollapsed}}"/>
 
 </MenuItem>
 

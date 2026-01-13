@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.BrushSetup.LinearBrushSetup;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für LinearBrushSetupView.xaml
+/// Interaktionslogik für LinearBrushSetupView.xaml.
 /// </summary>
 public partial class LinearBrushSetupView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LinearBrushSetupView"/> class.
+    /// </summary>
     public LinearBrushSetupView()
     {
         this.InitializeComponent();

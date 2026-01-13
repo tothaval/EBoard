@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Elements.StandardText
     using System.Windows.Controls;
 
     /// <summary>
-    /// Interaktionslogik für StandardTextView.xaml
+    /// Interaktionslogik für StandardTextView.xaml.
     /// </summary>
     public partial class StandardTextView : UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StandardTextView"/> class.
+        /// </summary>
         public StandardTextView()
         {
             this.InitializeComponent();

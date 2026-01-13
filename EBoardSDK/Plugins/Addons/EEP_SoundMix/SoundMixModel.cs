@@ -45,10 +45,17 @@ public class SoundMixModel
 
     public List<List<BasicAVModel>> Links { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SoundMixModel"/> class.
+    /// </summary>
     public SoundMixModel()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SoundMixModel"/> class.
+    /// </summary>
+    /// <param name="soundMixMainViewModel"></param>
     public SoundMixModel(SoundMixMainViewModel soundMixMainViewModel)
     {
         this.soundMixMainViewModel = soundMixMainViewModel;

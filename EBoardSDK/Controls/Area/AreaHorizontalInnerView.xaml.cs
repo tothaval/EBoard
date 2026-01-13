@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.Area;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für AreaHorizontalInnerView.xaml
+/// Interaktionslogik für AreaHorizontalInnerView.xaml.
 /// </summary>
 public partial class AreaHorizontalInnerView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaHorizontalInnerView"/> class.
+    /// </summary>
     public AreaHorizontalInnerView()
     {
         this.InitializeComponent();

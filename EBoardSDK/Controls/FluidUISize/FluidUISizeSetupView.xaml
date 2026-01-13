@@ -124,19 +124,10 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}" x:Key="sub">
-            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="TextBlock.Foreground" Value="{Binding ViewModel.FluidUIDesign.Foreground, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
-        </Style>
     </MenuItem.Resources>
 
     <MenuItem Header="Area"
-              Style="{StaticResource menuitem}"
-              Visibility="{Binding FluidUIContextHasArea, Converter={StaticResource booltocolconv}}">
+              Style="{StaticResource menuitem}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition SharedSizeGroup="A"/>
@@ -169,9 +160,9 @@
             </Grid>
 
             <Button Content="Reset"
-                    Command="{Binding ViewModel.ResetSizeCommand}"
-                    Grid.Column="1"
-                    Grid.ColumnSpan="2"
+                    Command="{Binding ResetSizeCommand}"
+                    Grid.Column="2"
+                    Grid.ColumnSpan="1"
                     Grid.Row="0"/>
 
             <TextBlock Text="Width"
@@ -205,7 +196,7 @@
                                               Value2="Top"
                                               Value3="Right"
                                               Value4="Bottom"
-                                              OKCommand="{Binding ViewModel.ResetMarginCommand}"/>
+                                              OKCommand="{Binding ResetMarginCommand}"/>
     </MenuItem>
 
     <MenuItem Header="Padding" Style="{StaticResource menuitem}">
@@ -215,7 +206,7 @@
                                               Value2="Top"
                                               Value3="Right"
                                               Value4="Bottom"
-                                              OKCommand="{Binding ViewModel.ResetPaddingCommand}"/>
+                                              OKCommand="{Binding ResetPaddingCommand}"/>
     </MenuItem>
 
     <MenuItem Header="Thickness" Style="{StaticResource menuitem}">
@@ -225,7 +216,7 @@
                                               Value2="Top"
                                               Value3="Right"
                                               Value4="Bottom"
-                                              OKCommand="{Binding ViewModel.ResetThicknessCommand}"/>
+                                              OKCommand="{Binding ResetThicknessCommand}"/>
     </MenuItem>
 
     <MenuItem Header="Corners" Style="{StaticResource menuitem}">
@@ -235,7 +226,7 @@
                                               Value2="TopRight"
                                               Value3="BottomRight"
                                               Value4="BottomLeft"
-                                              OKCommand="{Binding ViewModel.ResetCornersCommand}"/>
+                                              OKCommand="{Binding ResetCornersCommand}"/>
     </MenuItem>
 </MenuItem>
 

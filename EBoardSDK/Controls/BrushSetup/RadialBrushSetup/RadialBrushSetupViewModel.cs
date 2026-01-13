@@ -38,6 +38,9 @@ public partial class RadialBrushSetupViewModel : ObservableObject, IDisposable
 {
     public Brush Brush { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RadialBrushSetupViewModel"/> class.
+    /// </summary>
     public RadialBrushSetupViewModel()
     {
         var gradientStops = new GradientStopCollection();

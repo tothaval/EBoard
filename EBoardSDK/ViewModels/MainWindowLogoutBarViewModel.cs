@@ -40,6 +40,9 @@ namespace EBoardSDK.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Interfaces.FluidUIDesign;
+using EBoardSDK.Plugins;
+using EBoardSDK.Plugins.Elements.About;
+using EBoardSDK.Plugins.Elements.Manual;
 using EBoardSDK.SharedMethods;
 
 public partial class MainWindowLogoutBarViewModel : ObservableObject
@@ -48,27 +51,37 @@ public partial class MainWindowLogoutBarViewModel : ObservableObject
     private readonly MainViewModel mainViewModel;
 
     [ObservableProperty]
+    private string txtAbout = "About";
+
+    [ObservableProperty]
     private string txtExitEboard = "Off";
+
+    [ObservableProperty]
+    private string txtManual = "Manual";
 
     [ObservableProperty]
     private string txtShutDownMachine = "Shutdown";
 
-    public IFluidUIDesignModel BrushManagement => this.brushManagement;
-
-    public MainViewModel MainViewModel => this.mainViewModel;
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainWindowLogoutBarViewModel"/> class.
+    /// </summary>
+    /// <param name="brushManagement"></param>
+    /// <param name="mainViewModel"></param>
     public MainWindowLogoutBarViewModel(IFluidUIDesignModel brushManagement, MainViewModel mainViewModel)
     {
         this.brushManagement = brushManagement;
         this.mainViewModel = mainViewModel;
-
-        //brushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
     }
 
-    //private void BrushManagement_PropertyChangedEvent()
-    //{
-    //    this.OnPropertyChanged(nameof(this.BrushManagement));
-    //}
+    public MainViewModel MainViewModel => this.mainViewModel;
+
+    public bool ScreenExists => this.MainViewModel.EBoardBrowserViewModel.SelectedEBoard != null;
+
+    internal void Update()
+    {
+        this.OnPropertyChanged(nameof(this.ScreenExists));
+        this.OnPropertyChanged(nameof(this.MainViewModel));
+    }
 
     [RelayCommand]
     private void Close()
@@ -77,11 +90,39 @@ public partial class MainWindowLogoutBarViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void InvokeOrShowAbout()
+    {
+        if (this.ScreenExists)
+        {
+            var pluginManager = new SDKPluginManager();
+            pluginManager.InvokePluginOnEboard(new AboutViewModel(), this.MainViewModel.EBoardBrowserViewModel.SelectedEBoard);
+
+            return;
+        }
+
+        // TODO: show Element as ToolTip
+    }
+
+    [RelayCommand]
+    private void InvokeOrShowManual()
+    {
+        if (this.ScreenExists)
+        {
+            var pluginManager = new SDKPluginManager();
+            pluginManager.InvokePluginOnEboard(new ManualViewModel(), this.MainViewModel.EBoardBrowserViewModel.SelectedEBoard);
+
+            return;
+        }
+
+        // TODO: show Element as ToolTip
+    }
+
+    [RelayCommand]
     private void ShutDown()
     {
         var runner = this.mainViewModel.GetRunnerInstance();
 
-        var saveResult = runner.SaveEboardDataAsync().Result;
+        var saveResult = runner.SaveEboard().Result;
 
         new SharedMethod_UI().ShutDownMachine();
     }

@@ -34,10 +34,9 @@ namespace EBoardSDK.SharedMethods;
 using EBoardConfigManager.Models;
 using EBoardSDK.Controls.QuadValueSetup;
 using EBoardSDK.Enums;
-using EBoardSDK.Interfaces.FluidUIDataBlock;
-using EBoardSDK.Interfaces.FluidUIDesign;
-using EBoardSDK.Interfaces.FluidUISize;
 using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUISize;
+using EBoardSDK.ViewModels;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -82,7 +81,7 @@ public class SharedMethod_UI
         return value;
     }
 
-    public int ResetSizeDisplayValue(double value)
+    public int TransformDoubleNaNToInt(double value)
     {
         if (double.IsNaN(value))
         {
@@ -97,51 +96,59 @@ public class SharedMethod_UI
         Application.Current.Shutdown();
     }
 
-    public QuadValueSetupViewModel BuildQuadValueSetup(IFluidUISizeModel borderManagement, IFluidUIDesignModel brushManagement, Action action, BorderTargets borderTargets)
+    public QuadValueSetupViewModel BuildQuadValueSetup(EboardFluidUIBaseViewModel viewModel, Action action, BorderTargets borderTargets)
     {
+        var manager = new FluidUISizeManager(viewModel);
         var quadValue = new QuadValue<int>();
 
         switch (borderTargets)
         {
             case BorderTargets.CornerRadius:
-                quadValue.Value1 = (int)borderManagement.CornerRadius.TopLeft;
-                quadValue.Value2 = (int)borderManagement.CornerRadius.TopRight;
-                quadValue.Value3 = (int)borderManagement.CornerRadius.BottomRight;
-                quadValue.Value4 = (int)borderManagement.CornerRadius.BottomLeft;
+                var corner = manager.GetCornerRadius();
+
+                quadValue.Value1 = (int)corner.TopLeft;
+                quadValue.Value2 = (int)corner.TopRight;
+                quadValue.Value3 = (int)corner.BottomRight;
+                quadValue.Value4 = (int)corner.BottomLeft;
                 break;
             case BorderTargets.Margin:
-                quadValue.Value1 = (int)borderManagement.Margin.Left;
-                quadValue.Value2 = (int)borderManagement.Margin.Top;
-                quadValue.Value3 = (int)borderManagement.Margin.Right;
-                quadValue.Value4 = (int)borderManagement.Margin.Bottom;
+                var margin = manager.GetMargin();
+
+                quadValue.Value1 = (int)margin.Left;
+                quadValue.Value2 = (int)margin.Top;
+                quadValue.Value3 = (int)margin.Right;
+                quadValue.Value4 = (int)margin.Bottom;
                 break;
             case BorderTargets.Padding:
-                quadValue.Value1 = (int)borderManagement.Padding.Left;
-                quadValue.Value2 = (int)borderManagement.Padding.Top;
-                quadValue.Value3 = (int)borderManagement.Padding.Right;
-                quadValue.Value4 = (int)borderManagement.Padding.Bottom;
+                var padding = manager.GetPadding();
+
+                quadValue.Value1 = (int)padding.Left;
+                quadValue.Value2 = (int)padding.Top;
+                quadValue.Value3 = (int)padding.Right;
+                quadValue.Value4 = (int)padding.Bottom;
                 break;
             case BorderTargets.Thickness:
-                quadValue.Value1 = (int)borderManagement.BorderThickness.Left;
-                quadValue.Value2 = (int)borderManagement.BorderThickness.Top;
-                quadValue.Value3 = (int)borderManagement.BorderThickness.Right;
-                quadValue.Value4 = (int)borderManagement.BorderThickness.Bottom;
+                var borderThickness = manager.GetBorderThickness();
+
+                quadValue.Value1 = (int)borderThickness.Left;
+                quadValue.Value2 = (int)borderThickness.Top;
+                quadValue.Value3 = (int)borderThickness.Right;
+                quadValue.Value4 = (int)borderThickness.Bottom;
                 break;
             default:
                 break;
         }
 
-        var quadValueSetupVM = new QuadValueSetupViewModel(quadValue, action, brushManagement);
+        var quadValueSetupVM = new QuadValueSetupViewModel(viewModel, quadValue, action);
         return quadValueSetupVM;
     }
 
     public QuadValueSetupViewModel GetQuadValueSetupViewModel(
-    IFluidUISizeModel borderManagement,
-    IFluidUIDesignModel brushManagement,
+    EboardFluidUIBaseViewModel viewModel,
     Action quadValueAction,
     BorderTargets borderTargets)
     {
-        var quadVM = this.BuildQuadValueSetup(borderManagement, brushManagement, quadValueAction, borderTargets);
+        var quadVM = this.BuildQuadValueSetup(viewModel, quadValueAction, borderTargets);
 
         return quadVM;
     }
@@ -165,29 +172,6 @@ public class SharedMethod_UI
         }
     }
 
-    public void SetupTitleAndText(IFluidUIDataBlockModel dataBlockModel, string title, string text)
-    {
-        if (string.IsNullOrWhiteSpace(title))
-        {
-            title = string.Empty;
-        }
-
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            text = string.Empty;
-        }
-
-        if (string.IsNullOrWhiteSpace(dataBlockModel.Title) || dataBlockModel.Title.Equals("title"))
-        {
-            dataBlockModel.Title = title;
-        }
-
-        if (string.IsNullOrWhiteSpace(dataBlockModel.Text) || dataBlockModel.Text.Equals("text"))
-        {
-            dataBlockModel.Text = text;
-        }
-    }
-
     public string UserSelectImage(string imagePathProperty)
     {
         Microsoft.Win32.OpenFileDialog setPath = new Microsoft.Win32.OpenFileDialog();
@@ -204,6 +188,71 @@ public class SharedMethod_UI
         }
 
         return imagePathProperty;
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="folder"></param>
+    /// <param name="filter"></param>
+    /// <param name="initialDirectoryPath"></param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+    public async Task<string> GetFileToLoad(string folder = "Eboard/fluidui", string filter = "files (*.*)|*.*", string? initialDirectoryPath = null)
+    {
+        if (string.IsNullOrWhiteSpace(initialDirectoryPath))
+        {
+            initialDirectoryPath = null;
+        }
+
+        var path = initialDirectoryPath ?? Environment.CurrentDirectory;
+
+        Microsoft.Win32.OpenFileDialog setPath = new Microsoft.Win32.OpenFileDialog();
+        FluidUIContext fluidUIContext;
+
+        setPath.InitialDirectory = path;
+
+        setPath.Filter = filter;
+        setPath.FilterIndex = 2;
+        setPath.RestoreDirectory = true;
+
+        if (setPath.ShowDialog() == true)
+        {
+            return setPath.FileName;
+        }
+
+        return string.Empty;
+    }
+
+    public string FluidUIConfigurationFileExtension => "fcf"; // fcf > fluid ui configuration file
+
+    public string StandardTextFileExtension => "stf"; // stf > standard text file
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="fileExtension"></param>
+    /// <param name="initialDirectoryPath"></param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
+    public async Task<string> SetSaveFileName(string fileExtension, string? initialDirectoryPath = null)
+    {
+        if (string.IsNullOrWhiteSpace(initialDirectoryPath))
+        {
+            initialDirectoryPath = null;
+        }
+
+        var path = initialDirectoryPath ?? Environment.CurrentDirectory;
+
+        Microsoft.Win32.SaveFileDialog setPath = new Microsoft.Win32.SaveFileDialog();
+        setPath.InitialDirectory = path;
+        setPath.AddExtension = true;
+        setPath.DefaultExt = fileExtension;
+
+        if (setPath.ShowDialog() == true)
+        {
+            return setPath.FileName;
+        }
+
+        return string.Empty;
     }
 
     public string SetSaveDirectory()

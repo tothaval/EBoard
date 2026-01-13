@@ -42,7 +42,8 @@
              FontFamily="{Binding ElementViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
              FontWeight="{Binding ElementViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="Transparent">
 
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="booltovis"/>
@@ -60,7 +61,6 @@
         </Style>
 
         <Style TargetType="Button" x:Key="btn">
-            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border}" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
             
@@ -126,7 +126,7 @@
                 Command="{Binding RemoveLineCommand}"/>
 
         <Button Background="{Binding ElementViewModel.FluidUI.Design.Foreground}"
-                Foreground="Transparent"
+                Foreground="{Binding ElementViewModel.FluidUI.Design.Background}"
                 Style="{StaticResource btn}"
                 Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource booltovis}}"
                 HorizontalContentAlignment="Center"
@@ -153,7 +153,7 @@
                 Command="{Binding RemoveRowCommand}"/>
 
         <Button Background="{Binding ElementViewModel.FluidUI.Design.Foreground}"
-                Foreground="Transparent"
+                Foreground="{Binding ElementViewModel.FluidUI.Design.Background}"
                 Style="{StaticResource btn}"
                 Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource booltovis}}"
                 HorizontalContentAlignment="Center"
@@ -167,7 +167,7 @@
 
         <Border BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
                 Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource booltovis}}"
-            Margin="20 0 0 0"
+                Margin="20 0 0 0"
                 MinWidth="25"
                 Grid.Column="3"
                 Grid.Row="0">
@@ -198,7 +198,8 @@
                                          HorizontalAlignment="Stretch"
                                          VerticalAlignment="Stretch"
                                          HorizontalContentAlignment="Stretch"
-                                         VerticalContentAlignment="Stretch"/>
+                                         VerticalContentAlignment="Stretch"
+                                         Background="Transparent"/>
         </Border>
     </Grid>
 </UserControl>

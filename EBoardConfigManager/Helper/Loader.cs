@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -54,6 +54,11 @@ public static class Loader
     {
         try
         {
+            if (string.IsNullOrWhiteSpace(filename))
+            {
+                return false;
+            }
+
             var file = new FileInfo(filename);
 
             return file.Exists;
@@ -90,9 +95,9 @@ public static class Loader
         }
     }
 
-    public static IList<FileInfo> GetFiles(string directory, string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly)
+    public static List<FileInfo> GetFiles(string directory, string filter, SearchOption searchOption = SearchOption.TopDirectoryOnly)
     {
-        IList<FileInfo> fileInfos = [];
+        List<FileInfo> fileInfos = [];
 
         if (string.IsNullOrWhiteSpace(directory) && string.IsNullOrWhiteSpace(filter))
         {
@@ -121,6 +126,12 @@ public static class Loader
         }
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="file"></param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     public static async Task<T?> LoadJsonFile<T>(string file)
     {
         if (string.IsNullOrWhiteSpace(file) || !File.Exists(file))
@@ -164,7 +175,7 @@ public static class Loader
             Log.Error(e, s);
         }
 
-        return (T)Activator.CreateInstance(typeof(T));
+        return Activator.CreateInstance<T>();
     }
 }
 

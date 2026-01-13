@@ -34,10 +34,13 @@ namespace EBoardSDK.Views;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für MainWindowMenuBar.xaml
+/// Interaktionslogik für MainWindowMenuBar.xaml.
 /// </summary>
 public partial class MainWindowMenuBar : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainWindowMenuBar"/> class.
+    /// </summary>
     public MainWindowMenuBar()
     {
         this.InitializeComponent();

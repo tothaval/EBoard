@@ -39,13 +39,9 @@
 namespace EBoardSDK.Interfaces.FluidUISize;
 
 using EBoardSDK.Controls.QuadValueSetup;
-using EBoardSDK.Enums;
-using EBoardSDK.Models;
 
 public interface IFluidUISizeSetup : IFluidUIChangedAction
 {
-    public bool FluidUIContextHasArea { get; }
-
     public QuadValueSetupViewModel CornerRadiusQuadSetup { get; set; }
 
     public QuadValueSetupViewModel MarginQuadSetup { get; set; }
@@ -53,18 +49,6 @@ public interface IFluidUISizeSetup : IFluidUIChangedAction
     public QuadValueSetupViewModel PaddingQuadSetup { get; set; }
 
     public QuadValueSetupViewModel ThicknessQuadSetup { get; set; }
-
-    public void Apply_FluidUISizeHeight(int heightValue);
-
-    public void Apply_FluidUISizeQuadValue(QuadValue<int> quadValue, BorderTargets borderTargets);
-
-    public void Apply_FluidUISizeWidth(int widthValue);
-
-    public object Get_FluidUISizeObjectFromQuadValueSetup(QuadValueSetupViewModel quadValueSetupViewModel, BorderTargets borderTargets);
-
-    public void Reset_FluidUISizeQuadValue(BorderTargets borderTargets);
-
-    public void Reset_FluidUISizeWidthAndHeight();
 }
 
 // EOF

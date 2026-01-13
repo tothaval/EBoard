@@ -49,15 +49,22 @@ public partial class EmptyLinearViewModel : EBoardElementPluginBaseViewModel
         new Point(0, 0),
         new Point(0.5, 1));
 
+    private string pluginName = "EmptyLinear";
+
+    private string pluginHeader = "Empty Linear";
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EmptyLinearViewModel"/> class.
+    /// </summary>
+    public EmptyLinearViewModel() => this.InstantiateProperties();
+
     public override PluginCategories PluginCategory => PluginCategories.Element;
 
     public override bool NoDefaultBorders { get; } = false;
 
-    public override ImageBrush PluginLogo { get; set; }
+    public override ImageBrush PluginLogo { get; set; } = new();
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
-
-    private string pluginHeader = "Empty Linear Element";
 
     public override string PluginHeader
     {
@@ -65,15 +72,11 @@ public partial class EmptyLinearViewModel : EBoardElementPluginBaseViewModel
         set { this.pluginHeader = value; }
     }
 
-    private string pluginName = "EmptyLinear";
-
     public override string PluginName
     {
         get { return this.pluginName; }
         set { this.pluginName = value; }
     }
-
-    public override string ElementPluginName => "Linear";
 
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
@@ -85,14 +88,6 @@ public partial class EmptyLinearViewModel : EBoardElementPluginBaseViewModel
 
     public override Type ElementPluginViewModel => typeof(EmptyLinearViewModel);
 
-    public EmptyLinearViewModel() => this.InstantiateProperties();
-
-    private void InstantiateProperties()
-    {
-        //this.BorderManagement = new BorderManagement();
-        //this.BrushManagement = new BrushManagement();
-    }
-
     public override Task<EBoardFeedbackMessage> Load(string path)
     {
         return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
@@ -101,6 +96,10 @@ public partial class EmptyLinearViewModel : EBoardElementPluginBaseViewModel
     public override Task<EBoardFeedbackMessage> Save(string path)
     {
         return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
+    }
+
+    private void InstantiateProperties()
+    {
     }
 }
 

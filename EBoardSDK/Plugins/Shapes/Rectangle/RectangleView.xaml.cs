@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Shapes.Rectangle
     using System.Windows.Controls;
 
     /// <summary>
-    /// Interaktionslogik für RectangleView.xaml
+    /// Interaktionslogik für RectangleView.xaml.
     /// </summary>
     public partial class RectangleView : UserControl
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RectangleView"/> class.
+        /// </summary>
         public RectangleView()
         {
             this.InitializeComponent();

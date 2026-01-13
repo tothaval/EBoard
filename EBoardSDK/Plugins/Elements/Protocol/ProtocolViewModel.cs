@@ -33,9 +33,10 @@ namespace EBoardSDK.Plugins.Elements.Protocol;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins.Elements.Protocol.Models;
-using EBoardSDK.SharedMethods;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -65,6 +66,38 @@ public partial class ProtocolViewModel : EBoardElementPluginBaseViewModel
     [ObservableProperty]
     private string content = "!";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProtocolViewModel"/> class.
+    /// </summary>
+    public ProtocolViewModel()
+    {
+        if (this.Note == null)
+        {
+            this.Note = new Note();
+        }
+
+        this.DateTime_Created = DateTime.Now;
+        this.DateTime_Edited = DateTime.Now;
+
+        System.Windows.Threading.DispatcherTimer Timer = new System.Windows.Threading.DispatcherTimer();
+
+        Timer.Tick += this.Timer_Tick;
+
+        Timer.Interval = new TimeSpan(0, 0, 0, 0, 125);
+
+        Timer.Start();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProtocolViewModel"/> class.
+    /// </summary>
+    /// <param name="note"></param>
+    public ProtocolViewModel(Note note)
+        : this()
+    {
+        this.Note = note;
+    }
+
     public override PluginCategories PluginCategory => PluginCategories.Element;
 
     public override bool NoDefaultBorders { get; } = false;
@@ -89,8 +122,6 @@ public partial class ProtocolViewModel : EBoardElementPluginBaseViewModel
         set { this.pluginName = value; }
     }
 
-    public override string ElementPluginName => "Protocol";
-
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
     public override ResourceDictionary ResourceDictionary => new();
@@ -101,41 +132,11 @@ public partial class ProtocolViewModel : EBoardElementPluginBaseViewModel
 
     public override Type ElementPluginViewModel => typeof(ProtocolViewModel);
 
-    public ProtocolViewModel()
-    {
-        if (this.Note == null)
-        {
-            this.Note = new Note();
-        }
-
-        this.DateTime_Created = DateTime.Now;
-        this.DateTime_Edited = DateTime.Now;
-
-        System.Windows.Threading.DispatcherTimer Timer = new System.Windows.Threading.DispatcherTimer();
-
-        Timer.Tick += this.Timer_Tick;
-
-        Timer.Interval = new TimeSpan(0, 0, 0, 0, 125);
-
-        Timer.Start();
-    }
-
-    public ProtocolViewModel(Note note)
-        : this()
-    {
-        this.Note = note;
-    }
-
-    public void SetNote(Note note)
-    {
-        this.Note = note;
-    }
-
     public override async Task<EBoardFeedbackMessage> Load(string path)
     {
         try
         {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<Note>(path)!;
+            var data = await Loader.LoadJsonFile<Note>(path)!;
 
             if (data != null)
             {
@@ -163,21 +164,18 @@ public partial class ProtocolViewModel : EBoardElementPluginBaseViewModel
 
         var model = this.Note;
 
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
+        var result = Saver.SaveJsonFile(path, model);
 
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        return new EBoardFeedbackMessage()
         {
-            // TODO do stuff
-        }
-
-        return serializationResult!;
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
     }
 
-    [RelayCommand]
-    private void NewEntry()
+    public void SetNote(Note note)
     {
-        this.DateTime_Edited = this.CurrentDateTime;
-        this.Content = this.Content.Insert(0, $"{this.DateTime_Edited}\n\n\n");
+        this.Note = note;
     }
 
     private void Timer_Tick(object? sender, EventArgs e)
@@ -212,6 +210,13 @@ public partial class ProtocolViewModel : EBoardElementPluginBaseViewModel
         this.Note.Content = value;
 
         this.DateTime_Edited = this.CurrentDateTime;
+    }
+
+    [RelayCommand]
+    private void NewEntry()
+    {
+        this.DateTime_Edited = this.CurrentDateTime;
+        this.Content = this.Content.Insert(0, $"{this.DateTime_Edited}\n\n\n");
     }
 }
 
