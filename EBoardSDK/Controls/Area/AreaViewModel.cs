@@ -33,8 +33,10 @@ namespace EBoardSDK.Controls.Area;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins;
 using EBoardSDK.ViewModels;
+using System.Security.Cryptography;
 
 public partial class AreaViewModel<T> : ObservableObject
         where T : EBoardElementPluginBaseViewModel
@@ -48,6 +50,17 @@ public partial class AreaViewModel<T> : ObservableObject
     [ObservableProperty]
     private bool isMatrixChangeable = true;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaViewModel{T}"/> class.
+    /// </summary>
+    public AreaViewModel()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaViewModel{T}"/> class.
+    /// </summary>
+    /// <param name="elementViewModel"></param>
     public AreaViewModel(ElementViewModel elementViewModel)
     {
         this.elementViewModel = elementViewModel;
@@ -55,13 +68,14 @@ public partial class AreaViewModel<T> : ObservableObject
         this.AreaVerticalOuterViewModel = new(elementViewModel);
 
         this.IsMatrixChangeable = true;
+        this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
     public void SetElementViewModel(ElementViewModel elementViewModel)
     {
         this.elementViewModel = elementViewModel;
 
-        this.AreaVerticalOuterViewModel.SetElementViewModel(elementViewModel);
+        this.AreaVerticalOuterViewModel?.SetElementViewModel(elementViewModel);
 
         this.OnPropertyChanged(nameof(this.ElementViewModel));
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
@@ -69,19 +83,26 @@ public partial class AreaViewModel<T> : ObservableObject
 
     public void AddHorizontal()
     {
-        this.AreaVerticalOuterViewModel.AddLine();
+        this.AreaVerticalOuterViewModel?.AddLine();
+        this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
     public void CreateMatrix(int horizontalCount, int verticalCount)
     {
-        this.AreaVerticalOuterViewModel.CreateMatrix(horizontalCount, verticalCount);
+        this.AreaVerticalOuterViewModel?.CreateMatrix(horizontalCount, verticalCount);
 
         this.IsMatrixChangeable = false;
+        this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
     public List<List<T>> GetAllViewModelsList()
     {
         List<List<T>> listlist = new List<List<T>>();
+
+        if (this.AreaVerticalOuterViewModel == null)
+        {
+            return listlist;
+        }
 
         foreach (var item in this.AreaVerticalOuterViewModel.HorizontalInnerViewModels)
         {
@@ -100,34 +121,35 @@ public partial class AreaViewModel<T> : ObservableObject
 
     public void InsertViewModelList(List<T> viewModels, int verticalIndex)
     {
-        this.AreaVerticalOuterViewModel.InsertViewModelList(viewModels, verticalIndex);
+        this.AreaVerticalOuterViewModel?.InsertViewModelList(viewModels, verticalIndex);
+        this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
     [RelayCommand]
     public void AddLine()
     {
-        this.AreaVerticalOuterViewModel.AddLine();
+        this.AreaVerticalOuterViewModel?.AddLine();
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
     [RelayCommand]
     public void RemoveLine()
     {
-        this.AreaVerticalOuterViewModel.RemoveLine();
+        this.AreaVerticalOuterViewModel?.RemoveLine();
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
     [RelayCommand]
     public void AddRow()
     {
-        this.AreaVerticalOuterViewModel.AddRow();
+        this.AreaVerticalOuterViewModel?.AddRow();
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
     [RelayCommand]
     public void RemoveRow()
     {
-        this.AreaVerticalOuterViewModel.RemoveRow();
+        this.AreaVerticalOuterViewModel?.RemoveRow();
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 }

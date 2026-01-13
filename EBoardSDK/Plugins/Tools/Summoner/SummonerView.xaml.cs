@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Tools.Summoner;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für SummonerView.xaml
+/// Interaktionslogik für SummonerView.xaml.
 /// </summary>
 public partial class SummonerView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SummonerView"/> class.
+    /// </summary>
     public SummonerView()
     {
         this.InitializeComponent();

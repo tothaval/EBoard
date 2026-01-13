@@ -32,11 +32,10 @@
 namespace EBoardSDK.Plugins;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.DependencyInjection;
-using EBoardConfigManager.Models;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
+using EBoardSDK.Utilities;
 using EBoardSDK.ViewModels;
 using Serilog;
 using System.IO;
@@ -50,13 +49,13 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
 {
     private EBoardViewModel eBoardViewModel;
 
-    private ElementViewModel elementViewModel;
+    protected ElementViewModel elementViewModel;
+
+    public event Action? PropertyChangedEvent;
 
     public abstract Assembly? ElementPluginAssembly { get; }
 
     public abstract Type? ElementPluginModel { get; }
-
-    public abstract string ElementPluginName { get; }
 
     public abstract Type ElementPluginView { get; }
 
@@ -82,18 +81,26 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
 
     public ElementViewModel ElementViewModel => this.elementViewModel;
 
+    public IFluidUIContext FluidUI => throw new NotImplementedException();
+
+    public virtual void Dispose()
+    {
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     public async Task<bool> Initialize()
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(this.PluginName))
+            var path = await new SDKDataManager().GetInstalledPluginsDirectory();
+
+            if (string.IsNullOrWhiteSpace(this.PluginName) || string.IsNullOrWhiteSpace(path))
             {
                 return false;
             }
-
-            var dataLocation = Ioc.Default.GetRequiredService<Runner>().DataLocations;
-
-            var path = Path.Combine(dataLocation.EBoardDataPath, DataLocations.EBoardInstalledPluginsPath);
 
             var resourcestring = Path.Combine(path, $"{this.PluginName}_Logo.png");
 
@@ -138,7 +145,7 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
     /// </summary>
     public virtual void RefreshInitialization()
     {
-
+        this.ViewWasSet();
     }
 
     public void SetEBoardAndElementViewModel(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel)
@@ -149,6 +156,14 @@ public abstract partial class EBoardElementPluginBaseViewModel : ObservableObjec
         this.OnPropertyChanged(nameof(this.EBoardViewModel));
         this.OnPropertyChanged(nameof(this.ElementViewModel));
         this.OnPropertyChanged(nameof(this.Plugin));
+    }
+
+    public virtual void SetInitialValues()
+    {
+    }
+
+    public virtual void ViewWasSet()
+    {
     }
 }
 

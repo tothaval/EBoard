@@ -52,152 +52,58 @@
         <BooleanToVisibilityConverter x:Key="visConv"/>
     </UserControl.Resources>
 
-    <!--<UserControl.InputBindings>
-        <MouseBinding MouseAction="LeftDoubleClick"
-                          Command="{Binding NewNoteCommand}"/>
-    </UserControl.InputBindings>-->
-
-    <Border BorderBrush="Transparent" Margin="15"
-    Background="Transparent">
+    <Border BorderBrush="Transparent"
+            Margin="15"
+            Background="Transparent">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
-                <!--<ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>-->
             </Grid.ColumnDefinitions>
 
-            <TabControl  Background="Transparent"
-                 BorderThickness="0"
-                 BorderBrush="Transparent"
-                 Grid.Column="0"
-                         HorizontalAlignment="Center"
-                         HorizontalContentAlignment="Stretch"
-                 >
+            <TabControl Background="Transparent"
+                        BorderThickness="0"
+                        BorderBrush="Transparent"
+                        Grid.Column="0"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Stretch">
 
-                <TabItem x:Name="TI_log"  Header="Log"
-                 Background="FloralWhite"
-                 Foreground="Black"
-                 BorderBrush="Transparent"
-                 BorderThickness="0"
+                <TabItem x:Name="TI_log"
+                         Header="Log"
+                         Background="FloralWhite"
+                         Foreground="Black"
+                         BorderBrush="Transparent"
+                         BorderThickness="0"
                          HorizontalAlignment="Center">
                     <eboardsdkProtocol:ProtocolView DataContext="{Binding Protocol}"
                                     HorizontalAlignment="Center"/>
                 </TabItem>
 
-                <TabItem x:Name="TI_notes" Header="Notes"
-                 Background="FloralWhite"
-                 Foreground="Black"                         
-                 BorderBrush="Transparent"
-                 BorderThickness="0">
+                <TabItem x:Name="TI_notes"
+                         Header="Notes"
+                         Background="FloralWhite"
+                         Foreground="Black"
+                         BorderBrush="Transparent"
+                         BorderThickness="0">
                     <views:NotesView DataContext="{Binding Notes}"/>
                 </TabItem>
 
-                <TabItem x:Name="TI_matrix"  Header="Matrix"
-                 Background="FloralWhite"
-                 Foreground="Black"
-                 BorderBrush="Transparent"
-                 BorderThickness="0">
+                <TabItem x:Name="TI_matrix"
+                         Header="Matrix"
+                         Background="FloralWhite"
+                         Foreground="Black"
+                         BorderBrush="Transparent"
+                         BorderThickness="0">
                     <eboardsdkarea:AreaView DataContext="{Binding AreaViewModel}"/>
                 </TabItem>
 
-                <TabItem x:Name="TI_history"  Header="History"
-                 Background="FloralWhite"
-                 Foreground="Black"
-                 BorderBrush="Transparent"
-                 BorderThickness="0">
+                <TabItem x:Name="TI_history"
+                         Header="History"
+                         Background="FloralWhite"
+                         Foreground="Black"
+                         BorderBrush="Transparent"
+                         BorderThickness="0">
                 </TabItem>
-
             </TabControl>
-
-            <!--<StackPanel Visibility="Hidden"
-                        IsEnabled="False"
-                        x:Name="SP_options" 
-                    Grid.Column="1">
-                -->
-            <!--Visibility="{Binding OptionsClicked,Converter={StaticResource visConv}}"-->
-            <!--
-
-                <Slider 
-                        Interval="1"
-                        Value="{Binding Rounding}"
-                        LargeChange="5"
-                        SmallChange="1"
-                        IsSnapToTickEnabled="True"
-                        Minimum="0"
-                        Maximum="60"
-                    Width="120">
-                    <Slider.Background>
-                        <SolidColorBrush Color="red"/>
-                    </Slider.Background>
-                </Slider>
-
-
-                <Slider 
-                        Interval="1"
-                        Value="{Binding InnerRounding}"
-                        LargeChange="5"
-                        SmallChange="1"
-                        IsSnapToTickEnabled="True"
-                        Minimum="0"
-                        Maximum="60"
-                    Width="120">
-                    <Slider.Background>
-                        <SolidColorBrush Color="DarkOrange"/>
-                    </Slider.Background>
-                </Slider>
-
-                <Slider 
-                        Interval="1"
-                        Value="{Binding DateTimeFontSizeSliderValue}"
-                        LargeChange="4"
-                        SmallChange="1"
-                        IsSnapToTickEnabled="True"
-                        Minimum="8"
-                        Maximum="48"
-                    
-                    Width="120">
-                    <Slider.Background>
-                        <SolidColorBrush Color="MidnightBlue"/>
-                    </Slider.Background>
-                </Slider>
-
-                <Slider 
-                        Interval="1"
-                        Value="{Binding HeaderFontSizeSliderValue}"
-                        LargeChange="4"
-                        SmallChange="1"
-                        IsSnapToTickEnabled="True"
-                        Minimum="8"
-                        Maximum="48"
-                    
-                    Width="120">
-                    <Slider.Background>
-                        <SolidColorBrush Color="SkyBlue"/>
-                    </Slider.Background>
-                </Slider>
-
-                <Slider 
-                        Interval="1"
-                        Value="{Binding ContentFontSizeSliderValue}"
-                        LargeChange="4"
-                        SmallChange="1"
-                        IsSnapToTickEnabled="True"
-                        Minimum="8"
-                        Maximum="48"
-                    
-                    Width="120">
-                    <Slider.Background>
-                        <SolidColorBrush Color="Green"/>
-                    </Slider.Background>
-                </Slider>
-            </StackPanel>
-
-            <Button  Visibility="Hidden"
-                     IsEnabled="False"
-                     x:Name="BTN_options"
-                Grid.Column="2"
-                Height="50" Width="4"
-                    Command="{Binding OptionsClickedCommand}"/>-->
         </Grid>
     </Border>
 </UserControl>

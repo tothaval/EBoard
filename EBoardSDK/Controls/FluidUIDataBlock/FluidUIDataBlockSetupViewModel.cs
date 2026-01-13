@@ -33,21 +33,45 @@ namespace EBoardSDK.Controls.FluidUIDataBlock;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.FluidUIDataBlock.FluidUIIndexText;
+using EBoardSDK.Controls.FluidUIDataBlock.FluidUIKeyText;
+using EBoardSDK.Controls.FluidUIMenu;
+using EBoardSDK.Enums;
+using EBoardSDK.Interfaces;
 using EBoardSDK.Interfaces.FluidUIDataBlock;
+using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUIDataBlock;
+using EBoardSDK.SharedMethods;
 using EBoardSDK.ViewModels;
 using System;
 using System.Collections.ObjectModel;
 
+/// <summary>
+/// TODO: refactor into several views and viewmodels.
+/// </summary>
 public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUIDataBlockSetup
 {
     private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIDataBlockManager fluidUIDataBlockManager;
+
+    private FluidUISelectionViewModel loadSelectionViewModel;
+    private FluidUISelectionViewModel saveSelectionViewModel;
 
     [ObservableProperty]
-    private FluidUIIndexTextViewModel fluidUIIndexText;
+    private FluidUIIndexTextViewModel? fluidUIIndexText;
+
+    [ObservableProperty]
+    private FluidUIKeyTextViewModel? fluidUIKeyText;
+
+    [ObservableProperty]
+    private string title = string.Empty;
 
     [ObservableProperty]
     private string text = string.Empty;
+
+    [ObservableProperty]
+    private bool showToolTip = true;
 
     [ObservableProperty]
     private int indexCount = 0;
@@ -55,22 +79,58 @@ public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUI
     [ObservableProperty]
     private ObservableCollection<FluidUIIndexTextViewModel> fluidUIIndexTexts = new();
 
+    [ObservableProperty]
+    private ObservableCollection<FluidUIKeyTextViewModel> fluidUIKeyTexts = new();
+
+    [ObservableProperty]
+    private ObservableCollection<QuadFluidUIIndexTextViewModel> quadIndexTexts = new();
+
+    [ObservableProperty]
+    private ObservableCollection<QuadFluidUIKeyTextViewModel> quadKeyTexts = new();
+
+    [ObservableProperty]
+    private QuadFluidUIIndexTextViewModel selectedIndexTextQuadValue;
+
+    [ObservableProperty]
+    private QuadFluidUIKeyTextViewModel selectedKeyTextQuadValue;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIDataBlockSetupViewModel"/> class.
+    /// </summary>
+    /// <param name="eboardFluidUIBaseViewModel"></param>
     public FluidUIDataBlockSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
 
-        foreach (var item in this.ViewModel.FluidUI.DataBlock.IndexTextList)
-        {
-            this.FluidUIIndexTexts.Add(new FluidUIIndexTextViewModel(this.ViewModel, item));
-        }
+        this.fluidUIDataBlockManager = new FluidUIDataBlockManager(this.ViewModel);
 
-        this.FluidUIIndexText = this.FluidUIIndexTexts.FirstOrDefault()!;
+        this.loadSelectionViewModel = new FluidUISelectionViewModel(this.ViewModel, this.LoadFluidUIConfiguration);
+        this.saveSelectionViewModel = new FluidUISelectionViewModel(this.ViewModel, this.SaveFluidUIConfiguration);
+
+        this.Setup();
+
+        this.OnPropertyChanged(nameof(this.InverseIndexTextListIsEmpty));
+        this.OnPropertyChanged(nameof(this.InverseKeyTextListIsEmpty));
+        this.OnPropertyChanged(nameof(this.QuadIndexTexts));
+        this.OnPropertyChanged(nameof(this.QuadKeyTexts));
+
+        this.OnPropertyChanged(nameof(this.LoadSelectionViewModel));
+        this.OnPropertyChanged(nameof(this.SaveSelectionViewModel));
+
+        this.OnPropertyChanged(nameof(this.ViewModel));
     }
 
     public event Action PropertyChangedEvent;
 
+    public FluidUISelectionViewModel LoadSelectionViewModel => this.loadSelectionViewModel;
+
+    public FluidUISelectionViewModel SaveSelectionViewModel => this.saveSelectionViewModel;
+
     public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
 
+    public bool InverseIndexTextListIsEmpty => this.FluidUIIndexTexts.Count != 0;
+
+    public bool InverseKeyTextListIsEmpty => this.FluidUIKeyTexts.Count != 0;
 
     public void Dispose()
     {
@@ -80,73 +140,256 @@ public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUI
     {
     }
 
-    //partial void OnTextChanged(string value)
-    //{
-    //    if (this.FluidUIIndexText != null)
-    //    {
-    //        var element = this.ViewModel.FluidUI.DataBlock.IndexTextList.Where(x => x.Index.Equals(this.FluidUIIndexText.Index)).FirstOrDefault();
+    private IFluidUIContext ApplyConfigurationTargetOnDeepCopy()
+    {
+        var manager = new FluidUIDeepCopyManager();
+        var copy = manager.DeepCopyIFluidUIContext(this.ViewModel.FluidUI);
 
-    //        if (element != null && !element.Text.Equals(value))
-    //        {
-    //            element.Text = value;
-    //        }
+        this.ProcessConfigurationTarget(copy, this.SaveSelectionViewModel.ConfigurationTarget);
 
-    //        this.OnPropertyChanged(nameof(this.FluidUIIndexTexts));
-    //    }
-    //}
+        return copy;
+    }
+
+    private void ProcessConfigurationTarget(IFluidUIContext fluiduiconfig, ConfigurationTargets configurationTarget)
+    {
+        if (configurationTarget != ConfigurationTargets.All)
+        {
+            if (configurationTarget != ConfigurationTargets.DataBlock)
+            {
+                fluiduiconfig.DataBlock = null;
+            }
+
+            if (configurationTarget != ConfigurationTargets.Design)
+            {
+                fluiduiconfig.Design = null;
+            }
+
+            if (configurationTarget != ConfigurationTargets.Font)
+            {
+                fluiduiconfig.Font = null;
+            }
+
+            if (configurationTarget != ConfigurationTargets.Size)
+            {
+                fluiduiconfig.Size = null;
+            }
+
+            if (configurationTarget != ConfigurationTargets.Stand)
+            {
+                fluiduiconfig.Stand = null;
+            }
+        }
+    }
+
+    private async void LoadFluidUIConfiguration()
+    {
+        var folder = "eboard/fluidui/";
+        var helper = new SharedMethod_UI();
+
+        var filename = await helper.GetFileToLoad(folder, $"files (*.{helper.FluidUIConfigurationFileExtension})|*.{helper.FluidUIConfigurationFileExtension}");
+
+        if (filename != null && Loader.FileExists(filename))
+        {
+            var fluiduiconfig = await Loader.LoadJsonFile<FluidUIContext>(filename);
+
+            if (fluiduiconfig != null)
+            {
+                this.ProcessConfigurationTarget(fluiduiconfig, this.LoadSelectionViewModel.ConfigurationTarget);
+
+                fluiduiconfig.Design?.LoadBrushesFromColorData();
+
+                this.viewModel.SetFluidUI(fluiduiconfig);
+            }
+        }
+    }
+
+    private async void SaveFluidUIConfiguration()
+    {
+        var copy = this.ApplyConfigurationTargetOnDeepCopy();
+
+        var helper = new SharedMethod_UI();
+        var path = await new SharedMethod_UI().SetSaveFileName(helper.FluidUIConfigurationFileExtension);
+
+        _ = Saver.SaveJsonFile(path, copy);
+    }
+
+    private void Setup()
+    {
+        this.Text = this.fluidUIDataBlockManager.GetText();
+        this.Title = this.fluidUIDataBlockManager.GetTitle();
+
+        var indexTextViewModelCollection = this.fluidUIDataBlockManager.GetFluidUIIndexTextViewModelObservableCollection();
+
+        this.ShowToolTip = this.fluidUIDataBlockManager.GetShowToolTip();
+
+        if (indexTextViewModelCollection != null)
+        {
+            this.FluidUIIndexTexts = indexTextViewModelCollection;
+            this.FluidUIIndexText = this.FluidUIIndexTexts.FirstOrDefault()!;
+        }
+
+        var keyTextViewModelCollection = this.fluidUIDataBlockManager.GetFluidUIKeyTextViewModelObservableCollection();
+
+        if (keyTextViewModelCollection != null)
+        {
+            this.FluidUIKeyTexts = keyTextViewModelCollection;
+            this.FluidUIKeyText = this.FluidUIKeyTexts.FirstOrDefault()!;
+        }
+
+        this.QuadIndexTexts = this.fluidUIDataBlockManager.GetIndexTextQuadViewModels();
+
+        this.SelectedIndexTextQuadValue = this.QuadIndexTexts.FirstOrDefault()!;
+
+        this.QuadKeyTexts = this.fluidUIDataBlockManager.GetKeyTextQuadViewModels();
+
+        this.SelectedKeyTextQuadValue = this.QuadKeyTexts.FirstOrDefault()!;
+    }
+
+    partial void OnShowToolTipChanged(bool value)
+    {
+        this.fluidUIDataBlockManager.SetShowToolTip(value);
+    }
+
+    partial void OnTextChanged(string value)
+    {
+        this.fluidUIDataBlockManager?.SetText(value);
+    }
+
+    partial void OnTitleChanged(string value)
+    {
+        this.fluidUIDataBlockManager?.SetTitle(value);
+    }
 
     [RelayCommand]
     private void AddIndexText()
     {
-        this.IndexCount = this.ViewModel.FluidUI.DataBlock.AddFluidUIIndexTextToList();
-        var fluidtext = this.ViewModel.FluidUI.DataBlock.IndexTextList.LastOrDefault();
+        this.IndexCount = this.fluidUIDataBlockManager.GetNewIndexCount();
+        this.FluidUIIndexText = this.fluidUIDataBlockManager.GetFluidUIIndexTextViewModel();
 
-        this.FluidUIIndexText = new FluidUIIndexTextViewModel(this.ViewModel, fluidtext);
-
-        this.FluidUIIndexTexts.Add(this.FluidUIIndexText);
+        if (this.FluidUIIndexText != null)
+        {
+            this.FluidUIIndexTexts.Add(this.FluidUIIndexText);
+        }
 
         this.OnPropertyChanged(nameof(this.FluidUIIndexTexts));
         this.OnPropertyChanged(nameof(this.FluidUIIndexText));
+
+        this.OnPropertyChanged(nameof(this.InverseIndexTextListIsEmpty));
     }
 
     [RelayCommand]
     private void DeleteIndexText()
     {
-
-        var index = this.FluidUIIndexText.Index;
-        var time = this.FluidUIIndexText.Time;
-        var text = this.FluidUIIndexText.Text;
-
-        if (this.ViewModel.FluidUI.DataBlock.IndexTextList.Any(x => (x.Index == index && x.Time.Equals(time))))
+        if (this.FluidUIIndexText == null)
         {
-            var model = this.ViewModel.FluidUI.DataBlock.IndexTextList.Where(x => (x.Index == index && x.Time.Equals(time))).FirstOrDefault();
-
-            if (model != null)
-            {
-                this.ViewModel.FluidUI.DataBlock.IndexTextList.Remove(model);
-
-                this.FluidUIIndexTexts = new();
-
-                foreach (var item in this.ViewModel.FluidUI.DataBlock.IndexTextList)
-                {
-                    this.FluidUIIndexTexts.Add(new FluidUIIndexTextViewModel(this.ViewModel, item));
-                }
-            }
+            return;
         }
 
-        this.FluidUIIndexText = this.FluidUIIndexTexts.LastOrDefault();
+        var changedCollection = this.fluidUIDataBlockManager.DeleteFluidUIIndexText(this.FluidUIIndexText);
+
+        if (changedCollection != null)
+        {
+            this.FluidUIIndexTexts.Clear();
+            this.FluidUIIndexTexts = changedCollection;
+        }
+
+        if (this.FluidUIIndexTexts != null && this.FluidUIIndexTexts.Count > 0)
+        {
+            this.FluidUIIndexText = this.FluidUIIndexTexts.LastOrDefault()!;
+        }
 
         this.OnPropertyChanged(nameof(this.FluidUIIndexTexts));
         this.OnPropertyChanged(nameof(this.FluidUIIndexText));
+        this.OnPropertyChanged(nameof(this.InverseIndexTextListIsEmpty));
     }
 
     [RelayCommand]
     private void ClearIndexTextList()
     {
-        this.ViewModel.FluidUI.DataBlock.IndexTextList.Clear();
+        this.fluidUIDataBlockManager.ClearIndexTextList();
         this.FluidUIIndexTexts.Clear();
+
         this.OnPropertyChanged(nameof(this.ViewModel.FluidUI));
         this.OnPropertyChanged(nameof(this.FluidUIIndexTexts));
+        this.OnPropertyChanged(nameof(this.InverseIndexTextListIsEmpty));
+    }
+
+    [RelayCommand]
+    private void AddKeyText()
+    {
+        this.FluidUIKeyText = this.fluidUIDataBlockManager.GetFluidUIKeyTextViewModel();
+
+        if (this.FluidUIKeyText != null)
+        {
+            this.FluidUIKeyTexts.Add(this.FluidUIKeyText);
+        }
+
+        this.OnPropertyChanged(nameof(this.FluidUIKeyTexts));
+        this.OnPropertyChanged(nameof(this.FluidUIKeyText));
+        this.OnPropertyChanged(nameof(this.InverseKeyTextListIsEmpty));
+    }
+
+    [RelayCommand]
+    private void DeleteKeyText()
+    {
+        if (this.FluidUIKeyText == null)
+        {
+            return;
+        }
+
+        var changedCollection = this.fluidUIDataBlockManager.DeleteFluidUKeyText(this.FluidUIKeyText);
+
+        if (changedCollection != null)
+        {
+            this.FluidUIKeyTexts.Clear();
+            this.FluidUIKeyTexts = changedCollection;
+        }
+
+        if (this.FluidUIKeyTexts != null && this.FluidUIKeyTexts.Count > 0)
+        {
+            this.FluidUIKeyText = this.FluidUIKeyTexts.LastOrDefault()!;
+        }
+
+        this.OnPropertyChanged(nameof(this.FluidUIIndexTexts));
+        this.OnPropertyChanged(nameof(this.FluidUIIndexText));
+        this.OnPropertyChanged(nameof(this.InverseKeyTextListIsEmpty));
+    }
+
+    [RelayCommand]
+    private void ClearKeyTextList()
+    {
+        this.fluidUIDataBlockManager.ClearKeyTextList();
+        this.FluidUIKeyTexts.Clear();
+
+        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI));
+        this.OnPropertyChanged(nameof(this.FluidUIIndexTexts));
+        this.OnPropertyChanged(nameof(this.InverseKeyTextListIsEmpty));
+    }
+
+    [RelayCommand]
+    private void ResetSelectedIndexTextQuadValue()
+    {
+        this.SelectedIndexTextQuadValue?.Reset();
+        this.fluidUIDataBlockManager.SetInitialIndexTextQuadValues();
+    }
+
+    [RelayCommand]
+    private void ResetSelectedKeyTextQuadValue()
+    {
+        this.SelectedKeyTextQuadValue?.Reset();
+        this.fluidUIDataBlockManager.SetInitialKeyTextQuadValues();
+    }
+
+    [RelayCommand]
+    private void ClearDataBlockTextAndTitle()
+    {
+        this.fluidUIDataBlockManager.ClearTextAndTitle();
+    }
+
+    [RelayCommand]
+    private void ResetDataBlockTextAndTitle()
+    {
+        this.fluidUIDataBlockManager.SetupTitleAndText("fluid ui context", "fluid ui context description");
     }
 }
 

@@ -34,10 +34,13 @@ namespace EBoardSDK.Views;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für MainWindowLogoutBar.xaml
+/// Interaktionslogik für MainWindowLogoutBar.xaml.
 /// </summary>
 public partial class MainWindowLogoutBar : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainWindowLogoutBar"/> class.
+    /// </summary>
     public MainWindowLogoutBar()
     {
         this.InitializeComponent();

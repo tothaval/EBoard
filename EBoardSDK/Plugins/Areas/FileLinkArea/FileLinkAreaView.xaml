@@ -97,7 +97,6 @@
         </Style>
     </UserControl.Resources>
 
-
     <Border >
         <Grid>
             <Grid.ColumnDefinitions>

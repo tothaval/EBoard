@@ -37,10 +37,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoardSDK.Views"
-             xmlns:ut="clr-namespace:EBoardSDK.Utilities"
              xmlns:vms="clr-namespace:EBoardSDK.ViewModels" 
              xmlns:esdkfuim="clr-namespace:EBoardSDK.Controls.FluidUIMenu"
              xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
+             xmlns:ScreenSetup="clr-namespace:EBoardSDK.Controls.ScreenSetup"
              x:Name="EBoard_EBoardBrowser"
              d:DataContext="{d:DesignInstance Type=vms:EBoardBrowserViewModel}"
              mc:Ignorable="d" 
@@ -49,8 +49,8 @@
              FontSize="{Binding FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
              FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
              FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
-             Foreground="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"    
-             >
+             Foreground="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
+             Opacity="{Binding FluidUI.Design.Opacity, NotifyOnSourceUpdated=True}">
 
     <UserControl.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
@@ -78,10 +78,8 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="3"                            
                                 CornerRadius="5" 
-                                MinWidth="50"
-                                MinHeight="25"
-                                Margin="5"
-                                Padding="5">
+                                MinWidth="25"
+                                MinHeight="25">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
                         </Border>
@@ -101,8 +99,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-        <ut:VisibilityConverterToCollapsed x:Key="VisibilityToCollapsed"/>
 
         <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
             <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
@@ -124,10 +120,18 @@
 
         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}" x:Key="sub">
             <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
             <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Background" Value="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+        </Style>
+
+        <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTip}">
+            <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+            <Setter Property="FontSize" Value="{Binding FluidUI.Font.FontSize}"/>
+            <Setter Property="FontFamily" Value="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
         </Style>
     </UserControl.Resources>
 
@@ -136,230 +140,296 @@
             BorderThickness="{Binding FluidUI.Size.BorderThickness, NotifyOnSourceUpdated=True}"
             BorderBrush="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"
             CornerRadius="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"
-            HorizontalAlignment="Left">        
+            HorizontalAlignment="Left">
         <Border.ToolTip>
             <ToolTip Content="{Binding FluidUI.DataBlock.Text,NotifyOnSourceUpdated=True}"
-                     Background="{Binding FluidUI.Design.Background}"
-                     BorderBrush="{Binding FluidUI.Design.Border}"
-                     BorderThickness="2"
-                     Padding="{Binding FluidUI.Size.Padding}"
-                     Foreground="{Binding FluidUI.Design.Foreground}"
-                     FontSize="{Binding FluidUI.Font.FontSize}"
-                     FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
-                     FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}">
-            </ToolTip>
+                     Visibility="{Binding FluidUI.DataBlock.ShowToolTip, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}"/>
         </Border.ToolTip>
 
+        <Border.Resources>
+            <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItem}">
+                <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
+                <Setter Property="BorderThickness" Value="3"/>
+                <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
+            </Style>
+        </Border.Resources>
+        
         <Border.ContextMenu >
             <ContextMenu Background="{Binding FluidUI.Design.Background}"
                          BorderBrush="{Binding FluidUI.Design.Border}"
                          Style="{StaticResource ContextMenuStyle}">
                 <TextBlock Text="{Binding FluidUI.DataBlock.Title,NotifyOnSourceUpdated=True}"/>
 
-                <esdkfuim:FluidUIMenuView DataContext="{Binding FluidUIMenuViewModel, NotifyOnSourceUpdated=True}"
-                                          Style="{StaticResource menuitem}"
-                                          SizeMenuItemVisible="False"/>
-
-                <MenuItem Header="Delete" Command="{Binding DeleteElementCommand}" Style="{StaticResource menuitem}"/>
-            </ContextMenu>
-        </Border.ContextMenu>
-
-        <Grid >
-            <Grid.OpacityMask>
-                <VisualBrush Visual="{Binding ElementName=mask}"/>
-            </Grid.OpacityMask>
-
-            <Border Name="mask"
-            Background="{Binding FluidUI.Design.Background}"
-            CornerRadius="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}" />
-
-            <Border Padding="{Binding FluidUI.Size.Padding}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-
-                    <Grid Grid.Column="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <TextBlock Margin="5 10 0 0"
-                                   Grid.Row="0">
-                            <Run Text="Selected: "/>
-                            <Run Text="{Binding SelectedEBoard.FluidUI.DataBlock.Title}"/>
-                            <Run Text="{Binding CurrentSelectionID, NotifyOnSourceUpdated=True}"/>
-                            <Run Text="/"/>
-                            <Run Text="{Binding EBoardCount, NotifyOnSourceUpdated=True}"/>
-                        </TextBlock>
-
-                        <ScrollViewer CanContentScroll="True"
-                                      VerticalScrollBarVisibility="Auto"
-                                      MaxWidth="320"
-                                      MaxHeight="160"
-                                      Margin="0 0 0 0"
-                                      Grid.Row="1">
-
-                            <ListBox ItemsSource="{Binding EBoards}"
-                                     Background="Transparent"
-                                     BorderBrush="Transparent"
-                                     SelectedItem="{Binding SelectedEBoard, NotifyOnSourceUpdated=True}">
-
-                                <ListBox.ContextMenu>
-                                    <ContextMenu Background="{Binding FluidUI.Design.Background}"
-                                             Style="{StaticResource ContextMenuStyle}"
-                                                 BorderBrush="{Binding FluidUI.Design.Border}" >
-                                        
-                                        <Label Content="Screen Panel" Background="Transparent"
-                                               Foreground="{Binding FluidUI.Design.Foreground}"/>
-                                        
-                                        <MenuItem Header="Delete Selected" Style="{StaticResource menuitem}"
-                                              Command="{Binding DeleteEBoardCommand}"/>
-                                        
-                                        <MenuItem Header="Delete All" Style="{StaticResource menuitem}"
-                                              Command="{Binding DeleteAllScreensCommand}"/>
-                                        
-                                    </ContextMenu>
-                                </ListBox.ContextMenu>
-
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <WrapPanel x:Name="wp_eBoardBrowser"
-                                           MaxWidth="300"
-                                   Background="Transparent"
-                                   VerticalAlignment="Top"
-                                   HorizontalAlignment="Stretch"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <!--<local:EBoardView Content="{Binding }" MaxHeight="50" MaxWidth="50"/>-->
-
-                                        <Border Background="{Binding FluidUI.Design.Background}"
-                                                CornerRadius="10"
-                                                BorderBrush="{Binding FluidUI.Design.Border}"
-                                                BorderThickness="3">
-                                            <Grid VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding SelectedEBoard.FluidUI.DataBlock.Title, NotifyOnSourceUpdated=True}"
-                                                           Padding="0 10 0 0"
-                                                           MinWidth="42"
-                                                           MinHeight="42"
-                                                           VerticalAlignment="Center"/>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ListBox>
-                        </ScrollViewer>
-                    </Grid>
-
-                    <Grid Grid.Column="1">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Button Content="Add EBoard"
-                                Command="{Binding AddEBoardCommand}"
-                                Grid.Row="0"/>
-
-                        <Grid Grid.Row="1">
+                <MenuItem Header="Panel"
+                          Style="{StaticResource menuitem}">
+                    <MenuItem Header="Size"
+                              Style="{StaticResource menuitem}">
+                        <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" MinWidth="100"/>
-                                <ColumnDefinition Width="Auto" MinWidth="100"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-
                             <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                                <RowDefinition/>
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="Name"
-                                       Grid.Column="0"
-                                       Grid.Row="0"/>
+                            <TextBlock Text="max width"
+                                   Grid.Column="0"
+                                   Grid.Row="0"/>
+                            <TextBox Text="{Binding MaxWidth,UpdateSourceTrigger=Default}"
+                                 Grid.Column="1"
+                                 Grid.Row="0"/>
 
-                            <TextBox Text="{Binding SelectedEBoard.FluidUI.DataBlock.Title,
-                                NotifyOnSourceUpdated=True,
-                                UpdateSourceTrigger=LostFocus}"
-                                     Grid.Column="1"
-                                     Grid.Row="0"/>
-
-                            <TextBlock Text="Depth"
-                                       Grid.Column="0"
-                                       Grid.Row="1"/>
-                            
-                            <TextBox Text="{Binding EBoardDepth,
-                                NotifyOnSourceUpdated=True,
-                                UpdateSourceTrigger=LostFocus}"
-                                     Grid.Column="1"
-                                     Grid.Row="1"/>
-
-                            <TextBlock Text="Width"
-                                       Grid.Column="0"
-                                       Grid.Row="2"/>
-                            
-                            <TextBox Text="{Binding NewEBoardWidth,
-                                NotifyOnSourceUpdated=True,
-                                UpdateSourceTrigger=LostFocus}"
-                                     Grid.Column="1"
-                                     Grid.Row="2"/>
-
-                            <TextBlock Text="Height"
-                                       Grid.Column="0"
-                                       Grid.Row="3"/>
-                            
-                            <TextBox Text="{Binding NewEBoardHeight,
-                                NotifyOnSourceUpdated=True,
-                                UpdateSourceTrigger=LostFocus}"
-                                     Grid.Column="1"
-                                     Grid.Row="3"/>
-
-                            <Button Content="Edit EBoard"
-                                    Margin="5 0 0 0"
-                                    Command="{Binding EditEBoardParametersCommand}"
-                                    Grid.Column="2"
-                                    Grid.Row="0"
-                                    Grid.RowSpan="6"/>
-
-                            <TextBlock Text="Created"
-                                       Grid.Column="0"
-                                       Grid.Row="4"/>
-                            
-                            <TextBlock Text="{Binding EBoardCreatedDate,
-                                NotifyOnSourceUpdated=True}"
-                                       Grid.Column="1"
-                                       Grid.Row="4"/>
-
-                            <TextBlock Text="Active"
-                                       Grid.Column="0"
-                                       Grid.Row="5"/>
-                            
-                            <TextBlock Grid.Column="1"
-                                       Grid.Row="5">
-                                
-                                <Run Text="{Binding EBoardContainerCount, NotifyOnSourceUpdated=True}"/>
-                                <Run Text="elements"/>
-                                <Run Text=":"/>
-                                <Run Text="{Binding EBoardElementCount, NotifyOnSourceUpdated=True}"/>
-                                <Run Text="plugins" />
-                                <Run Text="&amp;"/>
-                                <Run Text="{Binding EBoardShapeCount, NotifyOnSourceUpdated=True}"/>
-                                <Run Text="shapes" />
-                            </TextBlock>
+                            <TextBlock Text="max height"
+                                   Grid.Column="0"
+                                   Grid.Row="1"/>
+                            <TextBox Text="{Binding MaxHeight,UpdateSourceTrigger=Default}"
+                                 Grid.Column="1"
+                                 Grid.Row="1"/>
                         </Grid>
+                    </MenuItem>
 
-                        <Button Content="Delete EBoard"
-                                Command="{Binding DeleteEBoardCommand}"
-                                Grid.Row="2"/>
-                    </Grid>
+                    <MenuItem Header="Clear" Style="{StaticResource menuitem}"
+                          Command="{Binding DeleteAllScreensCommand}"/>
+                </MenuItem>
+
+                <MenuItem Header="Screen"
+                          Style="{StaticResource menuitem}">
+                    <MenuItem Header="Add"
+                              Command="{Binding AddEBoardCommand}"
+                              Style="{StaticResource menuitem}"/>
+                    <MenuItem Header="Delete"
+                              Command="{Binding DeleteSelectedScreenCommand}"
+                              Style="{StaticResource menuitem}"/>
+                </MenuItem>
+
+                <esdkfuim:FluidUIMenuView DataContext="{Binding FluidUIMenuViewModel, NotifyOnSourceUpdated=True}"
+                                          Style="{StaticResource menuitem}"/>
+            </ContextMenu>
+        </Border.ContextMenu>
+
+        <Grid >
+            
+            <!-- mask cuts out the central buttons if both sides are hidden and width and height is NaN -->
+            <!--<Grid.OpacityMask>
+                <VisualBrush Visual="{Binding ElementName=mask}"/>
+            </Grid.OpacityMask>
+
+            <Border Name="mask"
+                    Background="{Binding FluidUI.Design.Background}"
+                    CornerRadius="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"/>-->
+
+            <Border Padding="{Binding FluidUI.Size.Padding}"
+                    Width="{Binding FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
+                    Height="{Binding FluidUI.Size.Height, NotifyOnSourceUpdated=True}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ScrollViewer CanContentScroll="True"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto"
+                                  MinWidth="150"
+                                  MaxWidth="{Binding MaxWidth}"
+                                  MaxHeight="{Binding MaxHeight}"
+                                  Visibility="{Binding BrowserPanelVisible, Converter={StaticResource VisibilityToCollapsed}}"
+                                  Margin="10 10 0 10"
+                                  Grid.Column="0"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Top">
+
+                        <ListView ItemsSource="{Binding EBoards}"
+                                  Background="Transparent"
+                                  BorderBrush="Transparent"
+                                  HorizontalContentAlignment="Center"
+                                  VerticalContentAlignment="Center"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"
+                                  SelectedValue="{Binding Path=SelectedEBoard}"
+                                  SelectionMode="Extended"
+                                  x:Name="EboardsList">
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel x:Name="wp_eBoardBrowser"
+                                               Background="Transparent"
+                                               VerticalAlignment="Top"
+                                               HorizontalAlignment="Left"
+                                               MaxWidth="{Binding MaxWidth}"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <!--<local:EBoardView Content="{Binding }" MaxHeight="50" MaxWidth="50"/>-->
+
+                                    <Border Background="{Binding FluidUI.Design.Background}"
+                                            CornerRadius="10"
+                                            BorderBrush="{Binding FluidUI.Design.Border}"
+                                            BorderThickness="3">
+                                        <Grid VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding FluidUI.DataBlock.Title, NotifyOnSourceUpdated=True}"
+                                                       FontFamily="{Binding FluidUI.Font.FontFamily}"
+                                                       FontWeight="{Binding FluidUI.Font.FontWeight}"
+                                                       FontSize="15"
+                                                       Padding="3"
+                                                       TextAlignment="Center"
+                                                       HorizontalAlignment="Center"
+                                                       MinWidth="42"
+                                                       MinHeight="42"
+                                                       MaxWidth="168"
+                                                       MaxHeight="42"
+                                                       VerticalAlignment="Center">
+                                                <TextBlock.ToolTip>
+                                                    <ToolTip Content="{Binding FluidUI.DataBlock.Title, NotifyOnSourceUpdated=True}"
+                                                             Background="{Binding FluidUI.Design.Background}"
+                                                             BorderBrush="{Binding FluidUI.Design.Border}"
+                                                             BorderThickness="3"
+                                                             Foreground="{Binding FluidUI.Design.Foreground}"
+                                                             FontFamily="{Binding FluidUI.Font.FontFamily}"
+                                                             FontWeight="{Binding FluidUI.Font.FontWeight}"
+                                                             FontSize="{Binding FluidUI.Font.FontSize}"/>
+                                                </TextBlock.ToolTip>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ListView>
+                    </ScrollViewer>
+
+                    <Button Content="&lt;"
+                            Command="{Binding ToggleBrowserPanelVisibilityCommand}"
+                            Margin="10 10 1 10"
+                            MinHeight="50"
+                            Grid.Column="1"/>
+
+                    <Button Content="&gt;"
+                            Command="{Binding ToggleScreenSetupVisibilityCommand}"
+                            Margin="1 10 10 10"
+                            Grid.Column="2"/>
+
+                    <Border Visibility="{Binding ScreenSetupVisible, Converter={StaticResource VisibilityToCollapsed}}"
+                            Margin="0 10 10 10"
+                            Grid.Column="3">
+                        <ScreenSetup:ScreenSetupView DataContext="{Binding ScreenSetupViewModel}"/>
+                    </Border>
+
+                    <!--<Grid>
+                        <Button Content="Add EBoard"
+                            Command="{Binding AddEBoardCommand}"
+                            Grid.Column="2"
+                            Grid.ColumnSpan="3"
+                            Grid.Row="0"/>
+
+                    <TextBlock Text="Name"
+                               Grid.Column="2"
+                               Grid.Row="1"/>
+
+                    <TextBox Text="{Binding EBoardName}"
+                             Grid.Column="3"
+                             Grid.Row="1"/>
+
+                    <TextBlock Text="Depth"
+                               Grid.Column="2"
+                               Grid.Row="2"/>
+
+                    <TextBox Text="{Binding EBoardDepth}"
+                             Grid.Column="3"
+                             Grid.Row="2"/>
+
+                    <TextBlock Text="Width"
+                               Grid.Column="2"
+                               Grid.Row="3"/>
+
+                    <TextBox Text="{Binding NewEBoardWidth}"
+                             Grid.Column="3"
+                             Grid.Row="3"/>
+
+                    <TextBlock Text="Height"
+                               Grid.Column="2"
+                               Grid.Row="4"/>
+
+                    <TextBox Text="{Binding NewEBoardHeight}"
+                             Grid.Column="3"
+                             Grid.Row="4"/>
+
+                    <Button Content="Edit EBoard"
+                            Margin="5 0 0 0"
+                            Command="{Binding EditEBoardParametersCommand}"
+                            Grid.Column="4"
+                            Grid.Row="1"
+                            Grid.RowSpan="4"/>
+
+                    <Button Content="Delete EBoard"
+                            Command="{Binding DeleteSelectedScreensCommand}"
+                            CommandParameter="{Binding ElementName=EboardsList, Path=SelectedItems}"
+                            Grid.Column="2"
+                            Grid.ColumnSpan="3"
+                            Grid.Row="5"/>
+
+                    <TextBlock VerticalAlignment="Center"
+                               Grid.Column="2"
+                               Grid.Row="6">
+                            <Run Text="Selected"/>
+                    </TextBlock>
+
+                    <TextBlock VerticalAlignment="Center"
+                               Grid.Column="3"
+                               Grid.Row="6">
+                            <Run Text="{Binding CurrentSelectionID, NotifyOnSourceUpdated=True}"/>
+                            <Run Text="/"/>
+                            <Run Text="{Binding EBoardCount, NotifyOnSourceUpdated=True}"/>
+                    </TextBlock>
+
+                    <TextBlock Text="Created"
+                               Grid.Column="2"
+                               Grid.Row="7"/>
+
+                    <TextBlock Text="{Binding EBoardCreatedDate, StringFormat=u,
+                        NotifyOnSourceUpdated=True}"
+                               Grid.Column="3"
+                               Grid.Row="7"/>
+
+                    <TextBlock Text="Active"
+                               Grid.Column="2"
+                               Grid.Row="8"/>
+
+                    <TextBlock Grid.Column="3"
+                               Grid.Row="8">
+                        <Run Text="{Binding EBoardContainerCount, NotifyOnSourceUpdated=True}"/>
+                        <Run Text="elements"/>
+                        <Run Text=":"/>
+                        <Run Text="{Binding EBoardElementCount, NotifyOnSourceUpdated=True}"/>
+                        <Run Text="plugins" />
+                        <Run Text="&amp;"/>
+                        <Run Text="{Binding EBoardShapeCount, NotifyOnSourceUpdated=True}"/>
+                        <Run Text="shapes" />
+                    </TextBlock>
+
+                    <TextBlock Grid.Column="2"
+                               Grid.Row="9">
+                        <Run Text="Title"/>
+                        <LineBreak/>
+                        <Run Text="Text"/>
+                    </TextBlock>
+
+                    <TextBlock TextAlignment="Left"
+                               HorizontalAlignment="Left"
+                               TextWrapping="WrapWithOverflow"
+                               Grid.Column="3"
+                               Grid.Row="9">
+                        <Run Text="{Binding SelectedEBoard.FluidUI.DataBlock.Title}"/>
+                        <LineBreak/>
+                        <Run Text="{Binding SelectedEBoard.FluidUI.DataBlock.Text}"/>
+                    </TextBlock>
+                </Grid>-->
+                                        
                 </Grid>
             </Border>
         </Grid>

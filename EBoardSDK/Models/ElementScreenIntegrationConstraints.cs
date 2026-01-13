@@ -59,6 +59,11 @@ public class ElementScreenIntegrationConstraints : IScreenIntegrationObject
 
     // für mögliche interaktionen mit dem eboard durch das element, zum beispiel die nutzung speziell dafür vorgesehener funktionen
     // private readonly ElementViewModel elementViewModel;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElementScreenIntegrationConstraints"/> class.
+    /// </summary>
+    /// <param name="elementInstantiationPolicy"></param>
+    /// <param name="plugin"></param>
     public ElementScreenIntegrationConstraints(ElementInstantiationPolicy? elementInstantiationPolicy = ElementInstantiationPolicy.ValueNotSet, IPlugin? plugin = null)
     {
         this.elementInstantiationPolicy = elementInstantiationPolicy;

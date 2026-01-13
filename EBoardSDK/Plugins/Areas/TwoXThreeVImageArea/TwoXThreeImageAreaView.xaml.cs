@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Areas.TwoXThreeVImageArea;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für TwoXThreeImageAreaView.xaml
+/// Interaktionslogik für TwoXThreeImageAreaView.xaml.
 /// </summary>
 public partial class TwoXThreeImageAreaView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TwoXThreeImageAreaView"/> class.
+    /// </summary>
     public TwoXThreeImageAreaView()
     {
         this.InitializeComponent();

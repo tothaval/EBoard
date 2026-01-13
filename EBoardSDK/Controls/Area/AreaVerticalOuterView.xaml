@@ -39,35 +39,30 @@
              xmlns:local="clr-namespace:EBoardSDK.Controls.Area"
              d:DataContext="{d:DesignInstance Type=local:AreaVerticalOuterViewModel`1}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="Transparent">
     
     <ListBox MinWidth="100" MinHeight="25"
              ItemsSource="{Binding HorizontalInnerViewModels}"
+             Background="Transparent"
              HorizontalContentAlignment="Stretch"
              HorizontalAlignment="Stretch"
              VerticalAlignment="Stretch"
              VerticalContentAlignment="Stretch">
         <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
-                <VirtualizingStackPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                        Orientation="Vertical"/>
+                <VirtualizingStackPanel HorizontalAlignment="Stretch" 
+                                        VerticalAlignment="Stretch"
+                                        Orientation="Vertical"
+                                        Background="Transparent"/>
             </ItemsPanelTemplate>
         </ListBox.ItemsPanel>
-        <!--<ListBox.ItemTemplate>
-            <DataTemplate>
-                <local:AreaHorizontalInnerView DataContext="{Binding}" />
-            </DataTemplate>
-        </ListBox.ItemTemplate>-->
-
+        
         <ListBox.ItemContainerStyle>
-            <Style
-       TargetType="ListBoxItem">
-
-                <Setter
-           Property="Template">
+            <Style TargetType="ListBoxItem">
+                <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate
-                   TargetType="ListBoxItem">
+                        <ControlTemplate TargetType="ListBoxItem">
                             <local:AreaHorizontalInnerView DataContext="{Binding}" />
                         </ControlTemplate>
                     </Setter.Value>

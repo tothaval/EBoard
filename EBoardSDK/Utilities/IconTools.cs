@@ -41,7 +41,7 @@ using System.Runtime.InteropServices;
 ///
 /// Building a Better ExtractAssociatedIcon
 /// Bradley Smith - 2010/07/28
-/// (updated 2014/11/13)
+/// (updated 2014/11/13).
 /// </summary>
 public static class IconTools
 {

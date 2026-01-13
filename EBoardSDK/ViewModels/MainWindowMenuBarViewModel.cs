@@ -43,11 +43,9 @@ using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Interfaces.FluidUIDesign;
 using EBoardSDK.Interfaces.FluidUIText;
+using EBoardSDK.Models;
 using EBoardSDK.Plugins;
-using Serilog;
-using System.IO;
-using System.Windows;
-using System.Windows.Media;
+using System.Windows.Threading;
 
 /// <summary>
 /// TODO:
@@ -59,54 +57,55 @@ using System.Windows.Media;
 /// </summary>
 public partial class MainWindowMenuBarViewModel : ObservableObject
 {
+    private SDKPluginManager sDKPluginManager;
+
     private readonly IFluidUIDesignModel brushManagement;
     private readonly IFluidUIFontModel fontManagement;
-
-    [ObservableProperty]
-    private bool eBoardBrowserSwitch;
-
-    [ObservableProperty]
-    private bool eBoardSettingsSwitch;
-
-    private MainViewModel mainViewModel;
-
-    [ObservableProperty]
-    private IList<EBoardElementPluginBaseViewModel> pluginCategoryAddons = [];
-
-    [ObservableProperty]
-    private IList<EBoardElementPluginBaseViewModel> pluginCategoryElements = [];
-
-    [ObservableProperty]
-    private IList<EBoardElementPluginBaseViewModel> pluginCategoryShapes = [];
-
-    [ObservableProperty]
-    private IList<EBoardElementPluginBaseViewModel> pluginCategoryAreas = [];
-
-    [ObservableProperty]
-    private IList<EBoardElementPluginBaseViewModel> pluginCategoryTools = [];
-
-    [ObservableProperty]
-    private IList<EBoardElementPluginBaseViewModel> foundPlugins = [];
 
     private IFluidUIDesignModel screenBrushManagement;
     private IFluidUIFontModel screenFontManagement;
 
+    private MainViewModel mainViewModel;
+
+    [ObservableProperty]
+    private bool eBoardBrowserSwitch = false;
+
+    [ObservableProperty]
+    private bool screenControlSwitch = false;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainWindowMenuBarViewModel"/> class.
+    /// </summary>
+    /// <param name="mainViewModel"></param>
+    /// <param name="eboardConfig"></param>
     public MainWindowMenuBarViewModel(MainViewModel mainViewModel, EBoardSDK.Models.EboardConfig eboardConfig)
     {
         this.mainViewModel = mainViewModel;
-        this.brushManagement = mainViewModel.EBoardBrowserViewModel.FluidUI.Design;
-        this.screenBrushManagement = this.mainViewModel.FluidUI.Design;
+        this.brushManagement = mainViewModel.EBoardBrowserViewModel.FluidUI.Design!;
+        this.screenBrushManagement = this.mainViewModel.FluidUI.Design!;
 
-        this.fontManagement = mainViewModel.EBoardBrowserViewModel.FluidUI.Font;
-        this.screenFontManagement = this.mainViewModel.FluidUI.Font;
+        this.fontManagement = mainViewModel.EBoardBrowserViewModel.FluidUI.Font!;
+        this.screenFontManagement = this.mainViewModel.FluidUI.Font!;
+
+        this.EBoardBrowserSwitch = eboardConfig.EBoardBrowserSwitch;
+        this.ScreenControlSwitch = eboardConfig.ScreenControlSwitch;
 
         this.mainViewModel.EBoardBrowserViewModel.PropertyChanged += this.EBoardBrowserViewModel_PropertyChanged;
-        //this.brushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
 
-        this.InstallEboardPlugins(SDKPluginManager.SDKPlugins);
-
-        this.InstallEboardPlugins(eboardConfig.ElementPlugins);
+        this.SearchForPlugins();
     }
+
+    public List<PluginRepresentationItem> FoundAddons { get; private set; } = [];
+
+    public List<PluginRepresentationItem> FoundElements { get; private set; } = [];
+
+    public List<PluginRepresentationItem> FoundShapes { get; private set; } = [];
+
+    public List<PluginRepresentationItem> FoundAreas { get; private set; } = [];
+
+    public List<PluginRepresentationItem> FoundTools { get; private set; } = [];
+
+    public List<PluginRepresentationItem> FoundPlugins { get; private set; } = [];
 
     public IFluidUIDesignModel BrushManagement => this.brushManagement;
 
@@ -120,224 +119,119 @@ public partial class MainWindowMenuBarViewModel : ObservableObject
 
     public EBoardBrowserViewModel EBoardBrowserViewModel => this.MainViewModel.EBoardBrowserViewModel;
 
-    //private void BrushManagement_PropertyChangedEvent()
-    //{
-    //    this.OnPropertyChanged(nameof(this.BrushManagement));
-    //    this.OnPropertyChanged(nameof(this.ScreenBrushManagement));
-    //}
+    public void InvokePluginNTimes(Type pluginType, int count)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            this.InvokePlugin(pluginType);
+        }
+    }
+
+    internal void SearchForPlugins()
+    {
+        if (this.sDKPluginManager == null)
+        {
+            this.sDKPluginManager = new SDKPluginManager();
+        }
+
+        this.FoundPlugins = this.sDKPluginManager.FoundPlugins;
+        this.FoundAddons = this.sDKPluginManager.FoundAddons;
+        this.FoundElements = this.sDKPluginManager.FoundElements;
+        this.FoundShapes = this.sDKPluginManager.FoundShapes;
+        this.FoundAreas = this.sDKPluginManager.FoundAreas;
+
+        var pluginItems = new List<PluginRepresentationItem>();
+        foreach (var item in this.sDKPluginManager.FoundTools)
+        {
+            pluginItems.Add(new PluginRepresentationItem()
+            {
+                PluginHeader = item.PluginHeader,
+                PluginLogo = item.PluginLogo,
+                PluginName = item.PluginName,
+            });
+        }
+
+        this.FoundTools = pluginItems;
+
+        this.OnPropertyChanged(nameof(this.FoundPlugins));
+        this.OnPropertyChanged(nameof(this.FoundAddons));
+        this.OnPropertyChanged(nameof(this.FoundElements));
+        this.OnPropertyChanged(nameof(this.FoundShapes));
+        this.OnPropertyChanged(nameof(this.FoundAreas));
+        this.OnPropertyChanged(nameof(this.FoundTools));
+    }
+
+    internal void InstallPlugin(PluginRepresentationItem eBoardElementPluginBaseViewModel)
+    {
+        this.sDKPluginManager.InstallPlugin(eBoardElementPluginBaseViewModel);
+
+        this.SearchForPlugins();
+    }
+
+    internal void UninstallPlugin(PluginRepresentationItem eBoardElementPluginBaseViewModel)
+    {
+        this.sDKPluginManager.UninstallPlugin(eBoardElementPluginBaseViewModel);
+
+        this.SearchForPlugins();
+    }
+
+    internal void Update()
+    {
+        this.OnPropertyChanged(nameof(this.ScreenBrushManagement));
+        this.OnPropertyChanged(nameof(this.ScreenFontManagement));
+    }
 
     private void EBoardBrowserViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard != null)
         {
-            if (this.ScreenBrushManagement != null)
-            {
-                this.ScreenBrushManagement.PropertyChangedEvent -= this.ScreenBrushManagement_PropertyChangedEvent;
-            }
-
-            if (this.ScreenFontManagement != null)
-            {
-                this.ScreenFontManagement.PropertyChangedEvent -= this.ScreenFontManagement_PropertyChangedEvent;
-            }
-
-            this.screenBrushManagement = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.FluidUI.Design;
-            this.screenFontManagement = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.FluidUI.Font;
-
-            if (this.ScreenBrushManagement != null)
-            {
-                this.ScreenBrushManagement.PropertyChangedEvent += this.ScreenBrushManagement_PropertyChangedEvent;
-            }
-
-            if (this.ScreenFontManagement != null)
-            {
-                this.ScreenFontManagement.PropertyChangedEvent += this.ScreenFontManagement_PropertyChangedEvent; ;
-            }
+            this.screenBrushManagement = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.FluidUI.Design!;
+            this.screenFontManagement = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.FluidUI.Font!;
 
             this.OnPropertyChanged(nameof(this.ScreenBrushManagement));
             this.OnPropertyChanged(nameof(this.ScreenFontManagement));
         }
     }
 
-    partial void OnEBoardBrowserSwitchChanged(bool value)
+    private async void InvokeObjectAsPluginAsync(object s)
     {
-        if (this.EBoardSettingsSwitch)
+        if (s is PluginRepresentationItem)
         {
-            this.EBoardSettingsSwitch = false;
+            var pluginitem = s as PluginRepresentationItem;
+            if (pluginitem != null)
+            {
+                var plugin = await this.sDKPluginManager.InvokePluginByName(pluginitem.PluginName ?? string.Empty);
+
+                var selectedEboard = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard;
+
+                if (selectedEboard != null)
+                {
+                    this.sDKPluginManager.InvokePluginOnEboard(plugin, selectedEboard);
+                }
+            }
         }
     }
 
-    partial void OnEBoardSettingsSwitchChanged(bool value)
+    partial void OnEBoardBrowserSwitchChanged(bool value)
     {
-        if (this.EBoardBrowserSwitch)
+        if (value && this.ScreenControlSwitch)
+        {
+            this.ScreenControlSwitch = false;
+        }
+    }
+
+    partial void OnScreenControlSwitchChanged(bool value)
+    {
+        if (value && this.EBoardBrowserSwitch)
         {
             this.EBoardBrowserSwitch = false;
         }
     }
 
-    private void ScreenBrushManagement_PropertyChangedEvent()
-    {
-        this.OnPropertyChanged(nameof(this.ScreenBrushManagement));
-    }
-
-    private void ScreenFontManagement_PropertyChangedEvent()
-    {
-        this.OnPropertyChanged(nameof(this.ScreenFontManagement));
-    }
-
-    private void InstallEboardPlugins(IList<EBoardElementPluginBaseViewModel> elements)
-    {
-        elements.ToList().ForEach(
-            sdkplugin =>
-            {
-                try
-                {
-                    _ = sdkplugin.Initialize();
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "plugin initialization error");
-                }
-
-                try
-                {
-                    if (!Application.Current.Resources.MergedDictionaries.Contains(sdkplugin.ResourceDictionary))
-                    {
-                        Application.Current.Resources.MergedDictionaries.Add(sdkplugin.ResourceDictionary);
-                    }
-                }
-                catch (IOException ioex)
-                {
-                    var ioexAdditionalMessage = string.Join(
-                        $"\n__{sdkplugin.ElementPluginAssembly}\t",
-                        $"plugin load error: {sdkplugin.PluginName}",
-                        "ResourceDictionary path or file is corrupt");
-                    Log.Error(ioex, ioexAdditionalMessage);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "unhandled exception");
-                    throw;
-                }
-
-                var category = sdkplugin.PluginCategory;
-
-                switch (category)
-                {
-                    case EBoardSDK.Enums.PluginCategories.Addon:
-                        this.PluginCategoryAddons.Add(sdkplugin);
-
-                        this.OnPropertyChanged(nameof(this.PluginCategoryAddons));
-                        break;
-                    case EBoardSDK.Enums.PluginCategories.Element:
-                        this.PluginCategoryElements.Add(sdkplugin);
-                        this.OnPropertyChanged(nameof(this.PluginCategoryElements));
-                        break;
-                    case EBoardSDK.Enums.PluginCategories.Shape:
-                        this.PluginCategoryShapes.Add(sdkplugin);
-                        this.OnPropertyChanged(nameof(this.PluginCategoryShapes));
-                        break;
-                    case EBoardSDK.Enums.PluginCategories.Area:
-                        this.PluginCategoryAreas.Add(sdkplugin);
-                        this.OnPropertyChanged(nameof(this.PluginCategoryAreas));
-                        break;
-                    case EBoardSDK.Enums.PluginCategories.Tool:
-                        this.PluginCategoryTools.Add(sdkplugin);
-                        this.OnPropertyChanged(nameof(this.PluginCategoryTools));
-                        break;
-                    case EBoardSDK.Enums.PluginCategories.Unkown:
-                        break;
-                    default:
-                        break;
-                }
-
-                this.FoundPlugins.Add(sdkplugin);
-                this.OnPropertyChanged(nameof(this.FoundPlugins));
-            });
-    }
-
     [RelayCommand]
-    private void ClearElements()
+    private async void InvokePlugin(object s)
     {
-        this.mainViewModel?.EBoardBrowserViewModel?.DeleteAllElements();
-    }
-
-    [RelayCommand]
-    private void InvokePlugin(object s)
-    {
-        if (s is Type)
-        {
-            var selectedEboard = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard;
-
-            var p = s as Type;
-
-            if (selectedEboard != null && p != null)
-            {
-                var elementViewModel = new ElementViewModel(selectedEboard);
-
-                if (Activator.CreateInstance(p) is IPlugin plugin)
-                {
-                    plugin.SetEBoardAndElementViewModel(selectedEboard, elementViewModel);
-
-                    var interfaces = plugin?.GetType().GetInterfaces();
-
-                    if (interfaces != null &&
-                        interfaces.Any(x => x.Name.Equals(nameof(IPlugin))))
-                    {
-                        var screenpolicies = this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.InstantiationPolicies;
-
-                        if (screenpolicies == null || screenpolicies.Contains(EBoardSDK.Enums.ElementInstantiationPolicy.ValueNotSet))
-                        {
-                            return;
-                        }
-
-                        if (plugin.ElementScreenIntegrationConstraints == null)
-                        {
-                            return;
-                        }
-
-                        if (plugin.ElementScreenIntegrationConstraints.InstantiationPolicy == EBoardSDK.Enums.ElementInstantiationPolicy.OnePerScreen)
-                        {
-                            bool exists = false;
-
-                            selectedEboard.Elements.ToList().ForEach(element =>
-                            {
-                                if (element.Plugin.ElementPluginViewModel.Equals(plugin.ElementPluginViewModel))
-                                {
-                                    exists = true;
-                                }
-                            });
-
-                            if (exists)
-                            {
-                                return;
-                            }
-                        }
-
-                        if (plugin.PluginCategory == Enums.PluginCategories.Shape)
-                        {
-                            elementViewModel.FluidUI.Design.Background = new SolidColorBrush(Colors.Transparent);
-                            elementViewModel.FluidUI.Design.Foreground = new SolidColorBrush(Colors.Transparent);
-                            elementViewModel.FluidUI.Design.Border = new SolidColorBrush(Colors.Transparent);
-
-                            elementViewModel.FluidUI.Size.Margin = new Thickness(0);
-                            elementViewModel.FluidUI.Size.Padding = new Thickness(0);
-                            elementViewModel.FluidUI.Size.BorderThickness = new Thickness(0);
-                            elementViewModel.FluidUI.Size.CornerRadius = new CornerRadius(0);
-
-                            elementViewModel.Redraw();
-                        }
-
-                        elementViewModel.Plugin = plugin;
-
-                        elementViewModel.Plugin.SetEBoardAndElementViewModel(selectedEboard, elementViewModel);
-
-                        elementViewModel.Plugin.RefreshInitialization();
-
-                        this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard.AddElement(elementViewModel);
-                    }
-                }
-            }
-        }
+        this.InvokeObjectAsPluginAsync(s);
     }
 }
 

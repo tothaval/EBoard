@@ -33,197 +33,131 @@ namespace EBoardSDK.Controls.QuadValueSetup;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Interfaces.FluidUIDesign;
+using EBoardSDK.Enums;
 using EBoardSDK.Models;
+using EBoardSDK.ViewModels;
+using System.Windows;
 
 public partial class QuadValueSetupViewModel : ObservableObject
 {
-    private readonly IFluidUIDesignModel brushManagement;
+    private readonly EboardFluidUIBaseViewModel viewModel;
 
     [ObservableProperty]
-    private QuadValue<int> quadValue;
-
+    [NotifyPropertyChangedFor(nameof(QuadValueString))]
     private int all = 0;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(QuadValueString))]
     private int topLeft = 0;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(QuadValueString))]
     private int topRight = 0;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(QuadValueString))]
     private int bottomLeft = 0;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(QuadValueString))]
     private int bottomRight = 0;
 
-    public IFluidUIDesignModel BrushManagement => this.brushManagement;
+    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
 
     private Action okAction;
 
-    public QuadValueSetupViewModel(QuadValue<int> thebeforethickness, Action okResult, IFluidUIDesignModel brushManagement)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuadValueSetupViewModel"/> class.
+    /// </summary>
+    /// <param name="viewModel"></param>
+    /// <param name="quadValue"></param>
+    /// <param name="okResult"></param>
+    public QuadValueSetupViewModel(EboardFluidUIBaseViewModel viewModel, QuadValue<int> quadValue, Action okResult)
     {
-        this.brushManagement = brushManagement;
+        this.viewModel = viewModel;
 
         this.okAction = okResult;
 
-        this.quadValue = thebeforethickness;
-
-        var c = thebeforethickness;
-
-        if (c.Value1 == c.Value2 && c.Value1 == c.Value3 && c.Value1 == c.Value4)
-        {
-            this.all = c.Value1;
-        }
-        else
-        {
-            var cmid = ((int)c.Value1 + (int)c.Value2 + (int)c.Value3 + (int)c.Value4) / 4;
-
-            this.all = cmid;
-        }
-
-        // calling the fields on purpose, to trigger property changed only once
-        this.topLeft = (int)c.Value1;
-        this.topRight = (int)c.Value2;
-        this.bottomRight = (int)c.Value3;
-        this.BottomLeft = (int)c.Value4;
-
-        this.BrushManagement.PropertyChangedEvent += this.BrushManagement_PropertyChangedEvent;
+        this.ApplyQuadValue(quadValue);
     }
 
-    public string QuadValueString => $"{this.QuadValue.Value1},{this.QuadValue.Value2},{this.QuadValue.Value3},{this.QuadValue.Value4}";
+    public string QuadValueString => $"{this.TopLeft},{this.TopRight},{this.BottomRight},{this.BottomLeft}";
 
-    public int All
+    public void ApplyQuadValue(QuadValue<int> quadValue)
     {
-        get
-        {
-            return this.all;
-        }
+        this.TopLeft = quadValue.Value1;
+        this.TopRight = quadValue.Value2;
+        this.BottomRight = quadValue.Value3;
+        this.BottomLeft = quadValue.Value4;
 
-        set
-        {
-            if (this.all != value)
-            {
-                this.all = value;
-
-                this.topLeft = value;
-                this.topRight = value;
-                this.bottomRight = value;
-                this.bottomLeft = value;
-
-                this.QuadValue = this.BuildThickness(this.All);
-
-                this.OnPropertyChanged(nameof(this.QuadValueString));
-
-                this.OnPropertyChanged(nameof(this.QuadValue));
-                this.OnPropertyChanged(nameof(this.All));
-                this.OnPropertyChanged(nameof(this.TopLeft));
-                this.OnPropertyChanged(nameof(this.TopRight));
-                this.OnPropertyChanged(nameof(this.BottomRight));
-                this.OnPropertyChanged(nameof(this.BottomLeft));
-            }
-        }
+        this.SetAllValue();
     }
 
-
-    public int TopLeft
+    public object GetQuadValueObject(BorderTargets borderTargets)
     {
-        get
+        switch (borderTargets)
         {
-            return this.topLeft;
-        }
-
-        set
-        {
-            if (this.topLeft != value)
-            {
-                this.topLeft = value;
-
-                this.QuadValue = this.BuildThickness();
-
-                this.OnPropertyChanged(nameof(this.QuadValueString));
-                this.OnPropertyChanged(nameof(this.TopLeft));
-            }
-        }
-    }
-
-
-    public int TopRight
-    {
-        get
-        {
-            return this.topRight;
-        }
-
-        set
-        {
-            if (this.topRight != value)
-            {
-                this.topRight = value;
-                this.QuadValue = this.BuildThickness();
-
-                this.OnPropertyChanged(nameof(this.QuadValueString));
-                this.OnPropertyChanged(nameof(this.TopRight));
-            }
-        }
-    }
-
-
-    public int BottomLeft
-    {
-        get
-        {
-            return this.bottomLeft;
-        }
-
-        set
-        {
-            if (this.bottomLeft != value)
-            {
-                this.bottomLeft = value;
-                this.QuadValue = this.BuildThickness();
-
-                this.OnPropertyChanged(nameof(this.QuadValueString));
-                this.OnPropertyChanged(nameof(this.BottomLeft));
-            }
-        }
-    }
-
-    public int BottomRight
-    {
-        get
-        {
-            return this.bottomRight;
-        }
-
-        set
-        {
-            if (this.bottomRight != value)
-            {
-                this.bottomRight = value;
-                this.QuadValue = this.BuildThickness();
-
-                this.OnPropertyChanged(nameof(this.QuadValueString));
-                this.OnPropertyChanged(nameof(this.BottomRight));
-            }
+            case BorderTargets.CornerRadius:
+                return new CornerRadius(
+                    this.TopLeft,
+                    this.TopRight,
+                    this.BottomRight,
+                    this.BottomLeft);
+            case BorderTargets.Margin:
+            case BorderTargets.Padding:
+            case BorderTargets.Thickness:
+                return new Thickness(
+                    this.TopLeft,
+                    this.TopRight,
+                    this.BottomRight,
+                    this.BottomLeft);
+            default:
+                return new QuadValue<int>(this.All);
         }
     }
 
     public void Dispose()
     {
-        this.BrushManagement.PropertyChangedEvent -= this.BrushManagement_PropertyChangedEvent;
-
-        GC.SuppressFinalize(this);
     }
 
-    private void BrushManagement_PropertyChangedEvent()
+    public void Reset()
     {
-        this.OnPropertyChanged(nameof(this.BrushManagement));
+        this.All = 0;
+    }
+
+    private void SetAllValue()
+    {
+        if (this.TopLeft == this.TopRight && this.TopLeft == this.BottomRight && this.TopLeft == this.BottomLeft)
+        {
+            this.All = this.TopLeft;
+        }
+        else
+        {
+            var cmid = (this.TopLeft + this.TopRight + this.BottomRight + this.BottomLeft) / 4;
+
+            this.All = cmid;
+        }
+
+        this.OnPropertyChanged(nameof(this.All));
+    }
+
+    partial void OnAllChanged(int value)
+    {
+        this.topLeft = value;
+        this.topRight = value;
+        this.bottomRight = value;
+        this.bottomLeft = value;
+
+        this.OnPropertyChanged(nameof(this.TopLeft));
+        this.OnPropertyChanged(nameof(this.TopRight));
+        this.OnPropertyChanged(nameof(this.BottomRight));
+        this.OnPropertyChanged(nameof(this.BottomLeft));
     }
 
     [RelayCommand]
     private void Ok()
     {
         this.okAction?.Invoke();
-    }
-
-    private QuadValue<int> BuildThickness(int v) => new QuadValue<int>(v);
-
-    private QuadValue<int> BuildThickness()
-    {
-        return new QuadValue<int>(this.TopLeft, this.TopRight, this.bottomRight, this.bottomLeft);
     }
 }
 

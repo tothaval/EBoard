@@ -32,197 +32,51 @@
 namespace EBoardSDK.Models;
 
 using EBoardSDK.Interfaces;
-using EBoardSDK.Interfaces.FluidUIDataBlock;
-using EBoardSDK.Interfaces.FluidUIDesign;
-using EBoardSDK.Interfaces.FluidUISize;
-using EBoardSDK.Interfaces.FluidUIStand;
-using EBoardSDK.Interfaces.FluidUIText;
 using EBoardSDK.Models.FluidUIDataBlock;
 using EBoardSDK.Models.FluidUIDesign;
 using EBoardSDK.Models.FluidUIFont;
 using EBoardSDK.Models.FluidUISize;
 using EBoardSDK.Models.FluidUIStand;
 using System;
-using System.Windows;
-using System.Windows.Media;
 
 public class FluidUIContext : IFluidUIContext
 {
     public event Action? PropertyChangedEvent;
 
-    public DataBlockManagement DataBlock { get; set; } = new DataBlockManagement();
+    public FluidUIDataBlockModel? DataBlock { get; set; } = new FluidUIDataBlockModel();
 
-    public BrushManagement Design { get; set; } = new BrushManagement();
+    public FluidUIDesignModel? Design { get; set; } = new FluidUIDesignModel();
 
-    public FontManagement Font { get; set; } = new FontManagement();
+    public FluidUIFontModel? Font { get; set; } = new FluidUIFontModel();
 
-    public BorderManagement Size { get; set; } = new BorderManagement();
+    public FluidUISizeModel? Size { get; set; } = new FluidUISizeModel();
 
-    public PlacementManagement Stand { get; set; } = new PlacementManagement();
+    public FluidUIStandModel? Stand { get; set; } = new FluidUIStandModel();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIContext"/> class.
+    /// </summary>
     public FluidUIContext()
     {
-        this.Apply_FluidUI();
-    }
-
-    public void Apply_FluidUI(
-        IFluidUIDataBlockModel? dataBlock = null,
-        IFluidUIDesignModel? design = null,
-        IFluidUIFontModel? font = null,
-        IFluidUISizeModel? size = null,
-        IFluidUIStandModel? stand = null)
-    {
-        this.Apply_FluidUIDataBlock(dataBlock);
-        this.Apply_FluidUIDesign(design);
-        this.Apply_FluidUIFont(font);
-        this.Apply_FluidUISize(size);
-        this.Apply_FluidUIStand(stand);
-
-        //this.DataBlock.PropertyChangedEvent += this.DataBlock_PropertyChangedEvent;
-        //this.Design.PropertyChangedEvent += this.Design_PropertyChangedEvent;
-        //this.Font.PropertyChangedEvent += this.Font_PropertyChangedEvent;
-        //this.Size.PropertyChangedEvent += this.Size_PropertyChangedEvent;
-        //this.Stand.PropertyChangedEvent += this.Stand_PropertyChangedEvent;
-    }
-
-    public void Apply_FluidUIDataBlock(IFluidUIDataBlockModel? dataBlock = null)
-    {
-        if (dataBlock != null)
-        {
-            this.DataBlock = (DataBlockManagement)dataBlock;
-        }
-        else if (this.DataBlock == null)
-        {
-            this.DataBlock = new DataBlockManagement()
-            {
-                Title = "title",
-                Text = "text",
-            };
-        }
-    }
-
-    public void Apply_FluidUIDesign(IFluidUIDesignModel? design = null)
-    {
-        if (design != null)
-        {
-            this.Design = (BrushManagement)design;
-        }
-        else if (this.Design == null)
-        {
-            this.Design = new BrushManagement()
-            {
-                Background = new SolidColorBrush(Colors.White),
-                Foreground = new SolidColorBrush(Colors.DarkGray),
-                Border = new SolidColorBrush(Colors.Black),
-                Highlight = new SolidColorBrush(Colors.DarkGoldenrod),
-            };
-        }
-    }
-
-    public void Apply_FluidUIFont(IFluidUIFontModel? font = null)
-    {
-        if (font != null)
-        {
-            this.Font = (FontManagement)font;
-        }
-        else if (this.Font == null)
-        {
-            this.Font = new FontManagement()
-            {
-                FontSize = 15.0,
-                FontFamily = new System.Windows.Media.FontFamily("Verdana"),
-                FontWeight = FontWeights.Normal,
-            };
-        }
-    }
-
-    public void Apply_FluidUISize(IFluidUISizeModel? size = null)
-    {
-        if (size != null)
-        {
-            this.Size = (BorderManagement)size;
-        }
-        else if (this.Size == null)
-        {
-            this.Size = new BorderManagement()
-            {
-                Margin = new Thickness(5),
-                CornerRadius = new CornerRadius(0),
-                BorderThickness = new Thickness(2),
-                Padding = new Thickness(10, 5, 10, 5),
-                Height = double.NaN,
-                Width = double.NaN,
-            };
-        }
-    }
-
-    public void Apply_FluidUIStand(IFluidUIStandModel? stand = null)
-    {
-        if (stand != null)
-        {
-            this.Stand = (PlacementManagement)stand;
-        }
-        else if (this.Stand == null)
-        {
-            this.Stand = new PlacementManagement()
-            {
-                Angle = 0,
-                Z = 0,
-                Position = new System.Windows.Point(5, 5),
-            };
-        }
     }
 
     public void Dispose()
     {
-        //this.DataBlock.PropertyChangedEvent -= this.DataBlock_PropertyChangedEvent;
-        //this.Design.PropertyChangedEvent -= this.Design_PropertyChangedEvent;
-        //this.Font.PropertyChangedEvent -= this.Font_PropertyChangedEvent;
-        //this.Size.PropertyChangedEvent -= this.Size_PropertyChangedEvent;
-        //this.Stand.PropertyChangedEvent -= this.Stand_PropertyChangedEvent;
-
-        this.DataBlock.Dispose();
-        this.Design.Dispose();
-        this.Font.Dispose();
-        this.Size.Dispose();
-        this.Stand.Dispose();
+        this.DataBlock?.Dispose();
+        this.Design?.Dispose();
+        this.Font?.Dispose();
+        this.Size?.Dispose();
+        this.Stand?.Dispose();
     }
 
     public void SetInitialValues()
     {
-        this.Apply_FluidUI();
-
         this.DataBlock?.SetInitialValues();
         this.Design?.SetInitialValues();
         this.Font?.SetInitialValues();
         this.Size?.SetInitialValues();
         this.Stand?.SetInitialValues();
     }
-
-    //private void DataBlock_PropertyChangedEvent()
-    //{
-    //    this.PropertyChangedEvent?.Invoke();
-    //}
-
-    //private void Design_PropertyChangedEvent()
-    //{
-    //    this.PropertyChangedEvent?.Invoke();
-    //}
-
-    //private void Font_PropertyChangedEvent()
-    //{
-    //    this.PropertyChangedEvent?.Invoke();
-    //}
-
-    //private void Size_PropertyChangedEvent()
-    //{
-    //    this.PropertyChangedEvent?.Invoke();
-    //}
-
-    //private void Stand_PropertyChangedEvent()
-    //{
-    //    this.PropertyChangedEvent?.Invoke();
-    //}
 }
 
 // EOF

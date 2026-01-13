@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Elements.Link;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für LinkView.xaml
+/// Interaktionslogik für LinkView.xaml.
 /// </summary>
 public partial class LinkView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LinkView"/> class.
+    /// </summary>
     public LinkView()
     {
         this.InitializeComponent();

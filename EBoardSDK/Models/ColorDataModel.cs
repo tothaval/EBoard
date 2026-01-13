@@ -50,41 +50,48 @@ public class ColorDataModel
 {
     /// <summary>
     /// Gets or sets can be used to store the brushtype, this is used to rebuild the
-    /// brush data on load
+    /// brush data on load.
     /// </summary>
     public string BrushType { get; set; }
 
     /// <summary>
-    /// Gets or sets gradientColor[0]
+    /// Gets or sets gradientColor[0].
     /// </summary>
     public Color Color { get; set; }
 
     /// <summary>
-    /// Gets or sets in case the brush is an image, the path to the image can be stored here
+    /// Gets or sets in case the brush is an image, the path to the image can be stored here.
     /// </summary>
     public string ImagePath { get; set; }
 
     /// <summary>
     /// Gets or sets can be used to store gradient color strings, they will
-    /// be matched with GradientStops list
+    /// be matched with GradientStops list.
     /// </summary>
     public ObservableCollection<Color> GradientColors { get; set; }
 
     /// <summary>
     /// Gets or sets can be used to store gradient stop points, they will
-    /// be matched with GradientColors list
+    /// be matched with GradientColors list.
     /// </summary>
     public ObservableCollection<double> GradientStops { get; set; }
 
     /// <summary>
-    /// Gets or sets can be used to store gradient points for radialgradientbrush and lineargradientbrush
+    /// Gets or sets can be used to store gradient points for radialgradientbrush and lineargradientbrush.
     /// </summary>
     public ObservableCollection<Point> GradientPoints { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ColorDataModel"/> class.
+    /// </summary>
     public ColorDataModel()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ColorDataModel"/> class.
+    /// </summary>
+    /// <param name="brush"></param>
     public ColorDataModel(Brush brush)
     {
         this.ImagePath = string.Empty;
@@ -146,64 +153,71 @@ public class ColorDataModel
         return radialGradientBrush;
     }
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     public async Task<Brush> GetBrush()
     {
-        if (this.BrushType.Equals("SolidColorBrush"))
+        if (this.BrushType != null)
         {
-            SolidColorBrush solidColorBrush = new SolidColorBrush(this.GradientColors[0]);
-
-            await Task.CompletedTask;
-
-            return solidColorBrush;
-        }
-
-        if (this.BrushType.Equals("LinearGradientBrush"))
-        {
-            LinearGradientBrush linearGradientBrush = this.BuildLinearGradientBrush();
-
-            await Task.CompletedTask;
-
-            return linearGradientBrush;
-        }
-
-        if (this.BrushType.Equals("RadialGradientBrush"))
-        {
-            RadialGradientBrush radialGradientBrush = this.BuildRadialGradientBrush();
-
-            await Task.CompletedTask;
-
-            return radialGradientBrush;
-        }
-
-        if (this.BrushType.Equals("ImageBrush"))
-        {
-            Brush brush = new ImageBrush();
-
-            brush = new SharedMethod_UI().ChangeBackgroundToImage(brush, this.ImagePath);
-
-            if (brush.GetType().Name.Equals("SolidColorBrush"))
+            if (this.BrushType.Equals("SolidColorBrush"))
             {
-                this.BrushType = "SolidColorBrush";
-
-                this.Color = ((SolidColorBrush)brush).Color;
-
-                this.GradientColors.Clear();
-
-                this.GradientColors.Add(this.Color);
+                SolidColorBrush solidColorBrush = new SolidColorBrush(this.GradientColors[0]);
 
                 await Task.CompletedTask;
 
-                return brush as SolidColorBrush;
+                return solidColorBrush;
             }
 
-            await Task.CompletedTask;
+            if (this.BrushType.Equals("LinearGradientBrush"))
+            {
+                LinearGradientBrush linearGradientBrush = this.BuildLinearGradientBrush();
 
-            return brush as ImageBrush;
-        }
+                await Task.CompletedTask;
 
-        if (this.BrushType.Equals("VisualBrush"))
-        {
-            return new VisualBrush();
+                return linearGradientBrush;
+            }
+
+            if (this.BrushType.Equals("RadialGradientBrush"))
+            {
+                RadialGradientBrush radialGradientBrush = this.BuildRadialGradientBrush();
+
+                await Task.CompletedTask;
+
+                return radialGradientBrush;
+            }
+
+            if (this.BrushType.Equals("ImageBrush"))
+            {
+                Brush brush = new ImageBrush();
+
+                brush = new SharedMethod_UI().ChangeBackgroundToImage(brush, this.ImagePath);
+
+                if (brush.GetType().Name.Equals("SolidColorBrush"))
+                {
+                    this.BrushType = "SolidColorBrush";
+
+                    this.Color = ((SolidColorBrush)brush).Color;
+
+                    this.GradientColors.Clear();
+
+                    this.GradientColors.Add(this.Color);
+
+                    await Task.CompletedTask;
+
+                    return brush as SolidColorBrush;
+                }
+
+                await Task.CompletedTask;
+
+                return brush as ImageBrush;
+            }
+
+            if (this.BrushType.Equals("VisualBrush"))
+            {
+                return new VisualBrush();
+            }
         }
 
         return new SolidColorBrush();

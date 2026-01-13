@@ -38,7 +38,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vms="clr-namespace:EBoardSDK.ViewModels"
         xmlns:m="clr-namespace:EBoardSDK"
-        xmlns:ut="clr-namespace:EBoardSDK.Utilities"
         xmlns:esdkfuim="clr-namespace:EBoardSDK.Controls.FluidUIMenu"
         xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
         xmlns:views="clr-namespace:EBoardSDK.Views"
@@ -46,6 +45,7 @@
         FontSize="{Binding FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
         FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
         FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
+        Opacity="{Binding FluidUI.Design.Opacity, NotifyOnSourceUpdated=True}"
         
         x:Name="EboardMainWindow"
         mc:Ignorable="d"
@@ -57,16 +57,11 @@
         ResizeMode="CanResizeWithGrip"
         SizeToContent="Manual"
         
-        ScrollViewer.VerticalScrollBarVisibility="Auto"
-        
         Background="Transparent"
         
-        Foreground="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"        
-                
         MouseLeftButtonDown="EboardMainWindow_MouseLeftButtonDown"
         MouseLeftButtonUp="EboardMainWindow_MouseLeftButtonUp"
-        SizeChanged="EboardMainWindow_SizeChanged"
-        >
+        SizeChanged="EboardMainWindow_SizeChanged">
 
     <Window.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
@@ -118,8 +113,6 @@
             </Style.Triggers>
         </Style>
 
-        <BooleanToVisibilityConverter x:Key="btvc"/>
-
         <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
             <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
             <Setter Property="BorderThickness" Value="3"/>
@@ -140,28 +133,31 @@
 
         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}" x:Key="sub">
             <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
             <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Background" Value="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
         </Style>
 
-        <Style TargetType="Grid">
-            <Setter Property="Background" Value="Transparent"/>
+        <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTip}">
+            <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+            <Setter Property="FontSize" Value="{Binding FluidUI.Font.FontSize}"/>
+            <Setter Property="FontFamily" Value="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
         </Style>
     </Window.Resources>
 
     <WindowChrome.WindowChrome>
-        <WindowChrome
-            CaptionHeight="1"  
-            CornerRadius ="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"
-            ResizeBorderThickness="25"         
-            GlassFrameThickness="0"            
-            >
+        <WindowChrome CaptionHeight="1"  
+                      CornerRadius ="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"
+                      ResizeBorderThickness="25"         
+                      GlassFrameThickness="0">
         </WindowChrome>
     </WindowChrome.WindowChrome>
 
-    <Grid ClipToBounds="True">
+    <Grid ClipToBounds="True"
+          Background="Transparent">
         <Border 
             Background="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"
             BorderBrush="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"
@@ -174,36 +170,27 @@
             Width="{Binding FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
             Height="{Binding FluidUI.Size.Height, NotifyOnSourceUpdated=True}" >
 
-            <Border.Resources>
-                <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItem}">
-                    <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
-                    <Setter Property="BorderThickness" Value="5"/>
-                    <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
-                    <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
-                </Style>
-            </Border.Resources>
-
             <Border.InputBindings>
                 <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding MainControlsVisibilityChangeCommand}"/>
             </Border.InputBindings>
+
+            <Border.Resources>
+                <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItem}">
+                    <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
+                    <Setter Property="BorderThickness" Value="3"/>
+                    <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
+                </Style>
+            </Border.Resources>
             
             <Border.ToolTip>
                 <ToolTip Content="{Binding FluidUI.DataBlock.Text,NotifyOnSourceUpdated=True}"
-                         Background="{Binding FluidUI.Design.Background}"
-                         BorderBrush="{Binding FluidUI.Design.Border}"
-                         BorderThickness="2"
-                         Padding="{Binding FluidUI.Size.Padding}"
-                         Foreground="{Binding FluidUI.Design.Foreground}"
-                         FontSize="{Binding FluidUI.Font.FontSize}"
-                         FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
-                         FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}">
-                </ToolTip>
+                         Visibility="{Binding FluidUI.DataBlock.ShowToolTip, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}"/>
             </Border.ToolTip>
 
-            <Border.ContextMenu >
+            <Border.ContextMenu>
                 <ContextMenu Background="{Binding FluidUI.Design.Background}"
-                         BorderBrush="{Binding FluidUI.Design.Border}"
-                         Style="{StaticResource ContextMenuStyle}">
+                             BorderBrush="{Binding FluidUI.Design.Border}"
+                             Style="{StaticResource ContextMenuStyle}">
                     <TextBlock Text="{Binding FluidUI.DataBlock.Title, NotifyOnSourceUpdated=True}"/>
 
                     <MenuItem Header="Data" Style="{StaticResource menuitem}">
@@ -214,7 +201,7 @@
                     <esdkfuim:FluidUIMenuView DataContext="{Binding FluidUIMenuViewModel, NotifyOnSourceUpdated=True}"
                                               Style="{StaticResource menuitem}"/>
 
-                    <MenuItem Header="{DynamicResource MaximizeContextMenuItemHeader}" Style="{StaticResource menuitem}"
+                    <MenuItem Header="{StaticResource EboardMainWindowMaximizeContextMenuHeader}" Style="{StaticResource menuitem}"
                           Click="MenuItem_Click"/>
 
                     <MenuItem Header="Minimize" Style="{StaticResource menuitem}"
@@ -245,13 +232,13 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Text="{Binding FluidUI.DataBlock.Title}"
-                           Visibility="{Binding MainControlsVisible, Converter={StaticResource btvc}}"
+                           Visibility="{Binding MainControlsVisible, Converter={StaticResource VisibilityToCollapsed}}"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Top"
                            Grid.Row="0"
@@ -267,7 +254,7 @@
                 <Border Grid.Row="1"
                         Grid.Column="0"
                         Grid.ColumnSpan="2"
-                        Visibility="{Binding MainControlsVisible, Converter={StaticResource btvc}}">
+                        Visibility="{Binding MainControlsVisible, Converter={StaticResource VisibilityToCollapsed}}">
                     <views:MainWindowMenuBar DataContext="{Binding MainWindowMenuBarVM}" Margin="10 0 0 0"/>
                 </Border>
 
@@ -275,17 +262,52 @@
                         Grid.Column="2"
                         Grid.ColumnSpan="2"
                         Margin="0 0 0 0"
-                        Visibility="{Binding MainControlsVisible, Converter={StaticResource btvc}}">
+                        Visibility="{Binding MainControlsVisible, Converter={StaticResource VisibilityToCollapsed}}">
                     <views:MainWindowLogoutBar DataContext="{Binding MainWindowLogoutBarVM}"
                                                HorizontalContentAlignment="Stretch"/>
                 </Border>
 
-        <!-- eboard browser switch -->
-                <Grid Grid.Row="2"
+                <!-- selected eboard screen -->
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Top"
+                            Grid.Row="2" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="4"
+                          CanContentScroll="True">
+                    <views:EBoardView DataContext="{Binding EBoardBrowserViewModel.SelectedEBoard, NotifyOnSourceUpdated=True}"/>
+                </ScrollViewer>
+
+                <!-- eboard browser und screen settings  -->
+                <Border Grid.Row="2"
+                        Grid.RowSpan="2"
+                        Grid.ColumnSpan="3"
+                        Grid.Column="0"
+                        Visibility="{Binding MainControlsVisible, Converter={StaticResource VisibilityToCollapsed}}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+                    <Grid>
+                        <Border Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
+                            Converter={StaticResource VisibilityToCollapsed},
+                            NotifyOnSourceUpdated=True,
+                            NotifyOnTargetUpdated=True}">
+                            <views:EBoardBrowserView Content="{Binding EBoardBrowserViewModel}"/>
+                        </Border>
+
+                        <Border Visibility="{Binding MainWindowMenuBarVM.ScreenControlSwitch,
+                            Converter={StaticResource VisibilityToCollapsed},
+                            NotifyOnSourceUpdated=True,
+                            NotifyOnTargetUpdated=True}">
+                            <views:ScreenControlView DataContext="{Binding EBoardBrowserViewModel.SelectedEBoard.ScreenControlViewModel}"/>
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- eboard browser switch -->
+                <Grid Grid.Row="4"
                       Grid.Column="0"
                       Grid.ColumnSpan="4"                      
                       Background="Transparent"
-                      Visibility="{Binding MainControlsVisible, Converter={StaticResource btvc}}">
+                      Visibility="{Binding MainControlsVisible, Converter={StaticResource VisibilityToCollapsed}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
@@ -321,7 +343,7 @@
                     <Button Content="&lt;" Command="{Binding PrevEboardCommand}"
                          Grid.Column="1"/>
 
-                    <TextBox Text="{Binding EBoardBrowserViewModel.SelectedEBoard.FluidUI.DataBlock.Title}"
+                    <TextBox Text="{Binding EBoardBrowserViewModel.ScreenSetupViewModel.EBoardName, UpdateSourceTrigger=Default}"
                              HorizontalAlignment="Center"
                              HorizontalContentAlignment="Center"
                              Grid.Column="2"
@@ -333,40 +355,6 @@
                     <Button Content="&gt;&gt;|" Command="{Binding LastEboardCommand}"
                             Grid.Column="4"/>
                 </Grid>
-
-                <!-- selected eboard screen -->
-                <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                                  VerticalScrollBarVisibility="Auto"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Top"
-                            Grid.Row="3" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="4"
-                          CanContentScroll="True">
-                    <views:EBoardView DataContext="{Binding EBoardBrowserViewModel.SelectedEBoard, NotifyOnSourceUpdated=True}"/>
-                </ScrollViewer>
-
-                <!-- eboard browser und screen settings  -->
-                <Border Grid.Row="2"
-                        Grid.RowSpan="2"
-                        Grid.ColumnSpan="3"
-                        Grid.Column="0"
-                        Visibility="{Binding MainControlsVisible, Converter={StaticResource btvc}}"
-                        HorizontalAlignment="Left">
-                    <Grid>
-                        <Border Visibility="{Binding MainWindowMenuBarVM.EBoardBrowserSwitch,
-                            Converter={StaticResource btvc},
-                            NotifyOnSourceUpdated=True,
-                            NotifyOnTargetUpdated=True}">
-                            <views:EBoardBrowserView Content="{Binding EBoardBrowserViewModel}"/>
-                        </Border>
-                        
-                        <Border Visibility="{Binding MainWindowMenuBarVM.EBoardSettingsSwitch,
-                            Converter={StaticResource btvc},
-                            NotifyOnSourceUpdated=True,
-                            NotifyOnTargetUpdated=True}">
-                            <views:ScreenControlView DataContext="{Binding EBoardBrowserViewModel.SelectedEBoard.EBoardSettingsViewModel}"/>
-                        </Border>
-                    </Grid>
-                </Border>
             </Grid>
         </Border>
     </Grid>

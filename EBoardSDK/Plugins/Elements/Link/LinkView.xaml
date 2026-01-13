@@ -54,7 +54,7 @@
         <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
             <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Padding" Value="0 0 10 0"/>
         </Style>
@@ -97,8 +97,6 @@
             </Style.Triggers>
         </Style>
 
-        <conv:BooleanToVisibilityCollapsedConverter x:Key="BoolToVisibilityConverter"/>
-
         <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
             <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border}"/>
             <Setter Property="BorderThickness" Value="3"/>
@@ -116,11 +114,22 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTip}">
+            <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border}"/>
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="FontSize" Value="{Binding ElementViewModel.FluidUI.Font.FontSize}"/>
+            <Setter Property="FontFamily" Value="{Binding ElementViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding ElementViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid MinHeight="30" MinWidth="30"
           Background="Transparent">
         <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
@@ -128,14 +137,62 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Button Content="{Binding LinkStatusText, NotifyOnSourceUpdated=True}"
-                Command="{Binding LinkCommand}"
-                Visibility="{Binding IsLinkEmpty, NotifyOnSourceUpdated=True, Converter={StaticResource BoolToVisibilityConverter}}"
+        <Button Command="{Binding LinkFileCommand}"
+                Visibility="{Binding IsLinkEmpty, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}"
                 Grid.Column="0"
-                Grid.Row="0"/>
+                Grid.Row="0">
+            <TextBlock>
+                <Run Text="file"/>
+                <LineBreak/>
+                <Run Text="{Binding LinkStatusText, NotifyOnSourceUpdated=True}"/>
+            </TextBlock>
+        </Button>
+
+        <Button Command="{Binding LinkFolderCommand}"
+                Visibility="{Binding IsLinkEmpty, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}"
+                Grid.Column="1"
+                Grid.Row="0">
+            <TextBlock>
+                <Run Text="folder"/>
+                <LineBreak/>
+                <Run Text="{Binding LinkStatusText, NotifyOnSourceUpdated=True}"/>
+            </TextBlock>
+        </Button>
+
+        <Button Command="{Binding LinkWebCommand}"
+                Visibility="{Binding IsLinkEmpty, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}"
+                Grid.Column="3"
+                Grid.Row="0">
+            <TextBlock>
+                <Run Text="web"/>
+                <LineBreak/>                
+                <TextBox Text="{Binding LinkTargetPath, Delay=100, UpdateSourceTrigger=PropertyChanged}"
+                         MinWidth="50">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Return" Command="{Binding SaveLinkTargetNameCommandCommand}"/>
+                            </TextBox.InputBindings>
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+                                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
+                                    <Setter Property="CaretBrush" Value="{Binding ElementViewModel.FluidUI.Design.Highlight}"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Highlight}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="False">
+                                            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+            </TextBlock>
+        </Button>
 
         <Button Command="{Binding ExecuteLinkTargetCommand}"
-                Visibility="{Binding IsLinked, Converter={StaticResource BoolToVisibilityConverter}}"
+                Visibility="{Binding IsLinked, Converter={StaticResource VisibilityToCollapsed}}"
                 Grid.Column="0"
                 Grid.Row="0">
             <Button.InputBindings>
@@ -143,11 +200,7 @@
             </Button.InputBindings>
 
             <Button.ToolTip>
-                <ToolTip Content="{Binding LinkTargetPath, NotifyOnSourceUpdated=True}"
-                         Background="{Binding ElementViewModel.FluidUI.Design.Background}"
-                         Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
-                         BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
-                         BorderThickness="1"/>
+                <ToolTip Content="{Binding LinkTargetPath, NotifyOnSourceUpdated=True}"/>
             </Button.ToolTip>
 
             <Button.Content>
@@ -166,6 +219,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="auto"/>
                             <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
                         </Grid.RowDefinitions>
 
                         <Image Source="{Binding ImageSource, NotifyOnSourceUpdated=True}"
@@ -173,30 +227,25 @@
 
                         <TextBox Text="{Binding LinkTargetName, Delay=100, UpdateSourceTrigger=PropertyChanged}"
                              BorderThickness="0"
-                             Grid.Row="1"
+                             Grid.Row="2"
                              IsReadOnly="{Binding IsEditLinkTargetNameTextBoxReadOnly, NotifyOnSourceUpdated=True}"
                              IsReadOnlyCaretVisible="{Binding InverseEditBoolForTextBoxCaretSetting, NotifyOnSourceUpdated=True}">
                             <TextBox.InputBindings>
                                 <KeyBinding Key="Return" Command="{Binding SaveLinkTargetNameCommandCommand}"/>
                             </TextBox.InputBindings>
                             <TextBox.Style>
-
                                 <Style TargetType="TextBox">
                                     <Setter Property="Background" Value="Transparent"/>
-                                    <Style.Triggers>
-                                        
-                                        
+                                    <Style.Triggers> 
                                         <Trigger Property="IsMouseOver" Value="True">
                                             <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Highlight}"/>
                                         </Trigger>
-
                                         <Trigger Property="IsMouseOver" Value="False">
                                             <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
-                            </TextBox.Style>
-                            
+                            </TextBox.Style>                            
                         </TextBox>
                     </Grid>
                 </Border>

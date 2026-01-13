@@ -1,6 +1,11 @@
 ﻿// <copyright file="IFluidUIDataBlockSetup.cs" company=".">
 // Stephan Kammel
 // </copyright>
+using EBoardSDK.Controls.FluidUIDataBlock.FluidUIIndexText;
+using EBoardSDK.Controls.FluidUIDataBlock.FluidUIKeyText;
+using EBoardSDK.ViewModels;
+using System.Collections.ObjectModel;
+
 /// license
 ///
 /// <b>ad-hoc license terms eboard prototype</b><br>
@@ -33,6 +38,31 @@ namespace EBoardSDK.Interfaces.FluidUIDataBlock;
 
 public interface IFluidUIDataBlockSetup : IFluidUIChangedAction
 {
+    public FluidUIIndexTextViewModel? FluidUIIndexText { get; set; }
+
+    public FluidUIKeyTextViewModel? FluidUIKeyText { get; set; }
+
+    public string Text { get; set; }
+
+    public int IndexCount { get; set; }
+
+    public ObservableCollection<FluidUIIndexTextViewModel> FluidUIIndexTexts { get; set; }
+
+    public ObservableCollection<FluidUIKeyTextViewModel> FluidUIKeyTexts { get; set; }
+
+    public ObservableCollection<QuadFluidUIIndexTextViewModel> QuadIndexTexts { get; set; }
+
+    public ObservableCollection<QuadFluidUIKeyTextViewModel> QuadKeyTexts { get; set; }
+
+    public QuadFluidUIIndexTextViewModel SelectedIndexTextQuadValue { get; set; }
+
+    public QuadFluidUIKeyTextViewModel SelectedKeyTextQuadValue { get; set; }
+
+    public EboardFluidUIBaseViewModel ViewModel { get; }
+
+    public bool InverseIndexTextListIsEmpty { get; }
+
+    public bool InverseKeyTextListIsEmpty { get; }
 }
 
 // EOF

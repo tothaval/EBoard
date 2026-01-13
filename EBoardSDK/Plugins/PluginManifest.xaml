@@ -34,24 +34,46 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     
+                    xmlns:SoundMix="clr-namespace:EBoardSDK.Plugins.Addons.SoundMix"  
+                    
+                    xmlns:About="clr-namespace:EBoardSDK.Plugins.Elements.About"   
                     xmlns:EmptyLinear="clr-namespace:EBoardSDK.Plugins.Elements.EmptyLinear"                    
                     xmlns:EmptyRadial="clr-namespace:EBoardSDK.Plugins.Elements.EmptyRadial"
-                    xmlns:FileLinkArea="clr-namespace:EBoardSDK.Plugins.Areas.FileLinkArea"
+                    xmlns:Gold="clr-namespace:EBoardSDK.Plugins.Elements.Gold"     
                     xmlns:Image="clr-namespace:EBoardSDK.Plugins.Elements.Image"
                     xmlns:Link="clr-namespace:EBoardSDK.Plugins.Elements.Link"
+                    xmlns:Manual="clr-namespace:EBoardSDK.Plugins.Elements.Manual"   
                     xmlns:Protocol="clr-namespace:EBoardSDK.Plugins.Elements.Protocol"
                     xmlns:StandardText="clr-namespace:EBoardSDK.Plugins.Elements.StandardText"
-                    xmlns:TwoXThreeV="clr-namespace:EBoardSDK.Plugins.Areas.TwoXThreeVImageArea"
-
-                    xmlns:Ellipse="clr-namespace:EBoardSDK.Plugins.Shapes.Ellipse"
-                    xmlns:Rectangle="clr-namespace:EBoardSDK.Plugins.Shapes.Rectangle"           
                     
+                    xmlns:Ellipse="clr-namespace:EBoardSDK.Plugins.Shapes.Ellipse"
+                    xmlns:Line="clr-namespace:EBoardSDK.Plugins.Shapes.Line"
+                    xmlns:Path="clr-namespace:EBoardSDK.Plugins.Shapes.Path"
+                    xmlns:Rectangle="clr-namespace:EBoardSDK.Plugins.Shapes.Rectangle"
+                    xmlns:TextShape="clr-namespace:EBoardSDK.Plugins.Shapes.TextShape"
+                    
+                    xmlns:FileLinkArea="clr-namespace:EBoardSDK.Plugins.Areas.FileLinkArea"
+                    xmlns:PluginArea="clr-namespace:EBoardSDK.Plugins.Areas.PluginArea"     
+                    xmlns:ShapeArea="clr-namespace:EBoardSDK.Plugins.Areas.ShapeArea"     
+                    xmlns:TwoXThreeV="clr-namespace:EBoardSDK.Plugins.Areas.TwoXThreeVImageArea"
+                    
+                    xmlns:Coordinates="clr-namespace:EBoardSDK.Plugins.Tools.Coordinates"  
+                    xmlns:PluginManager="clr-namespace:EBoardSDK.Plugins.Tools.PluginManager"  
                     xmlns:Summoner="clr-namespace:EBoardSDK.Plugins.Tools.Summoner"  
                     xmlns:Uptime="clr-namespace:EBoardSDK.Plugins.Tools.Uptime"
                     
                     xmlns:basicAV="clr-namespace:EBoardSDK.Plugins.Elements.BasicAV">
 
+    <!-- #region Addons -->
+    <DataTemplate DataType="{x:Type SoundMix:SoundMixMainViewModel}">
+        <SoundMix:SoundMixMainView/>
+    </DataTemplate>
+    <!--#endregion-->
+
     <!--#region Elements -->
+    <DataTemplate DataType="{x:Type About:AboutViewModel}">
+        <About:AboutView/>
+    </DataTemplate>
 
     <DataTemplate DataType="{x:Type basicAV:BasicAVMainViewModel}">
         <basicAV:BasicAVMainView/>
@@ -65,8 +87,8 @@
         <EmptyRadial:EmptyRadialView/>
     </DataTemplate>
 
-    <DataTemplate DataType="{x:Type FileLinkArea:FileLinkAreaViewModel}">
-        <FileLinkArea:FileLinkAreaView/>
+    <DataTemplate DataType="{x:Type Gold:GoldViewModel}">
+        <Gold:GoldView/>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type Image:ImageViewModel}">
@@ -77,6 +99,10 @@
         <Link:LinkView/>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type Manual:ManualViewModel}">
+        <Manual:ManualView/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type Protocol:ProtocolViewModel}">
         <Protocol:ProtocolView/>
     </DataTemplate>
@@ -84,30 +110,65 @@
     <DataTemplate DataType="{x:Type StandardText:StandardTextViewModel}">
         <StandardText:StandardTextView/>
     </DataTemplate>
+    <!--#endregion-->
+
+    <!--#region Areas -->
+    <DataTemplate DataType="{x:Type FileLinkArea:FileLinkAreaViewModel}">
+        <FileLinkArea:FileLinkAreaView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type PluginArea:PluginAreaViewModel}">
+        <PluginArea:PluginAreaView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type ShapeArea:ShapeAreaViewModel}">
+        <ShapeArea:ShapeAreaView/>
+    </DataTemplate>
 
     <DataTemplate DataType="{x:Type TwoXThreeV:TwoXThreeImageAreaViewModel}">
         <TwoXThreeV:TwoXThreeImageAreaView/>
     </DataTemplate>
+    <!--#endregion-->
 
-    <!--#endregion-->    
-    
     <!--#region Shapes -->
     <DataTemplate DataType="{x:Type Ellipse:EllipseViewModel}">
         <Ellipse:EllipseView/>
     </DataTemplate>
-    
+
+    <DataTemplate DataType="{x:Type Line:LineViewModel}">
+        <Line:LineView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type Path:PathViewModel}">
+        <Path:PathView/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type Rectangle:RectangleViewModel}">
         <Rectangle:RectangleView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type TextShape:TextShapeViewModel}">
+        <TextShape:TextShapeView/>
     </DataTemplate>
     <!--#endregion-->
 
     <!--#region Tools -->
-    
-    
+    <DataTemplate DataType="{x:Type Coordinates:CoordinatesViewModel}">
+        <Coordinates:CoordinatesView/>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type PluginManager:PluginManagerViewModel}">
+        <PluginManager:PluginManagerView/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type Summoner:SummonerViewModel}">
         <Summoner:SummonerView/>
     </DataTemplate>
-    
+
+    <DataTemplate DataType="{x:Type Summoner:ShapeSummonerViewModel}">
+        <Summoner:SummonerView/>
+    </DataTemplate>
+
     <DataTemplate DataType="{x:Type Uptime:UptimeViewModel}">
         <Uptime:UptimeView/>
     </DataTemplate>

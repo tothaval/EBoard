@@ -31,11 +31,12 @@
 /// </p>
 namespace EBoardSDK.Plugins.Addons.SoundMix;
 
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.Area;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins.Addons.EEP_SoundMix;
 using EBoardSDK.Plugins.Elements.BasicAV;
-using EBoardSDK.SharedMethods;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -51,16 +52,19 @@ public partial class SoundMixMainViewModel : EBoardElementPluginBaseViewModel
 
     private string pluginName = "SoundMix";
 
+    private SoundMixModel? data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SoundMixMainViewModel"/> class.
+    /// </summary>
     public SoundMixMainViewModel()
     {
-        this.PluginLogo ??= new ImageBrush();
-
         this.AreaViewModel = new AreaViewModel<BasicAVMainViewModel>(this.ElementViewModel);
     }
 
     public override PluginCategories PluginCategory => PluginCategories.Addon;
 
-    public override ImageBrush PluginLogo { get; set; }
+    public override ImageBrush PluginLogo { get; set; } = new();
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
 
@@ -78,11 +82,9 @@ public partial class SoundMixMainViewModel : EBoardElementPluginBaseViewModel
         set { this.pluginName = value; }
     }
 
-    public override string ElementPluginName => "SoundMix";
-
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
-    public override ResourceDictionary ResourceDictionary => new() { Source = new Uri("/EBoardSDK;component/Plugins/Addons/EEP_SoundMix/SoundMixResources.xaml", uriKind: UriKind.Relative) };
+    public override ResourceDictionary ResourceDictionary => new();
 
     public override Type? ElementPluginModel => null;
 
@@ -104,14 +106,16 @@ public partial class SoundMixMainViewModel : EBoardElementPluginBaseViewModel
     {
         try
         {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<SoundMixModel>(path);
+            var data = await Loader.LoadJsonFile<SoundMixModel>(path);
 
             if (data != null)
             {
+                this.data = data;
+
                 var counter = 0;
 
                 // TODO stuff
-                foreach (var basicAVModelList in data.Links)
+                foreach (var basicAVModelList in this.data.Links)
                 {
                     this.AreaViewModel.AddHorizontal();
 
@@ -121,6 +125,7 @@ public partial class SoundMixMainViewModel : EBoardElementPluginBaseViewModel
                     {
                         // ggf ueber Konstruktor refaktoring verkuerzen
                         var basicAVWM = new BasicAVMainViewModel();
+                        basicAVWM.SetEBoardAndElementViewModel(this.EBoardViewModel, this.ElementViewModel);
 
                         var result = basicAVWM.InsertBasicAVModel(basicAVModel);
 
@@ -149,14 +154,13 @@ public partial class SoundMixMainViewModel : EBoardElementPluginBaseViewModel
 
         var model = new SoundMixModel(this);
 
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
+        var result = Saver.SaveJsonFile(path, model);
 
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        return new EBoardFeedbackMessage()
         {
-            // TODO do stuff
-        }
-
-        return serializationResult!;
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
     }
 }
 

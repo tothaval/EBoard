@@ -35,10 +35,13 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
 /// <summary>
-/// Interaktionslogik für SoundMixMainView.xaml
+/// Interaktionslogik für SoundMixMainView.xaml.
 /// </summary>
 public partial class BasicAVMainView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BasicAVMainView"/> class.
+    /// </summary>
     public BasicAVMainView()
     {
         this.InitializeComponent();

@@ -45,6 +45,9 @@ public partial class SplashScreenViewModel : ObservableObject
 
     private StringBuilder stringBuilder = new StringBuilder();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SplashScreenViewModel"/> class.
+    /// </summary>
     public SplashScreenViewModel()
     {
         this.TitleMessage = "eboard startup screen";

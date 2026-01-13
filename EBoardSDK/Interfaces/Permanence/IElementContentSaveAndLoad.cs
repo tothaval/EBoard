@@ -35,8 +35,20 @@ using EBoardSDK.Models;
 
 public interface IElementContentSaveAndLoad
 {
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="elementDataSet"></param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     public Task Load(string path, ElementConfig elementDataSet);
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="path"></param>
+    /// <param name="elementDataSet"></param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
     public Task Save(string path, ElementConfig elementDataSet);
 }
 

@@ -32,6 +32,7 @@
 namespace EBoardSDK.Controls.Area;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins;
 using EBoardSDK.ViewModels;
 using System.Collections.ObjectModel;
@@ -41,7 +42,7 @@ using System.Linq;
 /// TODO
 /// sinnvoll refaktorn und Methoden auslagern.
 /// 
-/// // make CreateNewArea a task?
+/// // make CreateNewArea a task?.
 /// </summary>
 public partial class AreaVerticalOuterViewModel<T> : ObservableObject
         where T : EBoardElementPluginBaseViewModel
@@ -57,10 +58,17 @@ public partial class AreaVerticalOuterViewModel<T> : ObservableObject
 
     private ElementViewModel elementViewModel;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaVerticalOuterViewModel{T}"/> class.
+    /// </summary>
     public AreaVerticalOuterViewModel()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaVerticalOuterViewModel{T}"/> class.
+    /// </summary>
+    /// <param name="elementViewModel"></param>
     public AreaVerticalOuterViewModel(ElementViewModel elementViewModel)
     {
         this.HorizontalInnerViewModels = new ObservableCollection<AreaHorizontalInnerViewModel<T>>();
@@ -83,6 +91,7 @@ public partial class AreaVerticalOuterViewModel<T> : ObservableObject
             this.HorizontalCount = viewModels.Count;
 
             this.HorizontalInnerViewModels[verticalIndex].InsertViewModelList(viewModels);
+            this.OnPropertyChanged(nameof(this.HorizontalInnerViewModels));
         }
     }
 
@@ -142,11 +151,15 @@ public partial class AreaVerticalOuterViewModel<T> : ObservableObject
         {
             item.RemoveElement();
         }
+
+        this.OnPropertyChanged(nameof(this.HorizontalInnerViewModels));
     }
 
     public void SetElementViewModel(ElementViewModel elementViewModel)
     {
         this.elementViewModel = elementViewModel;
+
+        this.OnPropertyChanged(nameof(this.HorizontalInnerViewModels));
     }
 
     private void AddAreaHorizontalInnerViewModel()
@@ -156,6 +169,8 @@ public partial class AreaVerticalOuterViewModel<T> : ObservableObject
             var areahorizontal = new AreaHorizontalInnerViewModel<T>(this.elementViewModel);
 
             this.HorizontalInnerViewModels.Add(areahorizontal);
+
+            this.OnPropertyChanged(nameof(this.HorizontalInnerViewModels));
         }
     }
 
@@ -189,7 +204,7 @@ public partial class AreaVerticalOuterViewModel<T> : ObservableObject
             {
                 if (i >= elementsCount)
                 {
-                    item.AddElement();
+                    item.CreateElement();
                 }
             }
         }

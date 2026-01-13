@@ -31,6 +31,7 @@
 /// </p>
 namespace EBoardSDK.Views;
 
+using EBoardSDK.Models.FluidUIStand;
 using EBoardSDK.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
@@ -44,66 +45,26 @@ public partial class ElementView : UserControl
 {
     private ElementViewModel _ElementViewModel;
 
-    private bool _IsDragging;
+    private bool isDragging;
+    private bool isResizing;
 
-    private Point _Position;
+    private Point oldMousePosition = default;
+    private Point position;
 
-    public Point Position => this._Position;
+    private UIElement visualParent;
+    private Canvas canvas;
 
-    private UIElement _VisualParent;
+    private RotateTransform rotateTransform = new();
 
-    public UIElement VisualParent => this._VisualParent;
-
-    private Canvas _Canvas;
-
-    private double _X;
-
-    public double X
-    {
-        get
-        {
-            return this._X;
-        }
-
-        set
-        {
-            this._X = value;
-        }
-    }
-
-    private double _Y;
-
-    public double Y
-    {
-        get
-        {
-            return this._Y;
-        }
-
-        set
-        {
-            this._Y = value;
-        }
-    }
+    private double x;
+    private double y;
 
     private int fallbackZ = 0;
+    private int z;
 
-    private int _Z;
-    private bool _IsResizing;
-
-    public int Z
-    {
-        get
-        {
-            return this._Z;
-        }
-
-        set
-        {
-            this._Z = value;
-        }
-    }
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ElementView"/> class.
+    /// </summary>
     public ElementView()
     {
         this.InitializeComponent();
@@ -111,98 +72,162 @@ public partial class ElementView : UserControl
         this.SetPlacement();
     }
 
+    public Canvas Canvas => this.canvas;
+
+    public bool IsDragging => this.isDragging;
+
+    public Point Position => this.position;
+
+    public UIElement VisualParent => this.visualParent;
+
+    public RotateTransform RotateTransform
+{
+        get
+        {
+            return this.rotateTransform;
+        }
+
+        set
+        {
+            this.rotateTransform = value;
+        }
+    }
+
+    public double X
+    {
+        get
+        {
+            return this.x;
+        }
+
+        set
+        {
+            this.x = value;
+        }
+    }
+
+    public double Y
+    {
+        get
+        {
+            return this.y;
+        }
+
+        set
+        {
+            this.y = value;
+        }
+    }
+
+    public int Z
+    {
+        get
+        {
+            return this.z;
+        }
+
+        set
+        {
+            this.z = value;
+        }
+    }
+
     public void SetPlacement()
     {
         if (this.DataContext != null)
         {
             this._ElementViewModel = (ElementViewModel)this.DataContext;
-
-            this._ElementViewModel.SetView(this);
         }
 
         if (this._ElementViewModel != null)
         {
-            this.X = this._ElementViewModel.FluidUI.Stand.Position.X;
-            this.Y = this._ElementViewModel.FluidUI.Stand.Position.Y;
-            this.Z = this._ElementViewModel.FluidUI.Stand.Z;
+            var manager = new FluidUIStandManager(this._ElementViewModel);
 
-            Canvas.SetLeft(this._VisualParent, this.X);
-            Canvas.SetTop(this._VisualParent, this.Y);
-            Panel.SetZIndex(this._VisualParent, this.Z);
+            this.X = manager.GetPosition().X;
+            this.Y = manager.GetPosition().Y;
+            this.Z = manager.GetZ();
 
-            this.ElementBorder.RenderTransformOrigin = this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.TransformOriginPoint;
-            this.ElementBorder.RenderTransform = this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.RotateTransformValue;
+            Canvas.SetLeft(this.visualParent, this.X);
+            Canvas.SetTop(this.visualParent, this.Y);
+            Panel.SetZIndex(this.visualParent, this.Z);
+
+            this.ElementBorder.RenderTransformOrigin = manager.GetTransformOriginPoint();
+            this.ElementBorder.RenderTransform = manager.GetRotateTransformValue();
+            this.RotateTransform = manager.GetRotateTransformValue();
         }
     }
 
     public void UpdatePlacement()
     {
-        this.X = Canvas.GetLeft(this._VisualParent);
-
-        this.Y = Canvas.GetTop(this._VisualParent);
-
-        if (Panel.GetZIndex(this._VisualParent) != this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue)
+        if (this._ElementViewModel != null)
         {
-            Panel.SetZIndex(this._VisualParent, this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue);
-        }
+            var manager = new FluidUIStandManager(this._ElementViewModel);
 
-        this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XMaximumValue = (int)this._Canvas.ActualWidth;
-        this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YMaximumValue = (int)this._Canvas.ActualHeight;
+            this.X = Canvas.GetLeft(this.visualParent);
+
+            this.Y = Canvas.GetTop(this.visualParent);
+
+            if (Panel.GetZIndex(this.visualParent) != manager.GetZ())
+            {
+                Panel.SetZIndex(this.visualParent, manager.GetZ());
+            }
+
+            this.ElementBorder.RenderTransformOrigin = manager.GetTransformOriginPoint();
+            this.ElementBorder.RenderTransform = manager.GetRotateTransformValue();
+        }
     }
 
     private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (!Keyboard.IsKeyDown(Key.LeftCtrl) || !Keyboard.IsKeyDown(Key.RightCtrl))
         {
-            this.Z = this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue;
-
-            if (this.Z < this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZMaximumValue && this.Z != this.fallbackZ)
+            if (this._ElementViewModel != null && this._ElementViewModel.EBoardViewModel.FluidUI.Stand != null)
             {
-                this.fallbackZ = this.Z;
+                if (this.Z < this._ElementViewModel.EBoardViewModel.FluidUI.Stand.Zmaximum && this.Z != this.fallbackZ)
+                {
+                    this.fallbackZ = this.Z;
+                }
+
+                this.isDragging = true;
+                this.isResizing = false;
+
+                this.position = e.GetPosition(this.visualParent);
+
+                this._ElementViewModel.EBoardViewModel?.BeginElementSelectionMovement(this._ElementViewModel);
+
+                this.oldMousePosition = e.GetPosition(this.canvas);
+
+                e.Handled = true;
             }
-
-            this._IsDragging = true;
-            this._IsResizing = false;
-
-            this._Position = e.GetPosition(this._VisualParent);
-
-            this._ElementViewModel.EBoardViewModel?.BeginElementSelectionMovement(this._ElementViewModel);
-
-            this.oldMousePosition = e.GetPosition(this._Canvas);
-
-            e.Handled = true;
         }
     }
 
-    private Point oldMousePosition = default;
-
     private void Border_MouseMove(object sender, MouseEventArgs e)
     {
-        if (!this._IsDragging)
+        if (!this.isDragging)
         {
             return;
         }
 
-        if (this._IsResizing)
+        if (this.isResizing)
         {
             return;
         }
 
-        if (e.LeftButton == MouseButtonState.Pressed)
+        if (e.LeftButton == MouseButtonState.Pressed && this._ElementViewModel != null)
         {
-            Point canvasRelativePosition = e.GetPosition(this._Canvas);
+            Point canvasRelativePosition = e.GetPosition(this.canvas);
 
             double x, y;
 
-            x = canvasRelativePosition.X - this._Position.X;
+            x = canvasRelativePosition.X - this.position.X;
 
-            y = canvasRelativePosition.Y - this._Position.Y;
+            y = canvasRelativePosition.Y - this.position.Y;
 
-            Canvas.SetLeft(this._VisualParent, x);
-            Canvas.SetTop(this._VisualParent, y);
+            Canvas.SetLeft(this.visualParent, x);
+            Canvas.SetTop(this.visualParent, y);
 
-            Panel.SetZIndex(this._VisualParent, 1000);
-            this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue = 1000;
+            Panel.SetZIndex(this.visualParent, 1000);
 
             Point delta = (Point)(this.oldMousePosition - canvasRelativePosition);
 
@@ -214,64 +239,64 @@ public partial class ElementView : UserControl
 
     private void Border_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
-        // if (!_IsDragging)
+        // if (!isDragging)
         //    return;
-        if (this._IsDragging)
+        if (this._ElementViewModel != null && this._ElementViewModel.EBoardViewModel.FluidUI.Stand != null)
         {
-            this._IsDragging = false;
-
-            this.X = Canvas.GetLeft(this._VisualParent);
-
-            this.Y = Canvas.GetTop(this._VisualParent);
-
-            this._ElementViewModel.FluidUI.Stand.Position = new Point(this.X, this.Y);
-
-            this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = this.X;
-            this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = this.Y;
-
-            if (this.Z > this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZMaximumValue)
+            if (this.isDragging)
             {
-                this.Z = this.fallbackZ;
-                this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue = this.fallbackZ;
-            }
-            else
-            {
-                this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue = this.Z;
+                this.isDragging = false;
+
+                this.X = Canvas.GetLeft(this.visualParent);
+
+                this.Y = Canvas.GetTop(this.visualParent);
+
+                if (this.Z > this._ElementViewModel.EBoardViewModel.FluidUI.Stand.Zmaximum)
+                {
+                    this.Z = this.fallbackZ;
+                }
+
+                this._ElementViewModel.StopMovement();
+
+                Panel.SetZIndex(this.visualParent, this.Z);
+
+                this._ElementViewModel.EBoardViewModel?.StopElementSelectionMovement(this._ElementViewModel);
             }
 
-            Panel.SetZIndex(this._VisualParent, this.Z);
-
-            this._ElementViewModel.EBoardViewModel.StopElementSelectionMovement(this._ElementViewModel);
+            this._ElementViewModel.WasLastActive();
         }
-
-        this._ElementViewModel.WasLastActive();
 
         e.Handled = true;
     }
 
     private void Element_Loaded(object sender, RoutedEventArgs e)
     {
-        this._VisualParent = VisualTreeHelper.GetParent(this) as UIElement;
+        this.visualParent = VisualTreeHelper.GetParent(this) as UIElement;
 
-        if (this._VisualParent != null)
+        if (this.visualParent != null)
         {
-            this._Canvas = VisualTreeHelper.GetParent(this._VisualParent) as Canvas;
+            this.canvas = VisualTreeHelper.GetParent(this.visualParent) as Canvas;
         }
 
         this._ElementViewModel = (ElementViewModel)this.DataContext;
 
-        this._ElementViewModel.SetView(this);
+        if (this._ElementViewModel != null)
+        {
+            var manager = new FluidUIStandManager(this._ElementViewModel);
 
-        this.X = this._ElementViewModel.FluidUI.Stand.Position.X;
-        this.Y = this._ElementViewModel.FluidUI.Stand.Position.Y;
-        this.Z = this._ElementViewModel.FluidUI.Stand.Z;
+            this.X = manager.GetPosition().X;
+            this.Y = manager.GetPosition().Y;
+            this.Z = manager.GetZ();
 
-        Canvas.SetLeft(this._VisualParent, this.X);
-        Canvas.SetTop(this._VisualParent, this.Y);
-        Panel.SetZIndex(this._VisualParent, this.Z);
+            Canvas.SetLeft(this.visualParent, this.X);
+            Canvas.SetTop(this.visualParent, this.Y);
+            Panel.SetZIndex(this.visualParent, this.Z);
 
-        this.ElementBorder.RenderTransformOrigin = this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.TransformOriginPoint;
-        this.ElementBorder.RenderTransform = this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.RotateTransformValue;
+            this.ElementBorder.RenderTransformOrigin = manager.GetTransformOriginPoint();
+            this.ElementBorder.RenderTransform = manager.GetRotateTransformValue();
+
+            this._ElementViewModel.SetView(this);
+        }
     }
 
     private void Element_Unloaded(object sender, RoutedEventArgs e)
@@ -280,76 +305,21 @@ public partial class ElementView : UserControl
 
     private void Border_MouseWheel(object sender, MouseWheelEventArgs e)
     {
+        var manager = new FluidUIStandManager(this._ElementViewModel);
+
         if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
         {
-            this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ApplyRotationAngleValueByMouseWheel(e.Delta);
+            if (this._ElementViewModel != null)
+            {
+                manager.ApplyRotationAngleValueByMouseWheel(e.Delta);
+            }
 
             return;
         }
 
-        this._ElementViewModel.FluidUIMenuViewModel.FluidUIStandSetupViewModel.ApplyZIndexValueByMouseWheel(e.Delta);
+        manager.ApplyZIndexValueByMouseWheel(e.Delta);
 
         this.UpdatePlacement();
-    }
-
-    private void Border_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
-    {
-        if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
-        {
-            this._IsResizing = true;
-
-            this._IsDragging = false;
-
-            this._Position = e.GetPosition(this._VisualParent);
-
-            this.X = Canvas.GetLeft(this._VisualParent);
-
-            this.Y = Canvas.GetTop(this._VisualParent);
-
-            this.oldMousePosition = e.GetPosition(this._Canvas);
-
-            e.Handled = true;
-        }
-    }
-
-    private void Border_MouseLeftButtonUp_1(object sender, MouseButtonEventArgs e)
-    {
-        if (!this._IsResizing)
-        {
-            return;
-        }
-
-        if (this._IsResizing)
-        {
-            this._IsResizing = false;
-
-            this.X = Canvas.GetLeft(this._VisualParent);
-
-            this.Y = Canvas.GetTop(this._VisualParent);
-        }
-
-        this._ElementViewModel.WasLastActive();
-
-        e.Handled = true;
-    }
-
-    private void Border_MouseMove_1(object sender, MouseEventArgs e)
-    {
-        if (e.LeftButton == MouseButtonState.Pressed && this._IsResizing)
-        {
-            Point canvasRelativePosition = e.GetPosition(this._Canvas);
-
-            double x, y;
-
-            x = canvasRelativePosition.X - this._Position.X;
-
-            y = canvasRelativePosition.Y - this._Position.Y;
-
-            this._ElementViewModel.Width = (int)x;
-            this._ElementViewModel.Height = (int)y;
-
-            this.oldMousePosition = canvasRelativePosition;
-        }
     }
 }
 

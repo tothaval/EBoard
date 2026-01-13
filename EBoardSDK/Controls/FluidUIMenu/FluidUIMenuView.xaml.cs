@@ -31,7 +31,6 @@
 /// </p>
 namespace EBoardSDK.Controls.FluidUIMenu;
 
-using System.Windows;
 using System.Windows.Controls;
 
 /// <summary>
@@ -39,20 +38,13 @@ using System.Windows.Controls;
 /// </summary>
 public partial class FluidUIMenuView : MenuItem
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIMenuView"/> class.
+    /// </summary>
     public FluidUIMenuView()
     {
         this.InitializeComponent();
     }
-
-    public bool SizeMenuItemVisible
-    {
-        get { return (bool)this.GetValue(SizeMenuItemVisibleProperty); }
-        set { this.SetValue(SizeMenuItemVisibleProperty, value); }
-    }
-
-    // Using a DependencyProperty as the backing store for SizeMenuItemVisible.  This enables animation, styling, binding, etc...
-    public static readonly DependencyProperty SizeMenuItemVisibleProperty =
-        DependencyProperty.Register("SizeMenuItemVisible", typeof(bool), typeof(FluidUIMenuView), new PropertyMetadata(true));
 }
 
 // EOF

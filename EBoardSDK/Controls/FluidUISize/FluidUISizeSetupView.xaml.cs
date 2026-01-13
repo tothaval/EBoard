@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.FluidUISize;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für FluidUISizeSetupView.xaml
+/// Interaktionslogik für FluidUISizeSetupView.xaml.
 /// </summary>
 public partial class FluidUISizeSetupView : MenuItem
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUISizeSetupView"/> class.
+    /// </summary>
     public FluidUISizeSetupView()
     {
         this.InitializeComponent();

@@ -1,0 +1,9 @@
+{
+    "IntroductionText": "this is your eboard manual...",
+    "ManualText": "explanations for certain elements, handling of eboard etc.",
+    "MainWindowText": "the main window of the application offers buttons for opening browser or screen control, a menu for instantiation of new elements onto the visible screen and buttons to open this manual as tooltip or element, a button for the about element, where license information and version data can be found, as well as an off button to close the application and the shutdown button to shutdown your computer.",
+    "BrowserText": "in the browser you can navigate screens and edit screen properties",
+    "ScreenText": "screens are like desktops, you can have many different screens and fill each with the variety of elements you have installed in your eboard.",
+    "ElementText": "elements can be moved and placed, they contain functionality from time to complex budgeting or more.",
+    "PluginText": "plugins offer functionality for eboard elements, they might have a different right click context menu, depending on the authors design choices. plugins can be installed using the plugin manager tool. each plugin has a category, current categories are: addons, elements, shapes, areas and tools. addons are complex plugins with plenty of functions, elements are plugins with a minor variety of functions, shapes can be used to draw, areas allow the instantiation of several plugins of one or many types, tools offer features for measurement and system monitoring."
+}

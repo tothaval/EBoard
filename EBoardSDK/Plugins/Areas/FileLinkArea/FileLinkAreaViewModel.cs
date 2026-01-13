@@ -33,10 +33,11 @@ namespace EBoardSDK.Plugins.Areas.FileLinkArea;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.Area;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins.Elements.Link;
-using EBoardSDK.SharedMethods;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -49,25 +50,29 @@ public partial class FileLinkAreaViewModel : EBoardElementPluginBaseViewModel
     [ObservableProperty]
     private string executeAllLinksButtonContent = "\n*\n*\n*\n";
 
+    private string pluginHeader = "FileLink Area";
+    private string pluginName = "FileLinkArea";
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileLinkAreaViewModel"/> class.
+    /// </summary>
+    public FileLinkAreaViewModel()
+    {
+    }
+
     public AreaViewModel<LinkViewModel> AreaViewModel { get; set; }
 
     public override PluginCategories PluginCategory => PluginCategories.Area;
 
     public override bool NoDefaultBorders { get; } = false;
 
-    public override ImageBrush PluginLogo { get; set; }
+    public override ImageBrush PluginLogo { get; set; } = new();
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
 
-    private string pluginHeader = "FileLink Area";
-
     public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
 
-    private string pluginName = "FileLinkArea";
-
     public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
-
-    public override string ElementPluginName => "FileLinkArea"; // mal konsolidieren, was benötigt wird und was doppelt ist.
 
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
@@ -78,10 +83,6 @@ public partial class FileLinkAreaViewModel : EBoardElementPluginBaseViewModel
     public override Type ElementPluginView => typeof(FileLinkAreaView);
 
     public override Type ElementPluginViewModel => typeof(FileLinkAreaViewModel);
-
-    public FileLinkAreaViewModel()
-    {
-    }
 
     public override void RefreshInitialization()
     {
@@ -98,7 +99,7 @@ public partial class FileLinkAreaViewModel : EBoardElementPluginBaseViewModel
     {
         try
         {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<FileLinkAreaModel>(path);
+            var data = await Loader.LoadJsonFile<FileLinkAreaModel>(path);
 
             // TODO ggf hier und andernorts generisch machen und refactorn
             if (data != null)
@@ -116,6 +117,8 @@ public partial class FileLinkAreaViewModel : EBoardElementPluginBaseViewModel
                     {
                         // ggf ueber Konstruktor refaktoring verkuerzen
                         var linkVM = new LinkViewModel();
+
+                        linkVM.SetEBoardAndElementViewModel(this.EBoardViewModel, this.ElementViewModel);
 
                         linkVM.InsertLinkModel(linkModel);
 
@@ -146,14 +149,13 @@ public partial class FileLinkAreaViewModel : EBoardElementPluginBaseViewModel
 
         var model = new FileLinkAreaModel(this);
 
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
+        var result = Saver.SaveJsonFile(path, model);
 
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        return new EBoardFeedbackMessage()
         {
-            // TODO do stuff
-        }
-
-        return serializationResult!;
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
     }
 
     [RelayCommand]
@@ -165,7 +167,7 @@ public partial class FileLinkAreaViewModel : EBoardElementPluginBaseViewModel
         {
             foreach (var linkViewModel in item)
             {
-                linkViewModel.ExecuteLink();
+                linkViewModel.ExecuteClick();
             }
         }
     }

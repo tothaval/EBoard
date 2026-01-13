@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Areas.FileLinkArea;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für FileLinkAreaView.xaml
+/// Interaktionslogik für FileLinkAreaView.xaml.
 /// </summary>
 public partial class FileLinkAreaView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileLinkAreaView"/> class.
+    /// </summary>
     public FileLinkAreaView()
     {
         this.InitializeComponent();

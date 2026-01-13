@@ -37,10 +37,13 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 /// <summary>
-/// Interaktionslogik für QuadValueSetupView.xaml
+/// Interaktionslogik für QuadValueSetupView.xaml.
 /// </summary>
 public partial class QuadValueSetupView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuadValueSetupView"/> class.
+    /// </summary>
     public QuadValueSetupView()
     {
         this.InitializeComponent();

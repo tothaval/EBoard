@@ -34,10 +34,13 @@ namespace EBoardSDK.Views;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für EBoardBrowserView.xaml
+/// Interaktionslogik für EBoardBrowserView.xaml.
 /// </summary>
 public partial class EBoardBrowserView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EBoardBrowserView"/> class.
+    /// </summary>
     public EBoardBrowserView()
     {
         this.InitializeComponent();

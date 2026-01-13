@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.FluidUIDataBlock;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für FluidUIDataBlockSetupView.xaml
+/// Interaktionslogik für FluidUIDataBlockSetupView.xaml.
 /// </summary>
 public partial class FluidUIDataBlockSetupView : MenuItem
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIDataBlockSetupView"/> class.
+    /// </summary>
     public FluidUIDataBlockSetupView()
     {
         this.InitializeComponent();

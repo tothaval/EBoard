@@ -33,6 +33,8 @@ namespace EBoardSDK.Plugins.Elements.Image;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
 using EBoardSDK.SharedMethods;
 using System.IO;
@@ -46,32 +48,41 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
     private readonly string imageDataFileName = "imagedata.xml";
 
     [ObservableProperty]
-    private ImageBrush imageBrush = new();
+    private ImageBrush? imageBrush = new();
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsImageNotSet))]
     private bool isLinked = false;
 
     [ObservableProperty]
-    private string linkTargetPath;
+    private string linkTargetPath = string.Empty;
+
+    [ObservableProperty]
+    private double opacityValue = 1.0;
+
+    private string pluginHeader = "Image Element";
+    private string pluginName = "Image";
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ImageViewModel"/> class.
+    /// </summary>
+    public ImageViewModel()
+    {
+    }
 
     public bool IsImageNotSet => !this.IsLinked;
 
     public override PluginCategories PluginCategory => PluginCategories.Element;
 
-    public override ImageBrush PluginLogo { get; set; }
+    public override ImageBrush PluginLogo { get; set; } = new();
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
-
-    private string pluginHeader = "Image Element";
 
     public override string PluginHeader
     {
         get { return this.pluginHeader; }
         set { this.pluginHeader = value; }
     }
-
-    private string pluginName = "Image";
 
     public override bool NoDefaultBorders { get; } = false;
 
@@ -81,11 +92,9 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
         set { this.pluginName = value; }
     }
 
-    public override string ElementPluginName => "Image";
-
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
-    public override ResourceDictionary ResourceDictionary => new() { Source = new Uri("/EBoardSDK;component/Plugins/Elements/Image/ImageResources.xaml", uriKind: UriKind.Relative) };
+    public override ResourceDictionary ResourceDictionary => new();
 
     public override Type? ElementPluginModel => null;
 
@@ -107,7 +116,7 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
 
         try
         {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<ImageModel>(path);
+            var data = await Loader.LoadJsonFile<ImageModel>(path);
 
             if (data != null)
             {
@@ -135,14 +144,13 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
             path = System.IO.Path.Combine(path, this.imageDataFileName);
         }
 
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
+        var result = Saver.SaveJsonFile(path, model);
 
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        return new EBoardFeedbackMessage()
         {
-            // TODO do stuff
-        }
-
-        return serializationResult!;
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
     }
 
     private void ApplyImage()
@@ -179,10 +187,16 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
         }
     }
 
+    partial void OnOpacityValueChanged(double value)
+    {
+        this.ImageBrush.Opacity = value;
+    }
+
     [RelayCommand]
     private void Reset()
     {
         this.IsLinked = false;
+        this.ImageBrush = null;
     }
 
     [RelayCommand]

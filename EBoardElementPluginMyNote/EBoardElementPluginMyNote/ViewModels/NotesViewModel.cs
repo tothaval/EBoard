@@ -37,6 +37,7 @@ using CommunityToolkit.Mvvm.Input;
 //using EBoardElementPluginMyNote.Commands;
 using EBoardSDK.Plugins.Elements.Protocol;
 using EBoardSDK.Plugins.Elements.Protocol.Models;
+using EBoardSDK.ViewModels;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -49,9 +50,37 @@ using System.Windows.Data;
 /// </summary>
 public partial class NotesViewModel : ObservableObject
 {
+    private ElementViewModel? elementViewModel;
+    private EBoardViewModel? eboardViewModel;
+
     private ObservableCollection<ProtocolViewModel> _notes;
 
     private ProtocolViewModel _Note;
+
+    private bool _ShowHideClicked = true;
+
+    public NotesViewModel(ObservableCollection<ProtocolViewModel> notes)
+    {
+        if (notes != null)
+        {
+            _notes = notes;
+        }
+        else
+        {
+            _notes = new ObservableCollection<ProtocolViewModel>();
+        }
+
+        Notes = CollectionViewSource.GetDefaultView(_notes);
+        Notes.SortDescriptions.Add(new SortDescription("DateTime_Created", ListSortDirection.Descending));
+
+        if (_notes.Count == 0)
+        {
+            this.NewNote();
+        }
+    }
+
+    public EboardFluidUIBaseViewModel? ViewModel => this.elementViewModel;
+
     public ProtocolViewModel Note
     {
         get { return _Note; }
@@ -62,7 +91,6 @@ public partial class NotesViewModel : ObservableObject
         }
     }
 
-    private bool _ShowHideClicked;
     public bool ShowHideClicked
     {
         get { return _ShowHideClicked; }
@@ -88,25 +116,6 @@ public partial class NotesViewModel : ObservableObject
         }
     }
 
-    public NotesViewModel(ObservableCollection<ProtocolViewModel> notes)
-    {
-        if (notes != null)
-        {
-            _notes = notes;
-        }
-        else
-        {
-            _notes = new ObservableCollection<ProtocolViewModel>();
-        }
-
-        Notes = CollectionViewSource.GetDefaultView(_notes);
-        Notes.SortDescriptions.Add(new SortDescription("DateTime_Created", ListSortDirection.Descending));
-
-        if (_notes.Count == 0)
-        {
-            this.NewNote();
-        }
-    }
 
     public List<ProtocolViewModel> GetNotes => this._notes.ToList();
 
@@ -118,6 +127,19 @@ public partial class NotesViewModel : ObservableObject
             {
                 this.InsertNewNote(note);
             }
+        }
+    }
+
+    internal void SetEBoardAndElementViewModel(EBoardViewModel eboardViewModel, ElementViewModel elementViewModel)
+    {
+        if (eboardViewModel != null)
+        {
+            this.eboardViewModel = eboardViewModel;
+        }
+
+        if (elementViewModel != null)
+        {
+            this.elementViewModel = elementViewModel;
         }
     }
 
@@ -189,6 +211,11 @@ public partial class NotesViewModel : ObservableObject
             else
             {
                 protocol = new ProtocolViewModel(note);
+            }
+
+            if (this.eboardViewModel != null && this.elementViewModel != null)
+            {
+                protocol.SetEBoardAndElementViewModel(this.eboardViewModel, this.elementViewModel);
             }
 
             this._notes?.Insert(0, protocol);

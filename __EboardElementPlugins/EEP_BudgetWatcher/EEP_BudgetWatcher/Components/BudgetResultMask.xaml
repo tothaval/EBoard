@@ -42,7 +42,6 @@
     <UserControl.Resources>
         <Style TargetType="TextBlock" x:Key="tb_minwidth">
             <Setter Property="MinWidth" Value="150"/>
-
         </Style>
         
     </UserControl.Resources>
@@ -64,8 +63,7 @@
             <RowDefinition Height="Auto" SharedSizeGroup="C"/>
             <RowDefinition Height="Auto" SharedSizeGroup="C"/>
         </Grid.RowDefinitions>
-
-
+        
         <!--#region Budget start date-->
         <TextBlock Text="Begin"
                    Style="{StaticResource StringValueTextBlock}"
@@ -78,10 +76,9 @@
             Mode=TwoWay,
             StringFormat=d}"
                     HorizontalAlignment="Right"
-                 Grid.Column="1"
-                 Grid.Row="0"/>
+                    Grid.Column="1"
+                    Grid.Row="0"/>
         <!--#endregion-->
-
 
         <!--#region Budget end date -->
         <TextBlock Text="End"
@@ -95,10 +92,9 @@
             Mode=TwoWay,
             StringFormat=d}"
                     HorizontalAlignment="Right"
-                 Grid.Column="1"
-                 Grid.Row="1"/>
+                    Grid.Column="1"
+                    Grid.Row="1"/>
         <!--#endregion-->
-
 
         <!--#region Budget nr of days -->
         <TextBlock Text="Number of Days"
@@ -113,13 +109,12 @@
             Mode=OneWay}"
                  Style="{StaticResource DoubleValueTextBox}"
                  MinWidth="150"
-                    HorizontalAlignment="Right"
+                 HorizontalAlignment="Right"
                  IsReadOnly="True"
                  TextAlignment="Right"
                  Grid.Column="1"
                  Grid.Row="2"/>
         <!--#endregion-->
-
 
         <!--#region Initial Budget -->
         <TextBlock Text="Initial Budget"
@@ -134,12 +129,11 @@
             StringFormat=C2}"
                  Style="{StaticResource DoubleValueTextBox}"
                  MinWidth="150"
-                    HorizontalAlignment="Right"
+                 HorizontalAlignment="Right"
                  TextAlignment="Right"
                  Grid.Column="1"
                  Grid.Row="3"/>
         <!--#endregion-->
-
 
         <!--#region Gains -->
         <TextBlock Text="Gains"
@@ -155,12 +149,11 @@
                  MinWidth="150"
                  Foreground="{DynamicResource GainBrush}"
                  IsReadOnly="True"
-                    HorizontalAlignment="Right"
-                   TextAlignment="Right"
-                   Grid.Column="1"
-                   Grid.Row="4"/>
+                 HorizontalAlignment="Right"
+                 TextAlignment="Right"
+                 Grid.Column="1"
+                 Grid.Row="4"/>
         <!--#endregion-->
-
         
         <!--#region Expenses -->
         <TextBlock Text="Expenses"
@@ -176,12 +169,11 @@
                  MinWidth="150"
                  Foreground="{DynamicResource ExpenseBrush}"
                  IsReadOnly="True"
-                    HorizontalAlignment="Right"
-                   TextAlignment="Right"
-                   Grid.Column="1"
-                   Grid.Row="5"/>
+                 HorizontalAlignment="Right"
+                 TextAlignment="Right"
+                 Grid.Column="1"
+                 Grid.Row="5"/>
         <!--#endregion-->
-
         
         <!--#region empty -->        
         <Border BorderBrush="{DynamicResource HeaderBrush}"
@@ -190,23 +182,20 @@
                 Grid.Column="0" Grid.ColumnSpan="2"
                 Grid.Row="6"/>
         <!--#endregion-->
-
         
         <!--#region  -->
         <TextBlock Text="Current Balance"
                    Grid.Column="0"
                    Grid.Row="7"
-                 Style="{StaticResource StringValueTextBlock}"
-                 FontWeight="Bold"
-                   />
+                   Style="{StaticResource StringValueTextBlock}"
+                   FontWeight="Bold"/>
 
         <TextBox Text="{Binding Path=CurrentBalance,
             NotifyOnSourceUpdated=True,
             ElementName=BRM,
             StringFormat=C2}"
                  Style="{StaticResource DoubleValueTextBox}"          
-                 MinWidth="150"       
-                 
+                 MinWidth="150" 
                  Foreground="{Binding Path=GainExpenseBrush,
             ElementName=BRM,
             Mode=OneWay,
@@ -214,13 +203,12 @@
             UpdateSourceTrigger=PropertyChanged}"
                  FontWeight="Bold"
                  IsReadOnly="True"
-                    HorizontalAlignment="Right"
-                   TextAlignment="Right"
-                   Grid.Column="1"
-                   Grid.Row="7"/>
+                 HorizontalAlignment="Right"
+                 TextAlignment="Right"
+                 Grid.Column="1"
+                 Grid.Row="7"/>
         <!--#endregion-->
-        
-        
+                
         <!--#region Budget nr of days -->
         <TextBlock Text="Days Left"
                    Style="{StaticResource StringValueTextBlock}"
@@ -235,38 +223,35 @@
             Mode=OneWay}"
                  Style="{StaticResource DoubleValueTextBox}"
                  MinWidth="150"
-                    HorizontalAlignment="Right"
+                 HorizontalAlignment="Right"
                  IsReadOnly="True"
                  TextAlignment="Right"
                  Grid.Column="1"
                  Grid.Row="8"/>
         <!--#endregion-->
-
         
         <!--#region BudgetPerDay -->
         <TextBlock Text="Budget / Day"
                    Grid.Column="0"
                    Grid.Row="9"
-                 Style="{StaticResource StringValueTextBlock}"
-                   />
+                   Style="{StaticResource StringValueTextBlock}"/>
 
         <TextBox Text="{Binding Path=BudgetPerDay,
             NotifyOnSourceUpdated=True,
             ElementName=BRM,
             StringFormat=C2}"
                  Style="{StaticResource DoubleValueTextBox}"         
-                 MinWidth="150"        
-                 
+                 MinWidth="150"
                  Foreground="{Binding Path=GainExpenseBrush,
             ElementName=BRM,
             Mode=OneWay,
             NotifyOnSourceUpdated=True,
             UpdateSourceTrigger=PropertyChanged}"
                  IsReadOnly="True"
-                    HorizontalAlignment="Right"
-                   TextAlignment="Right"
-                   Grid.Column="1"
-                   Grid.Row="9"/>
+                 HorizontalAlignment="Right"
+                 TextAlignment="Right"
+                 Grid.Column="1"
+                 Grid.Row="9"/>
         <!--#endregion-->
     </Grid>
 </UserControl>

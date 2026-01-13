@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.FluidUIFont;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für FluidUIFontSetupView.xaml
+/// Interaktionslogik für FluidUIFontSetupView.xaml.
 /// </summary>
 public partial class FluidUIFontSetupView : MenuItem
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIFontSetupView"/> class.
+    /// </summary>
     public FluidUIFontSetupView()
     {
         this.InitializeComponent();

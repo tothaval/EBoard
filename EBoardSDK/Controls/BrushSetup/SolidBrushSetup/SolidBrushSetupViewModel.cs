@@ -68,6 +68,12 @@ public partial class SolidBrushSetupViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private byte alphaValue = 255;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SolidBrushSetupViewModel"/> class.
+    /// </summary>
+    /// <param name="viewModel"></param>
+    /// <param name="brushTargets"></param>
+    /// <param name="okResult"></param>
     public SolidBrushSetupViewModel(EboardFluidUIBaseViewModel viewModel, BrushTargets brushTargets, Action okResult)
     {
         this.viewModel = viewModel;
@@ -112,19 +118,22 @@ public partial class SolidBrushSetupViewModel : ObservableObject, IDisposable
 
         this.ColorBrush = brush;
 
-        if (this.ColorBrush.GetType().Equals(typeof(SolidColorBrush)))
+        if (this.ColorBrush != null)
         {
-            var c = ((SolidColorBrush)this.ColorBrush).Color;
+            if (this.ColorBrush.GetType().Equals(typeof(SolidColorBrush)))
+            {
+                var c = ((SolidColorBrush)this.ColorBrush).Color;
 
-            this.AlphaValue = c.A;
+                this.AlphaValue = c.A;
 
-            var cmid = ((int)c.R + (int)c.G + (int)c.B) / 3;
+                var cmid = ((int)c.R + (int)c.G + (int)c.B) / 3;
 
-            this.GreyscaleValue = (byte)cmid;
+                this.GreyscaleValue = (byte)cmid;
 
-            this.RedValue = c.R;
-            this.GreenValue = c.G;
-            this.BlueValue = c.B;
+                this.RedValue = c.R;
+                this.GreenValue = c.G;
+                this.BlueValue = c.B;
+            }
         }
 
         return brush;

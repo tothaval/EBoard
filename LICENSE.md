@@ -7,14 +7,16 @@ contact: kammel@posteo.de
 until a license has been chosen, you may 
 use the software or parts of it under the following conditions:<br><br>
 1.)
-If you want to distribute or use the source code or a derived binary
-of the EBoard project for commercial purposes, you need to contact
-the project team for authorization and payment details.
-You may use the source or a derived binary for non commercial 
-purposes free of charge. In order to do so, copy this adhoc terms
-and a link to the repository to any source code file that uses code
-derived from this project and to the folder that holds the compiled source code.
-
+If you want to distribute or use the source code or a derived binary of
+the EBoard project for commercial or non-educational purposes, or in
+public administration or government activity, you need to contact the
+project team for authorization and payment details.<br>
+You may use the source or a derived binary for non commercial or for
+educational purposes free of charge.In order to do so, copy this adhoc
+terms and a link to the repository to any source code file that uses
+codederived from this project and to the folder that holds the compiled
+source code.
+<br><br>
 2.)
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF

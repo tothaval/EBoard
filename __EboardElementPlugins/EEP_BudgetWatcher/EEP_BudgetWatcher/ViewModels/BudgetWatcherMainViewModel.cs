@@ -33,10 +33,11 @@ namespace EEP_BudgetWatcher.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
 using EBoardSDK;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins;
-using EBoardSDK.SharedMethods;
 using EEP_BudgetWatcher.Models;
 using EEP_BudgetWatcher.Resources;
 using EEP_BudgetWatcher.Views;
@@ -48,38 +49,7 @@ using System.Windows.Media;
 
 public partial class BudgetWatcherMainViewModel : EBoardElementPluginBaseViewModel
 {
-    public override PluginCategories PluginCategory => PluginCategories.Addon;
-
-    public override bool NoDefaultBorders { get; } = false;
-
-    public override ImageBrush PluginLogo { get; set; }
-
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
-
-    private string pluginHeader = "BudgetWatcher Element";
-
-    public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
-
-    private string pluginName = "BudgetWatcher";
-
-    public override string PluginName { get { return pluginName; } set { pluginName = value; } }
-
-    public override string ElementPluginName => "BudgetWatcher";
-
-    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
-
-    public override ResourceDictionary ResourceDictionary => new() { Source = new Uri("/EEP_BudgetWatcher;component/Themes/Default.xaml", uriKind: UriKind.Relative) };
-
-    public override Type? ElementPluginModel => null;
-
-    public override Type ElementPluginView => typeof(BudgetWatcherMainView);
-
-    public override Type ElementPluginViewModel => typeof(BudgetWatcherMainViewModel);
-
     private readonly BudgetChangeViewModel _BudgetChangeViewModel;
-    public BudgetChangeViewModel BudgetChangeViewModel => _BudgetChangeViewModel;
-
-    public SetupFieldViewModel SetupField { get; }
 
     [ObservableProperty]
     private bool _ShowBudget;
@@ -93,6 +63,46 @@ public partial class BudgetWatcherMainViewModel : EBoardElementPluginBaseViewMod
     [ObservableProperty]
     private bool _ShowSetup;
 
+    private string pluginHeader = "BudgetWatcher Element";
+    private string pluginName = "BudgetWatcher";
+
+    public BudgetWatcherMainViewModel()
+    {
+        this.ElementScreenIntegrationConstraints = new EBoardSDK.Models.ElementScreenIntegrationConstraints(ElementInstantiationPolicy.Unconstrained);
+
+        SetInitialResources();
+
+        _BudgetChangeViewModel = new BudgetChangeViewModel();
+
+        SetupField = new SetupFieldViewModel();
+    }
+
+    public override PluginCategories PluginCategory => PluginCategories.Addon;
+
+    public override bool NoDefaultBorders { get; } = false;
+
+    public override ImageBrush PluginLogo { get; set; } = new();
+
+    public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
+
+    public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
+
+    public override string PluginName { get { return pluginName; } set { pluginName = value; } }
+
+    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
+
+    public override ResourceDictionary ResourceDictionary => new() { Source = new Uri("/EEP_BudgetWatcher;component/Themes/Default.xaml", uriKind: UriKind.Relative) };
+
+    public override Type? ElementPluginModel => null;
+
+    public override Type ElementPluginView => typeof(BudgetWatcherMainView);
+
+    public override Type ElementPluginViewModel => typeof(BudgetWatcherMainViewModel);
+
+    public BudgetChangeViewModel BudgetChangeViewModel => _BudgetChangeViewModel;
+
+    public SetupFieldViewModel SetupField { get; }
+
     public async override Task<EBoardFeedbackMessage> Load(string path)
     {
         if (new DirectoryInfo(path).Exists)
@@ -104,7 +114,7 @@ public partial class BudgetWatcherMainViewModel : EBoardElementPluginBaseViewMod
 
         try
         {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<BudgetOverviewModel>(path)!;
+            var data = await Loader.LoadJsonFile<BudgetOverviewModel>(path)!;
 
             if (data != null)
             {
@@ -132,32 +142,20 @@ public partial class BudgetWatcherMainViewModel : EBoardElementPluginBaseViewMod
             budgets.Add(budgetviewmodel.GetBudget);
         });
 
-        var budgetdata = new BudgetOverviewModel(budgets);
+        var model = new BudgetOverviewModel(budgets);
 
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(budgetdata, path);
+        var result = Saver.SaveJsonFile(path, model);
 
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        return new EBoardFeedbackMessage()
         {
-            // TODO do stuff
-        }
-
-        return serializationResult!;
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
     }
 
-    public BudgetWatcherMainViewModel()
+    private void SetInitialResources()
     {
-        SetInitialResources();
-
-        _BudgetChangeViewModel = new BudgetChangeViewModel();
-
-        SetupField = new SetupFieldViewModel();
-
-        //BrushManagement.PropertyChangedEvent += BrushManagement_PropertyChangedEvent;
-    }
-
-    private void BrushManagement_PropertyChangedEvent()
-    {
-        RegisterResources();
+        new ResourceSet().SetResources();
     }
 
     [RelayCommand]
@@ -170,16 +168,6 @@ public partial class BudgetWatcherMainViewModel : EBoardElementPluginBaseViewMod
     private void RemoveBudget()
     {
         BudgetChangeViewModel.RemoveBudget(BudgetChangeViewModel.BudgetViewModel);
-    }
-
-    private void RegisterResources()
-    {
-        //var resourceChangeApplied = new ResourceSet().ApplyBrushManagement(BrushManagement);
-    }
-
-    private void SetInitialResources()
-    {
-        new ResourceSet().SetResources();
     }
 }
 

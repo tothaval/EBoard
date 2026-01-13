@@ -55,10 +55,6 @@
             <image:ImageView DataContext="{Binding ImageViewModel5}"/>
             <image:ImageView DataContext="{Binding ImageViewModel6}"/>
         </UniformGrid>
-        
-        <!--<controls:AreaView DataContext="{Binding AreaViewModel}"
-                           HorizontalContentAlignment="Stretch"
-                           HorizontalAlignment="Stretch"/>-->
     </Border>
 </UserControl>
 

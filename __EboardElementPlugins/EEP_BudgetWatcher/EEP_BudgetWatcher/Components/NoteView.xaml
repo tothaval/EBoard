@@ -60,7 +60,7 @@
                 <Button Command="{Binding NewEntryCommand}"
                         Style="{StaticResource buttonStyle}"
                         Margin="5"
-                         MinWidth="150"
+                        MinWidth="150"
                         Grid.Column="0"
                         Grid.Row="0">
                     <Button.Content>
@@ -71,8 +71,7 @@
                                    Padding="5"/>
                     </Button.Content>
                 </Button>
-                
-                
+
                 <TextBox x:Name="TX_Note" 
                          Style="{StaticResource StringValueTextBox}"
                          Margin="5"
@@ -90,8 +89,7 @@
                          VerticalScrollBarVisibility="Auto"
                          VerticalAlignment="Stretch"
                          TextWrapping="Wrap"
-                         Text="{Binding Content, UpdateSourceTrigger=PropertyChanged}"
-                         />
+                         Text="{Binding Content, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
 </UserControl>
 

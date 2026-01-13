@@ -36,7 +36,7 @@ using System.Linq;
 using System.Windows;
 
 /// <summary>
-/// TODO: fix selected elements group actions throughout the project
+/// TODO: fix selected elements group actions throughout the project.
 /// </summary>
 public class ArrangeSelectedElements
 {
@@ -45,7 +45,7 @@ public class ArrangeSelectedElements
     public void ArrangeGroupAsLine(EBoardViewModel eBoardViewModel)
     {
         var elements = eBoardViewModel.Elements;
-        var eBoardSettingsViewModel = eBoardViewModel.EBoardSettingsViewModel;
+        var eBoardSettingsViewModel = eBoardViewModel.ScreenControlViewModel;
 
         var group = elements.Where(e => e.IsSelected).ToList();
 
@@ -60,33 +60,33 @@ public class ArrangeSelectedElements
             switch (rotation)
             {
                 case 0:
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = selectionArrangementOrigin.X + (counter * offset);
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = selectionArrangementOrigin.Y;
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = (int)(selectionArrangementOrigin.X + (counter * offset));
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = (int)selectionArrangementOrigin.Y;
                     break;
 
                 case 45:
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = selectionArrangementOrigin.X + (counter * offset);
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = selectionArrangementOrigin.Y + (counter * offset);
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = (int)(selectionArrangementOrigin.X + (counter * offset));
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = (int)(selectionArrangementOrigin.Y + (counter * offset));
                     break;
 
                 case -45:
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = selectionArrangementOrigin.X - (counter * offset);
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = selectionArrangementOrigin.Y + (counter * offset);
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = (int)(selectionArrangementOrigin.X - (counter * offset));
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = (int)(selectionArrangementOrigin.Y + (counter * offset));
                     break;
 
                 case 90:
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = selectionArrangementOrigin.X;
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = selectionArrangementOrigin.Y + (counter * offset);
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = (int)selectionArrangementOrigin.X;
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = (int)(selectionArrangementOrigin.Y + (counter * offset));
                     break;
 
                 case -90:
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = selectionArrangementOrigin.X;
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = selectionArrangementOrigin.Y - (counter * offset);
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = (int)selectionArrangementOrigin.X;
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = (int)(selectionArrangementOrigin.Y - (counter * offset));
                     break;
 
                 default:
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = selectionArrangementOrigin.X;
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = selectionArrangementOrigin.Y;
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = (int)selectionArrangementOrigin.X;
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = (int)selectionArrangementOrigin.Y;
                     break;
             }
 
@@ -97,7 +97,7 @@ public class ArrangeSelectedElements
     public void ArrangeGroupAsLine(EBoardViewModel eBoardViewModel, ElementViewModel originElement)
     {
         var elements = eBoardViewModel.Elements;
-        var eBoardSettingsViewModel = eBoardViewModel.EBoardSettingsViewModel;
+        var eBoardSettingsViewModel = eBoardViewModel.ScreenControlViewModel;
 
         var group = elements.Where(e => e.IsSelected && !e.Equals(originElement)).ToList();
 
@@ -110,33 +110,33 @@ public class ArrangeSelectedElements
             switch (rotation)
             {
                 case 0:
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition + (counter * (originElement.ElementView.ActualWidth + offset));
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = (int)(originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition + (counter * (originElement.ElementView.ActualWidth + offset)));
 
                     item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition;
                     break;
 
                 case 45:
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition + (counter * (originElement.ElementView.ActualWidth + offset));
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = (int)(originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition + (counter * (originElement.ElementView.ActualWidth + offset)));
 
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition + (counter * (originElement.ElementView.ActualHeight + offset));
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = (int)(originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition + (counter * (originElement.ElementView.ActualHeight + offset)));
                     break;
 
                 case -45:
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition - (counter * (originElement.ElementView.ActualWidth + offset));
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = (int)(originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition - (counter * (originElement.ElementView.ActualWidth + offset)));
 
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition + (counter * (originElement.ElementView.ActualHeight + offset));
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = (int)(originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition + (counter * (originElement.ElementView.ActualHeight + offset)));
                     break;
 
                 case 90:
                     item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition;
 
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition + (counter * (originElement.ElementView.ActualHeight + offset));
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = (int)(originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition + (counter * (originElement.ElementView.ActualHeight + offset)));
                     break;
 
                 case -90:
                     item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition = originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.XPosition;
 
-                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition - (counter * (originElement.ElementView.ActualHeight + offset));
+                    item.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition = (int)(originElement.FluidUIMenuViewModel.FluidUIStandSetupViewModel.YPosition - (counter * (originElement.ElementView.ActualHeight + offset)));
                     break;
 
                 default:
@@ -161,7 +161,7 @@ public class ArrangeSelectedElements
     public void ArrangeGroupAsSquare(EBoardViewModel eBoardViewModel, ElementViewModel? originElement = null)
     {
         var elements = eBoardViewModel.Elements;
-        var eBoardSettingsViewModel = eBoardViewModel.EBoardSettingsViewModel;
+        var eBoardSettingsViewModel = eBoardViewModel.ScreenControlViewModel;
 
         var group = elements.Where(e => e.IsSelected).ToList();
 
@@ -182,7 +182,7 @@ public class ArrangeSelectedElements
     public void ArrangeGroupAsRandomMatrix10x10(EBoardViewModel eBoardViewModel, ElementViewModel? originElement = null)
     {
         var elements = eBoardViewModel.Elements;
-        var eBoardSettingsViewModel = eBoardViewModel.EBoardSettingsViewModel;
+        var eBoardSettingsViewModel = eBoardViewModel.ScreenControlViewModel;
 
         var group = elements.Where(e => e.IsSelected).ToList();
 

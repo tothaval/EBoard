@@ -42,11 +42,13 @@ public partial class RectangleViewModel : ShapeBaseViewModel
 {
     private string pluginHeader = "Rectangle Shape Element";
 
-    private string pluginName = "RectangleShape";
+    private string pluginName = "Rectangle";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RectangleViewModel"/> class.
+    /// </summary>
     public RectangleViewModel()
     {
-        this.SetFluidUIViewModel(new EboardFluidUIBaseViewModel());
     }
 
     public override PluginCategories PluginCategory => PluginCategories.Shape;
@@ -69,8 +71,6 @@ public partial class RectangleViewModel : ShapeBaseViewModel
         set { this.pluginName = value; }
     }
 
-    public override string ElementPluginName => "Rectangle";
-
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
     public override ResourceDictionary ResourceDictionary => new();
@@ -80,29 +80,6 @@ public partial class RectangleViewModel : ShapeBaseViewModel
     public override Type ElementPluginView => typeof(RectangleView);
 
     public override Type ElementPluginViewModel => typeof(RectangleViewModel);
-
-    public override void RefreshInitialization()
-    {
-        if (this.ElementViewModel != null)
-        {
-            this.ElementViewModel.FluidUI.Size.Margin = new Thickness(0);
-            this.ElementViewModel.FluidUI.Size.Padding = new Thickness(0);
-
-            this.ElementViewModel.FluidUI.Design.Highlight = this.FluidUIViewModel.FluidUI.Design.Highlight;
-
-            this.ElementViewModel.Redraw();
-        }
-    }
-
-    public override Task<EBoardFeedbackMessage> Load(string path)
-    {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
-    }
-
-    public override Task<EBoardFeedbackMessage> Save(string path)
-    {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
-    }
 }
 
 // EOF
