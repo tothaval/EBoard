@@ -31,6 +31,8 @@
 /// </p>
 namespace EBoardElementPluginMyNote;
 
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
 using EBoardElementPluginMyNote.Models;
 using EBoardElementPluginMyNote.ViewModels;
 using EBoardSDK;
@@ -39,7 +41,6 @@ using EBoardSDK.Enums;
 using EBoardSDK.Plugins;
 using EBoardSDK.Plugins.Elements.Protocol;
 using EBoardSDK.Plugins.Elements.Protocol.Models;
-using EBoardSDK.SharedMethods;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,6 +48,18 @@ using System.Windows.Media;
 
 public class MyNoteViewModel : EBoardElementPluginBaseViewModel
 {
+    private string pluginHeader = "MyNote";
+    private string pluginName = "MyNote";
+
+    public MyNoteViewModel()
+    {
+        this.ElementScreenIntegrationConstraints = new EBoardSDK.Models.ElementScreenIntegrationConstraints(ElementInstantiationPolicy.Unconstrained);
+
+        this.Protocol = new ProtocolViewModel();
+        this.Notes = new NotesViewModel();
+        this.AreaViewModel = new AreaViewModel<ProtocolViewModel>(this.ElementViewModel);
+    }
+
     public ProtocolViewModel Protocol { get; }
 
     public NotesViewModel Notes { get; }
@@ -57,17 +70,13 @@ public class MyNoteViewModel : EBoardElementPluginBaseViewModel
 
     public override bool NoDefaultBorders { get; } = false;
 
-    public override ImageBrush PluginLogo { get; set; }
+    public override ImageBrush PluginLogo { get; set; } = new();
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
 
-    private string pluginHeader = "MyNote Element";
     public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
 
-    private string pluginName = "MyNote";
     public override string PluginName { get { return pluginName; } set { pluginName = value; } }
-
-    public override string ElementPluginName => "MyNote";
 
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
@@ -79,13 +88,6 @@ public class MyNoteViewModel : EBoardElementPluginBaseViewModel
 
     public override Type ElementPluginViewModel => typeof(MyNoteViewModel);
 
-    public MyNoteViewModel()
-    {
-        this.Protocol = new ProtocolViewModel();
-        this.Notes = new NotesViewModel();
-        this.AreaViewModel = new AreaViewModel<ProtocolViewModel>(this.ElementViewModel);
-    }
-
     public Note GetProtocol => this.Protocol.Note;
 
     public List<ProtocolViewModel> GetNotes => this.Notes.GetNotes;
@@ -96,6 +98,9 @@ public class MyNoteViewModel : EBoardElementPluginBaseViewModel
         {
             this.AreaViewModel.SetElementViewModel(this.ElementViewModel);
 
+            this.Protocol.SetEBoardAndElementViewModel(this.ElementViewModel.EBoardViewModel, this.ElementViewModel);
+            this.Notes.SetEBoardAndElementViewModel(this.ElementViewModel.EBoardViewModel, this.ElementViewModel);
+
             this.OnPropertyChanged(nameof(this.AreaViewModel));
         }
     }
@@ -104,7 +109,7 @@ public class MyNoteViewModel : EBoardElementPluginBaseViewModel
     {
         try
         {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<MyNoteModel>(path)!;
+            var data = await Loader.LoadJsonFile<MyNoteModel>(path)!;
 
             if (data != null)
             {
@@ -125,6 +130,8 @@ public class MyNoteViewModel : EBoardElementPluginBaseViewModel
                     {
                         // ggf ueber Konstruktor refaktoring verkuerzen
                         var protocolVM = new ProtocolViewModel(note);
+
+                        protocolVM.SetEBoardAndElementViewModel(this.EBoardViewModel, this.ElementViewModel);
 
                         protocolViewModels.Add(protocolVM);
                     }
@@ -151,14 +158,13 @@ public class MyNoteViewModel : EBoardElementPluginBaseViewModel
 
         var model = new MyNoteModel(this);
 
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
+        var result = Saver.SaveJsonFile(path, model);
 
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        return new EBoardFeedbackMessage()
         {
-            // TODO do stuff
-        }
-
-        return serializationResult!;
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
     }
 }
 

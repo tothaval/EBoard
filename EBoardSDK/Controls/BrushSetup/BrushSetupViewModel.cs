@@ -32,10 +32,12 @@
 namespace EBoardSDK.Controls.BrushSetup;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Controls.BrushSetup.LinearBrushSetup;
 using EBoardSDK.Controls.BrushSetup.RadialBrushSetup;
 using EBoardSDK.Controls.BrushSetup.SolidBrushSetup;
 using EBoardSDK.Enums;
+using EBoardSDK.Models.FluidUIDesign;
 using EBoardSDK.ViewModels;
 
 public partial class BrushSetupViewModel : ObservableObject
@@ -43,31 +45,30 @@ public partial class BrushSetupViewModel : ObservableObject
     private BrushTargets brushTargets;
 
     private readonly EboardFluidUIBaseViewModel viewModel;
+    private FluidUIDesignManager fluidUIDesignManager;
+
     private SolidBrushSetupViewModel solidBrushViewModel;
     private LinearBrushSetupViewModel linearBrushViewModel = new LinearBrushSetupViewModel();
     private RadialBrushSetupViewModel radialBrushViewModel = new RadialBrushSetupViewModel();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BrushSetupViewModel"/> class.
+    /// </summary>
+    /// <param name="eboardFluidUIBaseViewModel"></param>
+    /// <param name="brushTargets"></param>
+    /// <param name="okAction"></param>
     public BrushSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel, BrushTargets brushTargets, Action okAction)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
+        this.fluidUIDesignManager = new FluidUIDesignManager(this.ViewModel);
+
         this.solidBrushViewModel = new SolidBrushSetupViewModel(eboardFluidUIBaseViewModel, brushTargets, okAction);
 
         this.brushTargets = brushTargets;
 
-        //this.SolidBrush.PropertyChanged += this.SolidBrush_PropertyChanged;
-
         this.OnPropertyChanged(nameof(this.SolidBrush));
         this.OnPropertyChanged(nameof(this.ViewModel));
     }
-
-    //private void SolidBrush_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    //{
-    //    this.OnPropertyChanged(nameof(this.SolidBrush));
-    //    this.OnPropertyChanged(nameof(this.ViewModel));
-
-    //    this.OnPropertyChanged(nameof(this.ViewModel.FluidUI));
-    //    this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Design));
-    //}
 
     public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
 
@@ -76,6 +77,54 @@ public partial class BrushSetupViewModel : ObservableObject
     public LinearBrushSetupViewModel LinearBrush => this.linearBrushViewModel;
 
     public RadialBrushSetupViewModel RadialBrush => this.radialBrushViewModel;
+
+    [RelayCommand]
+    private void ResetForegroundImage()
+    {
+        this.fluidUIDesignManager.ResetBrush(BrushTargets.Foreground);
+    }
+
+    [RelayCommand]
+    private void ResetHighlightImage()
+    {
+        this.fluidUIDesignManager.ResetBrush(BrushTargets.Highlight);
+    }
+
+    [RelayCommand]
+    private void ResetImage()
+    {
+        this.fluidUIDesignManager.ResetBrush(BrushTargets.Background);
+    }
+
+    [RelayCommand]
+    private void ResetImageBorder()
+    {
+        this.fluidUIDesignManager.ResetBrush(BrushTargets.Border);
+    }
+
+    [RelayCommand]
+    private void SetBackgroundImage()
+    {
+        this.fluidUIDesignManager.SetUserChosenImagePath(BrushTargets.Background);
+    }
+
+    [RelayCommand]
+    private void SetForegroundImage()
+    {
+        this.fluidUIDesignManager.SetUserChosenImagePath(BrushTargets.Foreground);
+    }
+
+    [RelayCommand]
+    private void SetBorderImage()
+    {
+        this.fluidUIDesignManager.SetUserChosenImagePath(BrushTargets.Border);
+    }
+
+    [RelayCommand]
+    private void SetHighlightImage()
+    {
+        this.fluidUIDesignManager.SetUserChosenImagePath(BrushTargets.Highlight);
+    }
 }
 
 // EOF

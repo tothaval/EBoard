@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Elements.Image;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für ImageView.xaml
+/// Interaktionslogik für ImageView.xaml.
 /// </summary>
 public partial class ImageView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ImageView"/> class.
+    /// </summary>
     public ImageView()
     {
         this.InitializeComponent();

@@ -31,25 +31,20 @@
 /// </p>
 namespace EBoardSDK.Models;
 
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json.Serialization;
 
 public class EboardScreen
 {
     [JsonIgnore]
-    public ObservableCollection<ElementConfig> Elements { get; set; } = [];
+    public List<ElementConfig> Elements { get; set; } = [];
 
     [JsonIgnore]
-    public ObservableCollection<FileInfo> ContentDataFilePaths { get; set; } = [];
+    public List<FileInfo> ContentDataFilePaths { get; set; } = [];
 
     public string EBID { get; set; } = string.Empty;
 
     public int ID { get; set; } = -1;
-
-    public int EBoardDepth { get; set; } = 1;
-
-    public string EBoardName { get; set; } = string.Empty;
 
     public FluidUIContext EBoardScreenContext { get; set; }
 }

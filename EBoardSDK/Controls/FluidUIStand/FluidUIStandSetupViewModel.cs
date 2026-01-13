@@ -32,7 +32,10 @@
 namespace EBoardSDK.Controls.FluidUIStand;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Interfaces.FluidUIStand;
+using EBoardSDK.Models.FluidUISize;
+using EBoardSDK.Models.FluidUIStand;
 using EBoardSDK.ViewModels;
 using System;
 using System.Windows;
@@ -41,7 +44,9 @@ using System.Windows.Media;
 public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStandSetup
 {
     private EboardFluidUIBaseViewModel viewModel;
+    private EboardFluidUIBaseViewModel outerViewModel;
     private EBoardViewModel? eBoardViewModel;
+    private FluidUIStandManager fluidUIStandManager;
 
     private bool fluidUIContextHasStand = false;
 
@@ -55,22 +60,22 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
     private Point transformOriginPoint;
 
     [ObservableProperty]
+    private double xTransformOrigin;
+
+    [ObservableProperty]
+    private double yTransformOrigin;
+
+    [ObservableProperty]
     private int xMaximumValue;
 
     [ObservableProperty]
-    private double xPosition;
-
-    [ObservableProperty]
-    private int xSliderValue;
+    private int xPosition;
 
     [ObservableProperty]
     private int yMaximumValue;
 
     [ObservableProperty]
-    private double yPosition;
-
-    [ObservableProperty]
-    private int ySliderValue;
+    private int yPosition;
 
     [ObservableProperty]
     private int zIndexValue = 0;
@@ -84,48 +89,23 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
     [ObservableProperty]
     private bool isRotating = false;
 
-    public FluidUIStandSetupViewModel()
-    {
-        this.XMaximumValue = 2048;
-        this.YMaximumValue = 1024;
-
-        this.ZIndexValue = this.ViewModel.FluidUI.Stand.Z;
-        this.RotationAngleValue = (int)this.ViewModel.FluidUI.Stand.Angle;
-
-        this.CalibrateZSliderValues(100);
-
-        this.XPosition = (int)this.ViewModel.FluidUI.Stand.Position.X;
-        this.YPosition = (int)this.ViewModel.FluidUI.Stand.Position.Y;
-
-        this.ApplyRotationAngleValue(this.RotationAngleValue);
-    }
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIStandSetupViewModel"/> class.
+    /// </summary>
+    /// <param name="eboardFluidUIBaseViewModel"></param>
+    /// <param name="eBoardViewModel"></param>
+    /// <param name="fluidUIContextHasStand"></param>
     public FluidUIStandSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel, EBoardViewModel? eBoardViewModel = null, bool fluidUIContextHasStand = false)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
         this.eBoardViewModel = eBoardViewModel;
+        this.fluidUIStandManager = new FluidUIStandManager(this.ViewModel);
+
         this.fluidUIContextHasStand = fluidUIContextHasStand;
 
-        this.ZIndexValue = this.ViewModel.FluidUI.Stand.Z;
-        this.RotationAngleValue = (int)this.ViewModel.FluidUI.Stand.Angle;
+        this.ApplyFluidUIStandValues();
 
-        if (this.eBoardViewModel != null)
-        {
-            this.XMaximumValue = (int)this.eBoardViewModel.FluidUI.Size.Width;
-            this.YMaximumValue = (int)this.eBoardViewModel.FluidUI.Size.Height;
-            this.CalibrateZSliderValues(this.eBoardViewModel.EBoardDepth);
-        }
-        else
-        {
-            this.XMaximumValue = 2048;
-            this.YMaximumValue = 1024;
-            this.CalibrateZSliderValues(100);
-        }
-
-        this.XPosition = (int)this.ViewModel.FluidUI.Stand.Position.X;
-        this.YPosition = (int)this.ViewModel.FluidUI.Stand.Position.Y;
-
-        this.ApplyRotationAngleValue(this.RotationAngleValue);
+        this.SetupSliderValues();
 
         if (fluidUIContextHasStand)
         {
@@ -136,96 +116,134 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
         this.OnPropertyChanged(nameof(this.ViewModel));
     }
 
-    public event Action PropertyChangedEvent;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIStandSetupViewModel"/> class.
+    /// </summary>
+    /// <param name="eboardFluidUIBaseViewModel"></param>
+    /// <param name="outerViewModel"></param>
+    /// <param name="eBoardViewModel"></param>
+    /// <param name="fluidUIContextHasStand"></param>
+    public FluidUIStandSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel, EboardFluidUIBaseViewModel outerViewModel, EBoardViewModel? eBoardViewModel = null, bool fluidUIContextHasStand = false)
+    {
+        this.viewModel = eboardFluidUIBaseViewModel;
+        this.outerViewModel = outerViewModel;
+        this.eBoardViewModel = eBoardViewModel;
+        this.fluidUIStandManager = new FluidUIStandManager(this.outerViewModel);
+
+        this.fluidUIContextHasStand = fluidUIContextHasStand;
+
+        this.ApplyFluidUIStandValues();
+
+        this.SetupSliderValues();
+
+        if (fluidUIContextHasStand)
+        {
+            this.fluidUIContextHasStand = fluidUIContextHasStand;
+        }
+
+        this.OnPropertyChanged(nameof(this.FluidUIContextHasStand));
+        this.OnPropertyChanged(nameof(this.ViewModel));
+    }
+
+    public event Action? PropertyChangedEvent;
 
     public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
 
     public bool FluidUIContextHasStand => this.fluidUIContextHasStand;
 
-    public int ApplyRotationAngleValue(int rotationAngleValue)
+    public void ApplyFluidUIStandValues()
     {
-        this.UpdateRotation(rotationAngleValue);
+        this.XPosition = (int)this.fluidUIStandManager.GetPosition().X;
+        this.YPosition = (int)this.fluidUIStandManager.GetPosition().Y;
+        this.ZIndexValue = this.fluidUIStandManager.GetZ();
+        this.RotationAngleValue = (int)this.fluidUIStandManager.GetAngle();
+        this.TransformOriginPoint = this.fluidUIStandManager.GetTransformOriginPoint();
+        this.XTransformOrigin = this.TransformOriginPoint.X;
+        this.YTransformOrigin = this.TransformOriginPoint.Y;
 
-        this.RotationAngleValue = rotationAngleValue;
-
-        return this.RotationAngleValue;
-    }
-
-    public int ApplyRotationAngleValueByMouseWheel(int delta)
-    {
-        if (delta < 0 && this.RotationAngleValue > -180)
+        if (this.outerViewModel != null)
         {
-            this.RotationAngleValue--;
+            this.ViewModel.FluidUI.Stand = this.outerViewModel.FluidUI.Stand;
+            //this.ViewModel.UpdateStand();
         }
-
-        if (delta > 0 && this.RotationAngleValue < 180)
-        {
-            this.RotationAngleValue++;
-        }
-
-        this.UpdateRotation(this.RotationAngleValue);
-
-        return this.RotationAngleValue;
-    }
-
-    public void ApplyZIndexValue(int zIndexValue)
-    {
-        this.ZIndexValue = zIndexValue;
-
-        this.ViewModel.FluidUI.Stand.Z = zIndexValue;
-
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Stand.Z));
-        this.OnPropertyChanged(nameof(this.ZIndexValue));
-    }
-
-    public int ApplyZIndexValueByMouseWheel(int delta)
-    {
-        if (delta < 0 && this.ZMinimumValue < this.ZIndexValue)
-        {
-            this.ZIndexValue--;
-        }
-
-        if (delta > 0 && this.ZMaximumValue > this.ZIndexValue)
-        {
-            this.ZIndexValue++;
-        }
-
-        this.ViewModel.FluidUI.Stand.Z = this.ZIndexValue;
-
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Stand.Z));
-        this.OnPropertyChanged(nameof(this.ZIndexValue));
-
-        return this.ZIndexValue;
     }
 
     public void CalibrateZSliderValues(int eboardDepth)
     {
         if (eboardDepth >= 0)
         {
-            this.ZMinimumValue = 0;
-            this.ZMaximumValue = eboardDepth;
+            this.fluidUIStandManager.SetZmaximum(eboardDepth);
+            this.fluidUIStandManager.SetZminimum(0);
+
+            this.ZMaximumValue = this.fluidUIStandManager.GetZmaximum();
+            this.ZMinimumValue = this.fluidUIStandManager.GetZminimum();
 
             if (eboardDepth == 0)
             {
-                this.ZMaximumValue = 1;
+
+                this.fluidUIStandManager.SetZminimum(-1);
+                this.fluidUIStandManager.SetZmaximum(1);
+
+                this.ZMaximumValue = this.fluidUIStandManager.GetZmaximum();
+                this.ZMinimumValue = this.fluidUIStandManager.GetZminimum();
             }
         }
         else if (eboardDepth < 0)
         {
-            this.ZMinimumValue = eboardDepth;
-            this.ZMaximumValue = 0;
+            this.fluidUIStandManager.SetZmaximum(0);
+            this.fluidUIStandManager.SetZminimum(eboardDepth);
+
+            this.ZMaximumValue = this.fluidUIStandManager.GetZmaximum();
+            this.ZMinimumValue = this.fluidUIStandManager.GetZminimum();
         }
 
-        this.OnPropertyChanged(nameof(this.ZMinimumValue));
         this.OnPropertyChanged(nameof(this.ZMaximumValue));
+        this.OnPropertyChanged(nameof(this.ZMinimumValue));
     }
 
     public void Dispose()
     {
     }
 
+    public void Reset()
+    {
+        this.fluidUIStandManager.Reset();
+
+        this.ApplyFluidUIStandValues();
+
+        this.SetupSliderValues();
+    }
+
     public void SetInitialValues()
     {
+    }
+
+    private void SetupSliderValues()
+    {
+        if (this.eBoardViewModel != null)
+        {
+            var manager = new FluidUISizeManager(this.eBoardViewModel);
+
+            this.XMaximumValue = manager.GetWidth();
+            this.YMaximumValue = manager.GetHeight();
+
+            if (this.eBoardViewModel.FluidUI.Stand != null)
+            {
+                this.CalibrateZSliderValues(this.eBoardViewModel.FluidUI.Stand.Zmaximum);
+            }
+        }
+        else
+        {
+            this.XMaximumValue = 2048;
+            this.YMaximumValue = 1024;
+
+            this.CalibrateZSliderValues(100);
+        }
+    }
+
+    private void UpdateRotation()
+    {
+        this.IsRotating = false;
     }
 
     partial void OnRotationAngleValueChanging(int oldValue, int newValue)
@@ -234,90 +252,94 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
         {
             this.isRotating = true;
 
-            //ChangeSelection_RotationAngleValue(-(oldValue - newValue));
-
             return;
         }
 
         if (oldValue != newValue)
         {
-            this.UpdateRotation(newValue);
+            this.UpdateRotation();
+            this.fluidUIStandManager.SetAngle(newValue);
+
+            if (this.outerViewModel != null)
+            {
+                this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
+                //this.ViewModel.UpdateStand();
+            }
 
             return;
         }
     }
 
-    partial void OnRotateTransformValueChanged(RotateTransform value)
+    partial void OnTransformOriginPointChanged(Point value)
     {
-        this.ViewModel.FluidUI.Stand.Angle = RotationAngleValue;
+        this.fluidUIStandManager.SetTransformOriginPoint(value);
 
-        this.OnPropertyChanged(nameof(this.ViewModel.FluidUI.Stand.Angle));
-        this.OnPropertyChanged(nameof(this.ViewModel));
-        this.OnPropertyChanged(nameof(this.RotationAngleValue));
-    }
-
-    partial void OnXPositionChanged(double value)
-    {
-        if (XSliderValue != (int)value)
+        if (this.outerViewModel != null)
         {
-            XSliderValue = (int)value;
-        }
-
-        this.ViewModel.FluidUI.Stand.Position = new Point(value, this.ViewModel.FluidUI.Stand.Position.Y);
-
-        this.ViewModel.TriggerRedraw();
-    }
-
-    partial void OnXSliderValueChanged(int value)
-    {
-        if (XPosition != value)
-        {
-            XPosition = value;
+            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
+            //this.ViewModel.UpdateStand();
         }
     }
 
-    partial void OnYPositionChanged(double value)
+    partial void OnXPositionChanged(int value)
     {
-        if (YSliderValue != (int)value)
+        this.fluidUIStandManager.SetX(value);
+
+        if (this.outerViewModel != null)
         {
-            YSliderValue = (int)value;
+            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
+            //this.ViewModel.UpdateStand();
         }
-
-        this.ViewModel.FluidUI.Stand.Position = new Point(this.ViewModel.FluidUI.Stand.Position.X, value);
-
-        this.ViewModel.TriggerRedraw();
     }
 
-    partial void OnYSliderValueChanged(int value)
+    partial void OnYPositionChanged(int value)
     {
-        if (YPosition != value)
+        this.fluidUIStandManager.SetY(value);
+
+        if (this.outerViewModel != null)
         {
-            YPosition = value;
+            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
+            //this.ViewModel.UpdateStand();
+        }
+    }
+
+    partial void OnXTransformOriginChanged(double value)
+    {
+        this.TransformOriginPoint = new Point(value, this.TransformOriginPoint.Y);
+
+        if (this.outerViewModel != null)
+        {
+            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
+            //this.ViewModel.UpdateStand();
+        }
+    }
+
+    partial void OnYTransformOriginChanged(double value)
+    {
+        this.TransformOriginPoint = new Point(this.TransformOriginPoint.X, value);
+
+        if (this.outerViewModel != null)
+        {
+            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
+            //this.ViewModel.UpdateStand();
         }
     }
 
     partial void OnZIndexValueChanged(int value)
     {
-        this.ViewModel.FluidUI.Stand.Z = value;
+        this.fluidUIStandManager.SetZ(value);
 
-        //ChangeSelection_ZIndexValue(value);
-
-        this.ViewModel.TriggerRedraw();
+        if (this.outerViewModel != null)
+        {
+            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
+            //this.ViewModel.UpdateStand();
+        }
     }
 
-    private void UpdateRotation(int rotationAngle)
+    [RelayCommand]
+    private void ResetStand()
     {
-        this.RotateTransformValue = new RotateTransform(rotationAngle * -1);
-
-        this.TransformOriginPoint = new Point(0.5, 0.5);
-
-        this.IsRotating = false;
-
-        this.ViewModel.TriggerRedraw();
-
-        this.OnPropertyChanged(nameof(this.RotationAngleValue));
-        this.OnPropertyChanged(nameof(this.TransformOriginPoint));
-        this.OnPropertyChanged(nameof(this.ViewModel));
+        this.Reset();
     }
 }
 

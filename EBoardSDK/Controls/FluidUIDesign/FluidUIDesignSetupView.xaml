@@ -41,7 +41,8 @@
           xmlns:linear="clr-namespace:EBoardSDK.Controls.BrushSetup.LinearBrushSetup"
           xmlns:radial="clr-namespace:EBoardSDK.Controls.BrushSetup.RadialBrushSetup"
           xmlns:solid="clr-namespace:EBoardSDK.Controls.BrushSetup.SolidBrushSetup"
-             d:DataContext="{d:DesignInstance Type=local:FluidUIDesignSetupViewModel}"
+          d:DataContext="{d:DesignInstance Type=local:FluidUIDesignSetupViewModel}"
+          StaysOpenOnClick="True"
           mc:Ignorable="d" 
           d:DesignHeight="450" d:DesignWidth="800">
 
@@ -61,6 +62,13 @@
         <DataTemplate DataType="{x:Type solid:SolidBrushSetupViewModel}">
             <solid:SolidBrushSetupView/>
         </DataTemplate>
+
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
+            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="Padding" Value="0 0 10 0"/>
+        </Style>
 
         <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border}"/>
@@ -82,51 +90,61 @@
 
         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}" x:Key="sub">
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="TextBlock.Foreground" Value="{Binding ViewModel.FluidUIDesign.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
         </Style>
 
-        <Style TargetType="Label" >
-            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
-            <Setter Property="Background" Value="Transparent"/>
-        </Style>
-
-        <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}" x:Key="MenuButtonStyle">
-            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
-            <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Background}"/>
-            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border}"/>
-        </Style>
     </MenuItem.Resources>
-    <MenuItem Header="Colors" Style="{StaticResource menuitem}"
-                  StaysOpenOnClick="True">
-        <bs:BrushSetupView DataContext="{Binding BackgroundBS, NotifyOnSourceUpdated=True}"
-                                   Style="{StaticResource menuitem}"
-                                 Header="Background"
-                                   StaysOpenOnClick="True"/>
+    
+    <bs:BrushSetupView DataContext="{Binding BackgroundBS, NotifyOnSourceUpdated=True}"
+                           Style="{StaticResource menuitem}"
+                           Header="Background"
+                           StaysOpenOnClick="True"/>
 
-        <bs:BrushSetupView DataContext="{Binding ForegroundBS, NotifyOnSourceUpdated=True}"
-                                 Header="Foreground"
-                                 Style="{StaticResource menuitem}"
-                                 StaysOpenOnClick="True"/>
+    <bs:BrushSetupView DataContext="{Binding ForegroundBS, NotifyOnSourceUpdated=True}"
+                           Header="Foreground"
+                           Style="{StaticResource menuitem}"
+                           StaysOpenOnClick="True"/>
 
-        <bs:BrushSetupView DataContext="{Binding BorderBS, NotifyOnSourceUpdated=True}"
-                                 Header="Border"
-                                 Style="{StaticResource menuitem}"
-                                 StaysOpenOnClick="True"/>
+    <bs:BrushSetupView DataContext="{Binding BorderBS, NotifyOnSourceUpdated=True}"
+                           Header="Border"
+                           Style="{StaticResource menuitem}"
+                           StaysOpenOnClick="True"/>
 
-        <bs:BrushSetupView DataContext="{Binding HighlightBS, NotifyOnSourceUpdated=True}"
-                                 Header="Highlight"
-                                 Style="{StaticResource menuitem}"
-                                 StaysOpenOnClick="True"/>
-    </MenuItem>
+    <bs:BrushSetupView DataContext="{Binding HighlightBS, NotifyOnSourceUpdated=True}"
+                       Header="Highlight"
+                       Style="{StaticResource menuitem}"
+                       StaysOpenOnClick="True"/>
 
-    <MenuItem Header="Reset" Style="{StaticResource menuitem}">
-        <MenuItem Header="Background" Command="{Binding ViewModel.ResetImageCommand}" Style="{StaticResource menuitem}"/>
-        <MenuItem Header="Foreground" Command="{Binding ViewModel.ResetForegroundImageCommand}" Style="{StaticResource menuitem}"/>
-        <MenuItem Header="Border" Command="{Binding ViewModel.ResetImageBorderCommand}" Style="{StaticResource menuitem}"/>
-        <MenuItem Header="Highlight" Command="{Binding ViewModel.ResetHighlightImageCommand}" Style="{StaticResource menuitem}"/>
+
+    <MenuItem Header="Opacity"
+              Style="{StaticResource menuitem}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <TextBox Text="{Binding OpacityValue}"
+                 TextWrapping="NoWrap"
+                 Width="200"
+                 Padding="0 0 15 0"
+                 Grid.Row="0"/>
+
+            <Slider Value="{Binding OpacityValue}"
+                Background="{Binding ViewModel.FluidUI.Design.Background}"
+                Minimum="0"
+                Maximum="1"
+                Width="200"
+                SmallChange="0.05"
+                LargeChange="0.1"
+                Grid.Row="1"/>
+        </Grid>
     </MenuItem>
 </MenuItem>
 

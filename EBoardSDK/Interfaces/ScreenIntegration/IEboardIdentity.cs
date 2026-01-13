@@ -35,11 +35,7 @@ using EBoardSDK.Enums;
 
 public interface IEboardIdentity
 {
-    public int EBoardDepth { get; set; }
-
     public string EBID { get; }
-
-    public string? EBoardName { get; }
 
     public IList<ElementInstantiationPolicy>? InstantiationPolicies { get; }
 

@@ -37,171 +37,163 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoardSDK.Plugins.Tools.Summoner"
-               d:DataContext="{d:DesignInstance Type=local:SummonerViewModel}"
+             d:DataContext="{d:DesignInstance Type=local:SummonerViewModel}"
              FontSize="{Binding ElementViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
              FontFamily="{Binding ElementViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
              FontWeight="{Binding ElementViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-        <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch"
-                     Margin="{Binding ElementViewModel.FluidUI.Size.Margin}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+        </Style>
 
-            <TextBlock Grid.Row="0"
-                           Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                           FontWeight="Bold"
-                           Text="{Binding PluginHeader}"
-                           TextWrapping="Wrap"
-                       HorizontalAlignment="Center"/>
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="TextAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="0 0 10 0"/>
+        </Style>
 
-            <TextBox Grid.Row="1"
-                         Text="{Binding UserCommandString, UpdateSourceTrigger=PropertyChanged}"
-                         Background="Transparent"
-                     Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="DefaultButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="3"                            
+                                CornerRadius="5" 
+                                MinWidth="50"
+                                MinHeight="25"
+                                Margin="5"
+                                Padding="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Highlight}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTip}">
+            <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border}"/>
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="FontSize" Value="{Binding ElementViewModel.FluidUI.Font.FontSize}"/>
+            <Setter Property="FontFamily" Value="{Binding ElementViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding ElementViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
+        </Style>
+    </UserControl.Resources>
+    
+    <Border>
+        <Border.ContextMenu>
+            <ContextMenu Style="{StaticResource ContextMenuStyle}"
+                         Background="{Binding ElementViewModel.FluidUI.Design.Background}"
                          BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
-                         CaretBrush="{Binding ElementViewModel.FluidUI.Design.Foreground}"
-                     HorizontalContentAlignment="Left"
-                         MinWidth="100">
+                         BorderThickness="3">
+                <MenuItem Header="Reset"
+                          Command="{Binding ResetPluginTypeCommand}"
+                          Style="{StaticResource menuitem}"/>
+            </ContextMenu>
+        </Border.ContextMenu>
 
-                <TextBox.InputBindings>
-                    <KeyBinding Key="Return" Command="{Binding ExecuteCommandStringCommand}" />
-                </TextBox.InputBindings>
+        <Grid>
+            <Grid HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  Visibility="{Binding PluginTypeSelected, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                  Margin="{Binding ElementViewModel.FluidUI.Size.Margin}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            </TextBox>
+                <TextBlock Grid.Row="0"
+                   FontWeight="Bold"
+                   Text="{Binding PluginHeader}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"/>
 
-            <Border Grid.Row="2"
-                    Margin="0 10 0 0"
-                    Padding="10"
-                    BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
-                    BorderThickness="1">
+                <TextBox Grid.Row="1"
+                 Text="{Binding UserCommandString, UpdateSourceTrigger=PropertyChanged}"
+                 BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}">
+
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Return" Command="{Binding ExecuteCommandStringCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+
+                <ComboBox ItemsSource="{Binding Plugins, NotifyOnSourceUpdated=True}"
+                  SelectedItem="{Binding SelectedPlugin}"
+                  Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
+                  Grid.Row="2">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Background="Transparent"
+                               Text="{Binding PluginName}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+            </Grid>
+
+            <Border Visibility="{Binding PluginTypeSelected, Converter={StaticResource VisibilityToCollapsed}}"
+                    Padding="5">
+                <Border.ToolTip>
+                    <TextBlock>
+                        <Run Text="Summoner"/>
+                        <LineBreak/>
+                        <Run Text="summoned "/>
+                        <Run Text="{Binding Summonee.PluginHeader}"/>
+                    </TextBlock>
+                </Border.ToolTip>
                 
-                <ScrollViewer 
-                          HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto">
-                    <Border
-                     RenderTransformOrigin="{Binding TransformOriginPoint, NotifyOnSourceUpdated=True}"
-                     RenderTransform="{Binding RotateTransformValue, NotifyOnSourceUpdated=True}">
-
-                        <Border.InputBindings>
-                            <MouseBinding Gesture="Shift+LeftClick" Command="{Binding SelectCommand}"/>
-                        </Border.InputBindings>
-
-                        <Border.ContextMenu>
-
-                            <ContextMenu Name="ElementContextMenu"
-                                         Style="{StaticResource ContextMenuStyle}">
-
-                            <Label Content="Element" Foreground="{Binding Summonee.ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
-
-                                <MenuItem Header="Placement"
-                                          Style="{StaticResource MenuItemStyle}">
-
-                                    <WrapPanel Orientation="Horizontal">
-                                        <Label Content="R"
-                               Foreground="{Binding Summonee.ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="50"/>
-                                        <Label Content="{Binding RotationAngleValue, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding Summonee.ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="30"/>
-                                        <Slider Value="{Binding RotationAngleValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="-180"
-                            Maximum="180"
-                            Width="361"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-
-                                    </WrapPanel>
-
-                                </MenuItem>
-
-                                <MenuItem Header="Design"
-                                           Style="{StaticResource MenuItemStyle}">
-
-                                    <WrapPanel Orientation="Horizontal">
-                                        <Label Content="Width"
-                               Foreground="{Binding Summonee.ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="50"/>
-                                    <Label Content="{Binding Summonee.ElementViewModel.FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding Summonee.ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="35"/>
-                                    <Slider Value="{Binding Summonee.ElementViewModel.FluidUI.Size.Width, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="60"
-                            Maximum="1024"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-
-                                    </WrapPanel>
-
-
-                                    <WrapPanel Orientation="Horizontal">
-                                        <Label Content="Height"
-                               Foreground="{Binding Summonee.ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="50"/>
-                                    <Label Content="{Binding Summonee.ElementViewModel.FluidUI.Size.Height,NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding Summonee.ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="35"/>
-                                    <Slider Value="{Binding Summonee.ElementViewModel.FluidUI.Size.Height, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="60"
-                            Maximum="1024"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-
-                                    </WrapPanel>
-
-                                    <WrapPanel Orientation="Horizontal">
-                                        <Label Content="Corners"
-                               Foreground="{Binding Summonee.ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="50"/>
-                                        <Label Content="{Binding CornerRadiusValueSummonee, NotifyOnSourceUpdated=True}"
-                               Foreground="{Binding Summonee.ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                           MinWidth="30"/>
-                                        <Slider Value="{Binding CornerRadiusValueSummonee, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="0"
-                            Maximum="90"
-                            MinWidth="100"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-
-                                    </WrapPanel>
-
-                                    <MenuItem Header="+Image" Command="{Binding SetImageCommand}"
-                                               Style="{StaticResource MenuItemStyle}"/>
-
-                                    <MenuItem Header="Reset" Command="{Binding ResetImageCommand}"
-                                               Style="{StaticResource MenuItemStyle}"/>
-
-                                </MenuItem>
-
-                                <MenuItem Header="Delete" Command="{Binding DeleteElementCommand}"
-                                           Style="{StaticResource MenuItemStyle}"/>
-
-                            </ContextMenu>
-
-                        </Border.ContextMenu>
-
-                        <ContentPresenter Content="{Binding Summonee}"
-                                  HorizontalAlignment="Stretch"
-                                  VerticalAlignment="Stretch"/>
-                    </Border>
-                </ScrollViewer>                
+                <ContentPresenter Content="{Binding Summonee}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"/>
             </Border>
         </Grid>
+    </Border>
 </UserControl>
 
 <!-- EOF -->

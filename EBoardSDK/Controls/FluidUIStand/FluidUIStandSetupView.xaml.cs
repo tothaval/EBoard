@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.FluidUIStand;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für FluidUIStandSetupView.xaml
+/// Interaktionslogik für FluidUIStandSetupView.xaml.
 /// </summary>
 public partial class FluidUIStandSetupView : MenuItem
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIStandSetupView"/> class.
+    /// </summary>
     public FluidUIStandSetupView()
     {
         this.InitializeComponent();

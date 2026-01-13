@@ -40,23 +40,23 @@
              x:Name="areahoriz"
              d:DataContext="{d:DesignInstance Type=local:AreaHorizontalInnerViewModel`1}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>        
-        <ListBox ItemsSource="{Binding Elements}">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="Transparent">
+    <Grid>
+        <ListBox ItemsSource="{Binding Elements}"
+                 Background="Transparent">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
+                    <VirtualizingStackPanel Orientation="Horizontal"
+                                            Background="Transparent"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
+            
             <ListBox.ItemContainerStyle>
-                <Style
-                TargetType="ListBoxItem">
-
-                    <Setter
-                    Property="Template">
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Template">
                         <Setter.Value>
-                            <ControlTemplate
-                            TargetType="ListBoxItem">
+                            <ControlTemplate TargetType="ListBoxItem">
                                 <ContentControl Content="{TemplateBinding Content}"/>
                             </ControlTemplate>
                         </Setter.Value>

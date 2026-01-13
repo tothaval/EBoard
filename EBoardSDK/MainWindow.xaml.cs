@@ -36,14 +36,21 @@ using System.Windows.Input;
 using System.Windows.Media;
 
 /// <summary>
-/// Interaction logic for MainWindow.xaml
+/// Interaction logic for MainWindow.xaml.
 /// </summary>
 public partial class MainWindow : Window
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainWindow"/> class.
+    /// </summary>
     public MainWindow()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MainWindow"/> class.
+    /// </summary>
+    /// <param name="mainViewModel"></param>
     public MainWindow(MainViewModel mainViewModel)
     {
         this.InitializeComponent();

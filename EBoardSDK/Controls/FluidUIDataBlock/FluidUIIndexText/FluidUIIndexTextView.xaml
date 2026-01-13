@@ -40,6 +40,7 @@
              d:DataContext="{d:DesignInstance Type=local:FluidUIIndexTextViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
     <UserControl.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
@@ -54,22 +55,40 @@
     </UserControl.Resources>
     
     <Grid Background="Transparent">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" SharedSizeGroup="keyText"/>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0">
-            <Run Text="{Binding Index}"/>
-            <Run Text="||"/>
-            <Run Text="{Binding Time}"/>
-        </TextBlock>
+        <TextBlock Text="Time"
+                   Grid.Column="0"
+                   Grid.Row="0"
+                   />
+        <TextBlock Text="{Binding Time}"
+                   Grid.Column="1"
+                   Grid.Row="0"/>
 
+        <TextBlock Text="Index"
+                   Grid.Column="0"
+                   Grid.Row="1"/>
+        <TextBlock Text="{Binding Index}"
+                   Grid.Column="1"
+                 Grid.Row="1"/>
+
+        <TextBlock Text="Text"
+                   Grid.Column="0"
+                   Grid.Row="2"/>
         <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged, Delay=50}"
                  AcceptsReturn="True"
                  AcceptsTab="True"
-                 Grid.Row="1"/>
+                 Grid.Column="1"
+                 Grid.Row="2"/>
     </Grid>
 </UserControl>
 

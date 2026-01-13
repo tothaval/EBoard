@@ -54,11 +54,13 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
 
     private string pluginName = "Uptime";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="UptimeViewModel"/> class.
+    /// </summary>
     public UptimeViewModel()
     {
         this.ElementScreenIntegrationConstraints = new ElementScreenIntegrationConstraints(ElementInstantiationPolicy.OnePerScreen);
 
-        // Task.Delay(500);
         this.InstantiateProperties();
     }
 
@@ -82,8 +84,6 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
         set { this.pluginName = value; }
     }
 
-    public override string ElementPluginName => "Uptimer";
-
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
     public override ResourceDictionary ResourceDictionary => new();
@@ -95,6 +95,14 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
     public override Type ElementPluginViewModel => typeof(UptimeViewModel);
 
     public static string ToolTipMessage => "Days : Hours : Minutes : Seconds";
+
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        this.timer.Stop();
+        this.timer.Tick -= this.Timer_Tick;
+    }
 
     public override Task<EBoardFeedbackMessage> Load(string path)
     {
@@ -108,9 +116,6 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
 
     private void InstantiateProperties()
     {
-        //this.BorderManagement = new BorderManagement();
-        //this.BrushManagement = new BrushManagement();
-
         this.timer = new DispatcherTimer();
         this.timer.Interval = TimeSpan.FromMilliseconds(200);
         this.timer.Tick += this.Timer_Tick;
@@ -123,8 +128,8 @@ public partial class UptimeViewModel : EBoardElementPluginBaseViewModel
         long tickCountMs = Environment.TickCount64;
 
         var uptimeValue = TimeSpan.FromMilliseconds(tickCountMs);
-        DateTime currentTime = DateTime.Now;
-        this.Clock = $"{DateTime.Now.ToLocalTime()}";
+        DateTime currentTime = DateTime.UtcNow;
+        this.Clock = $"{currentTime.ToLocalTime()}";
         this.Uptime = $"{uptimeValue.Days:D2}:{uptimeValue.Hours:D2}:{uptimeValue.Minutes:D2}:{uptimeValue.Seconds:D2}";
     }
 

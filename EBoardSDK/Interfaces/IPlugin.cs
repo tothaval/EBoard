@@ -39,15 +39,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-public interface IPlugin
+public interface IPlugin : IFluidUI
 {
     public Assembly? ElementPluginAssembly { get; }
 
     public abstract ImageBrush PluginLogo { get; set; }
 
     public Type? ElementPluginModel { get; }
-
-    public string ElementPluginName { get; }
 
     public Type ElementPluginView { get; }
 
@@ -71,13 +69,27 @@ public interface IPlugin
 
     public ElementViewModel ElementViewModel { get; }
 
+    public Task<bool> Initialize();
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     public Task<EBoardFeedbackMessage> Load(string path);
 
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
     public Task<EBoardFeedbackMessage> Save(string path);
 
     public abstract void RefreshInitialization();
 
     public void SetEBoardAndElementViewModel(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel);
+
+    public void ViewWasSet();
 }
 
 // EOF

@@ -43,51 +43,46 @@ namespace EBoardSDK.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Controls.FluidUIMenu;
+using EBoardSDK.Controls.ScreenSetup;
 using EBoardSDK.Models;
-using EBoardSDK.SharedMethods;
-using EBoardSDK.Utilities.Factories;
+using EBoardSDK.Models.FluidUIDataBlock;
+using System.Collections;
 using System.Collections.ObjectModel;
-using System.Windows;
 
 public partial class EBoardBrowserViewModel : EboardFluidUIBaseViewModel
 {
     private readonly MainViewModel mainViewModel;
 
     [ObservableProperty]
+    private bool browserPanelVisible = true;
+
+    [ObservableProperty]
+    private bool screenSetupVisible = true;
+
+    [ObservableProperty]
+    private int maxWidth = 250;
+
+    [ObservableProperty]
+    private int maxHeight = 250;
+
+    [ObservableProperty]
     private int currentSelectionID;
 
     [ObservableProperty]
-    private DateTime eBoardCreatedDate;
-
-    [ObservableProperty]
-    private int eBoardContainerCount;
-
-    [ObservableProperty]
-    private int eBoardElementCount;
-
-    [ObservableProperty]
-    private int eBoardShapeCount;
-
-    [ObservableProperty]
-    private double newEBoardHeight = 480;
-
-    [ObservableProperty]
-    private double newEBoardWidth = 720;
-
-    [ObservableProperty]
     private int eBoardCount;
-
-    [ObservableProperty]
-    private int eBoardDepth = 100;
-
-    [ObservableProperty]
-    private string eBoardName = "new";
 
     private ObservableCollection<EBoardViewModel> eboards;
 
     [ObservableProperty]
     private EBoardViewModel selectedEBoard;
 
+    [ObservableProperty]
+    private ScreenSetupViewModel screenSetupViewModel;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EBoardBrowserViewModel"/> class.
+    /// </summary>
+    /// <param name="mainViewModel"></param>
     public EBoardBrowserViewModel(MainViewModel mainViewModel)
         : base()
     {
@@ -97,46 +92,29 @@ public partial class EBoardBrowserViewModel : EboardFluidUIBaseViewModel
 
         this.SetFluidUI(mainViewModel.EBoardConfig.EBoardBrowserViewContext);
 
-        var helper = new SharedMethod_UI();
-        helper.SetupTitleAndText(
-            this.FluidUI.DataBlock,
-            "Eboard Browser",
-            "Use this browser to:\n\n-> navigate eboard screens\n-> add, edit or delete eboard screens\n\n\nyou can change this description");
+        this.CreateFluidUIMenuViewModel();
 
-        this.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this, fluidUIContextHasStand: false, fluidUIContextHasArea: false));
+        var manager = new FluidUIDataBlockManager(this);
 
-        this.FontSizeValue = (int)this.FluidUI.Font.FontSize;
+        manager.SetupTitleAndText("Browser", "Use this browser to:\n\n-> navigate eboard screens\n-> add, edit or delete eboard screens\n\n\nyou can change this description");
 
-        this.EBoards = new ObservableCollection<EBoardViewModel>();
+        this.CreateFluidUIMenuViewModel();
+
+        this.eboards = new ObservableCollection<EBoardViewModel>();
 
         this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
         this.OnPropertyChanged(nameof(this.FluidUI));
+        this.OnPropertyChanged(nameof(this.EBoards));
     }
 
-    public ObservableCollection<EBoardViewModel> EBoards
-    {
-        get
-        {
-            return this.eboards;
-        }
+    public ObservableCollection<EBoardViewModel> EBoards => this.eboards;
 
-        set
-        {
-            this.eboards = value;
-            if (this.eboards.Count == 0)
-            {
-                this.eboards.Clear();
-            }
-        }
-    }
-
-    private static string TxtRemoveAllEboardScreensQuestion => "Delete all screens?";
-
-    private static string TxtRemoveEboardQuestion => "Remove Screen?";
-
-    private static string TxtRemoveEboardTitle => "Screen Deletion";
-
-    public Task AddEBoardViewModel(EBoardViewModel eBoardViewModel)
+    /// <summary>
+    ///
+    /// </summary>
+    /// <param name="eBoardViewModel"></param>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    internal Task AddEBoardViewModel(EBoardViewModel eBoardViewModel)
     {
         if (eBoardViewModel != null)
         {
@@ -148,14 +126,36 @@ public partial class EBoardBrowserViewModel : EboardFluidUIBaseViewModel
         return Task.CompletedTask;
     }
 
-    public IList<EBoardSDK.Models.EboardScreen> GetScreenData()
+    internal override void CreateFluidUIMenuViewModel()
     {
-        IList<EBoardSDK.Models.EboardScreen> eboardScreens = [];
+        if (this.fluidUIMenuViewModel == null)
+        {
+            this.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this, fluidUIContextHasStand: false));
+        }
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    /// <returns>A <see cref="Task"/> representing the result of the asynchronous operation.</returns>
+    internal Task DeleteAllScreens()
+    {
+        this.SelectedEBoard?.Dispose();
+        this.EBoards?.Clear();
+
+        return Task.CompletedTask;
+    }
+
+    internal List<EBoardSDK.Models.EboardScreen> GetScreenData()
+    {
+        List<EBoardSDK.Models.EboardScreen> eboardScreens = [];
 
         this.EBoards.Select(x => x).ToList().ForEach(
             escreen =>
             {
-                ObservableCollection<ElementConfig> elementConfigs = [];
+                escreen.DeselectElements();
+
+                List<ElementConfig> elementConfigs = [];
 
                 escreen.Elements.Select(x => x).ToList().ForEach(
                     element =>
@@ -172,8 +172,8 @@ public partial class EBoardBrowserViewModel : EboardFluidUIBaseViewModel
                             PluginHeader = element.Plugin.PluginHeader,
                             PluginName = element.Plugin.PluginName,
                             Plugin = element.Plugin,
-                            PluginType = element.Plugin.GetType().FullName,
-                            AssemblyName = element.Plugin.GetType().AssemblyQualifiedName,
+                            PluginType = element.Plugin.GetType()?.FullName!,
+                            AssemblyName = element.Plugin.GetType()?.AssemblyQualifiedName!,
 
                             ElementContext = (FluidUIContext)element.FluidUI,
                         });
@@ -185,8 +185,6 @@ public partial class EBoardBrowserViewModel : EboardFluidUIBaseViewModel
 
                     EBID = escreen.EBID,
                     ID = this.EBoards.IndexOf(escreen),
-                    EBoardDepth = escreen.EBoardDepth,
-                    EBoardName = escreen.EBoardName,
 
                     Elements = elementConfigs,
                 });
@@ -195,138 +193,31 @@ public partial class EBoardBrowserViewModel : EboardFluidUIBaseViewModel
         return eboardScreens;
     }
 
-    [RelayCommand]
-    private void AddEBoard()
-    {
-        if (this.EBoardName == null)
-        {
-            this.EBoardName = string.Empty;
-        }
-
-        var eboardScreen = EBoardFactory.GetNewEboardScreen(this.EBoardName, this.EBoardDepth, this.NewEBoardWidth, this.NewEBoardHeight);
-
-        EBoardViewModel eBoardViewModel = EBoardFactory.GetEBoardViewModelByEBoardDataSet(eboardScreen, this.mainViewModel);
-
-        this.EBoards.Add(eBoardViewModel);
-
-        this.SelectedEBoard = this.EBoards.Last();
-
-        this.RefreshEBoardParameters();
-    }
-
-    partial void OnSelectedEBoardChanging(EBoardViewModel? oldValue, EBoardViewModel newValue)
-    {
-        if (oldValue == null || oldValue == newValue || oldValue.Equals(newValue))
-        {
-            return;
-        }
-
-        oldValue.EBoardActive = false;
-
-        oldValue.Elements.CollectionChanged -= SelectedEBoardElements_CollectionChanged;
-
-        if (newValue == null)
-        {
-            return;
-        }
-
-        newValue.Elements.CollectionChanged += SelectedEBoardElements_CollectionChanged;
-    }
-
-    partial void OnSelectedEBoardChanged(EBoardViewModel value)
-    {
-        if (value == null)
-        {
-            return;
-        }
-
-        RefreshEBoardParameters();
-    }
-
-    private void SelectedEBoardElements_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        if (this.SelectedEBoard.Elements.Count != this.EBoardContainerCount)
-        {
-            this.RefreshSelectedEboardElementData();
-        }
-    }
-
-    [RelayCommand]
-    private void DeleteEBoard()
-    {
-        if (this.SelectedEBoard != null && this.EBoards.Count > 0)
-        {
-            this.RemoveSelectedEBoard();
-
-            if (this.EBoards.Count > 0)
-            {
-                this.RefreshEBoardParameters();
-
-                this.OnPropertyChanged(nameof(this.EBoards));
-            }
-        }
-    }
-
-    [RelayCommand]
-    private void EditEBoardParameters()
-    {
-        if (this.SelectedEBoard != null)
-        {
-            this.SelectedEBoard.EBoardName = this.EBoardName;
-            this.SelectedEBoard.EBoardDepth = this.EBoardDepth;
-            this.SelectedEBoard.Width = (int)this.NewEBoardWidth;
-            this.SelectedEBoard.Height = (int)this.NewEBoardHeight;
-        }
-    }
-
-    [RelayCommand]
-    private void DeleteAllScreens()
-    {
-        string question = TxtRemoveAllEboardScreensQuestion;
-        string title = TxtRemoveEboardTitle;
-
-        MessageBoxResult result = MessageBox.Show(question, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
-        if (result == MessageBoxResult.No)
-        {
-            return;
-        }
-
-        this.SelectedEBoard?.Dispose();
-        this.EBoards?.Clear();
-    }
-
-    public void DeleteAllElements()
-    {
-        this.SelectedEBoard?.Clear();
-    }
-
-    public void RefreshEboardData()
+    internal void RefreshSelectedEboardData()
     {
         this.RefreshEBoardParameters();
     }
 
-    public void RemoveSelectedEBoard(EBoardViewModel eBoardViewModel = null)
+    internal void RemoveEBoard(EBoardViewModel? eBoardViewModel = null)
     {
-        string question = TxtRemoveEboardQuestion;
-        string title = TxtRemoveEboardTitle;
-
-        MessageBoxResult result = MessageBox.Show(question, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
-        if (result == MessageBoxResult.No)
-        {
-            return;
-        }
-
         if (eBoardViewModel != null)
         {
-            this.SelectedEBoard = eBoardViewModel;
+            this.EBoards.Remove(eBoardViewModel);
         }
+    }
 
-        this.EBoards.Remove(this.SelectedEBoard);
-        this.SelectedEBoard?.Dispose();
-
-        if (this.EBoards.Count > 0 && result == MessageBoxResult.Yes)
+    internal void RemoveSelectedEBoards(IList eBoardViewModelList)
+    {
+        if (eBoardViewModelList != null && this.EBoards.Count > 0)
         {
-            this.SelectedEBoard = this.EBoards.Last();
+            var indexcount = eBoardViewModelList.Count - 1;
+
+            for (int i = indexcount; i > -1; i--)
+            {
+                EBoardViewModel? screen = (EBoardViewModel)eBoardViewModelList[i]!;
+
+                this.RemoveEBoard(screen);
+            }
         }
     }
 
@@ -334,39 +225,40 @@ public partial class EBoardBrowserViewModel : EboardFluidUIBaseViewModel
     {
         if (this.SelectedEBoard != null)
         {
-            this.EBoardName = this.SelectedEBoard.EBoardName;
-            this.EBoardDepth = this.SelectedEBoard.EBoardDepth;
-            this.NewEBoardHeight = this.SelectedEBoard.FluidUI.Size.Height;
-            this.NewEBoardWidth = this.SelectedEBoard.FluidUI.Size.Width;
-            this.SelectedEBoard.EBoardActive = true;
+            this.ScreenSetupViewModel = new ScreenSetupViewModel(this, this.SelectedEBoard);
 
             this.CurrentSelectionID = this.EBoards.IndexOf(this.SelectedEBoard) + 1;
             this.EBoardCount = this.EBoards.Count;
-            this.EBoardCreatedDate = this.SelectedEBoard.GetCreatedDate();
-
-            this.RefreshSelectedEboardElementData();
-        }
-        else
-        {
-            this.EBoardName = "no board selected";
-            this.EBoardDepth = 10;
-            this.NewEBoardHeight = 620;
-            this.NewEBoardWidth = 1240;
-
-            this.CurrentSelectionID = 0;
-            this.EBoardContainerCount = 0;
-            this.EBoardCount = 0;
-            this.EBoardCreatedDate = DateTime.Now;
-            this.EBoardElementCount = 0;
-            this.EBoardShapeCount = 0;
         }
     }
 
-    private void RefreshSelectedEboardElementData()
+    partial void OnSelectedEBoardChanged(EBoardViewModel value)
     {
-        this.EBoardContainerCount = this.SelectedEBoard.GetContainerCount();
-        this.EBoardElementCount = this.SelectedEBoard.GetElementCount();
-        this.EBoardShapeCount = this.SelectedEBoard.GetShapeCount();
+        this.RefreshEBoardParameters();
+    }
+
+    partial void OnSelectedEBoardChanging(EBoardViewModel? oldValue, EBoardViewModel newValue)
+    {
+        if (oldValue == null || newValue == null || oldValue.Equals(newValue))
+        {
+            return;
+        }
+
+        oldValue.BecomesInactive();
+
+        newValue.BecomesActive();
+    }
+
+    [RelayCommand]
+    private void ToggleBrowserPanelVisibility()
+    {
+        this.BrowserPanelVisible = !this.BrowserPanelVisible;
+    }
+
+    [RelayCommand]
+    private void ToggleScreenSetupVisibility()
+    {
+        this.ScreenSetupVisible = !this.ScreenSetupVisible;
     }
 }
 

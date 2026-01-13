@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.FluidUIDesign;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für FluidUIDesignSetupView.xaml
+/// Interaktionslogik für FluidUIDesignSetupView.xaml.
 /// </summary>
 public partial class FluidUIDesignSetupView : MenuItem
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIDesignSetupView"/> class.
+    /// </summary>
     public FluidUIDesignSetupView()
     {
         this.InitializeComponent();

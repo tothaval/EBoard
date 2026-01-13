@@ -52,10 +52,17 @@ public class TwoXThreeImageAreaModel
 
     public string Link6 { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TwoXThreeImageAreaModel"/> class.
+    /// </summary>
     public TwoXThreeImageAreaModel()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TwoXThreeImageAreaModel"/> class.
+    /// </summary>
+    /// <param name="twoXThreeImageAreaViewModel"></param>
     public TwoXThreeImageAreaModel(TwoXThreeImageAreaViewModel twoXThreeImageAreaViewModel)
     {
         this.twoXThreeImageAreaViewModel = twoXThreeImageAreaViewModel;

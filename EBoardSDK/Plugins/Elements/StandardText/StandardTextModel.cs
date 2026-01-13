@@ -31,35 +31,54 @@
 /// </p>
 namespace EBoardSDK.Plugins.Elements.StandardText;
 
-using System.Xml.Serialization;
+using EBoardSDK.Models.FluidUIFont;
+using System.Text.Json.Serialization;
+using System.Windows;
 
-[Serializable]
 public class StandardTextModel
 {
-    [XmlIgnore]
+    [JsonIgnore]
     private StandardTextViewModel standardTextViewModel;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StandardTextModel"/> class.
+    /// </summary>
     public StandardTextModel()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StandardTextModel"/> class.
+    /// </summary>
+    /// <param name="standardTextViewModel"></param>
     public StandardTextModel(StandardTextViewModel standardTextViewModel)
     {
         this.standardTextViewModel = standardTextViewModel;
 
-        this.FontSize = standardTextViewModel.FontSize;
-        this.FontSizeTitle = standardTextViewModel.FontSizeTitle;
+        this.SavePath = standardTextViewModel.SavePath;
+
         this.Text = standardTextViewModel.Text;
+        this.TextFont = (FluidUIFontModel)standardTextViewModel.TextFont;
+        this.TextAlignmentValue = standardTextViewModel.TextAlignmentValue;
+
         this.Title = standardTextViewModel.Title;
+        this.TitleFont = (FluidUIFontModel)standardTextViewModel.TitleFont;
+        this.TitleAlignmentValue = standardTextViewModel.TitleAlignmentValue;
     }
 
-    public int FontSize { get; set; } = 10;
-
-    public int FontSizeTitle { get; set; } = 20;
+    public string SavePath { get; set; } = string.Empty;
 
     public string Text { get; set; } = string.Empty;
 
+    public TextAlignment TextAlignmentValue { get; set; } = TextAlignment.Left;
+
     public string Title { get; set; } = string.Empty;
+
+    public TextAlignment TitleAlignmentValue { get; set; } = TextAlignment.Center;
+
+    public FluidUIFontModel TextFont { get; set; } = new FluidUIFontModel();
+
+    public FluidUIFontModel TitleFont { get; set; } = new FluidUIFontModel();
 }
 
 // EOF

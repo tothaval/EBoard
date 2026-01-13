@@ -34,10 +34,13 @@ namespace EBoardSDK.Views;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für ScreenControl.xaml
+/// Interaktionslogik für ScreenControl.xaml.
 /// </summary>
 public partial class ScreenControlView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ScreenControlView"/> class.
+    /// </summary>
     public ScreenControlView()
     {
         this.InitializeComponent();

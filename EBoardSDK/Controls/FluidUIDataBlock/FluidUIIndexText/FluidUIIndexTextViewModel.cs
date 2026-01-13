@@ -50,6 +50,11 @@ public partial class FluidUIIndexTextViewModel : ObservableObject
     [ObservableProperty]
     private string text;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIIndexTextViewModel"/> class.
+    /// </summary>
+    /// <param name="viewModel"></param>
+    /// <param name="fluidUIIndexText"></param>
     public FluidUIIndexTextViewModel(EboardFluidUIBaseViewModel viewModel, FluidUIIndexText fluidUIIndexText)
     {
         this.viewModel = viewModel;
@@ -58,6 +63,26 @@ public partial class FluidUIIndexTextViewModel : ObservableObject
         this.Index = this.indexText.Index;
         this.Time = this.indexText.Time;
         this.Text = this.indexText.Text;
+
+        this.OnPropertyChanged(nameof(this.ViewModel));
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIIndexTextViewModel"/> class.
+    /// </summary>
+    /// <param name="viewModel"></param>
+    /// <param name="fluidUIIndexText"></param>
+    /// <param name="index"></param>
+    public FluidUIIndexTextViewModel(EboardFluidUIBaseViewModel viewModel, FluidUIIndexText fluidUIIndexText, int index)
+    {
+        this.viewModel = viewModel;
+        this.indexText = fluidUIIndexText;
+
+        this.Index = index;
+        this.Time = this.indexText.Time;
+        this.Text = this.indexText.Text;
+
+        this.OnPropertyChanged(nameof(this.ViewModel));
     }
 
     public EboardFluidUIBaseViewModel ViewModel => this.viewModel;

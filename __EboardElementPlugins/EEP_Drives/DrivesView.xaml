@@ -65,16 +65,14 @@
                 BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"
                 BorderThickness="1"
                 CornerRadius="{Binding ElementViewModel.FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"
-                ClipToBounds="True"
-                >
+                ClipToBounds="True">
             
             <ListBox ItemsSource="{Binding Drives}"
-                     Background="Transparent"
-                                          
+                     Background="Transparent"                                          
                      x:Name="drivesList"
-                 SelectedItem=""
-                 BorderThickness="0"
-                 ClipToBounds="True">
+                     SelectedItem=""
+                     BorderThickness="0"
+                     ClipToBounds="True">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border Background="Transparent"

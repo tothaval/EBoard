@@ -207,26 +207,32 @@ public class ResourceSet
 
     public void SetResources()
     {
-        Application.Current.Resources["Language"] = Language;
+        try
+        {
+            Application.Current.Resources["Language"] = Language;
 
-        Application.Current.Resources["FS"] = FS;
-        Application.Current.Resources["FF"] = new FontFamily(FontFamily);
+            Application.Current.Resources["FS"] = FS;
+            Application.Current.Resources["FF"] = new FontFamily(FontFamily);
 
-        Application.Current.Resources["HFS"] = FS * 1.25;
+            Application.Current.Resources["HFS"] = FS * 1.25;
 
-        Application.Current.Resources["Button_CornerRadius"] = ButtonCornerRadius;
+            Application.Current.Resources["Button_CornerRadius"] = ButtonCornerRadius;
 
-        Application.Current.Resources["VisibilityField_CornerRadius"] = VisibilityFieldCornerRadius;
+            Application.Current.Resources["VisibilityField_CornerRadius"] = VisibilityFieldCornerRadius;
 
 
-        Application.Current.Resources["BackgroundBrush"] = new SolidColorBrush(C_Background);
-        Application.Current.Resources["TextBrush"] = new SolidColorBrush(C_Text);
-        Application.Current.Resources["HeaderBrush"] = new SolidColorBrush(C_Text_Header);
-        Application.Current.Resources["SelectionBrush"] = new SolidColorBrush(C_Selection);
-        Application.Current.Resources["GainBrush"] = new SolidColorBrush(C_Gain);
-        Application.Current.Resources["ExpenseBrush"] = new SolidColorBrush(C_Expense);
+            Application.Current.Resources["BackgroundBrush"] = new SolidColorBrush(C_Background);
+            Application.Current.Resources["TextBrush"] = new SolidColorBrush(C_Text);
+            Application.Current.Resources["HeaderBrush"] = new SolidColorBrush(C_Text_Header);
+            Application.Current.Resources["SelectionBrush"] = new SolidColorBrush(C_Selection);
+            Application.Current.Resources["GainBrush"] = new SolidColorBrush(C_Gain);
+            Application.Current.Resources["ExpenseBrush"] = new SolidColorBrush(C_Expense);
 
-        Application.Current.Resources["Culture"] = XmlLanguage.GetLanguage(CurrentCulture.IetfLanguageTag);
+            Application.Current.Resources["Culture"] = XmlLanguage.GetLanguage(CurrentCulture.IetfLanguageTag);
+        }
+        catch (Exception)
+        {
+        }
     }
 
     #endregion methods

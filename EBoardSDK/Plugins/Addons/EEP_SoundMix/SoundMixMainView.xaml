@@ -44,7 +44,7 @@
              FontWeight="{Binding ElementViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-
+    
     <Grid MinHeight="150" MinWidth="300">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

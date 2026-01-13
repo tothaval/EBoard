@@ -42,28 +42,100 @@
              FontFamily="{Binding ElementViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
              FontWeight="{Binding ElementViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Background="Transparent">
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="bool2vis"/>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+        </Style>
+
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="0 0 10 0"/>
+        </Style>
+
+        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Highlight}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTip}">
+            <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border}"/>
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="FontSize" Value="{Binding ElementViewModel.FluidUI.Font.FontSize}"/>
+            <Setter Property="FontFamily" Value="{Binding ElementViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding ElementViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
+        </Style>
     </UserControl.Resources>
-    
+
     <Grid Background="{Binding ImageBrush}">
+        <Grid.ContextMenu>
+            <ContextMenu  Background="{Binding ElementViewModel.FluidUI.Design.Background}"
+                          BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
+                          Style="{StaticResource ContextMenuStyle}"
+                          Visibility="{Binding IsImageNotSet, Converter={StaticResource InverseVisibilityToCollapsed}}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
+
+                        <TextBlock Text="Opacity"
+                                   Grid.Row="0"/>
+
+                        <TextBox Text="{Binding OpacityValue}"
+                                 TextWrapping="NoWrap"
+                                 Width="200"
+                                 Padding="0 0 15 0"
+                                 Grid.Row="1"/>
+
+                        <Slider Value="{Binding OpacityValue}"
+                                Background="{Binding ElementViewModel.FluidUI.Design.Background}"
+                                Minimum="0"
+                                Maximum="1"
+                                Width="200"
+                                SmallChange="0.05"
+                                LargeChange="0.1"
+                                Grid.Row="2"/>
+                    </Grid>
+            </ContextMenu>
+        </Grid.ContextMenu>
+
         <Grid.ToolTip>
-            <ToolTip Content="{Binding LinkTargetPath, NotifyOnSourceUpdated=True}"
-                         Background="{Binding ElementViewModel.FluidUI.Design.Background}"
-                         Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
-                         BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
-                         BorderThickness="1"/>
+            <ToolTip Content="{Binding LinkTargetPath, NotifyOnSourceUpdated=True}"/>
         </Grid.ToolTip>
-        
+
         <Grid.InputBindings>
-                <MouseBinding Gesture="Control+Leftclick" Command="{Binding ResetCommand}"/>
+            <MouseBinding Gesture="Control+Leftclick" Command="{Binding ResetCommand}"/>
         </Grid.InputBindings>
-        
+
         <Button Content="+"
                 Command="{Binding SetImageCommand}"
                 Style="{StaticResource DefaultButtonStyle}"
-                Visibility="{Binding IsImageNotSet, Converter={StaticResource bool2vis}}"/>
+                Visibility="{Binding IsImageNotSet, Converter={StaticResource VisibilityToCollapsed}}"/>
     </Grid>
 </UserControl>
 

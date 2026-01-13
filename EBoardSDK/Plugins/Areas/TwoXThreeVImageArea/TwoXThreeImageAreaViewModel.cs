@@ -32,9 +32,10 @@
 namespace EBoardSDK.Plugins.Areas.TwoXThreeVImageArea;
 
 using CommunityToolkit.Mvvm.Input;
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins.Elements.Image;
-using EBoardSDK.SharedMethods;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,7 +43,15 @@ using System.Windows.Media;
 
 public partial class TwoXThreeImageAreaViewModel : EBoardElementPluginBaseViewModel
 {
-    //public AreaViewModel<ImageViewModel> AreaViewModel { get; }
+    private string pluginHeader = "2X3V Image Area";
+    private string pluginName = "TwoX3VImageArea";
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TwoXThreeImageAreaViewModel"/> class.
+    /// </summary>
+    public TwoXThreeImageAreaViewModel()
+    {
+    }
 
     public ImageViewModel ImageViewModel1 { get; } = new();
 
@@ -60,19 +69,13 @@ public partial class TwoXThreeImageAreaViewModel : EBoardElementPluginBaseViewMo
 
     public override bool NoDefaultBorders { get; } = false;
 
-    public override ImageBrush PluginLogo { get; set; }
+    public override ImageBrush PluginLogo { get; set; } = new();
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
 
-    private string pluginHeader = "2X3V Image Area";
-
     public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
 
-    private string pluginName = "TwoX3VImageArea";
-
     public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
-
-    public override string ElementPluginName => "TwoX3VImageArea"; // mal konsolidieren, was benötigt wird und was doppelt ist.
 
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
@@ -84,23 +87,11 @@ public partial class TwoXThreeImageAreaViewModel : EBoardElementPluginBaseViewMo
 
     public override Type ElementPluginViewModel => typeof(TwoXThreeImageAreaViewModel);
 
-    public TwoXThreeImageAreaViewModel()
-    {
-        //this.AreaViewModel = new AreaViewModel<ImageViewModel>(); // ma kucken ob das noch genutzt wird.
-
-        //this.AreaViewModel.CreateMatrix(2, 3);
-    }
-
-    [RelayCommand]
-    private void Reset()
-    {
-    }
-
     public override async Task<EBoardFeedbackMessage> Load(string path)
     {
         try
         {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<TwoXThreeImageAreaModel>(path);
+            var data = await Loader.LoadJsonFile<TwoXThreeImageAreaModel>(path);
 
             if (data != null)
             {
@@ -128,14 +119,18 @@ public partial class TwoXThreeImageAreaViewModel : EBoardElementPluginBaseViewMo
 
         var model = new TwoXThreeImageAreaModel(this);
 
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
+        var result = Saver.SaveJsonFile(path, model);
 
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        return new EBoardFeedbackMessage()
         {
-            // TODO do stuff
-        }
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
+    }
 
-        return serializationResult!;
+    [RelayCommand]
+    private void Reset()
+    {
     }
 }
 

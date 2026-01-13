@@ -33,13 +33,16 @@ namespace EBoardSDK.Controls.FluidUIDataBlock.FluidUIIndexText;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für FluidUIIndexTextView.xaml
+/// Interaktionslogik für FluidUIIndexTextView.xaml.
 /// </summary>
 public partial class FluidUIIndexTextView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUIIndexTextView"/> class.
+    /// </summary>
     public FluidUIIndexTextView()
     {
-        InitializeComponent();
+        this.InitializeComponent();
     }
 }
 

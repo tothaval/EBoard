@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.BrushSetup.RadialBrushSetup;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für RadialBrushSetupView.xaml
+/// Interaktionslogik für RadialBrushSetupView.xaml.
 /// </summary>
 public partial class RadialBrushSetupView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="RadialBrushSetupView"/> class.
+    /// </summary>
     public RadialBrushSetupView()
     {
         this.InitializeComponent();

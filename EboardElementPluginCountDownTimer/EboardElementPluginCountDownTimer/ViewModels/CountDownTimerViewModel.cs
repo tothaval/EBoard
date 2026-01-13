@@ -31,6 +31,7 @@
 /// </p>
 namespace EboardElementPluginCountDownTimer.ViewModels;
 
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EboardElementPluginCountDownTimer.Views;
 using EBoardSDK;
@@ -46,23 +47,59 @@ using System.Windows.Threading;
 
 public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
 {
+    private int _SelectedYear;
+    private int _SelectedYear_Stop;
+    private int _SelectedMonth;
+    private int _SelectedMonth_Stop;
+    private int _SelectedDay;
+    private int _SelectedDay_Stop;
+    private int _SelectedHour;
+    private int _SelectedHour_Stop;
+    private int _SelectedMinute;
+    private int _SelectedMinute_Stop;
+
+    [ObservableProperty]
+    private string countdown;
+
+    private string pluginHeader = "CountDownTimer Element";
+    private string pluginName = "CountDownTimer";
+
+    public CountDownTimerViewModel()
+    {
+        this.ElementScreenIntegrationConstraints = new EBoardSDK.Models.ElementScreenIntegrationConstraints(ElementInstantiationPolicy.OnePerScreen);
+
+        FillMonths();
+        FillHours();
+        FillMinutes();
+
+        SelectedYear = DateTime.Now.Year;
+        SelectedMonth = DateTime.Now.Month;
+        SelectedDay = DateTime.Now.Day;
+        SelectedHour = DateTime.Now.Hour;
+        SelectedMinute = Minutes.First();
+
+        SelectedYear_Stop = DateTime.Now.Year;
+        SelectedMonth_Stop = DateTime.Now.Month;
+        SelectedDay_Stop = DateTime.Now.Day + 1;
+        SelectedHour_Stop = DateTime.Now.Hour;
+        SelectedMinute_Stop = Minutes.First();
+
+        Timer.Interval = TimeSpan.FromMilliseconds(16.18);
+        Timer.Tick += Timer_Tick;
+    }
+
     public override bool NoDefaultBorders { get; } = false;
 
     public override PluginCategories PluginCategory => PluginCategories.Element;
 
-    public override ImageBrush PluginLogo { get; set; }
+    public override ImageBrush PluginLogo { get; set; } = new();
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
 
-    private string pluginHeader = "CountDownTimer Element";
-
     public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
 
-    private string pluginName = "CountDownTimer";
 
     public override string PluginName { get { return pluginName; } set { pluginName = value; } }
-
-    public override string ElementPluginName => "CountDownTimer";
 
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
@@ -74,13 +111,10 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
 
     public override Type ElementPluginViewModel => typeof(CountDownTimerViewModel);
 
-    public string CountDown => ProcessCountDownRequest();
-
     public DateTime StartDate => GetStartDate();
 
     public DateTime StopDate => GetStopDate();
 
-    private int _SelectedYear;
     public int SelectedYear
     {
         get { return _SelectedYear; }
@@ -101,7 +135,7 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
                 _SelectedYear = value;
             }
 
-            OnPropertyChanged(nameof(CountDown));
+            OnPropertyChanged(nameof(Countdown));
             OnPropertyChanged(nameof(SelectedYear));
             OnPropertyChanged(nameof(StartDate));
 
@@ -109,7 +143,6 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         }
     }
 
-    private int _SelectedMonth;
     public int SelectedMonth
     {
         get { return _SelectedMonth; }
@@ -117,7 +150,7 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         {
             _SelectedMonth = value;
 
-            OnPropertyChanged(nameof(CountDown));
+            OnPropertyChanged(nameof(Countdown));
             OnPropertyChanged(nameof(SelectedMonth));
             OnPropertyChanged(nameof(StartDate));
 
@@ -125,7 +158,6 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         }
     }
 
-    private int _SelectedDay;
     public int SelectedDay
     {
         get { return _SelectedDay; }
@@ -133,13 +165,12 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         {
             _SelectedDay = value;
 
-            OnPropertyChanged(nameof(CountDown));
+            OnPropertyChanged(nameof(Countdown));
             OnPropertyChanged(nameof(SelectedDay));
             OnPropertyChanged(nameof(StartDate));
         }
     }
 
-    private int _SelectedHour;
     public int SelectedHour
     {
         get { return _SelectedHour; }
@@ -147,13 +178,12 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         {
             _SelectedHour = value;
 
-            OnPropertyChanged(nameof(CountDown));
+            OnPropertyChanged(nameof(Countdown));
             OnPropertyChanged(nameof(SelectedHour));
             OnPropertyChanged(nameof(StartDate));
         }
     }
 
-    private int _SelectedMinute;
     public int SelectedMinute
     {
         get { return _SelectedMinute; }
@@ -161,13 +191,12 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         {
             _SelectedMinute = value;
 
-            OnPropertyChanged(nameof(CountDown));
+            OnPropertyChanged(nameof(Countdown));
             OnPropertyChanged(nameof(SelectedMinute));
             OnPropertyChanged(nameof(StartDate));
         }
     }
 
-    private int _SelectedYear_Stop;
     public int SelectedYear_Stop
     {
         get { return _SelectedYear_Stop; }
@@ -187,8 +216,7 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
                 _SelectedYear_Stop = value;
             }
 
-
-            OnPropertyChanged(nameof(CountDown));
+            OnPropertyChanged(nameof(Countdown));
             OnPropertyChanged(nameof(SelectedYear_Stop));
             OnPropertyChanged(nameof(StopDate));
 
@@ -196,7 +224,6 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         }
     }
 
-    private int _SelectedMonth_Stop;
     public int SelectedMonth_Stop
     {
         get { return _SelectedMonth_Stop; }
@@ -204,7 +231,7 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         {
             _SelectedMonth_Stop = value;
 
-            OnPropertyChanged(nameof(CountDown));
+            OnPropertyChanged(nameof(Countdown));
             OnPropertyChanged(nameof(SelectedMonth_Stop));
             OnPropertyChanged(nameof(StopDate));
 
@@ -212,7 +239,6 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         }
     }
 
-    private int _SelectedDay_Stop;
     public int SelectedDay_Stop
     {
         get { return _SelectedDay_Stop; }
@@ -220,13 +246,12 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         {
             _SelectedDay_Stop = value;
 
-            OnPropertyChanged(nameof(CountDown));
+            OnPropertyChanged(nameof(Countdown));
             OnPropertyChanged(nameof(SelectedDay_Stop));
             OnPropertyChanged(nameof(StopDate));
         }
     }
 
-    private int _SelectedHour_Stop;
     public int SelectedHour_Stop
     {
         get { return _SelectedHour_Stop; }
@@ -234,13 +259,12 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         {
             _SelectedHour_Stop = value;
 
-            OnPropertyChanged(nameof(CountDown));
+            OnPropertyChanged(nameof(Countdown));
             OnPropertyChanged(nameof(SelectedHour_Stop));
             OnPropertyChanged(nameof(StopDate));
         }
     }
 
-    private int _SelectedMinute_Stop;
     public int SelectedMinute_Stop
     {
         get { return _SelectedMinute_Stop; }
@@ -248,7 +272,7 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
         {
             _SelectedMinute_Stop = value;
 
-            OnPropertyChanged(nameof(CountDown));
+            OnPropertyChanged(nameof(Countdown));
             OnPropertyChanged(nameof(SelectedMinute_Stop));
             OnPropertyChanged(nameof(StopDate));
         }
@@ -270,31 +294,19 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
 
     public ObservableCollection<int> Months { get; set; }
 
-    public CountDownTimerViewModel()
+    public override Task<EBoardFeedbackMessage> Load(string path)
     {
-        Timer.Interval = TimeSpan.FromMilliseconds(16.18);
-        Timer.Tick += Timer_Tick;
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
+    }
 
-        FillMonths();
-        FillHours();
-        FillMinutes();
-
-        SelectedYear = DateTime.Now.Year;
-        SelectedMonth = DateTime.Now.Month;
-        SelectedDay = DateTime.Now.Day;
-        SelectedHour = DateTime.Now.Hour;
-        SelectedMinute = Minutes.First();
-
-        SelectedYear_Stop = DateTime.Now.Year;
-        SelectedMonth_Stop = DateTime.Now.Month;
-        SelectedDay_Stop = DateTime.Now.Day + 1;
-        SelectedHour_Stop = DateTime.Now.Hour;
-        SelectedMinute_Stop = Minutes.First();
+    public override Task<EBoardFeedbackMessage> Save(string path)
+    {
+        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
     }
 
     private void Timer_Tick(object? sender, EventArgs e)
     {
-        OnPropertyChanged(nameof(CountDown));
+        this.Countdown = this.ProcessCountDownRequest();
     }
 
     private void FillDays()
@@ -404,7 +416,6 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
 
         double percentageLeft = difference / (StopDate - StartDate).TotalMicroseconds * 100;
 
-
         return $"{diff_days.ToString("N0")} d\n" +
             $"{diff_hours.ToString("N0")} h\n" +
             $"{diff_minutes.ToString("N0")} '\n" +
@@ -422,16 +433,6 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
     private void StopTimer()
     {
         Timer.Stop();
-    }
-
-    public override Task<EBoardFeedbackMessage> Load(string path)
-    {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
-    }
-
-    public override Task<EBoardFeedbackMessage> Save(string path)
-    {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
     }
 }
 

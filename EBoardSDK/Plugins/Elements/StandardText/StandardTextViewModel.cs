@@ -33,8 +33,17 @@ namespace EBoardSDK.Plugins.Elements.StandardText;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
+using EBoardSDK.Interfaces.FluidUIText;
+using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUIFont;
+using EBoardSDK.Plugins.Shapes.TextShape;
 using EBoardSDK.SharedMethods;
+using EBoardSDK.ViewModels;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,39 +51,52 @@ using System.Windows.Media;
 
 public partial class StandardTextViewModel : EBoardElementPluginBaseViewModel
 {
-    [ObservableProperty]
-    private int fontSize;
-
-    [ObservableProperty]
-    private int fontSizeTitle;
+    private string savePath = string.Empty;
 
     [ObservableProperty]
     private bool isTitleSet;
 
     [ObservableProperty]
-    private string text;
-
-    [ObservableProperty]
-    private string title;
-
-    [ObservableProperty]
-    private Brush titleTextBoxBorderBrush;
+    private Brush titleTextBoxBorderBrush = new SolidColorBrush();
 
     [ObservableProperty]
     private int titleTextBoxBorderThickness;
 
     [ObservableProperty]
-    private Brush titleTextBoxBrush;
+    private Brush titleTextBoxBrush = new SolidColorBrush();
 
-    public override bool NoDefaultBorders { get; } = false;
+    [ObservableProperty]
+    private string text = "text";
 
-    public override PluginCategories PluginCategory => PluginCategories.Element;
+    [ObservableProperty]
+    private TextAlignment textAlignmentValue = TextAlignment.Left;
 
-    public override ImageBrush PluginLogo { get; set; }
+    [ObservableProperty]
+    private string title = "title";
 
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+    [ObservableProperty]
+    private TextAlignment titleAlignmentValue = TextAlignment.Center;
+
+    [ObservableProperty]
+    private IFluidUIFontModel textFont = new FluidUIFontModel();
+
+    [ObservableProperty]
+    private IFluidUIFontModel titleFont = new FluidUIFontModel();
+
+    private StandardTextFontSetupViewModel? textFontSetup;
+
+    private StandardTextFontSetupViewModel? titleFontSetup;
 
     private string pluginHeader = "Standard Text Element";
+
+    private string pluginName = "StandardText";
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StandardTextViewModel"/> class.
+    /// </summary>
+    public StandardTextViewModel() => this.InstantiateProperties();
+
+    public ObservableCollection<TextAlignment> TextAlignments { get; set; } = new ObservableCollection<TextAlignment>() { TextAlignment.Left, TextAlignment.Right, TextAlignment.Center, TextAlignment.Justify };
 
     public override string PluginHeader
     {
@@ -82,15 +104,11 @@ public partial class StandardTextViewModel : EBoardElementPluginBaseViewModel
         set { this.pluginHeader = value; }
     }
 
-    private string pluginName = "StandardText";
-
     public override string PluginName
     {
         get { return this.pluginName; }
         set { this.pluginName = value; }
     }
-
-    public override string ElementPluginName => "StandardText";
 
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
@@ -104,38 +122,29 @@ public partial class StandardTextViewModel : EBoardElementPluginBaseViewModel
 
     public bool IsTitleTextboxEditing => !this.IsTitleSet;
 
-    public StandardTextViewModel() => this.InstantiateProperties();
+    public override bool NoDefaultBorders { get; } = false;
 
-    private void InstantiateProperties()
-    {
-        this.IsTitleSet = true;
+    public override PluginCategories PluginCategory => PluginCategories.Element;
 
-        //this.BorderManagement = new BorderManagement();
-        //this.BrushManagement = new BrushManagement();
+    public override ImageBrush PluginLogo { get; set; } = new();
 
-        if (this.PluginHeader.Equals(string.Empty))
-        {
-            this.PluginHeader = "Standard Text";
-        }
+    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
 
-        if (string.IsNullOrWhiteSpace(this.Title))
-        {
-            this.Title = this.PluginHeader;
-        }
-    }
+    public string SavePath => this.savePath;
+
+    public StandardTextFontSetupViewModel TextFontSetup => this.textFontSetup;
+
+    public StandardTextFontSetupViewModel TitleFontSetup => this.titleFontSetup;
 
     public override async Task<EBoardFeedbackMessage> Load(string path)
     {
         try
         {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<StandardTextModel>(path)!;
+            var data = await Loader.LoadJsonFile<StandardTextModel>(path);
 
             if (data != null)
             {
-                this.FontSize = data.FontSize;
-                this.FontSizeTitle = data.FontSizeTitle;
-                this.Text = data.Text;
-                this.Title = data.Title;
+                this.ApplyStandardTextModel(data);
 
                 return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
             }
@@ -154,14 +163,61 @@ public partial class StandardTextViewModel : EBoardElementPluginBaseViewModel
 
         var model = new StandardTextModel(this);
 
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
+        var result = Saver.SaveJsonFile(path, model);
 
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        return new EBoardFeedbackMessage()
         {
-            // TODO do stuff
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
+    }
+
+    public override void RefreshInitialization()
+    {
+        if (this.TextFont == null)
+        {
+            this.TextFont = new FluidUIFontModel();
         }
 
-        return serializationResult!;
+        if (this.TitleFont == null)
+        {
+            this.TitleFont = new FluidUIFontModel();
+        }
+
+        this.textFontSetup = new StandardTextFontSetupViewModel(this.ElementViewModel, this, isTitle: false);
+        this.titleFontSetup = new StandardTextFontSetupViewModel(this.ElementViewModel, this, isTitle: true);
+
+        this.OnPropertyChanged(nameof(this.TextFontSetup));
+        this.OnPropertyChanged(nameof(this.TitleFontSetup));
+    }
+
+    public void UpdateFont()
+    {
+        this.OnPropertyChanged(nameof(this.TextFont));
+        this.OnPropertyChanged(nameof(this.TitleFont));
+    }
+
+    private void ApplyStandardTextModel(StandardTextModel data)
+    {
+        this.savePath = data.SavePath;
+
+        this.Text = data.Text;
+        this.TextFont = data.TextFont;
+        this.TextAlignmentValue = data.TextAlignmentValue;
+
+        this.Title = data.Title;
+        this.TitleFont = data.TitleFont;
+        this.TitleAlignmentValue = data.TitleAlignmentValue;
+
+        this.RefreshInitialization();
+    }
+
+    private void InstantiateProperties()
+    {
+        this.IsTitleSet = true;
+
+        this.OnPropertyChanged(nameof(this.TextAlignmentValue));
+        this.OnPropertyChanged(nameof(this.TextAlignments));
     }
 
     [RelayCommand]
@@ -177,13 +233,90 @@ public partial class StandardTextViewModel : EBoardElementPluginBaseViewModel
     }
 
     [RelayCommand]
+    private async void LoadStandardTextModelFromFile()
+    {
+        if (this.Text.Length > 0)
+        {
+            MessageBoxResult result = MessageBox.Show("Do you want to save the text first?", $"save this {this.Text.Length} character(s)?", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                this.SaveStandardTextModelToFile();
+            }
+        }
+
+        var folder = new StandardTextModel(this).SavePath;
+        var helper = new SharedMethod_UI();
+
+        var filename = await helper.GetFileToLoad(folder, $"files $(*.{helper.StandardTextFileExtension})|*.{helper.StandardTextFileExtension}", this.savePath);
+
+        if (filename != null && Loader.FileExists(filename))
+        {
+            var data = await Loader.LoadJsonFile<StandardTextModel>(filename);
+
+            if (data != null)
+            {
+                this.ApplyStandardTextModel(data);
+            }
+
+            var path = new FileInfo(filename).Directory;
+
+            if (path != null && path.Exists)
+            {
+                this.savePath = path.FullName;
+            }
+        }
+    }
+
+    [RelayCommand]
+    private void MakeTextShape()
+    {
+        var manager = new FluidUIDeepCopyManager();
+        var copy = manager.DeepCopyIFluidUIContext(this.ElementViewModel.FluidUI);
+
+        var elementViewModel = new ElementViewModel(this.EBoardViewModel);
+        var textshape = new TextShapeViewModel($"{this.Title}\n{this.Text}");
+        textshape.SetEBoardAndElementViewModel(this.EBoardViewModel, elementViewModel);
+        textshape.SetFluidUIContext(copy);
+        textshape.RefreshInitialization();
+
+        elementViewModel.Plugin = textshape;
+
+        new SDKPluginManager().InvokeElementViewModelOnEboard(elementViewModel);
+    }
+
+    [RelayCommand]
+    private async void SaveStandardTextModelToFile()
+    {
+        var model = new StandardTextModel(this);
+        var helper = new SharedMethod_UI();
+
+        var path = await new SharedMethod_UI().SetSaveFileName(helper.StandardTextFileExtension, this.savePath);
+
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return;
+        }
+
+        _ = Saver.SaveJsonFile(path, model);
+
+        var dir = new FileInfo(path).Directory;
+
+        if (dir != null)
+        {
+            this.savePath = dir.FullName;
+        }
+    }
+
+    [RelayCommand]
     private void SetTitle()
     {
+        if (this.ElementViewModel.FluidUI.Design != null)
+        {
+            this.TitleTextBoxBorderBrush = this.ElementViewModel.FluidUI.Design.Highlight;
+            this.TitleTextBoxBrush = this.ElementViewModel.FluidUI.Design.Background;
+        }
+
         this.IsTitleSet = false;
-
-        this.TitleTextBoxBorderBrush = this.ElementViewModel.FluidUI.Design.Foreground;
-        this.TitleTextBoxBrush = this.ElementViewModel.FluidUI.Design.Highlight;
-
         this.TitleTextBoxBorderThickness = 2;
     }
 }

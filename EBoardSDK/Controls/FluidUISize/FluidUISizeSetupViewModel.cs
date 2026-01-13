@@ -32,70 +32,65 @@
 namespace EBoardSDK.Controls.FluidUISize;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Controls.QuadValueSetup;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces.FluidUISize;
-using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUISize;
 using EBoardSDK.SharedMethods;
 using EBoardSDK.ViewModels;
 using System;
 using System.Windows;
 
-public class FluidUISizeSetupViewModel : ObservableObject, IFluidUISizeSetup
+public partial class FluidUISizeSetupViewModel : ObservableObject, IFluidUISizeSetup
 {
     private EboardFluidUIBaseViewModel viewModel;
+    private FluidUISizeManager fluidUISizeManager;
 
-    private bool fluidUIContextHasArea = true;
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUISizeSetupViewModel"/> class.
+    /// </summary>
     public FluidUISizeSetupViewModel()
     {
     }
 
-    public FluidUISizeSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel, bool fluidUIContextHasArea = true)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FluidUISizeSetupViewModel"/> class.
+    /// </summary>
+    /// <param name="eboardFluidUIBaseViewModel"></param>
+    public FluidUISizeSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
+        this.fluidUISizeManager = new FluidUISizeManager(this.ViewModel);
 
         var helper = new SharedMethod_UI();
 
         this.CornerRadiusQuadSetup = helper.GetQuadValueSetupViewModel(
-            eboardFluidUIBaseViewModel.FluidUI.Size,
-            eboardFluidUIBaseViewModel.FluidUI.Design,
-            eboardFluidUIBaseViewModel.ResetCorners,
+            eboardFluidUIBaseViewModel,
+            this.ResetCorners,
             BorderTargets.CornerRadius);
         this.CornerRadiusQuadSetup.PropertyChanged += this.CornerRadiusQuadSetup_PropertyChanged;
 
         this.MarginQuadSetup = helper.GetQuadValueSetupViewModel(
-            eboardFluidUIBaseViewModel.FluidUI.Size,
-            eboardFluidUIBaseViewModel.FluidUI.Design,
-            eboardFluidUIBaseViewModel.ResetMargin,
+            eboardFluidUIBaseViewModel,
+            this.ResetMargin,
             BorderTargets.Margin);
         this.MarginQuadSetup.PropertyChanged += this.MarginQuadSetup_PropertyChanged;
 
         this.PaddingQuadSetup = helper.GetQuadValueSetupViewModel(
-            eboardFluidUIBaseViewModel.FluidUI.Size,
-            eboardFluidUIBaseViewModel.FluidUI.Design,
-            eboardFluidUIBaseViewModel.ResetPadding,
+            eboardFluidUIBaseViewModel,
+            this.ResetPadding,
             BorderTargets.Padding);
         this.PaddingQuadSetup.PropertyChanged += this.PaddingQuadSetup_PropertyChanged;
 
         this.ThicknessQuadSetup = helper.GetQuadValueSetupViewModel(
-            eboardFluidUIBaseViewModel.FluidUI.Size,
-            eboardFluidUIBaseViewModel.FluidUI.Design,
-            eboardFluidUIBaseViewModel.ResetThickness,
+            eboardFluidUIBaseViewModel,
+            this.ResetThickness,
             BorderTargets.Thickness);
         this.ThicknessQuadSetup.PropertyChanged += this.ThicknessQuadSetup_PropertyChanged;
-
-        if (!fluidUIContextHasArea)
-        {
-            this.fluidUIContextHasArea = fluidUIContextHasArea;
-        }
-
-        this.OnPropertyChanged(nameof(this.FluidUIContextHasArea));
     }
 
-    public event Action PropertyChangedEvent;
-
-    public bool FluidUIContextHasArea => this.fluidUIContextHasArea;
+    public event Action? PropertyChangedEvent;
 
     public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
 
@@ -107,157 +102,93 @@ public class FluidUISizeSetupViewModel : ObservableObject, IFluidUISizeSetup
 
     public QuadValueSetupViewModel ThicknessQuadSetup { get; set; }
 
-    public void Apply_FluidUISizeQuadValue(QuadValue<int> quadValue, BorderTargets borderTargets)
-    {
-        if (quadValue == null)
-        {
-            return;
-        }
-
-        switch (borderTargets)
-        {
-            case BorderTargets.CornerRadius:
-                this.CornerRadiusQuadSetup.TopLeft = quadValue.Value1;
-                this.CornerRadiusQuadSetup.TopRight = quadValue.Value2;
-                this.CornerRadiusQuadSetup.BottomRight = quadValue.Value3;
-                this.CornerRadiusQuadSetup.BottomLeft = quadValue.Value4;
-                break;
-            case BorderTargets.Margin:
-                this.MarginQuadSetup.TopLeft = quadValue.Value1;
-                this.MarginQuadSetup.TopRight = quadValue.Value2;
-                this.MarginQuadSetup.BottomRight = quadValue.Value3;
-                this.MarginQuadSetup.BottomLeft = quadValue.Value4;
-                break;
-            case BorderTargets.Padding:
-                this.PaddingQuadSetup.TopLeft = quadValue.Value1;
-                this.PaddingQuadSetup.TopRight = quadValue.Value2;
-                this.PaddingQuadSetup.BottomRight = quadValue.Value3;
-                this.PaddingQuadSetup.BottomLeft = quadValue.Value4;
-                break;
-            case BorderTargets.Thickness:
-                this.ThicknessQuadSetup.TopLeft = quadValue.Value1;
-                this.ThicknessQuadSetup.TopRight = quadValue.Value2;
-                this.ThicknessQuadSetup.BottomRight = quadValue.Value3;
-                this.ThicknessQuadSetup.BottomLeft = quadValue.Value4;
-                break;
-            default:
-                break;
-        }
-
-        this.ViewModel.ApplyFluidUISizeChange();
-    }
-
-    public void Apply_FluidUISizeHeight(int heightValue)
-    {
-        this.ViewModel.FluidUI.Size.Height = heightValue;
-
-        this.ViewModel.ApplyFluidUISizeChange();
-    }
-
-    public void Apply_FluidUISizeWidth(int widthValue)
-    {
-        this.ViewModel.FluidUI.Size.Width = widthValue;
-
-        this.ViewModel.ApplyFluidUISizeChange();
-    }
-
     public void Dispose()
     {
         this.CornerRadiusQuadSetup.PropertyChanged -= this.CornerRadiusQuadSetup_PropertyChanged;
         this.MarginQuadSetup.PropertyChanged -= this.MarginQuadSetup_PropertyChanged;
         this.PaddingQuadSetup.PropertyChanged -= this.PaddingQuadSetup_PropertyChanged;
         this.ThicknessQuadSetup.PropertyChanged -= this.ThicknessQuadSetup_PropertyChanged;
-    }
 
-    public object Get_FluidUISizeObjectFromQuadValueSetup(QuadValueSetupViewModel quadValueSetupViewModel, BorderTargets borderTargets)
-    {
-        switch (borderTargets)
-        {
-            case BorderTargets.CornerRadius:
-                return new CornerRadius(
-                    quadValueSetupViewModel.QuadValue.Value1,
-                    quadValueSetupViewModel.QuadValue.Value2,
-                    quadValueSetupViewModel.QuadValue.Value3,
-                    quadValueSetupViewModel.QuadValue.Value4);
-            case BorderTargets.Margin:
-            case BorderTargets.Padding:
-            case BorderTargets.Thickness:
-                return new Thickness(
-                    quadValueSetupViewModel.QuadValue.Value1,
-                    quadValueSetupViewModel.QuadValue.Value2,
-                    quadValueSetupViewModel.QuadValue.Value3,
-                    quadValueSetupViewModel.QuadValue.Value4);
-            default:
-                return quadValueSetupViewModel.QuadValue;
-        }
-    }
-
-    public void Reset_FluidUISizeQuadValue(BorderTargets borderTargets)
-    {
-        switch (borderTargets)
-        {
-            case BorderTargets.CornerRadius:
-                this.CornerRadiusQuadSetup.All = 0;
-                break;
-            case BorderTargets.Margin:
-                this.MarginQuadSetup.All = 0;
-                break;
-            case BorderTargets.Padding:
-                this.PaddingQuadSetup.All = 0;
-                break;
-            case BorderTargets.Thickness:
-                this.ThicknessQuadSetup.All = 0;
-                break;
-            default:
-                break;
-        }
-
-        this.ViewModel.ApplyFluidUISizeChange();
-    }
-
-    public void Reset_FluidUISizeWidthAndHeight()
-    {
-        this.ViewModel.FluidUI.Size.Width = double.NaN;
-
-        this.ViewModel.FluidUI.Size.Height = double.NaN;
-
-        this.ViewModel.ApplyFluidUISizeChange();
+        this.PropertyChangedEvent = null;
     }
 
     public void SetInitialValues()
     {
-        this.ViewModel.FluidUI.Size.BorderThickness = new Thickness(2, 2, 2, 2);
-        this.ViewModel.FluidUI.Size.CornerRadius = new CornerRadius(5, 5, 5, 5);
-        this.ViewModel.FluidUI.Size.Height = double.NaN;
-        this.ViewModel.FluidUI.Size.Margin = new Thickness(5);
-        this.ViewModel.FluidUI.Size.Padding = new Thickness(5);
-        this.ViewModel.FluidUI.Size.Width = double.NaN;
-
-        this.ViewModel.ApplyFluidUISizeChange();
+        this.fluidUISizeManager.Reset();
     }
 
     private void MarginQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        this.ViewModel.FluidUI.Size.Margin = (Thickness)this.Get_FluidUISizeObjectFromQuadValueSetup(this.MarginQuadSetup, BorderTargets.Margin);
-        this.ViewModel.ApplyFluidUISizeChange();
+        var value = (Thickness)this.MarginQuadSetup.GetQuadValueObject(BorderTargets.Margin);
+
+        if (value != this.fluidUISizeManager.GetMargin())
+        {
+            this.fluidUISizeManager.SetMargin(value);
+        }
     }
 
     private void PaddingQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        this.ViewModel.FluidUI.Size.Padding = (Thickness)this.Get_FluidUISizeObjectFromQuadValueSetup(this.PaddingQuadSetup, BorderTargets.Padding);
-        this.ViewModel.ApplyFluidUISizeChange();
+        var value = (Thickness)this.PaddingQuadSetup.GetQuadValueObject(BorderTargets.Padding);
+
+        if (value != this.fluidUISizeManager.GetPadding())
+        {
+            this.fluidUISizeManager.SetPadding(value);
+        }
     }
 
     private void ThicknessQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        this.ViewModel.FluidUI.Size.BorderThickness = (Thickness)this.Get_FluidUISizeObjectFromQuadValueSetup(this.ThicknessQuadSetup, BorderTargets.Thickness);
-        this.ViewModel.ApplyFluidUISizeChange();
+        var value = (Thickness)this.ThicknessQuadSetup.GetQuadValueObject(BorderTargets.Thickness);
+
+        if (value != this.fluidUISizeManager.GetBorderThickness())
+        {
+            this.fluidUISizeManager.SetBorderThickness(value);
+        }
     }
 
     private void CornerRadiusQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        this.ViewModel.FluidUI.Size.CornerRadius = (CornerRadius)this.Get_FluidUISizeObjectFromQuadValueSetup(this.CornerRadiusQuadSetup, BorderTargets.CornerRadius);
-        this.ViewModel.ApplyFluidUISizeChange();
+        var value = (CornerRadius)this.CornerRadiusQuadSetup.GetQuadValueObject(BorderTargets.CornerRadius);
+
+        if (value != this.fluidUISizeManager.GetCornerRadius())
+        {
+            this.fluidUISizeManager.SetCornerRadius(value);
+        }
+    }
+
+    [RelayCommand]
+    public void ResetCorners()
+    {
+        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.CornerRadius);
+        this.CornerRadiusQuadSetup?.Reset();
+    }
+
+    [RelayCommand]
+    public void ResetMargin()
+    {
+        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.Margin);
+        this.MarginQuadSetup?.Reset();
+    }
+
+    [RelayCommand]
+    public void ResetPadding()
+    {
+        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.Padding);
+        this.PaddingQuadSetup?.Reset();
+    }
+
+    [RelayCommand]
+    public void ResetThickness()
+    {
+        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.Thickness);
+        this.ThicknessQuadSetup?.Reset();
+    }
+
+    [RelayCommand]
+    protected void ResetSize()
+    {
+        this.fluidUISizeManager.Reset_FluidUISizeWidthAndHeight();
     }
 }
 

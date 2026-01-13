@@ -31,34 +31,19 @@
 /// </p>
 namespace EBoardSDK.Models;
 
-using EBoardSDK.Plugins;
-using System.Text.Json.Serialization;
-
 public class EboardConfig
 {
-    [JsonIgnore]
-    public IList<EBoardElementPluginBaseViewModel> ElementPlugins { get; set; } = [];
-
-    [JsonIgnore]
-    public IList<EBoardElementPluginBaseViewModel> ShapePlugins { get; set; } = [];
-
-    [JsonIgnore]
-    public IList<EBoardElementPluginBaseViewModel> ToolPlugins { get; set; } = [];
-
-#if DEBUG
-    [JsonIgnore]
-    public IList<EBoardElementPluginBaseViewModel> CurrentDevelopmentPlugins { get; set; } = [];
-#endif
-
     public int EBoardCount { get; set; } = 1;
 
     public int EBoardIndex { get; set; } = 0;
 
     public bool EBoardBrowserSwitch { get; set; } = true;
 
-    public FluidUIContext EBoardContext { get; set; }
+    public bool ScreenControlSwitch { get; set; } = true;
 
-    public FluidUIContext EBoardBrowserViewContext { get; set; }
+    public FluidUIContext EBoardContext { get; set; } = new();
+
+    public FluidUIContext EBoardBrowserViewContext { get; set; } = new();
 }
 
 // EOF

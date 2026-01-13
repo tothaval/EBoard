@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Addons.SoundMix;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für SoundMixMainView.xaml
+/// Interaktionslogik für SoundMixMainView.xaml.
 /// </summary>
 public partial class SoundMixMainView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SoundMixMainView"/> class.
+    /// </summary>
     public SoundMixMainView()
     {
         this.InitializeComponent();

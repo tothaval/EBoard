@@ -30,12 +30,6 @@
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
 namespace EBoardSDK.Interfaces;
-
-using EBoardSDK.Interfaces.FluidUIDataBlock;
-using EBoardSDK.Interfaces.FluidUIDesign;
-using EBoardSDK.Interfaces.FluidUISize;
-using EBoardSDK.Interfaces.FluidUIStand;
-using EBoardSDK.Interfaces.FluidUIText;
 using EBoardSDK.Models.FluidUIDataBlock;
 using EBoardSDK.Models.FluidUIDesign;
 using EBoardSDK.Models.FluidUIFont;
@@ -44,32 +38,15 @@ using EBoardSDK.Models.FluidUIStand;
 
 public interface IFluidUIContext : IFluidUIChangedAction
 {
-    public DataBlockManagement DataBlock { get; set; }
+    public FluidUIDataBlockModel? DataBlock { get; set; }
 
-    public BrushManagement Design { get; set; }
+    public FluidUIDesignModel? Design { get; set; }
 
-    public FontManagement Font { get; set; }
+    public FluidUIFontModel? Font { get; set; }
 
-    public BorderManagement Size { get; set; }
+    public FluidUISizeModel? Size { get; set; }
 
-    public PlacementManagement Stand { get; set; }
-
-    public void Apply_FluidUI(
-        IFluidUIDataBlockModel? dataBlock = null,
-        IFluidUIDesignModel? design = null,
-        IFluidUIFontModel? font = null,
-        IFluidUISizeModel? size = null,
-        IFluidUIStandModel? stand = null);
-
-    public void Apply_FluidUIDataBlock(IFluidUIDataBlockModel? dataBlock = null);
-
-    public void Apply_FluidUIDesign(IFluidUIDesignModel? design = null);
-
-    public void Apply_FluidUIFont(IFluidUIFontModel? font = null);
-
-    public void Apply_FluidUISize(IFluidUISizeModel? size = null);
-
-    public void Apply_FluidUIStand(IFluidUIStandModel? stand = null);
+    public FluidUIStandModel? Stand { get; set; }
 }
 
 // EOF

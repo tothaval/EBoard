@@ -45,30 +45,68 @@
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
-        <Style TargetType="ToolTip">
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+        </Style>
+
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="0 0 10 0"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate>
-                        <Grid>
-                            <Border Background="{Binding ElementViewModel.FluidUI.Design.Background}"
-                                BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
-                                BorderThickness="{Binding ElementViewModel.FluidUI.Design.BorderThickness}">
-                                <TextBlock Text="{Binding ToolTipMessage}"
-                                       Foreground="{Binding  ElementViewModel.FluidUI.Design.Foreground}"
-                                       Margin="5"/>
-                            </Border>
-                        </Grid>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="DefaultButtonBorder"
+                             Background="{TemplateBinding Background}"
+                             BorderBrush="{TemplateBinding BorderBrush}"
+                             BorderThickness="3"                            
+                             CornerRadius="5" 
+                             MinWidth="50"
+                             MinHeight="25"
+                             Margin="5"
+                             Padding="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                        </Border>
                     </ControlTemplate>
-
                 </Setter.Value>
             </Setter>
 
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTip}">
+            <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border}"/>
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="FontSize" Value="{Binding ElementViewModel.FluidUI.Font.FontSize}"/>
+            <Setter Property="FontFamily" Value="{Binding ElementViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding ElementViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
         </Style>
     </UserControl.Resources>
 
     <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Stretch"          
-                     Margin="{Binding ElementViewModel.FluidUI.Size.Margin}">
+          VerticalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
@@ -81,50 +119,31 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0"
-                       Grid.Column="0"
-                       Grid.ColumnSpan="2"
-                           Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                           FontWeight="Bold"
-                           Text="{Binding PluginHeader}"
-                           TextWrapping="Wrap"
-                       HorizontalAlignment="Center"/>
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   FontWeight="Bold"
+                   Text="{Binding PluginHeader}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"/>
 
         <TextBlock Grid.Row="1"
-                       
-                       Grid.Column="0"        
-                       Background="Transparent"
-                       Padding="0 10 0 0"
-                     Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
-                         Text="now"/>
+                   Grid.Column="0"
+                   Text="now"/>
 
         <TextBlock Grid.Row="1"
-                       Grid.Column="1"
-                         Text="{Binding Clock, UpdateSourceTrigger=PropertyChanged}"
-                         Background="Transparent"
-                       TextAlignment="Right"
-                     Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
-                       Padding="0 10 0 0"
-                         MinWidth="100"/>
-
+                   Grid.Column="1"
+                   Text="{Binding Clock, UpdateSourceTrigger=PropertyChanged}"
+                   TextAlignment="Right"/>
 
         <TextBlock Grid.Row="2"
-                       
-                       Grid.Column="0"        
-                       Background="Transparent"
-                       Padding="0 10 0 0"
-                     Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"     
-                         Text="uptime"/>
+                   Grid.Column="0"
+                   Text="uptime"/>
 
-        <TextBlock Grid.Row="2"                      
-                       Grid.Column="1"
-                       Text="{Binding Uptime, UpdateSourceTrigger=PropertyChanged}"
-                       ToolTip="{Binding ToolTipMessage}"
-                       Background="Transparent"     
-                       TextAlignment="Right"         
-                       VerticalAlignment="Center"         
-                       Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
-                       Padding="0 10 0 0"
-                       MinWidth="100"/>
+        <TextBlock Grid.Row="2"
+                   Grid.Column="1"
+                   Text="{Binding Uptime, UpdateSourceTrigger=PropertyChanged}"
+                   ToolTip="{Binding ToolTipMessage}"
+                   TextAlignment="Right"/>
     </Grid>
 </UserControl>
 

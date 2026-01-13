@@ -36,10 +36,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 /// <summary>
-/// Interaktionslogik für SolidBrushSetupView.xaml
+/// Interaktionslogik für SolidBrushSetupView.xaml.
 /// </summary>
 public partial class SolidBrushSetupView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SolidBrushSetupView"/> class.
+    /// </summary>
     public SolidBrushSetupView()
     {
         this.InitializeComponent();

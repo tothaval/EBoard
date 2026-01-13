@@ -39,6 +39,9 @@ public partial class LinearBrushSetupViewModel : ObservableObject, IDisposable
 {
     public Brush Brush { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LinearBrushSetupViewModel"/> class.
+    /// </summary>
     public LinearBrushSetupViewModel()
     {
         var gradientStops = new GradientStopCollection();

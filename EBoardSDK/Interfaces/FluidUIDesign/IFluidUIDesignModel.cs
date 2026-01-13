@@ -69,6 +69,8 @@ public interface IFluidUIDesignModel : IFluidUIChangedAction
     public string ImageBorderPath { get; set; }
 
     public string ImageHighlightPath { get; set; }
+
+    public void ResetValuesToInitial(bool viewModelIsSelected);
 }
 
 // EOF

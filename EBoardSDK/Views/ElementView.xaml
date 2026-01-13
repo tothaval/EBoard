@@ -38,7 +38,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoardSDK.Views"
              xmlns:vms="clr-namespace:EBoardSDK.ViewModels"
-             xmlns:ut="clr-namespace:EBoardSDK.Utilities"
              xmlns:esdkfuim="clr-namespace:EBoardSDK.Controls.FluidUIMenu"
              xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
              d:DataContext="{d:DesignInstance Type=vms:ElementViewModel}"
@@ -49,19 +48,23 @@
              FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
              FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
              Foreground="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
+             Opacity="{Binding FluidUI.Design.Opacity, NotifyOnSourceUpdated=True}"
              Loaded="Element_Loaded"
              Unloaded="Element_Unloaded">
 
     <UserControl.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
             <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="MinWidth" Value="25"/>
         </Style>
 
         <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
             <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderThickness" Value="10 0 5 0"/>
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
-            <Setter Property="Padding" Value="0 0 10 0"/>
+            <Setter Property="Margin" Value="0 0 5 0"/>
+            <Setter Property="MinWidth" Value="25"/>
         </Style>
 
         <Style TargetType="Button">
@@ -102,12 +105,10 @@
             </Style.Triggers>
         </Style>
 
-        <ut:VisibilityConverterToCollapsed x:Key="VisibilityToCollapsed"/>
-
         <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
             <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
             <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="TextBlock.Foreground" Value="{Binding FluidUIDesign.Foreground}"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
             <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
             <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
 
@@ -120,12 +121,10 @@
                     <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
                 </Trigger>
             </Style.Triggers>
-
         </Style>
 
         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}" x:Key="sub">
             <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
             <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Background" Value="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
@@ -136,6 +135,15 @@
             <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
             <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
         </Style>
+        
+        <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTip}">
+            <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+            <Setter Property="FontSize" Value="{Binding FluidUI.Font.FontSize}"/>
+            <Setter Property="FontFamily" Value="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
+        </Style>
     </UserControl.Resources>
 
     <Border MouseLeftButtonDown="Border_MouseLeftButtonDown"
@@ -143,10 +151,10 @@
             MouseMove="Border_MouseMove"
             MouseWheel="Border_MouseWheel"
             x:Name="ElementBorder"
-            RenderTransformOrigin="{Binding FluidUIMenuViewModel.FluidUIStandSetupViewModel.TransformOriginPoint, NotifyOnSourceUpdated=True}"
-            RenderTransform="{Binding FluidUIMenuViewModel.FluidUIStandSetupViewModel.RotateTransformValue, NotifyOnSourceUpdated=True}"
+            RenderTransformOrigin="{Binding FluidUI.Stand.TransformOriginPoint, NotifyOnSourceUpdated=True}"
+            RenderTransform="{Binding FluidUI.Stand.RotateTransformValue, NotifyOnSourceUpdated=True}"
             ClipToBounds="True">
-
+        
         <Border.InputBindings>
             <MouseBinding Gesture="Shift+LeftClick" Command="{Binding SelectCommand}"/>
         </Border.InputBindings>
@@ -154,22 +162,98 @@
         <Border.Resources>
             <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItem}">
                 <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
-                <Setter Property="BorderThickness" Value="5"/>
-                <Setter Property="Foreground" Value="Red"/>
+                <Setter Property="BorderThickness" Value="3"/>
                 <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
             </Style>
         </Border.Resources>
         
         <Border.ToolTip>
-            <ToolTip Content="{Binding FluidUI.DataBlock.Text,NotifyOnSourceUpdated=True}"
-                     Background="{Binding FluidUI.Design.Background}"
-                     BorderBrush="{Binding FluidUI.Design.Border}"
-                     BorderThickness="2"
-                     Padding="{Binding FluidUI.Size.Padding}"
-                     Foreground="{Binding FluidUI.Design.Foreground}"
-                     FontSize="{Binding FluidUI.Font.FontSize}"
-                     FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
-                     FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}">
+            <ToolTip Visibility="{Binding FluidUI.DataBlock.ShowToolTip, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto" SharedSizeGroup="stand1"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto" SharedSizeGroup="stand2"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="x"
+                               Grid.Column="0"
+                               Grid.Row="0"/>
+                    <Border BorderBrush="{Binding FluidUI.Design.Border}"
+                            BorderThickness="0 0 2 0"
+                            Margin="0 0 5 0"
+                            Grid.Column="1"
+                            Grid.Row="0">
+                        <TextBlock Text="{Binding FluidUI.Stand.Position.X, NotifyOnSourceUpdated=True}"
+                                   TextAlignment="Right"
+                                   Padding="0 0 5 0"/>
+                    </Border>
+
+                    <TextBlock Text="y"
+                               Grid.Column="0"
+                               Grid.Row="1"/>
+                    <Border BorderBrush="{Binding FluidUI.Design.Border}"
+                            BorderThickness="0 0 2 0"
+                            Margin="0 0 5 0"
+                            Grid.Column="1"
+                            Grid.Row="1">
+                        <TextBlock Text="{Binding FluidUI.Stand.Position.Y, NotifyOnSourceUpdated=True}"
+                                   TextAlignment="Right"
+                                   Padding="0 0 5 0"/>
+                    </Border>
+
+                    <TextBlock Text="z"
+                               Grid.Column="2"
+                               Grid.Row="0"/>
+                    <Border BorderBrush="{Binding FluidUI.Design.Border}"
+                            BorderThickness="0 0 2 0"
+                            Margin="0 0 5 0"
+                            Grid.Column="3"
+                            Grid.Row="0">
+                        <TextBlock Text="{Binding FluidUI.Stand.Z, NotifyOnSourceUpdated=True}"
+                                   TextAlignment="Right"
+                                   Padding="0 0 5 0"/>
+                    </Border>
+
+                    <TextBlock Text="°"
+                               Grid.Column="2"
+                               Grid.Row="1"/>
+                    <Border BorderBrush="{Binding FluidUI.Design.Border}"
+                            BorderThickness="0 0 2 0"
+                            Margin="0 0 5 0"
+                            Grid.Column="3"
+                            Grid.Row="1">
+                        <TextBlock Text="{Binding FluidUI.Stand.Angle, NotifyOnSourceUpdated=True}"
+                                   TextAlignment="Right"
+                                   Padding="0 0 5 0"/>
+                    </Border>
+                    
+                    <TextBlock Text="{Binding Plugin.PluginName, NotifyOnSourceUpdated=True, Mode=OneWay}"
+                               Grid.Column="4"
+                               Grid.Row="0"/>
+                    <TextBlock Text="{Binding FluidUI.DataBlock.Title, NotifyOnSourceUpdated=True}"
+                               Grid.Column="4"
+                               Grid.Row="1"/>
+
+                    <Separator Foreground="{Binding FluidUI.Design.Foreground}"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="5"
+                               Grid.Row="2" />
+
+                    <TextBlock Text="{Binding FluidUI.DataBlock.Text,NotifyOnSourceUpdated=True}"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="5"
+                               Grid.Row="3"/>
+                </Grid>
+
             </ToolTip>
         </Border.ToolTip>
 
@@ -177,56 +261,14 @@
             <ContextMenu Background="{Binding FluidUI.Design.Background}"
                          BorderBrush="{Binding FluidUI.Design.Border}"
                          Style="{StaticResource ContextMenuStyle}">
-                <TextBlock Text="{Binding FluidUI.DataBlock.Title,NotifyOnSourceUpdated=True}"/>
-
-                <MenuItem Header="Arrange" Style="{StaticResource menuitem}">
-
-                    <WrapPanel Orientation="Vertical">
-                        <WrapPanel Orientation="Horizontal">
-                            <Label Content="Arrangement Rotation"/>
-                            <Label Content="{Binding EBoardViewModel.EBoardSettingsViewModel.ArrangementRotationValue, NotifyOnSourceUpdated=True}"/>
-                        </WrapPanel>
-                        <Slider Value="{Binding EBoardViewModel.EBoardSettingsViewModel.ArrangementRotationValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="-90"
-                            Maximum="90"
-                            Width="361"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-                    </WrapPanel>
-
-                    <WrapPanel Orientation="Vertical">
-                        <WrapPanel Orientation="Horizontal">
-                            <Label Content="Arrangement Offset"
-                           MinWidth="50"/>
-                            <Label Content="{Binding EBoardViewModel.EBoardSettingsViewModel.ArrangementOffsetValue, NotifyOnSourceUpdated=True}"
-                               MinWidth="30"/>
-                        </WrapPanel>
-                        <Slider Value="{Binding EBoardViewModel.EBoardSettingsViewModel.ArrangementOffsetValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                            Minimum="-90"
-                            Maximum="90"
-                            Width="361"
-                            SmallChange="1"
-                            LargeChange="5"
-                            Interval="1"
-                            Orientation="Horizontal"/>
-                    </WrapPanel>
-
-                    <Rectangle StrokeThickness="1" Stroke="{Binding FluidUI.Design.Border}" HorizontalAlignment="Stretch"/>
-
-                    <WrapPanel Orientation="Horizontal">
-                        <Button Content="Line" Command="{Binding ArrangeGroupAsLineCommand}" Style="{StaticResource DefaultButtonStyle}"/>
-                        <Button Content="Square" Command="{Binding ArrangeGroupAsSquareCommand}" Style="{StaticResource DefaultButtonStyle}"/>
-                        <Button Content="Random 10x10" Command="{Binding ArrangeGroupAsRandomMatrix10x10Command}" Style="{StaticResource DefaultButtonStyle}"/>
-                    </WrapPanel>
-                </MenuItem>
+                <TextBlock Text="{Binding FluidUI.DataBlock.Title, NotifyOnSourceUpdated=True}"/>
 
                 <esdkfuim:FluidUIMenuView DataContext="{Binding FluidUIMenuViewModel, NotifyOnSourceUpdated=True}"
-                                              Style="{StaticResource menuitem}"/>
+                                          Style="{StaticResource menuitem}"/>
 
-                <MenuItem Header="Delete" Command="{Binding DeleteElementCommand}" Style="{StaticResource menuitem}"/>
-
+                <MenuItem Header="Delete"
+                          Command="{Binding DeleteElementCommand}"
+                          Style="{StaticResource menuitem}"/>
             </ContextMenu>
         </Border.ContextMenu>
 
@@ -246,54 +288,30 @@
             
                 Margin="{Binding FluidUI.Size.Margin, NotifyOnSourceUpdated=True}"
                 Padding="{Binding FluidUI.Size.Padding, NotifyOnSourceUpdated=True}"
-            
-                MouseLeftButtonDown="Border_MouseLeftButtonDown_1"
-                MouseLeftButtonUp="Border_MouseLeftButtonUp_1"
-                MouseMove="Border_MouseMove_1"
-                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                IsHitTestVisible="True"
-                
-                MinHeight="60"
-                MinWidth="60">
-                <Grid>
 
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                IsHitTestVisible="True"                
+                MinHeight="10"
+                MinWidth="10">
+                
+                <Grid>
                     <!--<Border Name="mask"
                     Background="{Binding Plugin.BrushManagement.Background, NotifyOnSourceUpdated=True}"
                     CornerRadius="{Binding Plugin.BorderManagement.CornerRadius, NotifyOnSourceUpdated=True}"
       
                     />-->
 
-                    <Grid 
-                Width="{Binding FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
-                Height="{Binding FluidUI.Size.Height, NotifyOnSourceUpdated=True}">
+                    <Grid Width="{Binding FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
+                          Height="{Binding FluidUI.Size.Height, NotifyOnSourceUpdated=True}">
 
                         <!--<Grid.OpacityMask>
                             <VisualBrush Visual="{Binding ElementName=mask}"/>
                         </Grid.OpacityMask>-->
 
                         <ContentPresenter Content="{Binding Plugin}" />
-
                     </Grid>
-
                 </Grid>
             </Border>
-
-            <TextBlock Foreground="{Binding FluidUI.Design.Highlight}"
-                       MinWidth="30"
-                       Text="{Binding FluidUIMenuViewModel.FluidUIStandSetupViewModel.ZIndexValue, NotifyOnSourceUpdated=True}"
-                       TextWrapping="Wrap"
-                       Margin="5 0 0 0"
-                       HorizontalAlignment="Left"
-                       VerticalAlignment="Top"
-                       Grid.Row="0"/>
-
-            <TextBlock Foreground="{Binding FluidUI.Design.Highlight}"
-                       Text="{Binding FluidUIMenuViewModel.FluidUIStandSetupViewModel.RotationAngleValue, NotifyOnSourceUpdated=True}"
-                       TextWrapping="Wrap"
-                       Margin="0 0 5 0"
-                       HorizontalAlignment="Right"
-                       VerticalAlignment="Top"
-                       Grid.Row="0"/>
         </Grid>
     </Border>
 </UserControl>

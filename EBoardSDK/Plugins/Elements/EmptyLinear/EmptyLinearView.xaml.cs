@@ -34,10 +34,13 @@ namespace EBoardSDK.Plugins.Elements.EmptyLinear;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für EmptyLinearView.xaml
+/// Interaktionslogik für EmptyLinearView.xaml.
 /// </summary>
 public partial class EmptyLinearView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EmptyLinearView"/> class.
+    /// </summary>
     public EmptyLinearView()
     {
         this.InitializeComponent();

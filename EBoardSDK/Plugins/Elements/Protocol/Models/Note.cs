@@ -37,7 +37,6 @@
  */
 namespace EBoardSDK.Plugins.Elements.Protocol.Models;
 
-[Serializable]
 public class Note
 {
     public int ID { get; set; }
@@ -50,6 +49,9 @@ public class Note
 
     public string Content { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Note"/> class.
+    /// </summary>
     public Note()
     {
         this.ID = -1;
@@ -59,6 +61,13 @@ public class Note
         this.Content = "note";
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Note"/> class.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="title"></param>
+    /// <param name="dateTime"></param>
+    /// <param name="content"></param>
     public Note(int id, string title, DateTime dateTime, string content)
     {
         this.ID = id;
@@ -67,6 +76,10 @@ public class Note
         this.Content = content;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Note"/> class.
+    /// </summary>
+    /// <param name="protocolViewModel"></param>
     public Note(ProtocolViewModel protocolViewModel)
     {
         this.ID = protocolViewModel.ID;

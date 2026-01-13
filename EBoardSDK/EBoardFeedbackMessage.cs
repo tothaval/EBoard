@@ -33,9 +33,9 @@ namespace EBoardSDK;
 
 public class EBoardFeedbackMessage
 {
-    public required EBoardTaskResult TaskResult { get; set; }
+    required public EBoardTaskResult TaskResult { get; set; }
 
-    public required string ResultMessage { get; set; }
+    required public string ResultMessage { get; set; }
 
     public Exception? Exception { get; set; }
 
@@ -43,7 +43,9 @@ public class EBoardFeedbackMessage
     {
         var s = this.Exception?.ToString() ?? string.Empty;
 
-        return $"task result: {this.TaskResult} _ details: {this.ResultMessage} _ {s}";
+        var message = $"task result: {this.TaskResult} _ details: {this.ResultMessage} _ {s}";
+
+        return message;
     }
 }
 

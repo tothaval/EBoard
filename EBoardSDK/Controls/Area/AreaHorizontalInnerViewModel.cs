@@ -32,6 +32,7 @@
 namespace EBoardSDK.Controls.Area;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins;
 using EBoardSDK.ViewModels;
 using System;
@@ -49,12 +50,17 @@ public partial class AreaHorizontalInnerViewModel<T> : ObservableObject
 
     private ElementViewModel elementViewModel;
 
-    //public ElementViewModel ElementViewModel => this.elementViewModel;
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaHorizontalInnerViewModel{T}"/> class.
+    /// </summary>
     public AreaHorizontalInnerViewModel()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaHorizontalInnerViewModel{T}"/> class.
+    /// </summary>
+    /// <param name="elementViewModel"></param>
     public AreaHorizontalInnerViewModel(ElementViewModel elementViewModel)
     {
         this.Elements = new();
@@ -70,17 +76,21 @@ public partial class AreaHorizontalInnerViewModel<T> : ObservableObject
         {
             this.AddElement(model);
         }
+
+        this.OnPropertyChanged(nameof(this.Elements));
+        this.OnPropertyChanged(nameof(this.Element));
     }
 
-    public void AddElement(T? elementViewModel = null)
+    public void AddElement(T plugin)
     {
-        if (elementViewModel != null)
-        {
-            this.Elements?.Add(elementViewModel);
+        plugin.RefreshInitialization();
+        this.Elements?.Add(plugin);
 
-            return;
-        }
+        this.OnPropertyChanged(nameof(this.Elements));
+    }
 
+    public void CreateElement()
+    {
         var instance = Activator.CreateInstance<T>();
 
         if (instance != null)
@@ -88,6 +98,7 @@ public partial class AreaHorizontalInnerViewModel<T> : ObservableObject
             if (this.elementViewModel != null)
             {
                 instance.SetEBoardAndElementViewModel(this.elementViewModel.EBoardViewModel, this.elementViewModel);
+                instance.RefreshInitialization();
             }
 
             this.Elements?.Add(instance);
@@ -98,7 +109,7 @@ public partial class AreaHorizontalInnerViewModel<T> : ObservableObject
 
     public void RemoveElement()
     {
-        var last = this.Elements?.LastOrDefault();
+        var last = this.Elements.LastOrDefault();
 
         if (last != null)
         {

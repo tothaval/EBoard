@@ -36,6 +36,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:eboard="clr-namespace:EBoardSDK"
              xmlns:vms="clr-namespace:EBoardSDK.ViewModels"
              xmlns:views="clr-namespace:EBoardSDK.Views"
              d:DataContext="{d:DesignInstance Type=vms:MainWindowMenuBarViewModel}"
@@ -44,7 +45,7 @@
              FontWeight="{Binding MainViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             >
+             x:Name="mainwindowmenubarname">
 
     <UserControl.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
@@ -95,8 +96,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
-        <BooleanToVisibilityConverter x:Key="bool2vis"/>
 
         <Style TargetType="ToggleButton">
 
@@ -115,17 +114,27 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="ToggleButton">
                         <Border x:Name="DefaultButtonBorder"
-                   Background="{TemplateBinding Background}"
-                   BorderBrush="{TemplateBinding BorderBrush}"
-                   BorderThickness="3"                            
-                   CornerRadius="5" 
-                   MinWidth="50"
-                   MinHeight="25"
-                   Margin="5"
-                   Padding="5">
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="3"                            
+                                CornerRadius="5" 
+                                MinWidth="50"
+                                MinHeight="25"
+                                Margin="5"
+                                Padding="5">
                             <ContentPresenter HorizontalAlignment="Center"
-                                 VerticalAlignment="Center"/>
+                                              VerticalAlignment="Center"/>
                         </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background"
+                                    TargetName="DefaultButtonBorder"
+                                    Value="{Binding MainViewModel.FluidUI.Design.Highlight}"/>
+                                <!--<Setter Property="Foreground"
+                                        Value="{Binding MainViewModel.FluidUI.Design.Highlight}"/>-->
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -143,15 +152,62 @@
             </Style.Triggers>
         </Style>
 
-        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}">
-            <Setter Property="BorderBrush" Value="{Binding ScreenBrushManagement.Border, NotifyOnSourceUpdated=True}"/>
+        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
+            <Setter Property="BorderBrush" Value="{Binding ScreenBrushManagement.Border}"/>
             <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="TextBlock.Foreground" Value="{Binding ScreenBrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="Background" Value="{Binding ScreenBrushManagement.Background, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding ScreenBrushManagement.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Foreground}"/>
+            <Setter Property="Background" Value="{Binding ScreenBrushManagement.Background}"/>
             <Setter Property="FontSize" Value="{Binding ScreenFontManagement.FontSize, NotifyOnSourceUpdated=True}" />
             <Setter Property="FontFamily" Value="{Binding ScreenFontManagement.FontFamily, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
             <Setter Property="FontWeight" Value="{Binding ScreenFontManagement.FontWeight, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Highlight}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Foreground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="MenuItem" x:Key="PluginLogoMenuItem">
+            <Setter Property="Command" Value="{Binding DataContext.InvokePluginCommand, RelativeSource={RelativeSource AncestorType=Menu}}"/>
+            <Setter Property="CommandParameter" Value="{Binding}" />
+
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Foreground, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource AncestorType=Menu}}"/>
+            <Setter Property="FontSize" Value="{Binding ScreenFontManagement.FontSize, NotifyOnSourceUpdated=True}" />
+            <Setter Property="FontFamily" Value="{Binding ScreenFontManagement.FontFamily, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
+            <Setter Property="FontWeight" Value="{Binding ScreenFontManagement.FontWeight, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
+            
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Grid Background="Transparent"
+                              Margin="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Rectangle Fill="{Binding PluginLogo}"
+                                       MinWidth="25"
+                                       MinHeight="25"
+                                       Grid.Column="0"/>
+                            <TextBlock Text="{Binding PluginHeader}"
+                                       Foreground="{Binding DataContext.MainWindowMenuBarVM.ScreenBrushManagement.Foreground, RelativeSource={RelativeSource AncestorType=eboard:MainWindow, Mode=FindAncestor}}"
+                                       FontSize="{Binding DataContext.MainWindowMenuBarVM.ScreenFontManagement.FontSize, RelativeSource={RelativeSource AncestorType=eboard:MainWindow, Mode=FindAncestor}}"
+                                       FontFamily="{Binding DataContext.MainWindowMenuBarVM.ScreenFontManagement.FontFamily, RelativeSource={RelativeSource AncestorType=eboard:MainWindow, Mode=FindAncestor}}"
+                                       FontWeight="{Binding DataContext.MainWindowMenuBarVM.ScreenFontManagement.FontWeight, RelativeSource={RelativeSource AncestorType=eboard:MainWindow, Mode=FindAncestor}}"                                       
+                                       Grid.Column="1">
+                            </TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
 
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -162,62 +218,7 @@
                     <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
                 </Trigger>
             </Style.Triggers>
-
         </Style>
-
-        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource SubMenuItemStyle}" x:Key="sub">
-            <Setter Property="BorderBrush" Value="{Binding ScreenBrushManagement.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="TextBlock.Foreground" Value="{Binding ScreenBrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="Background" Value="{Binding ScreenBrushManagement.Background, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="FontSize" Value="{Binding ScreenFontManagement.FontSize, NotifyOnSourceUpdated=True}" />
-            <Setter Property="FontFamily" Value="{Binding ScreenFontManagement.FontFamily, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
-            <Setter Property="FontWeight" Value="{Binding ScreenFontManagement.FontWeight, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
-        </Style>
-
-        <Style TargetType="MenuItem" x:Key="PluginLogoMenuItem">
-            <Setter Property="Command" Value="{Binding DataContext.InvokePluginCommand, RelativeSource={RelativeSource AncestorType=Menu}}"/>
-            <Setter Property="CommandParameter" Value="{Binding ElementPluginViewModel}" />
-
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="FontSize" Value="{Binding ScreenFontManagement.FontSize, NotifyOnSourceUpdated=True}" />
-            <Setter Property="FontFamily" Value="{Binding ScreenFontManagement.FontFamily, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
-            <Setter Property="FontWeight" Value="{Binding ScreenFontManagement.FontWeight, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
-
-            <Setter Property="HeaderTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <Grid Background="Transparent">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Rectangle Fill="{Binding PluginLogo}"
-                                  MinWidth="25"
-                                  MinHeight="25"
-                                  Grid.Column="0"/>
-                            <TextBlock Text="{Binding PluginName}"
-                                       FontSize="{Binding ScreenFontManagement.FontSize}"
-                                       FontFamily="{Binding ScreenFontManagement.FontFamily,NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
-                                       FontWeight="{Binding ScreenFontManagement.FontWeight, NotifyOnSourceUpdated=True}"
-                                       Grid.Column="1"/>
-                        </Grid>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style TargetType="Border" x:Key="MenuBarBorder">
-            <Setter Property="CornerRadius" Value="5"/>
-            <Setter Property="Background" Value="{Binding ScreenBrushManagement.Background, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderBrush" Value="{Binding ScreenBrushManagement.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="5"/>
-            <Setter Property="MinHeight" Value="50"/>
-            <Setter Property="MinWidth" Value="50"/>
-        </Style>
-
     </UserControl.Resources>
 
     <Grid HorizontalAlignment="Left">
@@ -235,48 +236,42 @@
                 UpdateSourceTrigger=PropertyChanged}"
                       Grid.Column="0"/>
 
-        <ToggleButton Content="Eboard Settings"     
+        <ToggleButton Content="Screen Control"
                       FontSize="{Binding MainViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"    
-                      IsChecked="{Binding EBoardSettingsSwitch,
+                      IsChecked="{Binding ScreenControlSwitch,
                 NotifyOnSourceUpdated=True,
                 UpdateSourceTrigger=PropertyChanged}"
                       Grid.Column="1"/>
-
 
         <Border Background="{Binding ScreenBrushManagement.Background}"
                 BorderBrush="{Binding ScreenBrushManagement.Border}"
                 BorderThickness="3"
                 CornerRadius="5"
                 Grid.Column="2">
-            <Menu>
-                <!-- TODO: Menustyles anpassen. -->
-                <!--<Menu.ItemTemplate>
-                <DataTemplate>
-                    <Border BorderBrush="{Binding ScreenBrushManagement.Border, RelativeSource={RelativeSource AncestorType=Menu}}">
-                        <TextBlock Text="{Binding}"/>
-                    </Border>
-                </DataTemplate>
-            </Menu.ItemTemplate>-->
-
+            <Menu Foreground="{Binding ScreenBrushManagement.Foreground}"
+                  Background="Transparent">
                 <MenuItem Header="Addons"
-                      ItemsSource="{Binding PluginCategoryAddons}"
-                      ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
-                <MenuItem Header="Elements" 
-                          ItemsSource="{Binding PluginCategoryElements}"
+                          Style="{StaticResource menuitem}"
+                          ItemsSource="{Binding FoundAddons}"
+                          ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
+                <MenuItem Header="Elements"
+                          Style="{StaticResource menuitem}"
+                          ItemsSource="{Binding FoundElements}"
                           ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
                 <MenuItem Header="Shapes"
-                          ItemsSource="{Binding PluginCategoryShapes}"
+                          Style="{StaticResource menuitem}"
+                          ItemsSource="{Binding FoundShapes}"
                           ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
-                <MenuItem Header="Areas" ItemsSource="{Binding PluginCategoryAreas}"
+                <MenuItem Header="Areas"
+                          Style="{StaticResource menuitem}"
+                          ItemsSource="{Binding FoundAreas}"
                           ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
-                <MenuItem Header="Tools" ItemsSource="{Binding PluginCategoryTools}"
+                <MenuItem Header="Tools"
+                          Style="{StaticResource menuitem}"
+                          ItemsSource="{Binding FoundTools, NotifyOnSourceUpdated=True}"
                           ItemContainerStyle="{StaticResource PluginLogoMenuItem}"/>
             </Menu>
         </Border>
-
-        <Button Content="Clear"
-                Command="{Binding ClearElementsCommand}"
-                Grid.Column="3"/>
     </Grid>
 </UserControl>
 

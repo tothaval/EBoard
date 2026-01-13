@@ -32,13 +32,10 @@
 namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Controls.FluidUIMenu;
-using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
-using EBoardSDK.SharedMethods;
-using System.Windows;
+using EBoardSDK.Models.FluidUISize;
 
 public partial class EboardFluidUIBaseViewModel : ObservableObject, IFluidUI
 {
@@ -46,14 +43,7 @@ public partial class EboardFluidUIBaseViewModel : ObservableObject, IFluidUI
 
     private IFluidUIContext fluidUI;
 
-    protected FluidUIMenuViewModel fluidUIMenuViewModel;
-
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(this.FluidUI))]
-    protected int cornerRadiusValue;
-
-    [ObservableProperty]
-    protected int fontSizeValue;
+    protected FluidUIMenuViewModel? fluidUIMenuViewModel;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(this.FluidUI))]
@@ -63,74 +53,26 @@ public partial class EboardFluidUIBaseViewModel : ObservableObject, IFluidUI
     [NotifyPropertyChangedFor(nameof(this.FluidUI))]
     protected int width = -1;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EboardFluidUIBaseViewModel"/> class.
+    /// </summary>
     public EboardFluidUIBaseViewModel()
     {
         if (this.fluidUI == null)
         {
             this.fluidUI = new FluidUIContext();
-            this.FluidUI.SetInitialValues();
             this.OnPropertyChanged(nameof(this.FluidUI));
         }
-
-        //this.FluidUI.PropertyChangedEvent += this.FluidUI_PropertyChangedEvent;
-        //this.FluidUI.Font.PropertyChangedEvent += this.Font_PropertyChangedEvent;
     }
-
-    //private void Font_PropertyChangedEvent()
-    //{
-
-    //    this.OnPropertyChanged(nameof(this.FluidUI.Font.FontFamily));
-
-    //    this.OnPropertyChanged(nameof(this.FluidUI));
-    //}
 
     public IFluidUIContext FluidUI => this.fluidUI;
 
     public FluidUIMenuViewModel FluidUIMenuViewModel => this.fluidUIMenuViewModel;
 
-    public void ApplyFluidUISizeChange()
+    public virtual void Dispose()
     {
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    public void Dispose()
-    {
-        if (this.FluidUI != null)
-        {
-            //this.FluidUI.PropertyChangedEvent -= this.FluidUI_PropertyChangedEvent;
-            this.FluidUI.Dispose();
-        }
-    }
-
-    public void SetFluidUI(IFluidUIContext? fluidUIContext)
-    {
-        //this.FluidUI.PropertyChangedEvent -= this.FluidUI_PropertyChangedEvent;
-
-        if (fluidUIContext == null)
-        {
-            this.fluidUI = new FluidUIContext();
-            this.FluidUI.SetInitialValues();
-        }
-        else
-        {
-            this.fluidUI = fluidUIContext;
-        }
-
-        //this.FluidUI.PropertyChangedEvent += this.FluidUI_PropertyChangedEvent;
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    public void SetFluidUIMenuViewModel(FluidUIMenuViewModel? fluidUIMenuViewModel)
-    {
-        if (fluidUIMenuViewModel != null)
-        {
-            this.fluidUIMenuViewModel = fluidUIMenuViewModel;
-            //this.FluidUIMenuViewModel.FluidUIFontSetupViewModel.PropertyChangedEvent += this.Font_PropertyChangedEvent;
-        }
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
+        this.FluidUI.Dispose();
+        this.FluidUIMenuViewModel?.Dispose();
     }
 
     public void SetInitialValues()
@@ -138,195 +80,168 @@ public partial class EboardFluidUIBaseViewModel : ObservableObject, IFluidUI
         this.FluidUI.SetInitialValues();
     }
 
-    public virtual void TriggerRedraw()
+    internal virtual void BecomesActive()
     {
     }
 
-    partial void OnCornerRadiusValueChanged(int value)
+    internal virtual void BecomesInactive()
     {
-        this.FluidUI.Size.CornerRadius = new CornerRadius(value);
+        this.FluidUI.Dispose();
+        this.FluidUIMenuViewModel?.Dispose();
+    }
 
+    internal virtual void CreateFluidUIMenuViewModel()
+    {
+    }
+
+    internal void DeleteFluidUIMenuViewModel()
+    {
+        this.FluidUIMenuViewModel?.Dispose();
+    }
+
+    internal void SetFluidUI(IFluidUIContext? fluidUIContext)
+    {
+        if (fluidUIContext == null)
+        {
+            this.fluidUI = new FluidUIContext();
+            this.FluidUI.SetInitialValues();
+        }
+        else
+        {
+            if (fluidUIContext.DataBlock != null)
+            {
+                this.fluidUI.DataBlock = fluidUIContext.DataBlock;
+                this.UpdateDataBlock();
+            }
+
+            if (fluidUIContext.Design != null)
+            {
+                this.fluidUI.Design = fluidUIContext.Design;
+                this.UpdateDesign();
+            }
+
+            if (fluidUIContext.Font != null)
+            {
+                this.fluidUI.Font = fluidUIContext.Font;
+                this.UpdateFont();
+            }
+
+            if (fluidUIContext.Size != null)
+            {
+                this.fluidUI.Size = fluidUIContext.Size;
+                this.UpdateSize();
+            }
+
+            if (fluidUIContext.Stand != null)
+            {
+                this.fluidUI.Stand = fluidUIContext.Stand;
+                this.UpdateStand();
+            }
+        }
+
+        this.UpdateFluidUI();
+    }
+
+    internal void SetFluidUIMenuViewModel(FluidUIMenuViewModel? fluidUIMenuViewModel)
+    {
+        if (fluidUIMenuViewModel != null)
+        {
+            this.fluidUIMenuViewModel = fluidUIMenuViewModel;
+        }
+
+        this.UpdateFluidUI();
+    }
+
+    internal virtual void Setup()
+    {
+    }
+
+    internal virtual void TriggerRedraw()
+    {
+    }
+
+    internal virtual void UpdateDataBlock()
+    {
+        this.OnPropertyChanged(nameof(this.FluidUI.DataBlock));
+
+        this.UpdateFluidUI();
+    }
+
+    internal virtual void UpdateDesign()
+    {
+        this.OnPropertyChanged(nameof(this.FluidUI.Design));
+
+        this.UpdateFluidUI();
+    }
+
+    internal virtual void UpdateFont()
+    {
+        this.OnPropertyChanged(nameof(this.FluidUI.Font));
+
+        this.UpdateFluidUI();
+    }
+
+    internal virtual void UpdateSize()
+    {
+        this.SetSize();
+
+        this.OnPropertyChanged(nameof(this.FluidUI.Size));
+
+        this.UpdateFluidUI();
+    }
+
+    internal virtual void UpdateStand()
+    {
+        this.OnPropertyChanged(nameof(this.FluidUI.Stand));
+
+        this.FluidUIMenuViewModel?.FluidUIStandSetupViewModel?.ApplyFluidUIStandValues();
+
+        this.UpdateFluidUI();
+
+        this.TriggerRedraw();
+    }
+
+    internal virtual void UpdateFluidUI()
+    {
         this.OnPropertyChanged(nameof(this.FluidUI));
+        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
+    }
+
+    protected void SetSize()
+    {
+        var manager = new FluidUISizeManager(this);
+
+        var height = manager.GetHeight();
+        var width = manager.GetWidth();
+
+        if (this.Height != height)
+        {
+            this.Height = height;
+        }
+
+        if (this.Width != width)
+        {
+            this.Width = width;
+        }
+
+        this.OnPropertyChanged(nameof(this.FluidUI.Size));
+
+        this.UpdateFluidUI();
     }
 
     partial void OnHeightChanged(int value)
     {
-        this.FluidUI.Size.Height = value;
+        var manager = new FluidUISizeManager(this);
 
-        this.OnPropertyChanged(nameof(this.FluidUI));
+        manager.SetHeight(value);
     }
 
     partial void OnWidthChanged(int value)
     {
-        this.FluidUI.Size.Width = value;
+        var manager = new FluidUISizeManager(this);
 
-        this.OnPropertyChanged(nameof(this.FluidUI));
+        manager.SetWidth(value);
     }
-
-    [RelayCommand]
-    public void ResetCorners()
-    {
-        this.FluidUIMenuViewModel.FluidUISizeSetupViewModel.Reset_FluidUISizeQuadValue(BorderTargets.CornerRadius);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    protected void ResetHighlightImage()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Reset_FluidUIDesignBrush(BrushTargets.Highlight);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    protected void ResetImageBorder()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Reset_FluidUIDesignBrush(BrushTargets.Border);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    protected void ResetForegroundImage()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Reset_FluidUIDesignBrush(BrushTargets.Foreground);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    protected void ResetImage()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Reset_FluidUIDesignBrush(BrushTargets.Background);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    public void ResetMargin()
-    {
-        this.FluidUIMenuViewModel.FluidUISizeSetupViewModel.Reset_FluidUISizeQuadValue(BorderTargets.Margin);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    public void ResetPadding()
-    {
-        this.FluidUIMenuViewModel.FluidUISizeSetupViewModel.Reset_FluidUISizeQuadValue(BorderTargets.Padding);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    public void ResetThickness()
-    {
-        this.FluidUIMenuViewModel.FluidUISizeSetupViewModel.Reset_FluidUISizeQuadValue(BorderTargets.Thickness);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    protected void ResetSize()
-    {
-        this.FluidUIMenuViewModel.FluidUISizeSetupViewModel.Reset_FluidUISizeWidthAndHeight();
-
-        this.SetElementSizeDisplayValue();
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    public void SetColorValueAsBackground()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Apply_FluidUIDesignBrush(this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.BackgroundBS!.SolidBrush.ColorBrush, BrushTargets.Background);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    public void SetColorValueAsForeground()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Apply_FluidUIDesignBrush(this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.ForegroundBS!.SolidBrush.ColorBrush, BrushTargets.Foreground);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    public void SetColorValueAsBorder()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Apply_FluidUIDesignBrush(this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.BorderBS!.SolidBrush.ColorBrush, BrushTargets.Border);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    public void SetColorValueAsHighlight()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.Apply_FluidUIDesignBrush(this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.HighlightBS!.SolidBrush.ColorBrush, BrushTargets.Highlight);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    private void SetBackgroundImage()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.SetUserChosenImagePath(BrushTargets.Background);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    private void SetForegroundImage()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.SetUserChosenImagePath(BrushTargets.Foreground);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    private void SetBorderImage()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.SetUserChosenImagePath(BrushTargets.Border);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    private void SetHighlightImage()
-    {
-        this.FluidUIMenuViewModel.FluidUIDesignSetupViewModel.SetUserChosenImagePath(BrushTargets.Highlight);
-
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    [RelayCommand]
-    private void ApplyFontSize()
-    {
-        this.FluidUIMenuViewModel.FluidUIFontSetupViewModel.ApplyFontSize(this.FontSizeValue);
-
-        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    protected void SetElementSizeDisplayValue()
-    {
-        this.Height = new SharedMethod_UI().ResetSizeDisplayValue(this.FluidUI.Size.Height);
-        this.Width = new SharedMethod_UI().ResetSizeDisplayValue(this.FluidUI.Size.Width);
-
-        this.FluidUI.Size.Height = this.Height;
-        this.FluidUI.Size.Width = this.Width;
-
-        this.OnPropertyChanged(nameof(this.Width));
-        this.OnPropertyChanged(nameof(this.Height));
-        this.OnPropertyChanged(nameof(this.FluidUI));
-    }
-
-    //private void FluidUI_PropertyChangedEvent()
-    //{
-    //    this.OnPropertyChanged(nameof(this.FluidUI));
-    //}
 }
 
 // EOF

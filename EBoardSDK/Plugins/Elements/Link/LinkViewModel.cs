@@ -33,11 +33,12 @@ namespace EBoardSDK.Plugins.Elements.Link;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardConfigManager.Enums;
+using EBoardConfigManager.Helper;
 using EBoardSDK;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins;
-using EBoardSDK.SharedMethods;
 using EBoardSDK.Utilities;
 using System;
 using System.Diagnostics;
@@ -50,8 +51,11 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollectiveClickableObject
+public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollectiveClickable
 {
+    [ObservableProperty]
+    private LinkTargets linkTargetType = LinkTargets.File;
+
     [ObservableProperty]
     private string epicText = "this is the most epic text in the entire existance.";
 
@@ -78,6 +82,16 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
     [ObservableProperty]
     private string editText = "Edit";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LinkViewModel"/> class.
+    /// </summary>
+    public LinkViewModel()
+    {
+        this.LinkStatusText = "unlinked";
+
+        this.OnPropertyChanged(nameof(this.InverseEditBoolForTextBoxCaretSetting));
+    }
+
     public bool IsLinkEmpty => !this.IsLinked;
 
     public bool InverseEditBoolForTextBoxCaretSetting => !this.IsEditLinkTargetNameTextBoxReadOnly;
@@ -98,8 +112,6 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
 
     public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
 
-    public override string ElementPluginName => "Link";
-
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
     public override ResourceDictionary ResourceDictionary => new();
@@ -110,16 +122,7 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
 
     public override Type ElementPluginViewModel => typeof(LinkViewModel);
 
-    public Action CollectiveClickEvent => this.ExecuteOnClick;
-
-    public LinkViewModel()
-    {
-        this.LinkStatusText = "unlinked";
-
-        this.OnPropertyChanged(nameof(this.InverseEditBoolForTextBoxCaretSetting));
-    }
-
-    public void ExecuteLink()
+    public void ExecuteClick()
     {
         this.ExecuteOnClick();
     }
@@ -130,7 +133,7 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
         {
             if (linkModel != null)
             {
-                this.LinkFile(linkModel.LinkTargetPath, linkModel.LinkTargetName);
+                this.LinkTarget(linkModel.LinkTarget, linkModel.LinkTargetPath, linkModel.LinkTargetName);
             }
         }
         catch (Exception)
@@ -164,9 +167,8 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
         }
     }
 
-
     [RelayCommand]
-    private void Link()
+    private void LinkFile()
     {
         Microsoft.Win32.OpenFileDialog setPath = new Microsoft.Win32.OpenFileDialog();
         setPath.InitialDirectory = Environment.GetEnvironmentVariable("userdir");
@@ -176,15 +178,53 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
 
         if (setPath.ShowDialog() == true)
         {
-            this.LinkFile(setPath.FileName);
+            this.LinkTarget(LinkTargets.File, setPath.FileName);
         }
     }
 
-    private void LinkFile(string fileName, string? linkName = null)
+    [RelayCommand]
+    private void LinkFolder()
+    {
+        Microsoft.Win32.OpenFolderDialog setPath = new Microsoft.Win32.OpenFolderDialog();
+        setPath.InitialDirectory = Environment.GetEnvironmentVariable("userdir");
+
+        if (setPath.ShowDialog() == true)
+        {
+            this.LinkTarget(LinkTargets.Folder, setPath.FolderName, setPath.SafeFolderName);
+        }
+    }
+
+    [RelayCommand]
+    private void LinkWeb()
+    {
+        this.LinkTarget(LinkTargets.Web, this.LinkTargetPath);
+    }
+
+    private void LinkTarget(LinkTargets linkTarget, string link, string? linkName = null)
+    {
+        this.LinkTargetType = linkTarget;
+
+        switch (linkTarget)
+        {
+            case LinkTargets.File:
+                this.LinkFileTarget(link, linkName);
+                break;
+            case LinkTargets.Web:
+                this.LinkWebTarget(link, linkName);
+                break;
+            case LinkTargets.Folder:
+                this.LinkFolderTarget(link, linkName);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void LinkFileTarget(string link, string? linkName = null)
     {
         try
         {
-            var fileInfo = new FileInfo(fileName);
+            var fileInfo = new FileInfo(link);
 
             if (fileInfo.Exists)
             {
@@ -235,6 +275,103 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
         }
     }
 
+    private void LinkFolderTarget(string folderName, string? linkName = null)
+    {
+        try
+        {
+            var dirInfo = new DirectoryInfo(folderName);
+
+            if (dirInfo.Exists)
+            {
+                this.LinkTargetName = string.IsNullOrWhiteSpace(linkName) ? dirInfo.Name : linkName;
+                this.LinkTargetPath = dirInfo.FullName;
+
+                this.IsLinked = dirInfo.Exists;
+
+                if (Uri.IsWellFormedUriString(this.LinkTargetPath, UriKind.RelativeOrAbsolute))
+                {
+                    //thx to https://www.brad-smith.info/blog/archives/164 for IconTools.cs
+                    Icon icon = IconTools.GetIconForExtension(".html", ShellIconSize.LargeIcon);
+
+                    using (Bitmap bmp = icon.ToBitmap())
+                    {
+                        var stream = new MemoryStream();
+                        bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                        this.ImageSource = BitmapFrame.Create(stream);
+                    }
+                }
+                else
+                {
+                    Icon icon = IconTools.GetIconForFile(this.LinkTargetPath, ShellIconSize.LargeIcon);
+
+                    using (Bitmap bmp = icon.ToBitmap())
+                    {
+                        var stream = new MemoryStream();
+                        bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                        this.ImageSource = BitmapFrame.Create(stream);
+                    }
+
+                    //// alternative ImageSource solution
+                    //// thx to: https://stackoverflow.com/questions/1127647/convert-system-drawing-icon-to-system-media-imagesource
+
+                    //ImageSource imageSource = Imaging.CreateBitmapSourceFromHIcon(
+                    //    icon.Handle,
+                    //    Int32Rect.Empty,
+                    //    BitmapSizeOptions.FromEmptyOptions());
+                }
+
+                this.OnPropertyChanged(nameof(this.ImageSource));
+                this.OnPropertyChanged(nameof(this.IsLinkEmpty));
+            }
+        }
+        catch (Exception)
+        {
+            this.Reset();
+        }
+    }
+
+    private void LinkWebTarget(string linkTargetPath, string? linkName = null)
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(linkTargetPath))
+            {
+                if (string.IsNullOrWhiteSpace(linkName))
+                {
+                    this.LinkTargetName = linkTargetPath;
+                }
+                else
+                {
+                    this.LinkTargetName = linkName;
+                }
+
+                if (Uri.IsWellFormedUriString(linkTargetPath, UriKind.RelativeOrAbsolute))
+                {
+                    this.LinkTargetPath = linkTargetPath;
+
+                    this.IsLinked = true;
+
+                    //thx to https://www.brad-smith.info/blog/archives/164 for IconTools.cs
+                    Icon icon = IconTools.GetIconForExtension(".html", ShellIconSize.LargeIcon);
+
+                    using (Bitmap bmp = icon.ToBitmap())
+                    {
+                        var stream = new MemoryStream();
+                        bmp.Save(stream, System.Drawing.Imaging.ImageFormat.Png);
+                        this.ImageSource = BitmapFrame.Create(stream);
+                    }
+                }
+
+                this.OnPropertyChanged(nameof(this.ImageSource));
+                this.OnPropertyChanged(nameof(this.IsLinkEmpty));
+            }
+        }
+        catch (Exception)
+        {
+            this.Reset();
+        }
+    }
+
     [RelayCommand]
     private void Reset()
     {
@@ -254,11 +391,11 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
     {
         try
         {
-            var data = await new SharedMethod_Plugins().DeserializeConfigFiles<LinkModel>(path);
+            var data = await Loader.LoadJsonFile<LinkModel>(path);
 
             if (data != null)
             {
-                this.LinkFile(data.LinkTargetPath, data.LinkTargetName);
+                this.LinkTarget(data.LinkTarget, data.LinkTargetPath, data.LinkTargetName);
 
                 return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
             }
@@ -275,16 +412,20 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
     {
         EBoardFeedbackMessage? serializationResult = null;
 
-        var model = new LinkModel() { LinkTargetName = this.LinkTargetName, LinkTargetPath = this.LinkTargetPath };
-
-        serializationResult = await new SharedMethod_Plugins().SerializeConfigFiles(model, path);
-
-        if (!serializationResult.TaskResult.Equals(EBoardTaskResult.Success))
+        var model = new LinkModel()
         {
-            // TODO do stuff
-        }
+            LinkTargetName = this.LinkTargetName,
+            LinkTargetPath = this.LinkTargetPath,
+            LinkTarget = this.LinkTargetType,
+        };
 
-        return serializationResult!;
+        var result = Saver.SaveJsonFile(path, model);
+
+        return new EBoardFeedbackMessage()
+        {
+            ResultMessage = $"{path} :: saving eboard config: {result}",
+            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
+        };
     }
 
     [RelayCommand]

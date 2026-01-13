@@ -34,10 +34,13 @@ namespace EBoardSDK.Controls.Area;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für AreaView.xaml
+/// Interaktionslogik für AreaView.xaml.
 /// </summary>
 public partial class AreaView : UserControl
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AreaView"/> class.
+    /// </summary>
     public AreaView()
     {
         this.InitializeComponent();

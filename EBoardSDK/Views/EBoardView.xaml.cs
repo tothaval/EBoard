@@ -31,16 +31,42 @@
 /// </p>
 namespace EBoardSDK.Views;
 
+using EBoardSDK.ViewModels;
 using System.Windows.Controls;
 
 /// <summary>
-/// Interaktionslogik für EBoardView.xaml
+/// Interaktionslogik für EBoardView.xaml.
 /// </summary>
 public partial class EBoardView : UserControl
 {
+    private EBoardViewModel eboardViewModel;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EBoardView"/> class.
+    /// </summary>
     public EBoardView()
     {
         this.InitializeComponent();
+
+        this.DataContextChanged += this.EBoardView_DataContextChanged;
+    }
+
+    private void EBoardView_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
+    {
+        this.SetPlacement();
+    }
+
+    public void SetPlacement()
+    {
+        if (this.DataContext != null)
+        {
+            this.eboardViewModel = (EBoardViewModel)this.DataContext;
+        }
+
+        if (this.eboardViewModel != null)
+        {
+            this.eboardViewModel.SetView(this);
+        }
     }
 }
 
