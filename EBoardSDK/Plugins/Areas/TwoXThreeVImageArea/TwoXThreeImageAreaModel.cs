@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -31,14 +31,31 @@
 /// </p>
 namespace EBoardSDK.Plugins.Areas.TwoXThreeVImageArea;
 
-using System;
-using System.Xml.Serialization;
-
-[Serializable]
+/// <summary>
+/// Serializable data model for <see cref="TwoXThreeImageAreaView"/>.
+/// </summary>
 public class TwoXThreeImageAreaModel
 {
-    [XmlIgnore]
-    private readonly TwoXThreeImageAreaViewModel twoXThreeImageAreaViewModel;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TwoXThreeImageAreaModel"/> class.
+    /// </summary>
+    public TwoXThreeImageAreaModel()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TwoXThreeImageAreaModel"/> class.
+    /// </summary>
+    /// <param name="twoXThreeImageAreaViewModel">Desired is the instance that has to be stored.</param>
+    public TwoXThreeImageAreaModel(TwoXThreeImageAreaViewModel twoXThreeImageAreaViewModel)
+    {
+        this.Link1 = twoXThreeImageAreaViewModel.ImageViewModel1.LinkTargetPath ?? string.Empty;
+        this.Link2 = twoXThreeImageAreaViewModel.ImageViewModel2.LinkTargetPath ?? string.Empty;
+        this.Link3 = twoXThreeImageAreaViewModel.ImageViewModel3.LinkTargetPath ?? string.Empty;
+        this.Link4 = twoXThreeImageAreaViewModel.ImageViewModel4.LinkTargetPath ?? string.Empty;
+        this.Link5 = twoXThreeImageAreaViewModel.ImageViewModel5.LinkTargetPath ?? string.Empty;
+        this.Link6 = twoXThreeImageAreaViewModel.ImageViewModel6.LinkTargetPath ?? string.Empty;
+    }
 
     public string Link1 { get; set; } = string.Empty;
 
@@ -52,28 +69,6 @@ public class TwoXThreeImageAreaModel
 
     public string Link6 { get; set; } = string.Empty;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TwoXThreeImageAreaModel"/> class.
-    /// </summary>
-    public TwoXThreeImageAreaModel()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TwoXThreeImageAreaModel"/> class.
-    /// </summary>
-    /// <param name="twoXThreeImageAreaViewModel"></param>
-    public TwoXThreeImageAreaModel(TwoXThreeImageAreaViewModel twoXThreeImageAreaViewModel)
-    {
-        this.twoXThreeImageAreaViewModel = twoXThreeImageAreaViewModel;
-
-        this.Link1 = twoXThreeImageAreaViewModel.ImageViewModel1.LinkTargetPath ?? string.Empty;
-        this.Link2 = twoXThreeImageAreaViewModel.ImageViewModel2.LinkTargetPath ?? string.Empty;
-        this.Link3 = twoXThreeImageAreaViewModel.ImageViewModel3.LinkTargetPath ?? string.Empty;
-        this.Link4 = twoXThreeImageAreaViewModel.ImageViewModel4.LinkTargetPath ?? string.Empty;
-        this.Link5 = twoXThreeImageAreaViewModel.ImageViewModel5.LinkTargetPath ?? string.Empty;
-        this.Link6 = twoXThreeImageAreaViewModel.ImageViewModel6.LinkTargetPath ?? string.Empty;
-    }
 }
 
 // EOF

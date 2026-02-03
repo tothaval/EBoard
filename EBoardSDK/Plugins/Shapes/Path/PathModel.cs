@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -30,25 +30,13 @@
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
 namespace EBoardSDK.Plugins.Shapes.Path;
-
 using EBoardSDK.Models;
-using System.Text.Json.Serialization;
 
+/// <summary>
+/// Serializable data model for <see cref="PathView"/>.
+/// </summary>
 public class PathModel
 {
-    [JsonIgnore]
-    private PathViewModel pathViewModel;
-
-    public bool PathEntered { get; set; } = false;
-
-    public string PathString { get; set; } = "enter path geometry";
-
-    public double ScaleX { get; set; } = 1.0;
-
-    public double ScaleY { get; set; } = 1.0;
-
-    public FluidUIContext FluidUIContext { get; set; } = new FluidUIContext();
-
     /// <summary>
     /// Initializes a new instance of the <see cref="PathModel"/> class.
     /// </summary>
@@ -59,18 +47,20 @@ public class PathModel
     /// <summary>
     /// Initializes a new instance of the <see cref="PathModel"/> class.
     /// </summary>
-    /// <param name="pathViewModel"></param>
+    /// <param name="pathViewModel">Desired is the instance that has to be stored.</param>
     public PathModel(PathViewModel pathViewModel)
     {
-        this.pathViewModel = pathViewModel;
-
         this.PathEntered = pathViewModel.PathEntered;
         this.PathString = pathViewModel.PathString;
-        this.ScaleX = pathViewModel.ScaleX;
-        this.ScaleY = pathViewModel.ScaleY;
 
         this.FluidUIContext = (FluidUIContext)pathViewModel.ViewModel.FluidUI;
     }
+
+    public bool PathEntered { get; set; } = false;
+
+    public string PathString { get; set; } = "enter path geometry";
+
+    public FluidUIContext FluidUIContext { get; set; } = new FluidUIContext();
 }
 
 // EOf

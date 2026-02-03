@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -32,14 +32,13 @@
 namespace EBoardSDK.Plugins.Elements.StandardText;
 
 using EBoardSDK.Models.FluidUIFont;
-using System.Text.Json.Serialization;
 using System.Windows;
 
+/// <summary>
+/// Serializable data model for <see cref="StandardTextView"/>.
+/// </summary>
 public class StandardTextModel
 {
-    [JsonIgnore]
-    private StandardTextViewModel standardTextViewModel;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="StandardTextModel"/> class.
     /// </summary>
@@ -50,21 +49,26 @@ public class StandardTextModel
     /// <summary>
     /// Initializes a new instance of the <see cref="StandardTextModel"/> class.
     /// </summary>
-    /// <param name="standardTextViewModel"></param>
+    /// <param name="standardTextViewModel">Desired is the instance that has to be stored.</param>
     public StandardTextModel(StandardTextViewModel standardTextViewModel)
     {
-        this.standardTextViewModel = standardTextViewModel;
-
         this.SavePath = standardTextViewModel.SavePath;
 
+        this.ShowOnlyText = standardTextViewModel.ShowOnlyText;
+        this.ShowOnlyTitle = standardTextViewModel.ShowOnlyTitle;
+
         this.Text = standardTextViewModel.Text;
-        this.TextFont = (FluidUIFontModel)standardTextViewModel.TextFont;
         this.TextAlignmentValue = standardTextViewModel.TextAlignmentValue;
+        this.TextVerticalAlignment = standardTextViewModel.TextVerticalAlignment;
 
         this.Title = standardTextViewModel.Title;
         this.TitleFont = (FluidUIFontModel)standardTextViewModel.TitleFont;
         this.TitleAlignmentValue = standardTextViewModel.TitleAlignmentValue;
     }
+
+    public bool ShowOnlyText { get; set; } = false;
+
+    public bool ShowOnlyTitle { get; set; } = false;
 
     public string SavePath { get; set; } = string.Empty;
 
@@ -72,11 +76,13 @@ public class StandardTextModel
 
     public TextAlignment TextAlignmentValue { get; set; } = TextAlignment.Left;
 
+    public VerticalAlignment TextVerticalAlignment { get; set; } = VerticalAlignment.Top;
+
+    public FluidUIFontModel TextFont { get; set; } = new FluidUIFontModel();
+
     public string Title { get; set; } = string.Empty;
 
     public TextAlignment TitleAlignmentValue { get; set; } = TextAlignment.Center;
-
-    public FluidUIFontModel TextFont { get; set; } = new FluidUIFontModel();
 
     public FluidUIFontModel TitleFont { get; set; } = new FluidUIFontModel();
 }

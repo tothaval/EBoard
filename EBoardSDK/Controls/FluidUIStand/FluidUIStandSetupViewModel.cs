@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,28 +33,38 @@ namespace EBoardSDK.Controls.FluidUIStand;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces.FluidUIStand;
-using EBoardSDK.Models.FluidUISize;
 using EBoardSDK.Models.FluidUIStand;
 using EBoardSDK.ViewModels;
 using System;
 using System.Windows;
-using System.Windows.Media;
 
 public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStandSetup
 {
-    private EboardFluidUIBaseViewModel viewModel;
-    private EboardFluidUIBaseViewModel outerViewModel;
-    private EBoardViewModel? eBoardViewModel;
+    private FluidUIBaseViewModel viewModel;
+    private ScreenViewModel? eBoardViewModel;
     private FluidUIStandManager fluidUIStandManager;
 
-    private bool fluidUIContextHasStand = false;
+    private FluidUIStandSettings fluidUIStandSettings = FluidUIStandSettings.NoStandContextArea;
 
     [ObservableProperty]
     private int rotationAngleValue;
 
     [ObservableProperty]
-    private RotateTransform rotateTransformValue;
+    private double skewAngleX = 0.0;
+
+    [ObservableProperty]
+    private double skewAngleY = 0.0;
+
+    [ObservableProperty]
+    private double skewCenterX;
+
+    [ObservableProperty]
+    private double skewCenterY;
+
+    [ObservableProperty]
+    private Point skewCenterPoint;
 
     [ObservableProperty]
     private Point transformOriginPoint;
@@ -69,10 +79,16 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
     private int xMaximumValue;
 
     [ObservableProperty]
+    private int xMinimumValue;
+
+    [ObservableProperty]
     private int xPosition;
 
     [ObservableProperty]
     private int yMaximumValue;
+
+    [ObservableProperty]
+    private int yMinimumValue;
 
     [ObservableProperty]
     private int yPosition;
@@ -95,112 +111,59 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
     /// <param name="eboardFluidUIBaseViewModel"></param>
     /// <param name="eBoardViewModel"></param>
     /// <param name="fluidUIContextHasStand"></param>
-    public FluidUIStandSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel, EBoardViewModel? eBoardViewModel = null, bool fluidUIContextHasStand = false)
+    public FluidUIStandSetupViewModel(FluidUIBaseViewModel eboardFluidUIBaseViewModel, FluidUIStandSettings fluidUIStandSettings, ScreenViewModel? eBoardViewModel = null)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
         this.eBoardViewModel = eBoardViewModel;
         this.fluidUIStandManager = new FluidUIStandManager(this.ViewModel);
 
-        this.fluidUIContextHasStand = fluidUIContextHasStand;
+        this.fluidUIStandSettings = fluidUIStandSettings;
 
         this.ApplyFluidUIStandValues();
 
         this.SetupSliderValues();
 
-        if (fluidUIContextHasStand)
-        {
-            this.fluidUIContextHasStand = fluidUIContextHasStand;
-        }
-
-        this.OnPropertyChanged(nameof(this.FluidUIContextHasStand));
+        this.OnPropertyChanged(nameof(this.ElementContextArea));
+        this.OnPropertyChanged(nameof(this.ScreenContextArea));
         this.OnPropertyChanged(nameof(this.ViewModel));
     }
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FluidUIStandSetupViewModel"/> class.
-    /// </summary>
-    /// <param name="eboardFluidUIBaseViewModel"></param>
-    /// <param name="outerViewModel"></param>
-    /// <param name="eBoardViewModel"></param>
-    /// <param name="fluidUIContextHasStand"></param>
-    public FluidUIStandSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel, EboardFluidUIBaseViewModel outerViewModel, EBoardViewModel? eBoardViewModel = null, bool fluidUIContextHasStand = false)
-    {
-        this.viewModel = eboardFluidUIBaseViewModel;
-        this.outerViewModel = outerViewModel;
-        this.eBoardViewModel = eBoardViewModel;
-        this.fluidUIStandManager = new FluidUIStandManager(this.outerViewModel);
-
-        this.fluidUIContextHasStand = fluidUIContextHasStand;
-
-        this.ApplyFluidUIStandValues();
-
-        this.SetupSliderValues();
-
-        if (fluidUIContextHasStand)
-        {
-            this.fluidUIContextHasStand = fluidUIContextHasStand;
-        }
-
-        this.OnPropertyChanged(nameof(this.FluidUIContextHasStand));
-        this.OnPropertyChanged(nameof(this.ViewModel));
-    }
-
+    /// <inheritdoc/>
     public event Action? PropertyChangedEvent;
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
 
-    public bool FluidUIContextHasStand => this.fluidUIContextHasStand;
+    public bool ElementContextArea => this.fluidUIStandSettings == FluidUIStandSettings.ElementContextArea;
+
+    public bool ScreenContextArea => this.fluidUIStandSettings == FluidUIStandSettings.ScreenContextArea;
 
     public void ApplyFluidUIStandValues()
     {
-        this.XPosition = (int)this.fluidUIStandManager.GetPosition().X;
-        this.YPosition = (int)this.fluidUIStandManager.GetPosition().Y;
-        this.ZIndexValue = this.fluidUIStandManager.GetZ();
         this.RotationAngleValue = (int)this.fluidUIStandManager.GetAngle();
         this.TransformOriginPoint = this.fluidUIStandManager.GetTransformOriginPoint();
         this.XTransformOrigin = this.TransformOriginPoint.X;
         this.YTransformOrigin = this.TransformOriginPoint.Y;
 
-        if (this.outerViewModel != null)
-        {
-            this.ViewModel.FluidUI.Stand = this.outerViewModel.FluidUI.Stand;
-            //this.ViewModel.UpdateStand();
-        }
+        this.XMaximumValue = this.fluidUIStandManager.GetXmaximum();
+        this.XMinimumValue = this.fluidUIStandManager.GetXminimum();
+        this.XPosition = (int)this.fluidUIStandManager.GetPosition().X;
+
+        this.YMaximumValue = this.fluidUIStandManager.GetYmaximum();
+        this.YMinimumValue = this.fluidUIStandManager.GetYminimum();
+        this.YPosition = (int)this.fluidUIStandManager.GetPosition().Y;
+
+        this.ZIndexValue = this.fluidUIStandManager.GetZ();
+        this.ZMaximumValue = this.fluidUIStandManager.GetZmaximum();
+        this.ZMinimumValue = this.fluidUIStandManager.GetZminimum();
+
+        this.SkewAngleX = this.fluidUIStandManager.GetSkewAngleX();
+        this.SkewAngleY = this.fluidUIStandManager.GetSkewAngleY();
+
+        this.SkewCenterX = this.fluidUIStandManager.GetSkewCenterPoint().X;
+        this.SkewCenterY = this.fluidUIStandManager.GetSkewCenterPoint().Y;
     }
 
-    public void CalibrateZSliderValues(int eboardDepth)
-    {
-        if (eboardDepth >= 0)
-        {
-            this.fluidUIStandManager.SetZmaximum(eboardDepth);
-            this.fluidUIStandManager.SetZminimum(0);
-
-            this.ZMaximumValue = this.fluidUIStandManager.GetZmaximum();
-            this.ZMinimumValue = this.fluidUIStandManager.GetZminimum();
-
-            if (eboardDepth == 0)
-            {
-
-                this.fluidUIStandManager.SetZminimum(-1);
-                this.fluidUIStandManager.SetZmaximum(1);
-
-                this.ZMaximumValue = this.fluidUIStandManager.GetZmaximum();
-                this.ZMinimumValue = this.fluidUIStandManager.GetZminimum();
-            }
-        }
-        else if (eboardDepth < 0)
-        {
-            this.fluidUIStandManager.SetZmaximum(0);
-            this.fluidUIStandManager.SetZminimum(eboardDepth);
-
-            this.ZMaximumValue = this.fluidUIStandManager.GetZmaximum();
-            this.ZMinimumValue = this.fluidUIStandManager.GetZminimum();
-        }
-
-        this.OnPropertyChanged(nameof(this.ZMaximumValue));
-        this.OnPropertyChanged(nameof(this.ZMinimumValue));
-    }
-
+    /// <inheritdoc/>
     public void Dispose()
     {
     }
@@ -214,30 +177,42 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
         this.SetupSliderValues();
     }
 
+    /// <inheritdoc/>
     public void SetInitialValues()
     {
+    }
+
+    /// <inheritdoc/>
+    public void UpdateValues()
+    {
+        this.ApplyFluidUIStandValues();
     }
 
     private void SetupSliderValues()
     {
         if (this.eBoardViewModel != null)
         {
-            var manager = new FluidUISizeManager(this.eBoardViewModel);
+            var manager = new FluidUIStandManager(this.eBoardViewModel);
 
-            this.XMaximumValue = manager.GetWidth();
-            this.YMaximumValue = manager.GetHeight();
+            this.XMaximumValue = manager.GetXmaximum();
+            this.XMinimumValue = manager.GetXminimum();
 
-            if (this.eBoardViewModel.FluidUI.Stand != null)
-            {
-                this.CalibrateZSliderValues(this.eBoardViewModel.FluidUI.Stand.Zmaximum);
-            }
+            this.YMaximumValue = manager.GetYmaximum();
+            this.YMinimumValue = manager.GetYminimum();
+
+            this.ZMaximumValue = manager.GetZmaximum();
+            this.ZMinimumValue = manager.GetZminimum();
         }
         else
         {
             this.XMaximumValue = 2048;
-            this.YMaximumValue = 1024;
+            this.XMinimumValue = -10;
 
-            this.CalibrateZSliderValues(100);
+            this.YMaximumValue = 1024;
+            this.YMinimumValue = -10;
+
+            this.ZMaximumValue = 100;
+            this.ZMinimumValue = -10;
         }
     }
 
@@ -260,80 +235,92 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
             this.UpdateRotation();
             this.fluidUIStandManager.SetAngle(newValue);
 
-            if (this.outerViewModel != null)
-            {
-                this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
-                //this.ViewModel.UpdateStand();
-            }
-
             return;
         }
+    }
+
+    partial void OnSkewAngleXChanged(double value)
+    {
+        this.fluidUIStandManager.SetSkewAngleX(value);
+    }
+
+    partial void OnSkewAngleYChanged(double value)
+    {
+        this.fluidUIStandManager.SetSkewAngleY(value);
+    }
+
+    partial void OnSkewCenterXChanged(double value)
+    {
+        this.SkewCenterPoint = new Point(value, this.fluidUIStandManager.GetSkewCenterPoint().Y);
+
+        this.fluidUIStandManager.SetSkewCenterPoint(this.SkewCenterPoint);
+    }
+
+    partial void OnSkewCenterYChanged(double value)
+    {
+        this.SkewCenterPoint = new Point(this.fluidUIStandManager.GetSkewCenterPoint().X, value);
+
+        this.fluidUIStandManager.SetSkewCenterPoint(this.SkewCenterPoint);
     }
 
     partial void OnTransformOriginPointChanged(Point value)
     {
         this.fluidUIStandManager.SetTransformOriginPoint(value);
-
-        if (this.outerViewModel != null)
-        {
-            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
-            //this.ViewModel.UpdateStand();
-        }
     }
 
     partial void OnXPositionChanged(int value)
     {
         this.fluidUIStandManager.SetX(value);
-
-        if (this.outerViewModel != null)
-        {
-            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
-            //this.ViewModel.UpdateStand();
-        }
     }
 
     partial void OnYPositionChanged(int value)
     {
         this.fluidUIStandManager.SetY(value);
-
-        if (this.outerViewModel != null)
-        {
-            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
-            //this.ViewModel.UpdateStand();
-        }
     }
 
     partial void OnXTransformOriginChanged(double value)
     {
         this.TransformOriginPoint = new Point(value, this.TransformOriginPoint.Y);
-
-        if (this.outerViewModel != null)
-        {
-            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
-            //this.ViewModel.UpdateStand();
-        }
     }
 
     partial void OnYTransformOriginChanged(double value)
     {
         this.TransformOriginPoint = new Point(this.TransformOriginPoint.X, value);
-
-        if (this.outerViewModel != null)
-        {
-            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
-            //this.ViewModel.UpdateStand();
-        }
     }
 
     partial void OnZIndexValueChanged(int value)
     {
         this.fluidUIStandManager.SetZ(value);
+    }
 
-        if (this.outerViewModel != null)
-        {
-            this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
-            //this.ViewModel.UpdateStand();
-        }
+    partial void OnXMaximumValueChanged(int value)
+    {
+        this.fluidUIStandManager.SetXmax(value);
+    }
+
+    partial void OnXMinimumValueChanged(int value)
+    {
+        this.fluidUIStandManager.SetXmin(value);
+    }
+
+    partial void OnYMaximumValueChanged(int value)
+    {
+        this.fluidUIStandManager.SetYmax(value);
+    }
+
+    partial void OnYMinimumValueChanged(int value)
+    {
+        this.fluidUIStandManager.SetYmin(value);
+    }
+
+    partial void OnZMaximumValueChanged(int value)
+    {
+        this.fluidUIStandManager.SetZmaximum(value);
+    }
+
+    partial void OnZMinimumValueChanged(int value)
+    {
+        this.fluidUIStandManager.SetZminimum(value);
     }
 
     [RelayCommand]

@@ -10,19 +10,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -37,9 +37,59 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoardSDK.Controls.BrushSetup.RadialBrushSetup"
+             xmlns:solid="clr-namespace:EBoardSDK.Controls.BrushSetup.SolidBrushSetup"
              d:DataContext="{d:DesignInstance Type=local:RadialBrushSetupViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
+            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+        </Style>
+
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
+            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="DefaultButtonBorder"
+                   Background="{TemplateBinding Background}"
+                   BorderBrush="{TemplateBinding BorderBrush}"
+                   BorderThickness="3"                            
+                   CornerRadius="5" 
+                   MinWidth="50"
+                   MinHeight="25"
+                   Margin="5"
+                   Padding="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                 VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
@@ -47,15 +97,118 @@
             <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
 
-        <Button Grid.Column="0" Content="+" Style="{StaticResource DefaultButtonStyle}"/>
-        
-        <Label Grid.Column="1"
-                   MinWidth="150"
-                   MinHeight="100" 
-                   BorderThickness="4"
-                   Background="{Binding Brush}"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
 
-        <Button Grid.Column="2" Content="+" Style="{StaticResource DefaultButtonStyle}"/>
+        <Button Content="+"
+                Command="{Binding AddGradientPointCommand}"
+                Grid.Column="0"
+                Grid.Row="1"/>
+
+        <Button Content="-"
+                Command="{Binding RemoveGradientPointCommand}"
+                Grid.Column="0"
+                Grid.Row="2"/>
+
+        <Button Content="clear"
+                Command="{Binding ClearGradientPointsCommand}"
+                Grid.Column="0"
+                Grid.Row="3"/>
+
+        <Grid Grid.Column="2"
+              Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="apply"
+                Command="{Binding ApplyRadialGradientBrushCommand}"
+                Grid.Column="0"/>
+            <Button Content="restore"
+                Command="{Binding RestoreRadialGradientBrushCommand}"
+                Grid.Column="1"/>
+        </Grid>
+
+        <Grid Grid.Column="1"
+              Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="center point"
+                       Grid.Column="0"/>
+            <TextBox Text="{Binding CenterPoint}"
+                     Grid.Column="1"/>
+
+            <TextBlock Text="origin point"
+                       Grid.Column="2"/>
+            <TextBox Text="{Binding OriginPoint}"
+                     Grid.Column="3"/>
+        </Grid>
+
+        <Rectangle Fill="{Binding Brush}"
+                   MinWidth="150"
+                   MinHeight="100"
+                   StrokeThickness="4"
+                   Grid.Column="2"
+                   Grid.Row="1"
+                   Grid.RowSpan="3"/>
+
+        <ListBox ItemsSource="{Binding GradientStops, NotifyOnSourceUpdated=True}"
+                 SelectedItem="{Binding SelectedGradientStop, NotifyOnSourceUpdated=True}"
+                 Foreground="{Binding ViewModel.FluidUI.Design.Foreground}"
+                 x:Name="GradientStopList"
+                 Background="Transparent"
+                 Grid.Column="1"
+                 Grid.Row="1"
+                 Grid.RowSpan="3">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="Transparent">
+                        <Grid VerticalAlignment="Center"
+                              Background="Transparent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Rectangle MinWidth="25"
+                                       MinHeight="25"
+                                       Grid.Column="0">
+                                <Rectangle.Fill>
+                                    <SolidColorBrush Color="{Binding Color}"/>
+                                </Rectangle.Fill>
+                            </Rectangle>
+
+                            <TextBlock Text="{Binding Color, NotifyOnSourceUpdated=True}"
+                                       Grid.Column="1"/>
+
+                            <TextBox Text="{Binding Offset, NotifyOnSourceUpdated=True}"
+                                     Grid.Column="2"/>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+
+        </ListBox>
+
+        <Border Grid.Column="0"
+                Grid.ColumnSpan="3"
+                Grid.Row="4"
+                Visibility="{Binding GradientStopsExist, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}">
+            <solid:SolidBrushSetupView DataContext="{Binding SolidBrush}"/>
+        </Border>
+
     </Grid>
 </UserControl>
 

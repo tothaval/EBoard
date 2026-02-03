@@ -31,76 +31,87 @@
 /// </p>
 namespace EEP_Drives;
 
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoardSDK;
 using EBoardSDK.Enums;
 using EBoardSDK.Models;
 using EBoardSDK.Plugins;
+using EBoardSDK.Plugins.Elements.Link;
+using EBoardSDK.Plugins.Tools.Summoner;
+using EBoardSDK.Utilities.Factories;
 using Serilog;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
-public partial class DrivesViewModel : EBoardElementPluginBaseViewModel
+public partial class DrivesViewModel : PluginBaseViewModel
 {
-    private DriveInfo[] allDrives = DriveInfo.GetDrives();
+    private readonly string pluginHeader = "Drives";
+    private readonly string pluginName = "Drives";
 
-    private string pluginHeader = "Drives Element";
-    private string pluginName = "Drives";
+    private DriveInfo?[] allDrives = DriveInfo.GetDrives();
+
+    [ObservableProperty]
+    private bool showToolTip = true;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DrivesViewModel"/> class.
     /// </summary>
     public DrivesViewModel()
     {
-        this.ElementScreenIntegrationConstraints = new ElementScreenIntegrationConstraints(ElementInstantiationPolicy.OnePerScreen);
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.OnePerScreen,
+            copyConstraints: CopyConstraints.Denied);
+
+        this.SetMenuItemViewModel(new DrivesMenuItemViewModel(this));
+        this.SetMenuItem(new DrivesMenuItem(this.MenuItemViewModel!));
 
         this.RefreshDrives();
     }
 
-    public ICollection<DriveInfoViewModel> Drives { get; set; }
+    public ICollection<DriveInfoViewModel> Drives { get; set; } = new List<DriveInfoViewModel>();
 
-    public override PluginCategories PluginCategory => PluginCategories.Tool;
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.System;
 
-    public override bool NoDefaultBorders { get; } = false;
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new ();
 
-    public override ImageBrush PluginLogo { get; set; } = new ();
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
 
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
 
-    public override string PluginHeader
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
+
+    /// <inheritdoc/>
+    public override ResourceDictionary ResourceDictionary => new () { Source = new Uri("/EEP_Drives;component/DefaultResourceDictionary.xaml", uriKind: UriKind.Relative) };
+
+    /// <inheritdoc/>
+    public override Type? PluginModelType => null;
+
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(DrivesViewModel);
+
+    /// <inheritdoc/>
+    public override Task<EboardFeedbackMessage> Load(string path)
     {
-        get { return this.pluginHeader; }
-        set { this.pluginHeader = value; }
+        return Task.FromResult(FeedbackMessageFactory.EmptyCallSuccess("Load(string path)"));
     }
 
-    public override string PluginName
+    /// <inheritdoc/>
+    public override Task<EboardFeedbackMessage> Save(string path)
     {
-        get { return this.pluginName; }
-        set { this.pluginName = value; }
+        return Task.FromResult(FeedbackMessageFactory.EmptyCallSuccess("Save(string path)"));
     }
 
-    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
-
-    public override ResourceDictionary? ResourceDictionary => new () { Source = new Uri("/EEP_Drives;component/DefaultResourceDictionary.xaml", uriKind: UriKind.Relative) };
-
-    public override Type? ElementPluginModel => null;
-
-    public override Type ElementPluginView => typeof(DrivesView);
-
-    public override Type ElementPluginViewModel => typeof(DrivesViewModel);
-
-    public override Task<EBoardFeedbackMessage> Load(string path)
+    partial void OnShowToolTipChanged(bool value)
     {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
-    }
-
-    public override Task<EBoardFeedbackMessage> Save(string path)
-    {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
     }
 
     private void RefreshDrives()
@@ -114,27 +125,6 @@ public partial class DrivesViewModel : EBoardElementPluginBaseViewModel
             if (this.Drives.Count < this.allDrives.Length && !this.Drives.Contains(divm))
             {
                 this.Drives.Add(divm);
-            }
-        }
-    }
-
-    [RelayCommand]
-    private void OpenDrive(DriveInfo? driveInfo)
-    {
-        if (driveInfo != null)
-        {
-            try
-            {
-                Process.Start("explorer.exe", driveInfo.Name);
-            }
-            catch (Exception exception)
-            {
-                Log.Error($"could not process drive {driveInfo.Name}\n" +
-                    $"{driveInfo.VolumeLabel}\n" +
-                    $"{driveInfo.DriveFormat}\n" +
-                    $"{exception.Message}\n" +
-                    $"{exception.StackTrace}\n" +
-                    $"{exception.Source}");
             }
         }
     }

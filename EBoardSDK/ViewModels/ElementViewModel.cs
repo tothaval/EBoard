@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -29,41 +29,53 @@
 /// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
-/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *
- *  ElementViewModel
- *
- *  view model for ElementView, which offers some basic dragmove functionality,
- *  element placement properties within EBoardView canvas and basic content management
- */
 namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Controls.FluidUIMenu;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
 using EBoardSDK.Models.FluidUIDesign;
 using EBoardSDK.Models.FluidUISize;
 using EBoardSDK.Models.FluidUIStand;
-using EBoardSDK.Plugins.Tools.Coordinates;
+using EBoardSDK.Plugins.Eboard.Coordinates;
+using EBoardSDK.Utilities.Factories;
 using EBoardSDK.Views;
 using System.Windows;
 using System.Windows.Controls;
 
 /// <summary>
-/// TODO: refactoring to further reduce code towards the necessary minimum and nothing more.
+/// ElementViewModel is the FluidUI Element Context Area of the eboard prototype.
 ///
-/// update minium(minus?) and maximum values for x, y and z upon valuechange in eboardviewmodel.
+/// Its job is to contain a derivate of a PluginBaseViewModel, that offers functions
+/// to the user. Its implementation offers a way to display a menuitem for the plugin.
 ///
+/// -> Elements can be instantiated and manipulated within other FluidUI context areas
+///    depending on the Plugins ScreenInstantiationPolicy and other factors(partly implemented)
+/// -> Elements can be transformed in a variety of ways to the users wishes using FluidUI
+/// -> Elements show a ToolTip with FluidUI-DataBlock properties and Screen coordinates
+/// -> Elements have a right-click context menu with Plugin menu, Element menu and FluidUI menu
+/// -> Elements can be selected via left-click and dragged (x & y axis movement) via left-click
+///    pressed and mousemove
+/// -> Z level movement can be done via mousewheel rotation
+/// -> Rotation angle change can be done via ctrl-mousewheel rotation
+/// -> Groups of elements can be manipulated together (broken/implementation disabled)
+///
+/// Be advised:
+/// View code behind is used.
+/// Date of entry: 2026|01|20.
 /// </summary>
-public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSelection
+public partial class ElementViewModel : FluidUIBaseViewModel, IElementSelection
 {
-    private EBoardViewModel eBoardViewModel;
+    private readonly FluidUIContextAreas contextArea = FluidUIContextAreas.Element;
+
+    private ScreenViewModel screenViewModel;
 
     private string eID;
 
-    private ElementView elementView;
+    private ElementView? elementView;
 
     [ObservableProperty]
     private bool menuIsOpening = true;
@@ -72,49 +84,48 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
     private bool isSelected = false;
 
     [ObservableProperty]
-    private IPlugin plugin;
+    private int duplicationCount = 1;
+
+    [ObservableProperty]
+    private IPlugin? plugin;
+
+    [ObservableProperty]
+    private ElementConfig? elementConfig;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ElementViewModel"/> class.
     /// </summary>
-    /// <param name="eBoardViewModel"></param>
-    public ElementViewModel(EBoardViewModel eBoardViewModel)
+    /// <param name="eBoardViewModel">Desired is the FluidUI screen context area containing the element context area instance.</param>
+    public ElementViewModel(ScreenViewModel eBoardViewModel)
         : base()
     {
-        this.eBoardViewModel = eBoardViewModel;
+        this.screenViewModel = eBoardViewModel;
 
         this.CreateFluidUIMenuViewModel();
 
         var manager = new FluidUISizeManager(this);
         manager.Reset();
 
-        if (this.eID == null || this.eID.Equals("-1"))
+        if (string.IsNullOrWhiteSpace(this.eID) || this.eID.Equals("-1"))
         {
-            DateTime dateTime = DateTime.Now;
-
-            this.eID = $"Element_{dateTime.Ticks}";
+            this.eID = new EboardIdFactory().GetElementId();
             this.OnPropertyChanged(nameof(this.EID));
         }
-
-        this.SetSize();
 
         this.TriggerRedraw();
 
         this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
-        this.OnPropertyChanged(nameof(this.FluidUI));
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ElementViewModel"/> class.
     /// </summary>
-    /// <param name="eBoardViewModel"></param>
-    /// <param name="elementConfig"></param>
-    public ElementViewModel(EBoardViewModel eBoardViewModel, ElementConfig elementConfig)
+    /// <param name="eBoardViewModel">Desired is the FluidUI screen context area containing the element context area instance.</param>
+    /// <param name="elementConfig">Desired is the serialization model class of the element instance.</param>
+    public ElementViewModel(ScreenViewModel eBoardViewModel, ElementConfig elementConfig)
         : base()
     {
-        this.eBoardViewModel = eBoardViewModel;
-
-        elementConfig?.ElementContext?.Design?.LoadBrushesFromColorData();
+        this.screenViewModel = eBoardViewModel;
 
         if (elementConfig != null)
         {
@@ -124,33 +135,61 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
 
         this.CreateFluidUIMenuViewModel();
 
-        if (this.eID == null || this.eID.Equals("-1"))
+        if (string.IsNullOrWhiteSpace(this.eID) || this.eID.Equals("-1"))
         {
-            DateTime dateTime = DateTime.Now;
-
-            this.eID = $"Element_{dateTime.Ticks}";
+            this.eID = new EboardIdFactory().GetElementId();
             this.OnPropertyChanged(nameof(this.EID));
         }
 
-        this.SetSize();
-
         this.TriggerRedraw();
 
-        this.OnPropertyChanged(nameof(this.FluidUI.DataBlock.Title));
+        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
         this.OnPropertyChanged(nameof(this.FluidUI));
     }
 
+    public override FluidUIContextAreas ContextArea => this.contextArea;
+
+    /// <summary>
+    /// Gets the element ID.
+    ///
+    /// This string property is used in serialization for the filename
+    /// and for comparisons between ElementViewModel instances. It
+    /// consists of a prefix and DateTime.Ticks number, that is retrieved
+    /// on ElementViewModel instantiation.
+    ///
+    /// Be advised:
+    /// It was not tested if situations can occur where EIDs of many
+    /// Elements created in parallel equal each other. This could lead
+    /// to problems filtering and saving the ElementViewModel instance.
+    /// Date of entry: 2026|01|20.
+    /// </summary>
     public string EID => this.eID;
 
-    public EBoardViewModel EBoardViewModel => this.eBoardViewModel;
+    /// <summary>
+    /// Gets the FluidUI screen context area that contains the
+    /// ElementViewModel instance.
+    /// </summary>
+    public ScreenViewModel ScreenViewModel => this.screenViewModel;
 
-    public ElementView ElementView => this.elementView;
+    /// <summary>
+    /// Gets the underlying View for this ViewModel. Given incomplete
+    /// knowledge of WPF XAML and some requirements for ElementViewModel,
+    /// code behind must be used on some occations. This became evident
+    /// through the development of this FluidUI context area, but does
+    /// not necessarily mean that it is the best way.
+    ///
+    /// This property provides an ok way to access the view if necessary.
+    /// It should be avoided using it.
+    /// </summary>
+    public ElementView? ElementView => this.elementView;
+
+    public bool CopyAllowed { get; set; }
 
     public void ApplyData(ElementConfig elementConfig)
     {
-        elementConfig.SetEBoardAndElementViewModel(this.eBoardViewModel, this);
+        this.ElementConfig = elementConfig;
 
-        this.eID = elementConfig.EID;
+        this.eID = this.ElementConfig.EID;
     }
 
     public void ApplyRotationToGroupSelectedElement(int rotationValueDelta)
@@ -172,9 +211,24 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
         }
     }
 
+    //public void ScreenBecomesActive()
+    //{
+    //    this.CreateFluidUIMenuViewModel();
+    //}
+
+    //public void ScreenBecomesInactive()
+    //{
+    //    this.FluidUIMenuViewModel?.Dispose();
+    //    this.fluidUIMenuViewModel = null;
+    //}
+
     public override void Dispose()
     {
         base.Dispose();
+
+        this.FluidUI?.Dispose();
+        this.FluidUIMenuViewModel?.Dispose();
+        this.fluidUIMenuViewModel = null;
 
         this.Plugin?.Dispose();
     }
@@ -251,19 +305,22 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
         double x, y;
         int z;
 
-        x = this.ElementView.X;
-        y = this.ElementView.Y;
-        z = this.ElementView.Z;
+        if (this.ElementView != null)
+        {
+            x = this.ElementView.X;
+            y = this.ElementView.Y;
+            z = this.ElementView.Z;
 
-        manager.SetPosition(x, y);
-        manager.SetZ(z);
+            manager.SetPosition(x, y);
+            manager.SetZ(z);
+        }
 
-        this.FluidUIMenuViewModel?.FluidUIStandSetupViewModel?.ApplyFluidUIStandValues();
+        this.FluidUIMenuViewModel?.FluidUIStandSetupViewModel?.SetupViewModel.ApplyFluidUIStandValues();
     }
 
     public void WasLastActive()
     {
-        this.eBoardViewModel?.MoveLastClickedElementToEndOfList(this);
+        this.screenViewModel?.MoveLastClickedElementToEndOfList(this);
     }
 
     internal override void CreateFluidUIMenuViewModel()
@@ -272,10 +329,20 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
 
         if (this.fluidUIMenuViewModel == null)
         {
-            this.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this, eBoardViewModel: this.eBoardViewModel, fluidUIContextHasStand: true));
+            this.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this, Enums.FluidUIStandSettings.ElementContextArea, screenViewModel: this.screenViewModel));
         }
 
         this.FluidUIMenuViewModel.CreateViewModels();
+    }
+
+    internal void Duplicate()
+    {
+        this.Plugin?.Duplicate();
+    }
+
+    internal void PrepareCopy()
+    {
+        this.Plugin?.PrepareCopy();
     }
 
     internal override void TriggerRedraw()
@@ -286,7 +353,7 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
         }
     }
 
-    internal override void UpdateStand()
+    internal override void UpdateStand(bool updateFluidUI = true)
     {
         base.UpdateStand();
 
@@ -299,7 +366,6 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
                 coords.ChangeXYCoord();
             }
         }
-
     }
 
     partial void OnMenuIsOpeningChanging(bool value)
@@ -316,38 +382,93 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
 
     private void ChangeSelection_CornerRadiusValue(QuadValue<int> cornerRadius)
     {
-        this.eBoardViewModel?.ChangeSelection_CornerRadius(this, cornerRadius);
+        this.screenViewModel?.ChangeSelection_CornerRadius(this, cornerRadius);
     }
 
     private void ChangeSelection_HeightValue(int heightValue)
     {
-        this.eBoardViewModel?.ChangeSelection_Height(this, heightValue);
+        this.screenViewModel?.ChangeSelection_Height(this, heightValue);
     }
 
     private void ChangeSelection_RotationAngleValue(int rotationValueDelta)
     {
-        this.eBoardViewModel?.ChangeSelection_RotationAngle(this, rotationValueDelta);
+        this.screenViewModel?.ChangeSelection_RotationAngle(this, rotationValueDelta);
     }
 
     private void ChangeSelection_WidthValue(int widthValue)
     {
-        this.eBoardViewModel?.ChangeSelection_WidthValue(this, widthValue);
+        this.screenViewModel?.ChangeSelection_WidthValue(this, widthValue);
     }
 
     private void ChangeSelection_ZIndexValue(int zIndexValue)
     {
-        this.eBoardViewModel?.ChangeSelection_ZIndex(this, zIndexValue);
+        this.screenViewModel?.ChangeSelection_ZIndex(this, zIndexValue);
     }
 
-    partial void OnPluginChanged(IPlugin value)
+    partial void OnPluginChanged(IPlugin? value)
     {
+        if (value != null && value.ScreenInstantiationConstraints != null)
+        {
+            this.CopyAllowed = true;
+
+            if (value.ScreenInstantiationConstraints.CopyConstraints == Enums.CopyConstraints.Denied
+                || value.ScreenInstantiationConstraints.CopyConstraints == Enums.CopyConstraints.ValueNotSet)
+            {
+                this.CopyAllowed = false;
+                return;
+            }
+
+            if (value.ScreenInstantiationConstraints.InstantiationPolicy == Enums.InstantiationPolicy.OnePerScreen
+                || value.ScreenInstantiationConstraints.InstantiationPolicy == Enums.InstantiationPolicy.Global
+                || value.ScreenInstantiationConstraints.InstantiationPolicy == Enums.InstantiationPolicy.Unique
+                || value.ScreenInstantiationConstraints.InstantiationPolicy == Enums.InstantiationPolicy.ValueNotSet)
+            {
+                this.CopyAllowed = false;
+                return;
+            }
+        }
+
         this.OnPropertyChanged(nameof(this.FluidUI));
+        this.OnPropertyChanged(nameof(this.CopyAllowed));
+    }
+
+    private void DeleteThisElement()
+    {
+        this.screenViewModel?.RemoveElement(this);
     }
 
     [RelayCommand]
-    private void DeleteElement(object s)
+    private void Copy()
     {
-        this.eBoardViewModel?.RemoveElement(this);
+        this.screenViewModel?.MainViewModel.DeepCopyElementToElementCopyList(this, moveCopy: false);
+        // TODO implement, write new elementconfig instance into mainwindow copylist
+    }
+
+    [RelayCommand]
+    private void Delete(object s)
+    {
+        this.DeleteThisElement();
+    }
+
+    [RelayCommand]
+    private void DuplicateNTimes()
+    {
+        this.Duplicate();
+    }
+
+    [RelayCommand]
+    private void Move()
+    {
+        if (this.ScreenViewModel.MainViewModel.DeepCopyElementToElementCopyList(this, moveCopy: true))
+        {
+            this.DeleteThisElement();
+        }
+    }
+
+    [RelayCommand]
+    private void Save()
+    {
+        // TODO implement, write elementconfig to designated location
     }
 
     [RelayCommand]

@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,20 +33,24 @@ namespace EboardElementPluginCountDownTimer.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EboardElementPluginCountDownTimer.Views;
 using EBoardSDK;
 using EBoardSDK.Enums;
+using EBoardSDK.Models;
 using EBoardSDK.Plugins;
+using EBoardSDK.Plugins.Tools.Summoner;
+using EBoardSDK.Utilities.Factories;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
+public partial class CountDownTimerViewModel : PluginBaseViewModel
 {
+    private readonly string pluginHeader = "CountDownTimer Element";
+    private readonly string pluginName = "CountDownTimer";
+
     private int _SelectedYear;
     private int _SelectedYear_Stop;
     private int _SelectedMonth;
@@ -61,55 +65,61 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
     [ObservableProperty]
     private string countdown;
 
-    private string pluginHeader = "CountDownTimer Element";
-    private string pluginName = "CountDownTimer";
-
     public CountDownTimerViewModel()
     {
-        this.ElementScreenIntegrationConstraints = new EBoardSDK.Models.ElementScreenIntegrationConstraints(ElementInstantiationPolicy.OnePerScreen);
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.FullCopy);
 
-        FillMonths();
-        FillHours();
-        FillMinutes();
+        this.FillMonths();
+        this.FillHours();
+        this.FillMinutes();
 
-        SelectedYear = DateTime.Now.Year;
-        SelectedMonth = DateTime.Now.Month;
-        SelectedDay = DateTime.Now.Day;
-        SelectedHour = DateTime.Now.Hour;
-        SelectedMinute = Minutes.First();
+        var dt = DateTime.UtcNow;
 
-        SelectedYear_Stop = DateTime.Now.Year;
-        SelectedMonth_Stop = DateTime.Now.Month;
-        SelectedDay_Stop = DateTime.Now.Day + 1;
-        SelectedHour_Stop = DateTime.Now.Hour;
-        SelectedMinute_Stop = Minutes.First();
+        this.SelectedYear = dt.Year;
+        this.SelectedMonth = dt.Month;
+        this.SelectedDay = dt.Day;
+        this.SelectedHour = dt.Hour;
 
-        Timer.Interval = TimeSpan.FromMilliseconds(16.18);
-        Timer.Tick += Timer_Tick;
+        this.SelectedYear_Stop = dt.Year;
+        this.SelectedMonth_Stop = dt.Month;
+        this.SelectedDay_Stop = dt.Day + 1;
+        this.SelectedHour_Stop = dt.Hour;
+
+        if (this.Minutes != null)
+        {
+            SelectedMinute = this.Minutes.First();
+            SelectedMinute_Stop = this.Minutes.First();
+        }
+
+        this.Timer.Interval = TimeSpan.FromMilliseconds(16.18);
+        this.Timer.Tick += Timer_Tick;
     }
 
-    public override bool NoDefaultBorders { get; } = false;
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Element;
 
-    public override PluginCategories PluginCategory => PluginCategories.Element;
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new();
 
-    public override ImageBrush PluginLogo { get; set; } = new();
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
 
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
 
-    public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
 
-
-    public override string PluginName { get { return pluginName; } set { pluginName = value; } }
-
-    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
-
+    /// <inheritdoc/>
     public override ResourceDictionary ResourceDictionary => new() { Source = new Uri("/EboardElementPluginCountDownTimer;component/ElementPluginResources.xaml", uriKind: UriKind.Relative) };
 
-    public override Type? ElementPluginModel => null;
+    /// <inheritdoc/>
+    public override Type? PluginModelType => null;
 
-    public override Type ElementPluginView => typeof(CountDownTimerView);
-
-    public override Type ElementPluginViewModel => typeof(CountDownTimerViewModel);
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(CountDownTimerViewModel);
 
     public DateTime StartDate => GetStartDate();
 
@@ -294,14 +304,16 @@ public partial class CountDownTimerViewModel : EBoardElementPluginBaseViewModel
 
     public ObservableCollection<int> Months { get; set; }
 
-    public override Task<EBoardFeedbackMessage> Load(string path)
+    /// <inheritdoc/>
+    public override Task<EboardFeedbackMessage> Load(string path)
     {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
+        return Task.FromResult(FeedbackMessageFactory.EmptyCallSuccess("Load(string path)"));
     }
 
-    public override Task<EBoardFeedbackMessage> Save(string path)
+    /// <inheritdoc/>
+    public override Task<EboardFeedbackMessage> Save(string path)
     {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
+        return Task.FromResult(FeedbackMessageFactory.EmptyCallSuccess("Save(string path)"));
     }
 
     private void Timer_Tick(object? sender, EventArgs e)

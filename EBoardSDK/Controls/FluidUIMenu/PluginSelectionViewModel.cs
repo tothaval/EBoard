@@ -1,23 +1,50 @@
 ﻿// <copyright file="PluginSelectionViewModel.cs" company=".">
 // Stephan Kammel
 // </copyright>
-
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
 namespace EBoardSDK.Controls.FluidUIMenu;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using EBoardSDK.Enums;
+using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
 using EBoardSDK.Plugins;
-using EBoardSDK.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public partial class PluginSelectionViewModel : ObservableObject
 {
-    private readonly EboardFluidUIBaseViewModel viewModel;
+    private readonly IFluidUIContext fluidUI;
+
+    private bool singleSelectionTarget;
 
     private Action? buttonClickAction;
 
@@ -36,17 +63,27 @@ public partial class PluginSelectionViewModel : ObservableObject
     [ObservableProperty]
     private List<PluginRepresentationItem>? selectedPlugins;
 
-    public PluginSelectionViewModel(EboardFluidUIBaseViewModel viewModel, Action? buttonClickAction)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PluginSelectionViewModel"/> class.
+    /// </summary>
+    /// <param name="fluidUIContext"></param>
+    /// <param name="buttonClickAction"></param>
+    /// <param name="singleSelectionTarget"></param>
+    public PluginSelectionViewModel(IFluidUIContext fluidUIContext, Action? buttonClickAction, bool singleSelectionTarget)
     {
-        this.viewModel = viewModel;
+        this.fluidUI = fluidUIContext;
         this.buttonClickAction = buttonClickAction;
+        this.singleSelectionTarget = singleSelectionTarget;
 
         this.SearchForPlugins();
 
-        this.OnPropertyChanged(nameof(this.ViewModel));
+        this.OnPropertyChanged(nameof(this.FluidUI));
+        this.OnPropertyChanged(nameof(this.SingleSelectionTarget));
     }
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public IFluidUIContext FluidUI => this.fluidUI;
+
+    public bool SingleSelectionTarget => this.singleSelectionTarget;
 
     public List<PluginRepresentationItem> FoundAddons { get; private set; } = [];
 
@@ -60,6 +97,10 @@ public partial class PluginSelectionViewModel : ObservableObject
 
     public List<PluginRepresentationItem> FoundPlugins { get; private set; } = [];
 
+    public List<PluginRepresentationItem> FoundEboard { get; private set; } = [];
+
+    public List<PluginRepresentationItem> FoundSystem { get; private set; } = [];
+
     internal void SearchForPlugins()
     {
         var sDKPluginManager = new SDKPluginManager();
@@ -70,6 +111,9 @@ public partial class PluginSelectionViewModel : ObservableObject
         this.FoundShapes = sDKPluginManager.FoundShapes;
         this.FoundAreas = sDKPluginManager.FoundAreas;
         this.FoundTools = sDKPluginManager.FoundTools;
+
+        this.FoundSystem = sDKPluginManager.FoundSystem;
+        this.FoundEboard = sDKPluginManager.FoundEboard;
     }
 
     partial void OnSelectedPluginChanged(PluginRepresentationItem? value)
@@ -78,8 +122,6 @@ public partial class PluginSelectionViewModel : ObservableObject
         {
             return;
         }
-
-        this.SelectedPlugins = [this.SelectedPlugin];
 
         this.buttonClickAction?.Invoke();
     }
@@ -109,6 +151,12 @@ public partial class PluginSelectionViewModel : ObservableObject
             case SelectionTargets.Tools:
                 this.SelectedPlugins = this.FoundTools;
                 break;
+            case SelectionTargets.Eboard:
+                this.SelectedPlugins = this.FoundEboard;
+                break;
+            case SelectionTargets.System:
+                this.SelectedPlugins = this.FoundSystem;
+                break;
             case SelectionTargets.Specific:
                 this.SelectedPlugins = this.FoundPlugins;
                 break;
@@ -124,7 +172,7 @@ public partial class PluginSelectionViewModel : ObservableObject
 
     partial void OnTitleStringChanged(string value)
     {
-        var found = this.FoundPlugins.Where(x => x.PluginName.Equals(value) || x.PluginHeader.Equals(value)).ToList();
+        var found = this.FoundPlugins.Where(x => (x.PluginName != null && x.PluginName.Equals(value)) || (x.PluginHeader != null && x.PluginHeader.Equals(value))).ToList();
 
         if (found != null && found.Count > 0)
         {

@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -29,39 +29,60 @@
 /// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
-/*  EBoard (experimental UI design) (by Stephan Kammel, Dresden, Germany, 2024)
- *
- *  BrushManagement
- *
- *  model for brush property changes
- */
 namespace EBoardSDK.Models.FluidUIDesign;
 
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces.FluidUIDesign;
-using EBoardSDK.Models;
+using EBoardSDK.Utilities.Factories;
 using System;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 
+/// <summary>
+/// Provides properties for FluidUI-Design logic
+/// and is the model class for state serialization
+/// or deserialization.
+/// </summary>
 public class FluidUIDesignModel : IFluidUIDesignModel
 {
-    private Brush background = new SolidColorBrush(Colors.White);
-    private Brush border = new SolidColorBrush(Colors.Black);
-    private Brush foreground = new SolidColorBrush(Colors.DarkGray);
-    private Brush highlight = new SolidColorBrush(Colors.DarkGoldenrod);
-    private Brush selectionFallbackBrush = new SolidColorBrush(Colors.WhiteSmoke);
+    private bool onBackgroundLoad = true;
+    private bool onForegroundLoad = true;
+    private bool onBorderLoad = true;
+    private bool onHighlightLoad = true;
+    private bool onSelectionFallbackLoad = true;
+
+    private double opacity = FluidUIDesignDefaultPropertyFactory.DefaultOpacity;
+
+    private Brush background = FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+    private Brush foreground = FluidUIDesignDefaultPropertyFactory.ForegroundDefaultSolidColorBrush;
+    private Brush border = FluidUIDesignDefaultPropertyFactory.BorderDefaultSolidColorBrush;
+    private Brush highlight = FluidUIDesignDefaultPropertyFactory.HighlightDefaultSolidColorBrush;
+    private Brush selectionFallbackBrush = FluidUIDesignDefaultPropertyFactory.SelectionFallbackDefaultSolidColorBrush;
+
+    private FluidUIBrushModel backgroundColor = new(FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush);
+    private FluidUIBrushModel foregroundColor = new(FluidUIDesignDefaultPropertyFactory.ForegroundDefaultSolidColorBrush);
+    private FluidUIBrushModel borderColor = new(FluidUIDesignDefaultPropertyFactory.BorderDefaultSolidColorBrush);
+    private FluidUIBrushModel highlightColor = new(FluidUIDesignDefaultPropertyFactory.HighlightDefaultSolidColorBrush);
+    private FluidUIBrushModel selectionFallbackColor = new(FluidUIDesignDefaultPropertyFactory.SelectionFallbackDefaultSolidColorBrush);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUIDesignModel"/> class.
     /// </summary>
     public FluidUIDesignModel()
     {
-        this.SetInitialValues();
     }
 
-    public event Action PropertyChangedEvent;
+    /// <inheritdoc/>
+    public event Action? PropertyChangedEvent;
 
-    // background brush related properties, background is used on content border or as shape fill
+    /// <summary>
+    /// Gets or sets Background brush property, that is mostly used on FluidUI CAs as
+    /// value for Background properties or as shape Fill.
+    ///
+    /// It is sometimes used as Foreground brush, when Foreground or Highlight brushes
+    /// are used as Background. This allows to communicate something of importance or
+    /// relevance to the user, without breaking the feeling of the design.
+    /// </summary>
     [JsonIgnore]
     public Brush Background
     {
@@ -72,26 +93,17 @@ public class FluidUIDesignModel : IFluidUIDesignModel
 
         set
         {
-            this.background = value;
+            if (this.background != value)
+            {
+                this.background = value;
 
-            this.BackgroundColor = new ColorDataModel(value);
-        }
-    }
+                this.InvokePropertyChangedEvent();
+            }
 
-    // store background brush while user control object is highlighted due to selection or due to having focus
-    [JsonIgnore]
-    public Brush SelectionFallbackBrush
-    {
-        get
-        {
-            return this.selectionFallbackBrush;
-        }
-
-        set
-        {
-            this.selectionFallbackBrush = value;
-
-            this.SelectionFallbackColor = new ColorDataModel(value);
+            if (!this.onBackgroundLoad)
+            {
+                this.BackgroundColor = new FluidUIBrushModel(value);
+            }
         }
     }
 
@@ -106,9 +118,17 @@ public class FluidUIDesignModel : IFluidUIDesignModel
 
         set
         {
-            this.foreground = value;
+            if (this.foreground != value)
+            {
+                this.foreground = value;
 
-            this.ForegroundColor = new ColorDataModel(value);
+                this.InvokePropertyChangedEvent();
+            }
+
+            if (!this.onForegroundLoad)
+            {
+                this.ForegroundColor = new FluidUIBrushModel(value);
+            }
         }
     }
 
@@ -123,9 +143,17 @@ public class FluidUIDesignModel : IFluidUIDesignModel
 
         set
         {
-            this.border = value;
+            if (this.border != value)
+            {
+                this.border = value;
 
-            this.BorderColor = new ColorDataModel(value);
+                this.InvokePropertyChangedEvent();
+            }
+
+            if (!this.onBorderLoad)
+            {
+                this.BorderColor = new FluidUIBrushModel(value);
+            }
         }
     }
 
@@ -140,43 +168,156 @@ public class FluidUIDesignModel : IFluidUIDesignModel
 
         set
         {
-            this.highlight = value;
+            if (this.highlight != value)
+            {
+                this.highlight = value;
 
-            this.HighlightColor = new ColorDataModel(value);
+                this.InvokePropertyChangedEvent();
+            }
+
+            if (!this.onHighlightLoad)
+            {
+                this.HighlightColor = new FluidUIBrushModel(value);
+            }
         }
     }
 
-    public ColorDataModel BackgroundColor { get; set; } = new ();
-
-    public ColorDataModel BorderColor { get; set; } = new ();
-
-    public ColorDataModel ForegroundColor { get; set; } = new ();
-
-    public ColorDataModel HighlightColor { get; set; } = new();
-
-    public ColorDataModel SelectionFallbackColor { get; set; } = new();
-
-    public string ImagePath { get; set; } = string.Empty;
-
-    public string ImageForegroundPath { get; set; } = string.Empty;
-
-    public string ImageBorderPath { get; set; } = string.Empty;
-
-    public string ImageHighlightPath { get; set; } = string.Empty;
-
-    public double Opacity { get; set; } = 1.0;
-
-    public void Dispose()
+    // store background brush while user control object is highlighted due to selection or due to having focus
+    [JsonIgnore]
+    public Brush SelectionFallbackBrush
     {
+        get
+        {
+            return this.selectionFallbackBrush;
+        }
+
+        set
+        {
+            if (this.selectionFallbackBrush != value)
+            {
+                this.selectionFallbackBrush = value;
+
+                this.InvokePropertyChangedEvent();
+            }
+
+            if (!this.onSelectionFallbackLoad)
+            {
+                this.SelectionFallbackColor = new FluidUIBrushModel(value);
+            }
+        }
     }
 
-    public void LoadBrushesFromColorData()
+    public FluidUIBrushModel BackgroundColor
     {
-        this.Background = this.BackgroundColor?.GetBrush().Result ?? new SolidColorBrush(Colors.White);
-        this.Foreground = this.ForegroundColor?.GetBrush().Result ?? new SolidColorBrush(Colors.DarkGray);
-        this.Border = this.BorderColor?.GetBrush().Result ?? new SolidColorBrush(Colors.Black);
-        this.Highlight = this.HighlightColor?.GetBrush().Result ?? new SolidColorBrush(Colors.DarkGoldenrod);
-        this.SelectionFallbackBrush = this.SelectionFallbackColor?.GetBrush().Result ?? new SolidColorBrush(Colors.WhiteSmoke);
+        get
+        {
+            return this.backgroundColor;
+        }
+
+        set
+        {
+            this.backgroundColor = value;
+
+            if (this.onBackgroundLoad)
+            {
+                this.BuildBrushesFromFluidUIBrushModel(BrushTargets.Background).Wait();
+            }
+        }
+    }
+
+    public FluidUIBrushModel ForegroundColor
+    {
+        get
+        {
+            return this.foregroundColor;
+        }
+
+        set
+        {
+            this.foregroundColor = value;
+
+            if (this.onForegroundLoad)
+            {
+                this.BuildBrushesFromFluidUIBrushModel(BrushTargets.Foreground).Wait();
+            }
+        }
+    }
+
+    public FluidUIBrushModel BorderColor
+    {
+        get
+        {
+            return this.borderColor;
+        }
+
+        set
+        {
+            this.borderColor = value;
+
+            if (this.onBorderLoad)
+            {
+                this.BuildBrushesFromFluidUIBrushModel(BrushTargets.Border).Wait();
+            }
+        }
+    }
+
+    public FluidUIBrushModel HighlightColor
+    {
+        get
+        {
+            return this.highlightColor;
+        }
+
+        set
+        {
+            this.highlightColor = value;
+
+            if (this.onHighlightLoad)
+            {
+                this.BuildBrushesFromFluidUIBrushModel(BrushTargets.Highlight).Wait();
+            }
+        }
+    }
+
+    public FluidUIBrushModel SelectionFallbackColor
+    {
+        get
+        {
+            return this.selectionFallbackColor;
+        }
+
+        set
+        {
+            this.selectionFallbackColor = value;
+
+            if (this.onSelectionFallbackLoad)
+            {
+                this.BuildBrushesFromFluidUIBrushModel(BrushTargets.SelectionFallback).Wait();
+            }
+        }
+    }
+
+    public double Opacity
+    {
+        get
+        {
+            return this.opacity;
+        }
+
+        set
+        {
+            if (this.opacity != value)
+            {
+                this.opacity = value;
+
+                this.InvokePropertyChangedEvent();
+            }
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
     }
 
     public void ResetValuesToInitial(bool elementIsSelected)
@@ -185,31 +326,67 @@ public class FluidUIDesignModel : IFluidUIDesignModel
 
         if (elementIsSelected)
         {
-            this.Border = new SolidColorBrush(Colors.DarkGoldenrod);
-            this.SelectionFallbackBrush = new SolidColorBrush(Colors.Black);
+            this.Border = FluidUIDesignDefaultPropertyFactory.HighlightDefaultSolidColorBrush;
+            this.SelectionFallbackBrush = FluidUIDesignDefaultPropertyFactory.BorderDefaultSolidColorBrush;
         }
     }
 
+    /// <inheritdoc/>
     public void SetInitialValues()
     {
-        this.ImagePath = string.Empty;
-        this.ImageForegroundPath = string.Empty;
-        this.ImageBorderPath = string.Empty;
-        this.ImageHighlightPath = string.Empty;
+        this.Opacity = FluidUIDesignDefaultPropertyFactory.DefaultOpacity;
 
-        this.Opacity = 1.0;
+        this.Background = FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+        this.Foreground = FluidUIDesignDefaultPropertyFactory.ForegroundDefaultSolidColorBrush;
+        this.Border = FluidUIDesignDefaultPropertyFactory.BorderDefaultSolidColorBrush;
+        this.Highlight = FluidUIDesignDefaultPropertyFactory.HighlightDefaultSolidColorBrush;
+        this.SelectionFallbackBrush = FluidUIDesignDefaultPropertyFactory.SelectionFallbackDefaultSolidColorBrush;
 
-        this.Background = new SolidColorBrush(Colors.White);
-        this.Foreground = new SolidColorBrush(Colors.DarkGray);
-        this.Highlight = new SolidColorBrush(Colors.DarkGoldenrod);
-        this.Border = new SolidColorBrush(Colors.Black);
-        this.SelectionFallbackBrush = new SolidColorBrush(Colors.WhiteSmoke);
+        this.BackgroundColor = new FluidUIBrushModel(this.Background);
+        this.ForegroundColor = new FluidUIBrushModel(this.Foreground);
+        this.BorderColor = new FluidUIBrushModel(this.Border);
+        this.HighlightColor = new FluidUIBrushModel(this.Highlight);
+        this.SelectionFallbackColor = new FluidUIBrushModel(this.SelectionFallbackBrush);
+    }
 
-        this.BackgroundColor = new ColorDataModel(this.Background);
-        this.BorderColor = new ColorDataModel(this.Border);
-        this.ForegroundColor = new ColorDataModel(this.Foreground);
-        this.HighlightColor = new ColorDataModel(this.Highlight);
-        this.SelectionFallbackColor = new ColorDataModel(this.SelectionFallbackBrush);
+    internal async Task BuildBrushesFromFluidUIBrushModel(BrushTargets brushTargets)
+    {
+        switch (brushTargets)
+        {
+            case BrushTargets.Background:
+                this.background = await new FluidUIBrushManager(this.backgroundColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+                this.onBackgroundLoad = false;
+                break;
+            case BrushTargets.Foreground:
+                this.foreground = await new FluidUIBrushManager(this.foregroundColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.ForegroundDefaultSolidColorBrush;
+                this.onForegroundLoad = false;
+                break;
+            case BrushTargets.Border:
+                this.border = await new FluidUIBrushManager(this.borderColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.BorderDefaultSolidColorBrush;
+                this.onBorderLoad = false;
+                break;
+            case BrushTargets.Highlight:
+                this.highlight = await new FluidUIBrushManager(this.highlightColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.HighlightDefaultSolidColorBrush;
+                this.onHighlightLoad = false;
+                break;
+            case BrushTargets.SelectionFallback:
+                this.selectionFallbackBrush = await new FluidUIBrushManager(this.selectionFallbackColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.SelectionFallbackDefaultSolidColorBrush;
+                this.onSelectionFallbackLoad = false;
+                break;
+            default:
+                break;
+        }
+    }
+
+    /// <inheritdoc/>
+    public void UpdateValues()
+    {
+        this.InvokePropertyChangedEvent();
+    }
+
+    private void InvokePropertyChangedEvent()
+    {
+        this.PropertyChangedEvent?.Invoke();
     }
 }
 

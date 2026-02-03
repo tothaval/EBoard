@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,24 +33,37 @@ namespace EBoardSDK.Models.FluidUIDesign;
 
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
+using EBoardSDK.Interfaces.FluidUIDesign;
 using EBoardSDK.SharedMethods;
+using EBoardSDK.Utilities.Factories;
 using EBoardSDK.ViewModels;
 using System.Windows.Media;
 
+/// <summary>
+/// This class is tasked with manipulation of <see cref="IFluidUIDesignModel"/> instances
+/// and has getter and setter methods that get values or apply changes. It requires an
+/// instance of a <see cref="FluidUIBaseViewModel"/> and will manipulate the font model
+/// within its <see cref="IFluidUIContext"/>.
+/// </summary>
 internal class FluidUIDesignManager : IFluidUIManager
 {
-    private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIBaseViewModel viewModel;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUIDesignManager"/> class.
     /// </summary>
     /// <param name="viewModel"></param>
-    internal FluidUIDesignManager(EboardFluidUIBaseViewModel viewModel)
+    internal FluidUIDesignManager(FluidUIBaseViewModel viewModel)
     {
         this.viewModel = viewModel;
     }
 
-    public void Reset()
+    /// <summary>
+    /// Resets FluidUI-Design properties to initial values
+    /// and updates EboardFluidUIBaseViewModel.
+    /// </summary>
+    /// <param name="calledByIFluidUIContextManager"></param>
+    public void Reset(bool calledByIFluidUIContextManager = false)
     {
         if (this.viewModel.FluidUI.Design != null)
         {
@@ -65,69 +78,94 @@ internal class FluidUIDesignManager : IFluidUIManager
                 this.viewModel.FluidUI.Design.SetInitialValues();
             }
 
+            if (!calledByIFluidUIContextManager)
+            {
+                this.viewModel.SetFluidUIByUser(this.viewModel.FluidUI);
+            }
+
             this.viewModel.UpdateDesign();
         }
+    }
+
+    internal Brush GetBrush(BrushTargets brushTargets)
+    {
+        Brush brush = FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+
+        brush = this.GetFluidUIBrush(brushTargets);
+
+        return brush;
+    }
+
+    internal string GetImagePath(BrushTargets brushTargets)
+    {
+        string path = string.Empty;
+
+        if (this.viewModel.FluidUI.Design == null)
+        {
+            return string.Empty;
+        }
+
+        switch (brushTargets)
+        {
+            case BrushTargets.Background:
+                path = this.viewModel.FluidUI.Design.BackgroundColor.ImagePath;
+                break;
+            case BrushTargets.Foreground:
+                path = this.viewModel.FluidUI.Design.ForegroundColor.ImagePath;
+                break;
+            case BrushTargets.Border:
+                path = this.viewModel.FluidUI.Design.BorderColor.ImagePath;
+                break;
+            case BrushTargets.Highlight:
+                path = this.viewModel.FluidUI.Design.HighlightColor.ImagePath;
+                break;
+            case BrushTargets.SelectionFallback:
+                path = this.viewModel.FluidUI.Design.SelectionFallbackColor.ImagePath;
+                break;
+            default:
+                break;
+        }
+
+        return path;
     }
 
     internal double GetOpacity()
     {
-        return this.viewModel.FluidUI.Design?.Opacity ?? 0.0;
+        return this.viewModel.FluidUI.Design?.Opacity ?? FluidUIDesignDefaultPropertyFactory.DefaultOpacity;
     }
 
     internal void ResetBrush(BrushTargets brushTargets)
     {
-        if (this.viewModel.FluidUI.Design != null)
-        {
-            switch (brushTargets)
-            {
-                case BrushTargets.Background:
-                    this.viewModel.FluidUI.Design.ImagePath = string.Empty;
-                    this.SetBrush(new SolidColorBrush(Colors.White), BrushTargets.Background);
-                    break;
-                case BrushTargets.Border:
-                    this.viewModel.FluidUI.Design.ImageBorderPath = string.Empty;
-                    this.SetBrush(new SolidColorBrush(Colors.Black), BrushTargets.Border);
-                    break;
-                case BrushTargets.Foreground:
-                    this.viewModel.FluidUI.Design.ImageForegroundPath = string.Empty;
-                    this.SetBrush(new SolidColorBrush(Colors.DarkGray), BrushTargets.Foreground);
-                    break;
-                case BrushTargets.Highlight:
-                    this.viewModel.FluidUI.Design.ImageHighlightPath = string.Empty;
-                    this.SetBrush(new SolidColorBrush(Colors.DarkGoldenrod), BrushTargets.Highlight);
-                    break;
-                default:
-                    break;
-            }
+        this.ResetImagePath(brushTargets);
 
-            this.viewModel.UpdateDesign();
+        Brush brush = FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+
+        switch (brushTargets)
+        {
+            case BrushTargets.Background:
+                brush = FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+                break;
+            case BrushTargets.Border:
+                brush = FluidUIDesignDefaultPropertyFactory.BorderDefaultSolidColorBrush;
+                break;
+            case BrushTargets.Foreground:
+                brush = FluidUIDesignDefaultPropertyFactory.ForegroundDefaultSolidColorBrush;
+                break;
+            case BrushTargets.Highlight:
+                brush = FluidUIDesignDefaultPropertyFactory.HighlightDefaultSolidColorBrush;
+                break;
+            default:
+                break;
         }
+
+        this.SetBrush(brush, brushTargets);
     }
 
-    internal void SetBrush(Brush brush, BrushTargets brushTargets)
+    internal void SetBrush(Brush brush, BrushTargets brushTarget)
     {
-        if (this.viewModel.FluidUI.Design != null)
-        {
-            switch (brushTargets)
-            {
-                case BrushTargets.Background:
-                    this.viewModel.FluidUI.Design.Background = brush;
-                    break;
-                case BrushTargets.Border:
-                    this.viewModel.FluidUI.Design.Border = brush;
-                    break;
-                case BrushTargets.Foreground:
-                    this.viewModel.FluidUI.Design.Foreground = brush;
-                    break;
-                case BrushTargets.Highlight:
-                    this.viewModel.FluidUI.Design.Highlight = brush;
-                    break;
-                default:
-                    break;
-            }
+        this.AssignBrush(brushTarget, brush);
 
-            this.viewModel.UpdateDesign();
-        }
+        this.viewModel.UpdateDesign();
     }
 
     internal void SetOpacity(double value)
@@ -140,35 +178,39 @@ internal class FluidUIDesignManager : IFluidUIManager
         }
     }
 
-    internal void SetUserChosenImagePath(BrushTargets brushTargets)
+    internal Brush SetUserChosenImagePath(BrushTargets brushTargets)
     {
+        string path = string.Empty;
+
         if (this.viewModel.FluidUI.Design != null)
         {
             switch (brushTargets)
             {
                 case BrushTargets.Background:
-                    this.SetImageToBrushTarget(brushTargets, new SharedMethod_UI().UserSelectImage(this.viewModel.FluidUI.Design.ImagePath));
+                    path = new SharedMethod_UI().UserSelectImage(this.viewModel.FluidUI.Design.BackgroundColor.ImagePath);
                     break;
                 case BrushTargets.Border:
-                    this.SetImageToBrushTarget(brushTargets, new SharedMethod_UI().UserSelectImage(this.viewModel.FluidUI.Design.ImageBorderPath));
+                    path = new SharedMethod_UI().UserSelectImage(this.viewModel.FluidUI.Design.BorderColor.ImagePath);
                     break;
                 case BrushTargets.Foreground:
-                    this.SetImageToBrushTarget(brushTargets, new SharedMethod_UI().UserSelectImage(this.viewModel.FluidUI.Design.ImageForegroundPath));
+                    path = new SharedMethod_UI().UserSelectImage(this.viewModel.FluidUI.Design.ForegroundColor.ImagePath);
                     break;
                 case BrushTargets.Highlight:
-                    this.SetImageToBrushTarget(brushTargets, new SharedMethod_UI().UserSelectImage(this.viewModel.FluidUI.Design.ImageHighlightPath));
+                    path = new SharedMethod_UI().UserSelectImage(this.viewModel.FluidUI.Design.HighlightColor.ImagePath);
                     break;
                 default:
                     break;
             }
         }
+
+        return FluidUIDesignDefaultPropertyFactory.GetImageBrush(path);
     }
 
     internal void SwitchBorderToBorder()
     {
         if (this.viewModel.FluidUI.Design != null)
         {
-            this.viewModel.FluidUI.Design.Border = this.viewModel.FluidUI.Design.SelectionFallbackBrush;
+            this.AssignBrush(BrushTargets.Border, this.GetFluidUIBrush(BrushTargets.SelectionFallback));
 
             this.viewModel.UpdateDesign();
         }
@@ -178,41 +220,99 @@ internal class FluidUIDesignManager : IFluidUIManager
     {
         if (this.viewModel.FluidUI.Design != null)
         {
-            this.viewModel.FluidUI.Design.SelectionFallbackBrush = this.viewModel.FluidUI.Design.Border;
-            this.viewModel.FluidUI.Design.Border = this.viewModel.FluidUI.Design.Highlight;
+            this.AssignBrush(BrushTargets.SelectionFallback, this.GetFluidUIBrush(BrushTargets.Border));
+            this.AssignBrush(BrushTargets.Border, this.GetFluidUIBrush(BrushTargets.Highlight));
 
             this.viewModel.UpdateDesign();
         }
     }
 
-    internal void SetImageToBrushTarget(BrushTargets brushTargets, string path)
+    private void AssignBrush(BrushTargets brushTargets, Brush brush)
     {
-        if (this.viewModel.FluidUI.Design == null || string.IsNullOrWhiteSpace(path))
+        if (this.viewModel.FluidUI.Design == null)
         {
             return;
         }
 
-        Brush brush = new ImageBrush();
+        switch (brushTargets)
+        {
+            case BrushTargets.Background:
+                this.viewModel.FluidUI.Design.Background = brush;
+                break;
+            case BrushTargets.Border:
+                this.viewModel.FluidUI.Design.Border = brush;
+                break;
+            case BrushTargets.Foreground:
+                this.viewModel.FluidUI.Design.Foreground = brush;
+                break;
+            case BrushTargets.Highlight:
+                this.viewModel.FluidUI.Design.Highlight = brush;
+                break;
+            case BrushTargets.SelectionFallback:
+                this.viewModel.FluidUI.Design.SelectionFallbackBrush = brush;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private Brush GetFluidUIBrush(BrushTargets brushTargets)
+    {
+        Brush brush = FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+
+        if (this.viewModel.FluidUI.Design == null)
+        {
+            return brush;
+        }
 
         switch (brushTargets)
         {
             case BrushTargets.Background:
-                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.viewModel.FluidUI.Design.Background, path);
-                break;
-            case BrushTargets.Border:
-                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.viewModel.FluidUI.Design.Border, path);
+                brush = this.viewModel.FluidUI.Design.Background;
                 break;
             case BrushTargets.Foreground:
-                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.viewModel.FluidUI.Design.Foreground, path);
+                brush = this.viewModel.FluidUI.Design.Foreground;
+                break;
+            case BrushTargets.Border:
+                brush = this.viewModel.FluidUI.Design.Border;
                 break;
             case BrushTargets.Highlight:
-                brush = new SharedMethod_UI().ChangeBackgroundToImage(this.viewModel.FluidUI.Design.Highlight, path);
+                brush = this.viewModel.FluidUI.Design.Highlight;
+                break;
+            case BrushTargets.SelectionFallback:
+                brush = this.viewModel.FluidUI.Design.SelectionFallbackBrush;
                 break;
             default:
                 break;
         }
 
-        this.SetBrush(brush, brushTargets);
+        return brush;
+    }
+
+    private void ResetImagePath(BrushTargets brushTargets)
+    {
+        if (this.viewModel.FluidUI.Design == null)
+        {
+            return;
+        }
+
+        switch (brushTargets)
+        {
+            case BrushTargets.Background:
+                this.viewModel.FluidUI.Design.BackgroundColor.ImagePath = string.Empty;
+                break;
+            case BrushTargets.Border:
+                this.viewModel.FluidUI.Design.BorderColor.ImagePath = string.Empty;
+                break;
+            case BrushTargets.Foreground:
+                this.viewModel.FluidUI.Design.ForegroundColor.ImagePath = string.Empty;
+                break;
+            case BrushTargets.Highlight:
+                this.viewModel.FluidUI.Design.HighlightColor.ImagePath = string.Empty;
+                break;
+            default:
+                break;
+        }
     }
 }
 

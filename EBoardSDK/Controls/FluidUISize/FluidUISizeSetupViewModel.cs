@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -40,12 +40,19 @@ using EBoardSDK.Models.FluidUISize;
 using EBoardSDK.SharedMethods;
 using EBoardSDK.ViewModels;
 using System;
+using System.Runtime.CompilerServices;
 using System.Windows;
 
 public partial class FluidUISizeSetupViewModel : ObservableObject, IFluidUISizeSetup
 {
-    private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIBaseViewModel viewModel;
     private FluidUISizeManager fluidUISizeManager;
+
+    [ObservableProperty]
+    private double scaleX = 1.0;
+
+    [ObservableProperty]
+    private double scaleY = 1.0;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUISizeSetupViewModel"/> class.
@@ -58,7 +65,7 @@ public partial class FluidUISizeSetupViewModel : ObservableObject, IFluidUISizeS
     /// Initializes a new instance of the <see cref="FluidUISizeSetupViewModel"/> class.
     /// </summary>
     /// <param name="eboardFluidUIBaseViewModel"></param>
-    public FluidUISizeSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel)
+    public FluidUISizeSetupViewModel(FluidUIBaseViewModel eboardFluidUIBaseViewModel)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
         this.fluidUISizeManager = new FluidUISizeManager(this.ViewModel);
@@ -92,7 +99,7 @@ public partial class FluidUISizeSetupViewModel : ObservableObject, IFluidUISizeS
 
     public event Action? PropertyChangedEvent;
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
 
     public QuadValueSetupViewModel CornerRadiusQuadSetup { get; set; }
 
@@ -115,6 +122,14 @@ public partial class FluidUISizeSetupViewModel : ObservableObject, IFluidUISizeS
     public void SetInitialValues()
     {
         this.fluidUISizeManager.Reset();
+    }
+
+    public void UpdateValues()
+    {
+        this.OnPropertyChanged(nameof(this.CornerRadiusQuadSetup));
+        this.OnPropertyChanged(nameof(this.MarginQuadSetup));
+        this.OnPropertyChanged(nameof(this.PaddingQuadSetup));
+        this.OnPropertyChanged(nameof(this.ThicknessQuadSetup));
     }
 
     private void MarginQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

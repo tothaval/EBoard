@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -32,7 +32,6 @@
 namespace EBoardSDK.Controls.Area;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins;
 using EBoardSDK.ViewModels;
 using System;
@@ -40,15 +39,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 
 public partial class AreaHorizontalInnerViewModel<T> : ObservableObject
-    where T : EBoardElementPluginBaseViewModel
+    where T : PluginBaseViewModel
 {
     [ObservableProperty]
-    private ObservableCollection<T> elements;
+    private ObservableCollection<T> elements = new ();
 
     [ObservableProperty]
-    private T element;
+    private T? element;
 
-    private ElementViewModel elementViewModel;
+    private ElementViewModel? elementViewModel;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AreaHorizontalInnerViewModel{T}"/> class.
@@ -63,8 +62,6 @@ public partial class AreaHorizontalInnerViewModel<T> : ObservableObject
     /// <param name="elementViewModel"></param>
     public AreaHorizontalInnerViewModel(ElementViewModel elementViewModel)
     {
-        this.Elements = new();
-
         this.elementViewModel = elementViewModel;
     }
 
@@ -97,7 +94,7 @@ public partial class AreaHorizontalInnerViewModel<T> : ObservableObject
         {
             if (this.elementViewModel != null)
             {
-                instance.SetEBoardAndElementViewModel(this.elementViewModel.EBoardViewModel, this.elementViewModel);
+                instance.SetElementViewModel(this.elementViewModel);
                 instance.RefreshInitialization();
             }
 

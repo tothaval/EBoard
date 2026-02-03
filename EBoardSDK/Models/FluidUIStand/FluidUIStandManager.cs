@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -32,26 +32,43 @@
 namespace EBoardSDK.Models.FluidUIStand;
 
 using EBoardSDK.Interfaces;
+using EBoardSDK.Interfaces.FluidUIStand;
 using EBoardSDK.ViewModels;
 using System.Windows;
-using System.Windows.Media;
 
+/// <summary>
+/// This class is tasked with manipulation of <see cref="IFluidUIStandSetup"/> instances
+/// and has getter and setter methods that get values or apply changes. It requires an
+/// instance of a <see cref="FluidUIBaseViewModel"/> and will manipulate the font model
+/// within its <see cref="IFluidUIContext"/>.
+/// </summary>
 internal class FluidUIStandManager : IFluidUIManager
 {
-    private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIBaseViewModel viewModel;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUIStandManager"/> class.
     /// </summary>
-    /// <param name="viewModel"></param>
-    internal FluidUIStandManager(EboardFluidUIBaseViewModel viewModel)
+    /// <param name="viewModel">The inserted viewmodel of EboardFluidUIBaseViewModel class
+    /// will be used as target for any changes to its FluidUI property.</param>
+    internal FluidUIStandManager(FluidUIBaseViewModel viewModel)
     {
         this.viewModel = viewModel;
     }
 
-    public void Reset()
+    /// <summary>
+    /// Resets FluidUI-Stand properties to initial values
+    /// and updates EboardFluidUIBaseViewModel.
+    /// </summary>
+    /// <param name="calledByIFluidUIContextManager"></param>
+    public void Reset(bool calledByIFluidUIContextManager = false)
     {
         this.viewModel.FluidUI.Stand?.SetInitialValues();
+
+        if (!calledByIFluidUIContextManager)
+        {
+            this.viewModel.SetFluidUIByUser(this.viewModel.FluidUI);
+        }
 
         this.viewModel.UpdateStand();
     }
@@ -73,7 +90,7 @@ internal class FluidUIStandManager : IFluidUIManager
 
     internal void ApplyZIndexValueByMouseWheel(int delta)
     {
-        if (this.viewModel.FluidUI.Stand != null && delta < 0 && this.GetZ() < this.GetZmaximum())
+        if (this.viewModel.FluidUI.Stand != null && delta < 0 && this.GetZ() > this.GetZminimum())
         {
             this.viewModel.FluidUI.Stand.Z--;
         }
@@ -96,14 +113,44 @@ internal class FluidUIStandManager : IFluidUIManager
         return this.viewModel.FluidUI.Stand?.Position ?? new(25.0, 25.0);
     }
 
-    internal RotateTransform GetRotateTransformValue()
+    internal Point GetSkewCenterPoint()
     {
-        return this.viewModel.FluidUI.Stand?.RotateTransformValue ?? new(0.0);
+        return this.viewModel.FluidUI.Stand?.SkewCenterPoint ?? new(0.5, 0.5);
+    }
+
+    internal double GetSkewAngleX()
+    {
+        return this.viewModel.FluidUI.Stand?.SkewAngleX ?? 0.0;
+    }
+
+    internal double GetSkewAngleY()
+    {
+        return this.viewModel.FluidUI.Stand?.SkewAngleY ?? 0.0;
     }
 
     internal Point GetTransformOriginPoint()
     {
         return this.viewModel.FluidUI.Stand?.TransformOriginPoint ?? new(25.0, 25.0);
+    }
+
+    internal int GetXmaximum()
+    {
+        return this.viewModel.FluidUI.Stand?.Xmax ?? 1280;
+    }
+
+    internal int GetXminimum()
+    {
+        return this.viewModel.FluidUI.Stand?.Xmin ?? 0;
+    }
+
+    internal int GetYmaximum()
+    {
+        return this.viewModel.FluidUI.Stand?.Ymax ?? 640;
+    }
+
+    internal int GetYminimum()
+    {
+        return this.viewModel.FluidUI.Stand?.Ymin ?? 0;
     }
 
     internal int GetZ()
@@ -127,8 +174,6 @@ internal class FluidUIStandManager : IFluidUIManager
         {
             this.viewModel.FluidUI.Stand.Angle = a;
 
-            this.SetRotateTransformValue(a);
-
             this.viewModel.UpdateStand();
         }
     }
@@ -148,11 +193,33 @@ internal class FluidUIStandManager : IFluidUIManager
         this.SetPosition(new Point(x, y));
     }
 
-    internal void SetRotateTransformValue(double angle)
+    internal void SetSkewCenterPoint(Point skewp)
     {
-        if (this.viewModel.FluidUI.Stand != null && this.viewModel.FluidUI.Stand.RotateTransformValue.Angle != angle)
+        if (this.viewModel.FluidUI.Stand != null && this.GetSkewCenterPoint() != skewp)
         {
-            this.viewModel.FluidUI.Stand.RotateTransformValue = new RotateTransform(angle * -1);
+            this.viewModel.FluidUI.Stand.SkewCenterPoint = skewp;
+
+            this.viewModel.UpdateStand();
+        }
+    }
+
+    internal void SetSkewAngleX(double skewx)
+    {
+        if (this.viewModel.FluidUI.Stand != null && this.GetSkewAngleX() != skewx)
+        {
+            this.viewModel.FluidUI.Stand.SkewAngleX = skewx;
+
+            this.viewModel.UpdateStand();
+        }
+    }
+
+    internal void SetSkewAngleY(double skewy)
+    {
+        if (this.viewModel.FluidUI.Stand != null && this.GetSkewAngleY() != skewy)
+        {
+            this.viewModel.FluidUI.Stand.SkewAngleY = skewy;
+
+            this.viewModel.UpdateStand();
         }
     }
 
@@ -166,6 +233,34 @@ internal class FluidUIStandManager : IFluidUIManager
         }
     }
 
+    internal void SetY(double y)
+    {
+        if (this.viewModel.FluidUI.Stand != null && this.viewModel.FluidUI.Stand.Position.Y != y)
+        {
+            this.SetPosition(new Point(this.viewModel.FluidUI.Stand.Position.X, y));
+        }
+    }
+
+    internal void SetXmax(int xMax)
+    {
+        if (this.viewModel.FluidUI.Stand != null && this.viewModel.FluidUI.Stand.Xmax != xMax)
+        {
+            this.viewModel.FluidUI.Stand.Xmax = xMax;
+
+            this.viewModel.UpdateStand();
+        }
+    }
+
+    internal void SetXmin(int xMin)
+    {
+        if (this.viewModel.FluidUI.Stand != null && this.viewModel.FluidUI.Stand.Xmin != xMin)
+        {
+            this.viewModel.FluidUI.Stand.Xmin = xMin;
+
+            this.viewModel.UpdateStand();
+        }
+    }
+
     internal void SetX(double x)
     {
         if (this.viewModel.FluidUI.Stand != null && this.viewModel.FluidUI.Stand.Position.X != x)
@@ -174,11 +269,23 @@ internal class FluidUIStandManager : IFluidUIManager
         }
     }
 
-    internal void SetY(double y)
+    internal void SetYmax(int yMax)
     {
-        if (this.viewModel.FluidUI.Stand != null && this.viewModel.FluidUI.Stand.Position.Y != y)
+        if (this.viewModel.FluidUI.Stand != null && this.viewModel.FluidUI.Stand.Ymax != yMax)
         {
-            this.SetPosition(new Point(this.viewModel.FluidUI.Stand.Position.X, y));
+            this.viewModel.FluidUI.Stand.Ymax = yMax;
+
+            this.viewModel.UpdateStand();
+        }
+    }
+
+    internal void SetYmin(int yMin)
+    {
+        if (this.viewModel.FluidUI.Stand != null && this.viewModel.FluidUI.Stand.Ymin != yMin)
+        {
+            this.viewModel.FluidUI.Stand.Ymin = yMin;
+
+            this.viewModel.UpdateStand();
         }
     }
 

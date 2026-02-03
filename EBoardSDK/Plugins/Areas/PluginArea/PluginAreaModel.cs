@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -31,50 +31,80 @@
 /// </p>
 namespace EBoardSDK.Plugins.Areas.PluginArea;
 
-using EBoardSDK.Plugins.Elements.Link;
+using EBoardSDK.Plugins.Areas.ShapeArea;
+using EBoardSDK.Plugins.Eboard.Summoner;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
-internal class PluginAreaModel
+/// <summary>
+/// Serializable data model for <see cref="PluginAreaView"/> and <see cref="ShapeAreaView"/>.
+/// </summary>
+public class PluginAreaModel
 {
-    [JsonIgnore]
-    private readonly PluginAreaViewModel pluginAreaViewModel;
-
-    internal List<List<LinkModel>> Links { get; set; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="PluginAreaModel"/> class.
     /// </summary>
-    internal PluginAreaModel()
+    public PluginAreaModel()
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PluginAreaModel"/> class.
     /// </summary>
-    /// <param name="pluginAreaViewModel"></param>
-    internal PluginAreaModel(PluginAreaViewModel pluginAreaViewModel)
+    /// <param name="pluginAreaViewModel">Desired is the instance that has to be stored.</param>
+    public PluginAreaModel(PluginAreaViewModel pluginAreaViewModel)
     {
-        this.pluginAreaViewModel = pluginAreaViewModel;
+        this.ShowMatrixControls = pluginAreaViewModel.AreaViewModel.ShowMatrixControls;
 
-        //this.Links = new();
+        var areavm = pluginAreaViewModel.AreaViewModel;
 
-        //var areavm = shapeAreaViewModel.AreaViewModel;
+        if (areavm == null)
+        {
+            return;
+        }
 
-        //foreach (var item in areavm.AreaVerticalOuterViewModel.HorizontalInnerViewModels)
-        //{
-        //    var list = new List<LinkModel>();
+        foreach (var item in areavm.AreaVerticalOuterViewModel.HorizontalInnerViewModels)
+        {
+            var list = new List<SummonerModel>();
 
-        //    foreach (var horizontalelement in item.Elements)
-        //    {
-        //        var linkmodel = new LinkModel(horizontalelement);
+            foreach (var horizontalelement in item.Elements)
+            {
+                var model = new SummonerModel(horizontalelement);
 
-        //        list.Add(linkmodel);
-        //    }
+                list.Add(model);
+            }
 
-        //    this.Links.Add(list);
-        //}
+            this.Summonees.Add(list);
+        }
     }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PluginAreaModel"/> class.
+    /// </summary>
+    /// <param name="shapeAreaViewModel">Desired is the instance that has to be stored.</param>
+    public PluginAreaModel(ShapeAreaViewModel shapeAreaViewModel)
+    {
+        this.ShowMatrixControls = shapeAreaViewModel.AreaViewModel.ShowMatrixControls;
+
+        var areavm = shapeAreaViewModel.AreaViewModel;
+
+        foreach (var item in areavm.AreaVerticalOuterViewModel.HorizontalInnerViewModels)
+        {
+            var list = new List<SummonerModel>();
+
+            foreach (var horizontalelement in item.Elements)
+            {
+                var model = new SummonerModel(horizontalelement);
+
+                list.Add(model);
+            }
+
+            this.Summonees.Add(list);
+        }
+    }
+
+    public List<List<SummonerModel>> Summonees { get; set; } = new ();
+
+    public bool ShowMatrixControls { get; set; } = true;
 }
 
 // EOF

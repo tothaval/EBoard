@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -32,23 +32,17 @@
 namespace EBoardSDK.Controls.Area;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using EBoardSDK.Interfaces;
+using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Plugins;
 using EBoardSDK.ViewModels;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-/// <summary>
-/// TODO
-/// sinnvoll refaktorn und Methoden auslagern.
-/// 
-/// // make CreateNewArea a task?.
-/// </summary>
 public partial class AreaVerticalOuterViewModel<T> : ObservableObject
-        where T : EBoardElementPluginBaseViewModel
+        where T : PluginBaseViewModel
 {
     [ObservableProperty]
-    private ObservableCollection<AreaHorizontalInnerViewModel<T>> horizontalInnerViewModels;
+    private ObservableCollection<AreaHorizontalInnerViewModel<T>> horizontalInnerViewModels = new ();
 
     [ObservableProperty]
     private int verticalCount = 0;
@@ -56,7 +50,7 @@ public partial class AreaVerticalOuterViewModel<T> : ObservableObject
     [ObservableProperty]
     private int horizontalCount = 0;
 
-    private ElementViewModel elementViewModel;
+    private ElementViewModel? elementViewModel;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AreaVerticalOuterViewModel{T}"/> class.
@@ -71,8 +65,6 @@ public partial class AreaVerticalOuterViewModel<T> : ObservableObject
     /// <param name="elementViewModel"></param>
     public AreaVerticalOuterViewModel(ElementViewModel elementViewModel)
     {
-        this.HorizontalInnerViewModels = new ObservableCollection<AreaHorizontalInnerViewModel<T>>();
-
         this.elementViewModel = elementViewModel;
     }
 
@@ -174,7 +166,7 @@ public partial class AreaVerticalOuterViewModel<T> : ObservableObject
         }
     }
 
-    private void CreateNewArea()
+    private Task CreateNewArea()
     {
         if (this.VerticalCount == 0)
         {
@@ -210,6 +202,8 @@ public partial class AreaVerticalOuterViewModel<T> : ObservableObject
         }
 
         this.OnPropertyChanged(nameof(this.HorizontalInnerViewModels));
+
+        return Task.CompletedTask;
     }
 }
 

@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -43,13 +43,13 @@ using System.Windows.Media;
 
 public partial class FluidUIDesignSetupViewModel : ObservableObject, IFluidUIDesignSetup
 {
-    private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIBaseViewModel viewModel;
     private FluidUIDesignManager fluidUIDesignManager;
 
-    private BrushSetupViewModel backgroundBrushSetupViewModel;
-    private BrushSetupViewModel foregroundBrushSetupViewModel;
-    private BrushSetupViewModel borderBrushSetupViewModel;
-    private BrushSetupViewModel highlightBrushSetupViewModel;
+    private BrushSetupViewModel? backgroundBrushSetupViewModel;
+    private BrushSetupViewModel? foregroundBrushSetupViewModel;
+    private BrushSetupViewModel? borderBrushSetupViewModel;
+    private BrushSetupViewModel? highlightBrushSetupViewModel;
 
     [ObservableProperty]
     private double opacityValue = 1.0;
@@ -58,43 +58,27 @@ public partial class FluidUIDesignSetupViewModel : ObservableObject, IFluidUIDes
     /// Initializes a new instance of the <see cref="FluidUIDesignSetupViewModel"/> class.
     /// </summary>
     /// <param name="eboardFluidUIBaseViewModel"></param>
-    public FluidUIDesignSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel)
+    public FluidUIDesignSetupViewModel(FluidUIBaseViewModel eboardFluidUIBaseViewModel)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
         this.fluidUIDesignManager = new FluidUIDesignManager(this.ViewModel);
 
-        this.backgroundBrushSetupViewModel = new BrushSetupViewModel(eboardFluidUIBaseViewModel, Enums.BrushTargets.Background, this.SetColorValueAsBackground);
-
-        this.foregroundBrushSetupViewModel = new BrushSetupViewModel(eboardFluidUIBaseViewModel, Enums.BrushTargets.Foreground, this.SetColorValueAsForeground);
-
-        this.borderBrushSetupViewModel = new BrushSetupViewModel(eboardFluidUIBaseViewModel, Enums.BrushTargets.Border, this.SetColorValueAsBorder);
-
-        this.highlightBrushSetupViewModel = new BrushSetupViewModel(eboardFluidUIBaseViewModel, Enums.BrushTargets.Highlight, this.SetColorValueAsHighlight);
-
-        this.OpacityValue = this.fluidUIDesignManager.GetOpacity();
+        this.ApplyModel();
 
         this.OnPropertyChanged(nameof(this.ViewModel));
-
-        this.OnPropertyChanged(nameof(this.BackgroundBS));
-
-        this.OnPropertyChanged(nameof(this.ForegroundBS));
-
-        this.OnPropertyChanged(nameof(this.BorderBS));
-
-        this.OnPropertyChanged(nameof(this.HighlightBS));
     }
 
-    public event Action PropertyChangedEvent;
+    public event Action? PropertyChangedEvent;
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
 
-    public BrushSetupViewModel BackgroundBS => this.backgroundBrushSetupViewModel;
+    public BrushSetupViewModel? BackgroundBS => this.backgroundBrushSetupViewModel;
 
-    public BrushSetupViewModel ForegroundBS => this.foregroundBrushSetupViewModel;
+    public BrushSetupViewModel? ForegroundBS => this.foregroundBrushSetupViewModel;
 
-    public BrushSetupViewModel BorderBS => this.borderBrushSetupViewModel;
+    public BrushSetupViewModel? BorderBS => this.borderBrushSetupViewModel;
 
-    public BrushSetupViewModel HighlightBS => this.highlightBrushSetupViewModel;
+    public BrushSetupViewModel? HighlightBS => this.highlightBrushSetupViewModel;
 
     public bool ApplyBrush(Brush brush, BrushTargets brushTargets)
     {
@@ -107,21 +91,38 @@ public partial class FluidUIDesignSetupViewModel : ObservableObject, IFluidUIDes
                 switch (brushTargets)
                 {
                     case BrushTargets.Background:
-                        this.BackgroundBS.SolidBrush.ColorStringValue = "imagebrush";
-                        break;
-                    case BrushTargets.Border:
-                        this.BorderBS.SolidBrush.ColorStringValue = "imagebrush";
+                        if (this.BackgroundBS != null)
+                        {
+                            this.ChangeColorStringValue(this.BackgroundBS, brush);
+                        }
+
                         break;
                     case BrushTargets.Foreground:
-                        this.ForegroundBS.SolidBrush.ColorStringValue = "imagebrush";
+                        if (this.ForegroundBS != null)
+                        {
+                            this.ChangeColorStringValue(this.ForegroundBS, brush);
+                        }
+
+                        break;
+                    case BrushTargets.Border:
+                        if (this.BorderBS != null)
+                        {
+                            this.ChangeColorStringValue(this.BorderBS, brush);
+                        }
+
                         break;
                     case BrushTargets.Highlight:
-                        this.HighlightBS.SolidBrush.ColorStringValue = "imagebrush";
+                        if (this.HighlightBS != null)
+                        {
+                            this.ChangeColorStringValue(this.HighlightBS, brush);
+                        }
+
                         break;
                     default:
                         break;
                 }
             }
+
             return true;
         }
         catch (Exception)
@@ -136,6 +137,56 @@ public partial class FluidUIDesignSetupViewModel : ObservableObject, IFluidUIDes
 
     public void SetInitialValues()
     {
+    }
+
+    /// <inheritdoc/>
+    public void UpdateValues()
+    {
+        this.ApplyModel();
+    }
+
+    private void ApplyModel()
+    {
+        this.backgroundBrushSetupViewModel = new BrushSetupViewModel(this.ViewModel, Enums.BrushTargets.Background, this.SetColorValueAsBackground);
+
+        this.foregroundBrushSetupViewModel = new BrushSetupViewModel(this.ViewModel, Enums.BrushTargets.Foreground, this.SetColorValueAsForeground);
+
+        this.borderBrushSetupViewModel = new BrushSetupViewModel(this.ViewModel, Enums.BrushTargets.Border, this.SetColorValueAsBorder);
+
+        this.highlightBrushSetupViewModel = new BrushSetupViewModel(this.ViewModel, Enums.BrushTargets.Highlight, this.SetColorValueAsHighlight);
+
+        this.OpacityValue = this.fluidUIDesignManager.GetOpacity();
+
+        this.OnPropertyChanged(nameof(this.BackgroundBS));
+
+        this.OnPropertyChanged(nameof(this.ForegroundBS));
+
+        this.OnPropertyChanged(nameof(this.BorderBS));
+
+        this.OnPropertyChanged(nameof(this.HighlightBS));
+    }
+
+    private void ChangeColorStringValue(BrushSetupViewModel brushSetupViewModel, Brush brush)
+    {
+        if (brush.GetType() == typeof(ImageBrush))
+        {
+            brushSetupViewModel.SolidBrush.ColorStringValue = "image";
+        }
+
+        if (brush.GetType() == typeof(LinearGradientBrush))
+        {
+            brushSetupViewModel.SolidBrush.ColorStringValue = "linear";
+        }
+
+        if (brush.GetType() == typeof(RadialGradientBrush))
+        {
+            brushSetupViewModel.SolidBrush.ColorStringValue = "radial";
+        }
+
+        if (brush.GetType() == typeof(VisualBrush))
+        {
+            brushSetupViewModel.SolidBrush.ColorStringValue = "visual";
+        }
     }
 
     partial void OnOpacityValueChanged(double value)

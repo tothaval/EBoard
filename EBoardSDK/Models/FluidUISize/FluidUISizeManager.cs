@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,33 +33,51 @@ namespace EBoardSDK.Models.FluidUISize;
 
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
+using EBoardSDK.Interfaces.FluidUISize;
 using EBoardSDK.SharedMethods;
 using EBoardSDK.ViewModels;
 using System.Windows;
 
+/// <summary>
+/// This class is tasked with manipulation of <see cref="IFluidUISizeModel"/> instances
+/// and has getter and setter methods that get values or apply changes. It requires an
+/// instance of a <see cref="FluidUIBaseViewModel"/> and will manipulate the font model
+/// within its <see cref="IFluidUIContext"/>.
+/// </summary>
 internal class FluidUISizeManager : IFluidUIManager
 {
-    private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIBaseViewModel viewModel;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUISizeManager"/> class.
     /// </summary>
     /// <param name="viewModel"></param>
-    internal FluidUISizeManager(EboardFluidUIBaseViewModel viewModel)
+    internal FluidUISizeManager(FluidUIBaseViewModel viewModel)
     {
         this.viewModel = viewModel;
     }
 
-    public void Reset()
+    /// <summary>
+    /// Resets FluidUI-Size properties to initial values
+    /// and updates EboardFluidUIBaseViewModel.
+    /// </summary>
+    /// <param name="calledByIFluidUIContextManager"></param>
+    public void Reset(bool calledByIFluidUIContextManager = false)
     {
         if (this.viewModel.FluidUI.Size != null)
         {
             this.viewModel.FluidUI.Size.BorderThickness = new Thickness(2, 2, 2, 2);
             this.viewModel.FluidUI.Size.CornerRadius = new CornerRadius(5, 5, 5, 5);
-            this.viewModel.FluidUI.Size.Height = double.NaN;
             this.viewModel.FluidUI.Size.Margin = new Thickness(5);
             this.viewModel.FluidUI.Size.Padding = new Thickness(5);
-            this.viewModel.FluidUI.Size.Width = double.NaN;
+
+            this.Reset_FluidUISizeWidthAndHeight();
+            this.ResetScale();
+
+            if (!calledByIFluidUIContextManager)
+            {
+                this.viewModel.SetFluidUIByUser(this.viewModel.FluidUI);
+            }
         }
 
         this.viewModel.UpdateSize();
@@ -123,6 +141,16 @@ internal class FluidUISizeManager : IFluidUIManager
         return this.viewModel.FluidUI.Size?.BorderThickness ?? new(5.0);
     }
 
+    internal double GetScaleX()
+    {
+        return this.viewModel.FluidUI.Size?.ScaleX ?? 1.0;
+    }
+
+    internal double GetScaleY()
+    {
+        return this.viewModel.FluidUI.Size?.ScaleY ?? 1.0;
+    }
+
     internal int GetWidth()
     {
         int checkedWidth = -1;
@@ -162,6 +190,12 @@ internal class FluidUISizeManager : IFluidUIManager
     {
         this.SetWidth(double.NaN);
         this.SetHeight(double.NaN);
+    }
+
+    internal void ResetScale()
+    {
+        this.SetScaleX(1.0);
+        this.SetScaleY(1.0);
     }
 
     internal void SetCornerRadius(CornerRadius cornerRadius)
@@ -211,6 +245,26 @@ internal class FluidUISizeManager : IFluidUIManager
             this.viewModel.FluidUI.Size.BorderThickness = borderThickness;
 
             this.viewModel.UpdateSize();
+        }
+    }
+
+    internal void SetScaleX(double x)
+    {
+        if (this.viewModel.FluidUI.Size != null && this.GetScaleX() != x)
+        {
+            this.viewModel.FluidUI.Size.ScaleX = x;
+
+            this.viewModel.UpdateStand();
+        }
+    }
+
+    internal void SetScaleY(double y)
+    {
+        if (this.viewModel.FluidUI.Size != null && this.GetScaleY() != y)
+        {
+            this.viewModel.FluidUI.Size.ScaleY = y;
+
+            this.viewModel.UpdateStand();
         }
     }
 

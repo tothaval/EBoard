@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,7 +33,7 @@ namespace EBoardSDK.Controls.FluidUIFont;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Interfaces.FluidUIText;
+using EBoardSDK.Interfaces.FluidUIFont;
 using EBoardSDK.Models.FluidUIFont;
 using EBoardSDK.ViewModels;
 using System;
@@ -43,7 +43,7 @@ using FontFamily = System.Windows.Media.FontFamily;
 
 public partial class FluidUIFontSetupViewModel : ObservableObject, IFluidUIFontSetup
 {
-    private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIBaseViewModel viewModel;
     private FluidUIFontManager fluidUIFontManager;
 
     [ObservableProperty]
@@ -59,14 +59,11 @@ public partial class FluidUIFontSetupViewModel : ObservableObject, IFluidUIFontS
     /// Initializes a new instance of the <see cref="FluidUIFontSetupViewModel"/> class.
     /// </summary>
     /// <param name="eboardFluidUIBaseViewModel"></param>
-    public FluidUIFontSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel)
+    public FluidUIFontSetupViewModel(FluidUIBaseViewModel eboardFluidUIBaseViewModel)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
-        this.fluidUIFontManager = new FluidUIFontManager(this.ViewModel);
 
-        this.FontFamily = this.fluidUIFontManager.GetFontFamily();
-        this.FontSizeValue = this.fluidUIFontManager.GetFontSize();
-        this.FontWeight = this.fluidUIFontManager.GetFontWeight();
+        this.ApplyModel();
     }
 
     public event Action? PropertyChangedEvent;
@@ -91,7 +88,7 @@ public partial class FluidUIFontSetupViewModel : ObservableObject, IFluidUIFontS
         FontWeights.UltraLight,
     ];
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
 
     public void ApplyFontSize(int fontSize)
     {
@@ -123,6 +120,21 @@ public partial class FluidUIFontSetupViewModel : ObservableObject, IFluidUIFontS
 
     public void SetInitialValues()
     {
+    }
+
+    /// <inheritdoc/>
+    public void UpdateValues()
+    {
+        this.ApplyModel();
+    }
+
+    private void ApplyModel()
+    {
+        this.fluidUIFontManager = new FluidUIFontManager(this.ViewModel);
+
+        this.FontFamily = this.fluidUIFontManager.GetFontFamily();
+        this.FontSizeValue = this.fluidUIFontManager.GetFontSize();
+        this.FontWeight = this.fluidUIFontManager.GetFontWeight();
     }
 
     partial void OnFontFamilyChanged(FontFamily value)

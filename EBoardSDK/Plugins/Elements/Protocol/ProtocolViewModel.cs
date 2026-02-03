@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,21 +33,25 @@ namespace EBoardSDK.Plugins.Elements.Protocol;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardConfigManager.Enums;
-using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
+using EBoardSDK.Models;
+using EBoardSDK.Plugins.Elements.Link;
 using EBoardSDK.Plugins.Elements.Protocol.Models;
+using EBoardSDK.Plugins.Tools.Summoner;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+using Serilog;
 using System;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
-public partial class ProtocolViewModel : EBoardElementPluginBaseViewModel
+public partial class ProtocolViewModel : PluginBaseViewModel
 {
     [ObservableProperty]
-    private Note note;
+    private Note note = new();
 
     [ObservableProperty]
     private int iD = -1;
@@ -55,37 +59,43 @@ public partial class ProtocolViewModel : EBoardElementPluginBaseViewModel
     [ObservableProperty]
     private string title = "?";
 
-    public DateTime CurrentDateTime => DateTime.Now;
+    [ObservableProperty]
+    private DateTime dateTimeCreated;
 
     [ObservableProperty]
-    private DateTime dateTime_Created;
-
-    [ObservableProperty]
-    private DateTime dateTime_Edited;
+    private DateTime dateTimeEdited;
 
     [ObservableProperty]
     private string content = "!";
+
+    private string pluginHeader = "Protocol Element";
+
+    private string pluginName = "Protocol";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ProtocolViewModel"/> class.
     /// </summary>
     public ProtocolViewModel()
     {
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.OnlyModel);
+
         if (this.Note == null)
         {
             this.Note = new Note();
         }
 
-        this.DateTime_Created = DateTime.Now;
-        this.DateTime_Edited = DateTime.Now;
+        this.DateTimeCreated = DateTime.Now;
+        this.DateTimeEdited = DateTime.Now;
 
-        System.Windows.Threading.DispatcherTimer Timer = new System.Windows.Threading.DispatcherTimer();
+        System.Windows.Threading.DispatcherTimer timer = new System.Windows.Threading.DispatcherTimer();
 
-        Timer.Tick += this.Timer_Tick;
+        timer.Tick += this.Timer_Tick;
 
-        Timer.Interval = new TimeSpan(0, 0, 0, 0, 125);
+        timer.Interval = new TimeSpan(0, 0, 0, 0, 125);
 
-        Timer.Start();
+        timer.Start();
     }
 
     /// <summary>
@@ -98,84 +108,122 @@ public partial class ProtocolViewModel : EBoardElementPluginBaseViewModel
         this.Note = note;
     }
 
-    public override PluginCategories PluginCategory => PluginCategories.Element;
+    public static DateTime CurrentDateTime => DateTime.UtcNow;
 
-    public override bool NoDefaultBorders { get; } = false;
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Element;
 
-    public override ImageBrush PluginLogo { get; set; }
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new();
 
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
 
-    private string pluginHeader = "Protocol Element";
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
 
-    public override string PluginHeader
-    {
-        get { return this.pluginHeader; }
-        set { this.pluginHeader = value; }
-    }
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
 
-    private string pluginName = "Protocol";
-
-    public override string PluginName
-    {
-        get { return this.pluginName; }
-        set { this.pluginName = value; }
-    }
-
-    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
-
+    /// <inheritdoc/>
     public override ResourceDictionary ResourceDictionary => new();
 
-    public override Type? ElementPluginModel => null;
+    /// <inheritdoc/>
+    public override Type? PluginModelType => typeof(Note);
 
-    public override Type ElementPluginView => typeof(ProtocolView);
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(ProtocolViewModel);
 
-    public override Type ElementPluginViewModel => typeof(ProtocolViewModel);
-
-    public override async Task<EBoardFeedbackMessage> Load(string path)
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
     {
         try
         {
-            var data = await Loader.LoadJsonFile<Note>(path)!;
+            var data = await new SDKDataManager().LoadPluginContent<Note>(path);
 
             if (data != null)
             {
-                this.note = data;
+                this.ApplyModel(data);
 
-                this.DateTime_Created = data.DateTime_Created;
-                this.DateTime_Edited = data.DateTime_Edited;
-                this.Content = data.Content;
-                this.Title = data.Title;
-
-                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
+                return FeedbackMessageFactory.Success($"deserialized {path}");
             }
         }
         catch (Exception ex)
         {
-            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
+            return FeedbackMessageFactory.Exception(ex.Message);
         }
 
-        return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = string.Empty };
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(Note).FullName}");
     }
 
-    public override async Task<EBoardFeedbackMessage> Save(string path)
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Save(string path)
     {
-        EBoardFeedbackMessage? serializationResult = null;
-
         var model = this.Note;
 
-        var result = Saver.SaveJsonFile(path, model);
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
 
-        return new EBoardFeedbackMessage()
+    /// <inheritdoc/>
+    public override void InsertModel<T>(T model)
+    {
+        if (model == null)
         {
-            ResultMessage = $"{path} :: saving eboard config: {result}",
-            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
-        };
+            return;
+        }
+
+        if (model is Note note)
+        {
+            this.ApplyModel(note);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<Note>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new Note(this);
+
+        this.SetModel(model);
     }
 
     public void SetNote(Note note)
     {
         this.Note = note;
+    }
+
+    private void ApplyModel(Note note)
+    {
+        this.Note = note;
+
+        this.DateTimeCreated = note.DateTimeCreated;
+        this.DateTimeEdited = note.DateTimeEdited;
+        this.Content = note.Content;
+        this.Title = note.Title;
     }
 
     private void Timer_Tick(object? sender, EventArgs e)
@@ -192,31 +240,31 @@ public partial class ProtocolViewModel : EBoardElementPluginBaseViewModel
     {
         this.Note.Title = value;
 
-        this.DateTime_Edited = this.CurrentDateTime;
+        this.DateTimeEdited = CurrentDateTime;
     }
 
-    partial void OnDateTime_CreatedChanged(DateTime value)
+    partial void OnDateTimeCreatedChanged(DateTime value)
     {
-        this.Note.DateTime_Created = value;
+        this.Note.DateTimeCreated = value;
     }
 
-    partial void OnDateTime_EditedChanged(DateTime value)
+    partial void OnDateTimeEditedChanged(DateTime value)
     {
-        this.Note.DateTime_Edited = value;
+        this.Note.DateTimeEdited = value;
     }
 
     partial void OnContentChanged(string value)
     {
         this.Note.Content = value;
 
-        this.DateTime_Edited = this.CurrentDateTime;
+        this.DateTimeEdited = CurrentDateTime;
     }
 
     [RelayCommand]
     private void NewEntry()
     {
-        this.DateTime_Edited = this.CurrentDateTime;
-        this.Content = this.Content.Insert(0, $"{this.DateTime_Edited}\n\n\n");
+        this.DateTimeEdited = CurrentDateTime;
+        this.Content = this.Content.Insert(0, $"{this.DateTimeEdited}\n\n\n");
     }
 }
 

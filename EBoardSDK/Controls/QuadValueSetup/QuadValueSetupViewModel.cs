@@ -1,6 +1,8 @@
 ﻿// <copyright file="QuadValueSetupViewModel.cs" company=".">
 // Stephan Kammel
 // </copyright>
+using EBoardSDK.Models;
+
 /// license
 ///
 /// <b>ad-hoc license terms eboard prototype</b><br>
@@ -9,19 +11,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -40,7 +42,7 @@ using System.Windows;
 
 public partial class QuadValueSetupViewModel : ObservableObject
 {
-    private readonly EboardFluidUIBaseViewModel viewModel;
+    private readonly FluidUIBaseViewModel viewModel;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(QuadValueString))]
@@ -62,7 +64,7 @@ public partial class QuadValueSetupViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(QuadValueString))]
     private int bottomRight = 0;
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
 
     private Action okAction;
 
@@ -72,7 +74,7 @@ public partial class QuadValueSetupViewModel : ObservableObject
     /// <param name="viewModel"></param>
     /// <param name="quadValue"></param>
     /// <param name="okResult"></param>
-    public QuadValueSetupViewModel(EboardFluidUIBaseViewModel viewModel, QuadValue<int> quadValue, Action okResult)
+    public QuadValueSetupViewModel(FluidUIBaseViewModel viewModel, QuadValue<int> quadValue, Action okResult)
     {
         this.viewModel = viewModel;
 
@@ -85,12 +87,25 @@ public partial class QuadValueSetupViewModel : ObservableObject
 
     public void ApplyQuadValue(QuadValue<int> quadValue)
     {
-        this.TopLeft = quadValue.Value1;
-        this.TopRight = quadValue.Value2;
-        this.BottomRight = quadValue.Value3;
-        this.BottomLeft = quadValue.Value4;
+        var success = this.SetAllValue(quadValue);
 
-        this.SetAllValue();
+        if (!success)
+        {
+            this.TopLeft = quadValue.Value1;
+            this.TopRight = quadValue.Value2;
+            this.BottomRight = quadValue.Value3;
+            this.BottomLeft = quadValue.Value4;
+        }
+    }
+
+    public void ApplyQuadValue(CornerRadius cornerRadius)
+    {
+        this.ApplyQuadValue(this.MapToQuadValue(cornerRadius));
+    }
+
+    public void ApplyQuadValue(Thickness thickness)
+    {
+        this.ApplyQuadValue(this.MapToQuadValue(thickness));
     }
 
     public object GetQuadValueObject(BorderTargets borderTargets)
@@ -125,20 +140,46 @@ public partial class QuadValueSetupViewModel : ObservableObject
         this.All = 0;
     }
 
-    private void SetAllValue()
+    private QuadValue<int> MapToQuadValue(CornerRadius cornerRadius)
     {
-        if (this.TopLeft == this.TopRight && this.TopLeft == this.BottomRight && this.TopLeft == this.BottomLeft)
+        var quad = new QuadValue<int>();
+
+        quad.Value1 = (int)cornerRadius.TopLeft;
+        quad.Value2 = (int)cornerRadius.TopRight;
+        quad.Value3 = (int)cornerRadius.BottomRight;
+        quad.Value4 = (int)cornerRadius.BottomLeft;
+
+        return quad;
+    }
+
+    private QuadValue<int> MapToQuadValue(Thickness thickness)
+    {
+        var quad = new QuadValue<int>();
+
+        quad.Value1 = (int)thickness.Left;
+        quad.Value2 = (int)thickness.Top;
+        quad.Value3 = (int)thickness.Right;
+        quad.Value4 = (int)thickness.Bottom;
+
+        return quad;
+    }
+
+    private bool SetAllValue(QuadValue<int> quadValue)
+    {
+        if (quadValue.Value1 == quadValue.Value2 && quadValue.Value1 == quadValue.Value3 && quadValue.Value1 == quadValue.Value4)
         {
-            this.All = this.TopLeft;
+            this.All = quadValue.Value1;
+
+            return true;
         }
         else
         {
-            var cmid = (this.TopLeft + this.TopRight + this.BottomRight + this.BottomLeft) / 4;
+            var cmid = (quadValue.Value1 + quadValue.Value2 + quadValue.Value3 + quadValue.Value4) / 4;
 
             this.All = cmid;
         }
 
-        this.OnPropertyChanged(nameof(this.All));
+        return false;
     }
 
     partial void OnAllChanged(int value)

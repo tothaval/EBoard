@@ -10,19 +10,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoardSDK.Controls.ScreenSetup"
+             xmlns:ebb="clr-namespace:EBoardSDK.Plugins.Eboard.EboardBrowser"
              d:DataContext="{d:DesignInstance Type=local:ScreenSetupViewModel}"
              FontSize="{Binding ViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
              FontFamily="{Binding ViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
@@ -45,6 +46,7 @@
              Opacity="{Binding ViewModel.FluidUI.Design.Opacity, NotifyOnSourceUpdated=True}"
              ClipToBounds="True"             
              mc:Ignorable="d" 
+             x:Name="ScreenSetupViewName"
              d:DesignHeight="450" d:DesignWidth="800">
 
 
@@ -58,14 +60,11 @@
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
-            <Setter Property="Padding" Value="0 0 10 0"/>
         </Style>
 
         <Style TargetType="Button">
-            <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
 
             <Setter Property="Template">
                 <Setter.Value>
@@ -110,7 +109,7 @@
     </UserControl.Resources>
 
 
-    <Border>
+    <Border Background="{Binding ViewModel.FluidUI.Design.Background}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
@@ -121,8 +120,9 @@
                   HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition Width="2*" SharedSizeGroup="A"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto" SharedSizeGroup="A"/>
+                    <ColumnDefinition Width="2*" SharedSizeGroup="B"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
@@ -132,59 +132,74 @@
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
 
                 <Button Content="Add"
-                        Command="{Binding AddEBoardCommand}"
+                        Command="{Binding AddEboardCommand}"
                         Grid.Column="0"
-                        Grid.ColumnSpan="3"
+                        Grid.ColumnSpan="4"
                         Grid.Row="0"/>
+
+                <Button Content="Deselect"
+                        Margin="0 0 5 0"
+                        Command="{Binding DeselectEboardCommand}"
+                        Grid.Column="0"
+                        Grid.Row="1"
+                        Grid.RowSpan="5"/>
 
                 <Button Content="Edit"
                         Margin="5 0 0 0"
-                        Command="{Binding EditEBoardParametersCommand}"
-                        Grid.Column="2"
+                        Command="{Binding EditEboardParametersCommand}"
+                        Grid.Column="3"
                         Grid.Row="1"
-                        Grid.RowSpan="4"/>
+                        Grid.RowSpan="5"/>
 
                 <Button Content="Delete"
                         Command="{Binding DeleteSelectedScreensCommand}"
-                        CommandParameter="{Binding ElementName=EboardsList, Path=SelectedItems}"
                         Grid.Column="0"
-                        Grid.ColumnSpan="3"
-                        Grid.Row="5"/>
+                        Grid.ColumnSpan="4"
+                        Grid.Row="6"/>
 
                 <TextBlock Text="Name"
-                       Grid.Column="0"
+                       Grid.Column="1"
                        Grid.Row="1"/>
 
                 <TextBlock Text="Depth"
-                       Grid.Column="0"
+                       Grid.Column="1"
                        Grid.Row="2"/>
 
                 <TextBlock Text="Width"
-                       Grid.Column="0"
+                       Grid.Column="1"
                        Grid.Row="3"/>
 
                 <TextBlock Text="Height"
-                       Grid.Column="0"
+                       Grid.Column="1"
                        Grid.Row="4"/>
-
-                <TextBox Text="{Binding EBoardName}"
-                             Grid.Column="1"
+                
+                <TextBlock Text="Opacity"
+                Grid.Column="1"
+                Grid.Row="5"/>
+                
+                <TextBox Text="{Binding EboardName}"
+                             Grid.Column="2"
                              Grid.Row="1"/>
 
-                <TextBox Text="{Binding EBoardDepth}"
-                             Grid.Column="1"
+                <TextBox Text="{Binding EboardDepth}"
+                             Grid.Column="2"
                              Grid.Row="2"/>
 
-                <TextBox Text="{Binding NewEBoardWidth}"
-                             Grid.Column="1"
+                <TextBox Text="{Binding EboardWidth}"
+                             Grid.Column="2"
                              Grid.Row="3"/>
 
-                <TextBox Text="{Binding NewEBoardHeight}"
-                             Grid.Column="1"
+                <TextBox Text="{Binding EboardHeight}"
+                             Grid.Column="2"
                              Grid.Row="4"/>
+
+                <TextBox Text="{Binding EboardOpacity}"
+                             Grid.Column="2"
+                             Grid.Row="5"/>
             </Grid>
 
             <Grid Grid.Row="1">
@@ -226,7 +241,7 @@
                             <TextBlock Text="Created"
                                        Grid.Column="0"
                                        Grid.Row="1"/>
-                            <TextBlock Text="{Binding EBoardCreatedDate, NotifyOnSourceUpdated=True}"
+                            <TextBlock Text="{Binding EboardCreatedDate, NotifyOnSourceUpdated=True}"
                                        Grid.Column="1"
                                        Grid.Row="1"/>
 
@@ -283,9 +298,9 @@
                 <TextBlock VerticalAlignment="Center"
                            Grid.Column="1"
                            Grid.Row="0">
-                            <Run Text="{Binding ViewModel.CurrentSelectionID, NotifyOnSourceUpdated=True}"/>
+                            <Run Text="{Binding ViewModel.EboardBrowserViewModel.CurrentSelectionID, NotifyOnSourceUpdated=True}"/>
                             <Run Text="/"/>
-                            <Run Text="{Binding ViewModel.EBoardCount, NotifyOnSourceUpdated=True}"/>
+                            <Run Text="{Binding ViewModel.EboardCount, Mode=OneWay, NotifyOnSourceUpdated=True}"/>
                 </TextBlock>
 
                 <TextBlock Text="Title"

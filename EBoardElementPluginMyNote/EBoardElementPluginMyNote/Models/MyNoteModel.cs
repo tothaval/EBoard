@@ -32,56 +32,55 @@
 namespace EBoardElementPluginMyNote.Models;
 
 using EBoardSDK.Plugins.Elements.Protocol.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Serialization;
 
-[Serializable]
 public class MyNoteModel
 {
-    [XmlIgnore]
-    private MyNoteViewModel myNoteViewModel;
-
-    public Note Note { get; set; }
-
-    public List<Note> Notes { get; set; }
-
-    public List<List<Note>> NotesAreaList { get; set; }
-
     public MyNoteModel()
     {
     }
 
     public MyNoteModel(MyNoteViewModel myNoteViewModel)
     {
-        this.myNoteViewModel = myNoteViewModel;
+        this.ShowMatrixControls = myNoteViewModel.AreaViewModel?.ShowMatrixControls ?? false;
 
         // Protocol Tab
-        this.Note = this.myNoteViewModel.GetProtocol;
+        this.Note = myNoteViewModel.GetProtocol;
 
         // Notes Tab
-        Notes = [.. this.myNoteViewModel.GetNotes.Select(x => x.Note)];
+        Notes = [.. myNoteViewModel.GetNotes.Select(x => x.Note)];
 
         // Area Tab
         this.NotesAreaList = new();
+                
+        var areavm = myNoteViewModel.AreaViewModel;
 
-        var areavm = this.myNoteViewModel.AreaViewModel;
-
-        foreach (var item in areavm.AreaVerticalOuterViewModel.HorizontalInnerViewModels)
+        if (areavm != null)
         {
-            var list = new List<Note>();
-
-            foreach (var horizontalelement in item.Elements)
+            foreach (var item in areavm.AreaVerticalOuterViewModel.HorizontalInnerViewModels)
             {
-                var noteModel = new Note(horizontalelement);
+                var list = new List<Note>();
 
-                list.Add(noteModel);
-            }
+                foreach (var horizontalelement in item.Elements)
+                {
+                    var noteModel = new Note(horizontalelement);
 
-            this.NotesAreaList.Add(list);
+                    list.Add(noteModel);
+                }
+
+                this.NotesAreaList.Add(list);
+            } 
         }
     }
+
+    public Note Note { get; set; } = new();
+
+    public List<Note> Notes { get; set; } = new();
+
+    public List<List<Note>> NotesAreaList { get; set; } = new();
+
+    public bool ShowMatrixControls { get; set; } = true;
 }
 
 // EOF

@@ -1,0 +1,548 @@
+﻿<!--
+// <copyright file="MainWindow.xaml" company=".">
+// Stephan Kammel
+// </copyright>
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
+-->
+<Window x:Class="EBoardSDK.Windows.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EBoardSDK.Windows"
+        xmlns:logout="clr-namespace:EBoardSDK.Plugins.Eboard.LogOutBar"
+        xmlns:menu="clr-namespace:EBoardSDK.Plugins.Eboard.MenuBar"
+        xmlns:screenchanger="clr-namespace:EBoardSDK.Plugins.Eboard.ScreenChanger"
+        xmlns:sctrl="clr-namespace:EBoardSDK.Plugins.Eboard.ScreenControl"
+        xmlns:m="clr-namespace:EBoardSDK"
+        xmlns:esdkfuim="clr-namespace:EBoardSDK.Controls.FluidUIMenu"
+        xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
+        xmlns:vms="clr-namespace:EBoardSDK.ViewModels"
+        xmlns:views="clr-namespace:EBoardSDK.Views"
+        d:DataContext="{d:DesignInstance Type=vms:MainViewModel}"
+        FontSize="{Binding FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
+        FontFamily="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
+        FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
+        Opacity="{Binding FluidUI.Design.Opacity, NotifyOnSourceUpdated=True}"
+        
+        Background="Transparent"
+        
+        x:Name="EboardMainWindow"
+        mc:Ignorable="d"
+        Title="EBoard 2024"
+        AllowDrop="True"
+        AllowsTransparency="True"
+        WindowStyle="None"
+        WindowStartupLocation="Manual"
+        ResizeMode="CanResizeWithGrip"
+        SizeToContent="Manual"
+        
+        Drop="EboardMainWindow_Drop"
+        
+        MouseLeftButtonDown="EboardMainWindow_MouseLeftButtonDown"
+        MouseLeftButtonUp="EboardMainWindow_MouseLeftButtonUp"
+        SizeChanged="EboardMainWindow_SizeChanged">
+
+    <Window.Resources>
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+        </Style>
+
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="Padding" Value="0 0 10 0"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="DefaultButtonBorder"
+                          Background="{TemplateBinding Background}"
+                          BorderBrush="{TemplateBinding BorderBrush}"
+                          BorderThickness="3"                            
+                          CornerRadius="5" 
+                          MinWidth="50"
+                          MinHeight="25"
+                          Margin="5"
+                          Padding="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="DefaultButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="3"                            
+                                CornerRadius="5" 
+                                MinWidth="50"
+                                MinHeight="25"
+                                Margin="5"
+                                Padding="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background"
+                                    TargetName="DefaultButtonBorder"
+                                    Value="{Binding FluidUI.Design.Highlight}"/>
+                                <!--<Setter Property="Foreground"
+                                        Value="{Binding MainViewModel.FluidUI.Design.Highlight}"/>-->
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+            <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsSubmenuOpen" Value="True">
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Highlight}"/>
+                </Trigger>
+
+                <Trigger Property="IsSubmenuOpen" Value="false">
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Highlight}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MenuItemStyle}" x:Key="sub">
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="Background" Value="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+        </Style>
+
+        <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTip}">
+            <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
+            <Setter Property="FontSize" Value="{Binding FluidUI.Font.FontSize}"/>
+            <Setter Property="FontFamily" Value="{Binding FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
+        </Style>
+    </Window.Resources>
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="1"  
+                      CornerRadius ="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"
+                      ResizeBorderThickness="25"         
+                      GlassFrameThickness="0">
+        </WindowChrome>
+    </WindowChrome.WindowChrome>
+
+    <Border Background="{Binding FluidUI.Design.Background, NotifyOnSourceUpdated=True}"
+            BorderBrush="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"
+            BorderThickness="{Binding FluidUI.Size.BorderThickness, NotifyOnSourceUpdated=True}"
+            CornerRadius="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"
+            Margin="{Binding FluidUI.Size.Margin, NotifyOnSourceUpdated=True}"
+            Padding="{Binding FluidUI.Size.Padding, NotifyOnSourceUpdated=True}"
+            x:Name="Border_MainWindow"
+            ClipToBounds="True"
+            Width="{Binding FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
+            Height="{Binding FluidUI.Size.Height, NotifyOnSourceUpdated=True}" >
+
+        <Border.InputBindings>
+            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding SwitchMenuVisibilityCommand}"/>
+        </Border.InputBindings>
+
+        <Border.Resources>
+            <Style TargetType="MenuItem" BasedOn="{StaticResource ContextMenuItem}">
+                <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border}"/>
+                <Setter Property="Background" Value="{Binding FluidUI.Design.Background}"/>
+            </Style>
+        </Border.Resources>
+
+        <Border.ToolTip>
+            <ToolTip Visibility="{Binding FluidUI.DataBlock.ShowToolTip, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="{Binding FluidUI.DataBlock.Text,NotifyOnSourceUpdated=True}"
+                               Grid.Row="0"/>
+
+                    <Border Visibility="{Binding ShowCopyListItems, Converter={StaticResource VisibilityToCollapsed}}"
+                            BorderThickness="0 1 0 0"
+                            BorderBrush="{Binding FluidUI.Design.Foreground}"
+                            Margin="0 10 0 0"
+                            Padding="0 10 0 0"
+                            Grid.Row="1">
+
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0">
+                                <Run Text="fluid ui copy title: "/>
+                                <Run Text="{Binding FluidUIContextCopy.DataBlock.Title, NotifyOnSourceUpdated=True, Mode=OneWay}"/>
+                            </TextBlock>
+
+                            <TextBlock Foreground="{Binding FluidUI.Design.Highlight}"
+                                       Visibility="{Binding CopyListCountGreaterZero, Converter={StaticResource VisibilityToCollapsed}}"
+                                       Margin="5 0 0 0"
+                                       Grid.Row="1">
+                                <Run Text="copy list count: "/>
+                                <Run Text="{Binding ElementCopyList.Count, Mode=OneWay}"/>
+                            </TextBlock>
+
+                            <ListBox ItemsSource="{Binding ElementCopyList, NotifyOnSourceUpdated=True}"
+                                     Visibility="{Binding CopyListCountGreaterZero, Converter={StaticResource VisibilityToCollapsed}}"
+                                 Grid.Row="2">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Foreground="{Binding DataContext.FluidUI.Design.Highlight, RelativeSource={RelativeSource AncestorType=local:MainWindow,Mode=FindAncestor}}">
+                                        <Run Text="{Binding ElementConfig.EID, Mode=OneWay}"/>
+                                        <Run Text=" : "/>
+                                        <Run Text="{Binding ElementConfig.PluginName, Mode=OneWay}"/>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </ToolTip>
+        </Border.ToolTip>
+
+        <Border.ContextMenu>
+            <ContextMenu Background="{Binding FluidUI.Design.Background}"
+                             BorderBrush="{Binding FluidUI.Design.Border}"
+                             Style="{StaticResource ContextMenuStyle}">
+
+                <TextBlock Text="{Binding FluidUI.DataBlock.Title, NotifyOnSourceUpdated=True}"
+                               Foreground="{Binding FluidUI.Design.Foreground}"
+                               Style="{StaticResource DefaultTextBlock}"/>
+
+                <MenuItem Header="MainWindow"
+                          Style="{StaticResource menuitem}">
+
+                    <MenuItem Header="{DynamicResource MenuItemHeaderMaximize}"
+                              Style="{StaticResource menuitem}"
+                              Click="Maximize_Click"/>
+
+                    <MenuItem Header="Minimize"
+                                  Style="{StaticResource menuitem}"
+                                  Click="Minimize_Click"/>
+
+                    <MenuItem Header="Change"
+                                  Style="{StaticResource menuitem}"
+                                  Command="{Binding SwitchMenuVisibilityCommand}"/>
+                </MenuItem>
+
+                <MenuItem Header="Screens"
+                              Style="{StaticResource menuitem}">
+                    <MenuItem Header="Add"
+                                  Command="{Binding NavigationContextViewModel.AddScreenCommand}"
+                                  Style="{StaticResource menuitem}"/>
+                    <MenuItem Header="Delete"
+                                  Command="{Binding NavigationContextViewModel.DeleteSelectedScreenCommand}"
+                                  Style="{StaticResource menuitem}"/>
+                    <MenuItem Header="Deselect"
+                                  Command="{Binding NavigationContextViewModel.DeselectScreenCommand}"
+                                  Style="{StaticResource menuitem}"/>
+
+                    <MenuItem Header="Switch To"
+                              Style="{StaticResource menuitem}">
+                        <MenuItem Header="First"
+                                      Command="{Binding SwitchToEboardCommand}"
+                                      CommandParameter="First"
+                                      Style="{StaticResource menuitem}"/>
+                        <MenuItem Header="Last"
+                                      Command="{Binding SwitchToEboardCommand}"
+                                      CommandParameter="Last"
+                                      Style="{StaticResource menuitem}"/>
+                        <MenuItem Header="Prev"
+                                      Command="{Binding SwitchToEboardCommand}"
+                                      CommandParameter="Prev"
+                                      Style="{StaticResource menuitem}"/>
+                        <MenuItem Header="Next"
+                                      Command="{Binding SwitchToEboardCommand}"
+                                      CommandParameter="Next"
+                                      Style="{StaticResource menuitem}"/>
+                    </MenuItem>
+                </MenuItem>
+
+                <esdkfuim:FluidUIMenuView DataContext="{Binding FluidUIMenuViewModel, NotifyOnSourceUpdated=True}"
+                                              Style="{StaticResource menuitem}"/>
+
+                <MenuItem Header="Eboard" Style="{StaticResource menuitem}">
+                    <ToggleButton Content="Display copy list"
+                                  IsChecked="{Binding ShowCopyListItems}"/>
+
+                    <MenuItem Header="Reset FluidUI default"
+                                  Command="{Binding ResetFluidUIDefaultCommand}"
+                                  Style="{StaticResource menuitem}"/>
+
+                    <MenuItem Header="Save Path"
+                                  Command="{Binding SetSavePathCommand}"
+                                  Style="{StaticResource menuitem}"/>
+
+                    <MenuItem Header="Off"
+                              Command="{Binding CloseCommand}"
+                              Style="{StaticResource menuitem}"/>
+                </MenuItem>
+            </ContextMenu>
+        </Border.ContextMenu>
+
+        <Grid >
+            <!--<Grid.OpacityMask>
+                    <VisualBrush Visual="{Binding ElementName=mask}"/>
+                </Grid.OpacityMask>-->
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="{Binding FluidUI.DataBlock.Title}"
+                           Visibility="{Binding MainControlsVisible, Converter={StaticResource VisibilityToCollapsed}}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Top"
+                           Grid.Row="0"
+                           Grid.Column="0"
+                           Grid.ColumnSpan="4"/>
+
+            <!--<Border Name="mask"
+                        Background="{Binding BrushManager.Background, NotifyOnSourceUpdated=True}"
+                        CornerRadius="{Binding BorderManager.CornerRadius, NotifyOnSourceUpdated=True}"
+                        Grid.ColumnSpan="3"
+                        Grid.RowSpan="4"/>-->
+
+            <Border Grid.Row="1"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Visibility="{Binding MainControlsVisible, Converter={StaticResource VisibilityToCollapsed}}">
+                <menu:MenuBarView DataContext="{Binding MenuBar}" Margin="10 0 0 0"
+                                  VerticalAlignment="Top"/>
+            </Border>
+
+            <Border Grid.Row="1"
+                        Grid.RowSpan="2"
+                        Grid.Column="2"
+                        Grid.ColumnSpan="2"
+                        Margin="0 0 0 0"
+                        Visibility="{Binding MainControlsVisible, Converter={StaticResource VisibilityToCollapsed}}">
+                <logout:LogOutBarView DataContext="{Binding LogOutBar}"
+                                      HorizontalContentAlignment="Stretch"/>
+            </Border>
+
+            <!-- message strip -->
+            <Border Grid.Row="2"
+                    Visibility="{Binding ShowMessageStrip, Converter={StaticResource VisibilityToCollapsed}}"
+                    MinHeight="50"
+                    MaxHeight="100"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4">
+
+                <Border Visibility="{Binding MessageStripMessageActive, Converter={StaticResource VisibilityToCollapsed}}"
+                  Background="Transparent"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
+
+                    <TextBlock Foreground="{Binding FluidUI.Design.Highlight}"
+                               Text="{Binding MessageStripMessage}"
+                               MinWidth="100"
+                               MinHeight="50"
+                               MaxHeight="100"
+                               HorizontalAlignment="Center"/>
+                </Border>
+            </Border>
+
+            <!-- selected eboard screen -->
+            <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Top"
+                          Grid.Row="3" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="4"
+                          CanContentScroll="True"
+                          Visibility="{Binding NavigationContextViewModel.EboardBrowserViewModel.ActiveScreenIsNotNull, Converter={StaticResource VisibilityToCollapsed}}">
+                <views:EBoardView DataContext="{Binding NavigationContextViewModel.EboardBrowserViewModel.SelectedEboard, NotifyOnSourceUpdated=True}"/>
+            </ScrollViewer>
+
+            <!-- navigation context area or screen control -->
+            <Border Grid.Row="2"
+                        Grid.RowSpan="4"
+                        Grid.ColumnSpan="3"
+                        Grid.Column="0"
+                        Visibility="{Binding MainControlsVisible, Converter={StaticResource VisibilityToCollapsed}}"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top">
+                <Grid>
+                    <Border Visibility="{Binding MenuBar.EBoardBrowserSwitch,
+                            Converter={StaticResource VisibilityToCollapsed},
+                            NotifyOnSourceUpdated=True,
+                            NotifyOnTargetUpdated=True}">
+                        <views:NavigationContextView Content="{Binding NavigationContextViewModel}"/>
+                    </Border>
+
+                    <Border Visibility="{Binding MenuBar.ScreenControlSwitch,
+                            Converter={StaticResource VisibilityToCollapsed},
+                            NotifyOnSourceUpdated=True,
+                            NotifyOnTargetUpdated=True}">
+                        <sctrl:ScreenControlView DataContext="{Binding ScreenControlViewModel}"/>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- screen changer plugin -->
+            <Border Visibility="{Binding MainControlsVisible, Converter={StaticResource VisibilityToCollapsed}}"
+                    Grid.Row="6"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4">
+                <screenchanger:ScreenChangerView DataContext="{Binding ScreenChanger}"/>
+            </Border>
+
+
+            <Border Grid.Row="7"
+                    Visibility="{Binding ShowCopyListItems, Converter={StaticResource VisibilityToCollapsed}}"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    MinWidth="100"
+                    MinHeight="20">
+
+                <Border Visibility="{Binding CopyListCountGreaterZero, Converter={StaticResource VisibilityToCollapsed}}"
+                        Background="{Binding FluidUI.Design.Highlight}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                    <Border.ToolTip>
+                        <ToolTip Foreground="{Binding FluidUI.Design.Highlight}" >
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Foreground="{Binding FluidUI.Design.Highlight}"
+                                       Margin="5 0 0 0"
+                                       Grid.Row="0">
+                            <Run Text="copy list count: "/>
+                            <Run Text="{Binding ElementCopyList.Count, Mode=OneWay}"/>
+                                </TextBlock>
+
+                                <ListBox ItemsSource="{Binding ElementCopyList, NotifyOnSourceUpdated=True}"
+                                 Grid.Row="1">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Foreground="{Binding DataContext.FluidUI.Design.Highlight, RelativeSource={RelativeSource AncestorType=local:MainWindow,Mode=FindAncestor}}">
+                                        <Run Text="{Binding ElementConfig.EID, Mode=OneWay}"/>
+                                        <Run Text=" : "/>
+                                        <Run Text="{Binding ElementConfig.PluginName, Mode=OneWay}"/>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
+                                </ListBox>
+                            </Grid>
+                        </ToolTip>
+                    </Border.ToolTip>
+                </Border>
+            </Border>
+        </Grid>
+    </Border>
+</Window>
+
+<!-- EOF -->

@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,40 +33,64 @@ namespace EBoardSDK.Plugins.Elements.Link;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardSDK;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
+using EBoardSDK.Models;
 using EBoardSDK.Plugins;
+using EBoardSDK.Plugins.Eboard.Summoner;
+using EBoardSDK.Plugins.Elements.Protocol.Models;
+using EBoardSDK.Plugins.Tools.Summoner;
 using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+using Serilog;
 using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollectiveClickable
+public partial class LinkViewModel : PluginBaseViewModel, ICollectiveClickable
 {
+    private readonly string pluginHeader = "Link Element";
+    private readonly string pluginName = "Link";
+
+    private string simpleToolTip = string.Empty;
+
+    private string detailedToolTip = string.Empty;
+
+    [ObservableProperty]
+    private bool hideToolTip = false;
+
     [ObservableProperty]
     private LinkTargets linkTargetType = LinkTargets.File;
+
+    [ObservableProperty]
+    private string editText = "Edit";
 
     [ObservableProperty]
     private string epicText = "this is the most epic text in the entire existance.";
 
     [ObservableProperty]
+    private bool extendedToolTip = false;
+
+    [ObservableProperty]
     private string linkStatusText = "unlinked";
 
     [ObservableProperty]
-    private string linkTargetPath;
+    private string linkTargetPath = string.Empty;
 
     [ObservableProperty]
-    private string linkTargetName;
+    private string linkTargetName = string.Empty;
+
+    [ObservableProperty]
+    private string toolTipContent = string.Empty;
 
     [ObservableProperty]
     private ImageSource? imageSource;
@@ -79,15 +103,23 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
     [NotifyPropertyChangedFor(nameof(InverseEditBoolForTextBoxCaretSetting))]
     private bool isEditLinkTargetNameTextBoxReadOnly = true;
 
-    [ObservableProperty]
-    private string editText = "Edit";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="LinkViewModel"/> class.
     /// </summary>
     public LinkViewModel()
     {
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.FullCopy);
+
         this.LinkStatusText = "unlinked";
+
+        this.SetMenuItemViewModel(new LinkMenuItemViewModel(this));
+        this.SetMenuItem(new LinkMenuItem(this.MenuItemViewModel!));
+
+        this.OnPropertyChanged(nameof(this.MenuItemSet));
+        this.OnPropertyChanged(nameof(this.MenuItem));
+        this.OnPropertyChanged(nameof(this.MenuItemViewModel));
 
         this.OnPropertyChanged(nameof(this.InverseEditBoolForTextBoxCaretSetting));
     }
@@ -96,50 +128,130 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
 
     public bool InverseEditBoolForTextBoxCaretSetting => !this.IsEditLinkTargetNameTextBoxReadOnly;
 
-    public override PluginCategories PluginCategory => PluginCategories.Element;
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Element;
 
-    public override bool NoDefaultBorders { get; } = false;
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new ();
 
-    public override ImageBrush PluginLogo { get; set; }
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
 
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
 
-    private string pluginHeader = "Link Element";
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
 
-    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+    /// <inheritdoc/>
+    public override ResourceDictionary ResourceDictionary => new ();
 
-    private string pluginName = "Link";
+    /// <inheritdoc/>
+    public override Type? PluginModelType => typeof(LinkModel);
 
-    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
-
-    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
-
-    public override ResourceDictionary ResourceDictionary => new();
-
-    public override Type? ElementPluginModel => null;
-
-    public override Type ElementPluginView => typeof(LinkView);
-
-    public override Type ElementPluginViewModel => typeof(LinkViewModel);
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(LinkViewModel);
 
     public void ExecuteClick()
     {
         this.ExecuteOnClick();
     }
 
-    public void InsertLinkModel(LinkModel linkModel)
+    public void TriggerToolTipVisibility(bool visible)
+    {
+        this.HideToolTip = !visible;
+    }
+
+    /// <inheritdoc/>
+    public override void RefreshInitialization()
+    {
+        this.SetMenuItemViewModel(new LinkMenuItemViewModel(this));
+        this.SetMenuItem(new LinkMenuItem(this.MenuItemViewModel!));
+
+        this.OnPropertyChanged(nameof(this.ElementViewModel));
+    }
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
     {
         try
         {
-            if (linkModel != null)
+            var data = await Loader.LoadJsonFile<LinkModel>(path);
+
+            if (data != null)
             {
-                this.LinkTarget(linkModel.LinkTarget, linkModel.LinkTargetPath, linkModel.LinkTargetName);
+                this.ApplyModel(data);
+
+                return FeedbackMessageFactory.Success($"deserialized {path}");
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            return FeedbackMessageFactory.Exception(ex.Message);
+        }
+
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(LinkModel).FullName}");
+    }
+
+    /// <inheritdoc/>
+    public async override Task<EboardFeedbackMessage> Save(string path)
+    {
+        var model = new LinkModel(this);
+
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
+
+    /// <inheritdoc/>
+    public override void InsertModel<T>(T model)
+    {
+        if (model == null)
+        {
+            return;
+        }
+
+        if (model is LinkModel linkModel)
+        {
+            this.ApplyModel(linkModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<LinkModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
             this.Reset();
         }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            this.Reset();
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new LinkModel(this);
+
+        this.SetModel(model);
+    }
+
+    private void ApplyModel(LinkModel linkModel)
+    {
+        this.ExtendedToolTip = linkModel.ExtendedToolTip;
+        this.LinkTarget(linkModel.LinkTarget, linkModel.LinkTargetPath ?? string.Empty, linkModel.LinkTargetName);
     }
 
     private void ExecuteOnClick()
@@ -149,55 +261,6 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
             this.ExecuteLinkTarget();
             return;
         }
-    }
-
-    [RelayCommand]
-    private void ExecuteLinkTarget()
-    {
-        try
-        {
-            ProcessStartInfo start = new ProcessStartInfo(this.LinkTargetPath)
-            {
-                UseShellExecute = true
-            };
-            Process.Start(start);
-        }
-        catch
-        {
-        }
-    }
-
-    [RelayCommand]
-    private void LinkFile()
-    {
-        Microsoft.Win32.OpenFileDialog setPath = new Microsoft.Win32.OpenFileDialog();
-        setPath.InitialDirectory = Environment.GetEnvironmentVariable("userdir");
-        setPath.Filter = "files (*.*)|*.*";
-        setPath.FilterIndex = 2;
-        setPath.RestoreDirectory = true;
-
-        if (setPath.ShowDialog() == true)
-        {
-            this.LinkTarget(LinkTargets.File, setPath.FileName);
-        }
-    }
-
-    [RelayCommand]
-    private void LinkFolder()
-    {
-        Microsoft.Win32.OpenFolderDialog setPath = new Microsoft.Win32.OpenFolderDialog();
-        setPath.InitialDirectory = Environment.GetEnvironmentVariable("userdir");
-
-        if (setPath.ShowDialog() == true)
-        {
-            this.LinkTarget(LinkTargets.Folder, setPath.FolderName, setPath.SafeFolderName);
-        }
-    }
-
-    [RelayCommand]
-    private void LinkWeb()
-    {
-        this.LinkTarget(LinkTargets.Web, this.LinkTargetPath);
     }
 
     private void LinkTarget(LinkTargets linkTarget, string link, string? linkName = null)
@@ -220,6 +283,21 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
         }
     }
 
+    private void SetupToolTip(string detailedMessage)
+    {
+        this.detailedToolTip = detailedMessage;
+        this.simpleToolTip = $"{this.LinkTargetPath}";
+
+        if (this.ExtendedToolTip)
+        {
+            this.ToolTipContent = detailedMessage;
+        }
+        else
+        {
+            this.ToolTipContent = this.simpleToolTip;
+        }
+    }
+
     private void LinkFileTarget(string link, string? linkName = null)
     {
         try
@@ -233,9 +311,17 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
 
                 this.IsLinked = fileInfo.Exists;
 
+                this.SetupToolTip(
+                    $"{this.LinkTargetPath}\n" +
+                    $"dir: {fileInfo.DirectoryName}\n" +
+                    $"{fileInfo.Length} bytes\n" +
+                    $"last access:{fileInfo.LastAccessTimeUtc}\n" +
+                    $"last write: {fileInfo.LastWriteTimeUtc}\n" +
+                    $"attributes: {fileInfo.Attributes}");
+
                 if (Uri.IsWellFormedUriString(this.LinkTargetPath, UriKind.RelativeOrAbsolute))
                 {
-                    //thx to https://www.brad-smith.info/blog/archives/164 for IconTools.cs
+                    // thx to https://www.brad-smith.info/blog/archives/164 for IconTools.cs
                     Icon icon = IconTools.GetIconForExtension(".html", ShellIconSize.LargeIcon);
 
                     using (Bitmap bmp = icon.ToBitmap())
@@ -259,7 +345,7 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
                     //// alternative ImageSource solution
                     //// thx to: https://stackoverflow.com/questions/1127647/convert-system-drawing-icon-to-system-media-imagesource
 
-                    //ImageSource imageSource = Imaging.CreateBitmapSourceFromHIcon(
+                    // ImageSource imageSource = Imaging.CreateBitmapSourceFromHIcon(
                     //    icon.Handle,
                     //    Int32Rect.Empty,
                     //    BitmapSizeOptions.FromEmptyOptions());
@@ -288,9 +374,11 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
 
                 this.IsLinked = dirInfo.Exists;
 
+                this.SetupToolTip($"{this.LinkTargetPath}\ndirs: {dirInfo.EnumerateDirectories().Count()}\nfiles: {dirInfo.EnumerateFiles().Count()}\ncreated:{dirInfo.CreationTimeUtc}\nlast access: {dirInfo.LastAccessTimeUtc}\nlast write: {dirInfo.LastWriteTimeUtc}");
+
                 if (Uri.IsWellFormedUriString(this.LinkTargetPath, UriKind.RelativeOrAbsolute))
                 {
-                    //thx to https://www.brad-smith.info/blog/archives/164 for IconTools.cs
+                    // thx to https://www.brad-smith.info/blog/archives/164 for IconTools.cs
                     Icon icon = IconTools.GetIconForExtension(".html", ShellIconSize.LargeIcon);
 
                     using (Bitmap bmp = icon.ToBitmap())
@@ -314,7 +402,7 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
                     //// alternative ImageSource solution
                     //// thx to: https://stackoverflow.com/questions/1127647/convert-system-drawing-icon-to-system-media-imagesource
 
-                    //ImageSource imageSource = Imaging.CreateBitmapSourceFromHIcon(
+                    // ImageSource imageSource = Imaging.CreateBitmapSourceFromHIcon(
                     //    icon.Handle,
                     //    Int32Rect.Empty,
                     //    BitmapSizeOptions.FromEmptyOptions());
@@ -351,7 +439,9 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
 
                     this.IsLinked = true;
 
-                    //thx to https://www.brad-smith.info/blog/archives/164 for IconTools.cs
+                    this.SetupToolTip($"{this.LinkTargetPath}\nwebsite");
+
+                    // thx to https://www.brad-smith.info/blog/archives/164 for IconTools.cs
                     Icon icon = IconTools.GetIconForExtension(".html", ShellIconSize.LargeIcon);
 
                     using (Bitmap bmp = icon.ToBitmap())
@@ -372,6 +462,60 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
         }
     }
 
+    partial void OnExtendedToolTipChanged(bool value)
+    {
+        this.SetupToolTip(this.detailedToolTip);
+    }
+
+    [RelayCommand]
+    private void ExecuteLinkTarget()
+    {
+        try
+        {
+            ProcessStartInfo start = new ProcessStartInfo(this.LinkTargetPath)
+            {
+                UseShellExecute = true,
+            };
+            Process.Start(start);
+        }
+        catch
+        {
+        }
+    }
+
+    [RelayCommand]
+    private void LinkFile()
+    {
+        Microsoft.Win32.OpenFileDialog setPath = new ();
+        setPath.InitialDirectory = Environment.GetEnvironmentVariable("userdir");
+        setPath.Filter = "files (*.*)|*.*";
+        setPath.FilterIndex = 2;
+        setPath.RestoreDirectory = true;
+
+        if (setPath.ShowDialog() == true)
+        {
+            this.LinkTarget(LinkTargets.File, setPath.FileName);
+        }
+    }
+
+    [RelayCommand]
+    private void LinkFolder()
+    {
+        Microsoft.Win32.OpenFolderDialog setPath = new ();
+        setPath.InitialDirectory = Environment.GetEnvironmentVariable("userdir");
+
+        if (setPath.ShowDialog() == true)
+        {
+            this.LinkTarget(LinkTargets.Folder, setPath.FolderName, setPath.SafeFolderName);
+        }
+    }
+
+    [RelayCommand]
+    private void LinkWeb()
+    {
+        this.LinkTarget(LinkTargets.Web, this.LinkTargetPath);
+    }
+
     [RelayCommand]
     private void Reset()
     {
@@ -385,64 +529,6 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
 
         this.OnPropertyChanged(nameof(this.ImageSource));
         this.OnPropertyChanged(nameof(this.IsLinkEmpty));
-    }
-
-    public override async Task<EBoardFeedbackMessage> Load(string path)
-    {
-        try
-        {
-            var data = await Loader.LoadJsonFile<LinkModel>(path);
-
-            if (data != null)
-            {
-                this.LinkTarget(data.LinkTarget, data.LinkTargetPath, data.LinkTargetName);
-
-                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
-            }
-        }
-        catch (Exception ex)
-        {
-            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
-        }
-
-        return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = string.Empty };
-    }
-
-    public async override Task<EBoardFeedbackMessage> Save(string path)
-    {
-        EBoardFeedbackMessage? serializationResult = null;
-
-        var model = new LinkModel()
-        {
-            LinkTargetName = this.LinkTargetName,
-            LinkTargetPath = this.LinkTargetPath,
-            LinkTarget = this.LinkTargetType,
-        };
-
-        var result = Saver.SaveJsonFile(path, model);
-
-        return new EBoardFeedbackMessage()
-        {
-            ResultMessage = $"{path} :: saving eboard config: {result}",
-            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
-        };
-    }
-
-    [RelayCommand]
-    private void EditLinkTargetName()
-    {
-        if (this.IsEditLinkTargetNameTextBoxReadOnly)
-        {
-            this.IsEditLinkTargetNameTextBoxReadOnly = false;
-            this.EditText = "Edit";
-        }
-        else
-        {
-            this.IsEditLinkTargetNameTextBoxReadOnly = true;
-            this.EditText = "Save";
-        }
-
-        this.OnPropertyChanged(nameof(this.InverseEditBoolForTextBoxCaretSetting));
     }
 
     [RelayCommand]

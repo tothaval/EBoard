@@ -10,19 +10,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -31,38 +31,33 @@
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
 -->
-<MenuItem x:Class="EBoardSDK.Controls.FluidUIFont.FluidUIFontSetupView"
+<Grid x:Class="EBoardSDK.Controls.FluidUIFont.FluidUIFontSetupView"
           xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
           xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
           xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
           xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
           xmlns:local="clr-namespace:EBoardSDK.Controls.FluidUIFont"
-          d:DataContext="{d:DesignInstance Type=local:FluidUIFontSetupViewModel}"       
+          d:DataContext="{d:DesignInstance Type=local:FluidUIFontSetupViewModel}"
           mc:Ignorable="d" 
           d:DesignHeight="450" d:DesignWidth="800">
 
-    <MenuItem.Resources>
+    <Grid.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="Margin" Value="0 0 10 0"/>
-            <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
         <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="0 0 10 0"/>
             <Setter Property="MinHeight" Value="65"/>
             <Setter Property="MinWidth" Value="65"/>
         </Style>
 
         <Style TargetType="Button">
-            <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
 
             <Setter Property="Template">
                 <Setter.Value>
@@ -102,102 +97,82 @@
             <Setter Property="Maximum" Value="255"/>
             <Setter Property="Width" Value="256"/>
         </Style>
+    </Grid.Resources>
 
-        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
-            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border}"/>
-            <Setter Property="BorderThickness" Value="3"/>
-            <Setter Property="TextBlock.Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
-            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
-            <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Background}"/>
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="Auto"/>
+    </Grid.ColumnDefinitions>
 
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Highlight}"/>
-                </Trigger>
+    <Grid.RowDefinitions>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+        <RowDefinition/>
+    </Grid.RowDefinitions>
 
-                <Trigger Property="IsMouseOver" Value="False">
-                    <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-    </MenuItem.Resources>
-
-    <Grid VerticalAlignment="Center">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-        </Grid.ColumnDefinitions>
-
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-
-        <Button Content="Reset"
+    <Button Content="Reset"
                 Command="{Binding ResetCommand}"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
                 Grid.Row="0"/>
 
-        <!-- Font -->
-        <TextBlock Text="Font"
-                   Grid.Column="0"
-                   Grid.Row="1"/>
-        <ComboBox SelectedItem="{Binding FontFamily, UpdateSourceTrigger=PropertyChanged}"
-                  ItemsSource="{Binding Source={x:Static Fonts.SystemFontFamilies}}"
-                  Grid.Column="1"
-                  Grid.ColumnSpan="3"
-                  Grid.Row="1">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Source}"
-                               FontFamily="{Binding Source}"/>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+    <!-- Font -->
+    <TextBlock Text="Font"
+               Grid.Column="0"
+               Grid.Row="1"/>
+    <ComboBox SelectedItem="{Binding FontFamily, UpdateSourceTrigger=PropertyChanged}"
+              ItemsSource="{Binding Source={x:Static Fonts.SystemFontFamilies}}"
+              Grid.Column="1"
+              Grid.ColumnSpan="3"
+              Grid.Row="1">
+        <ComboBox.ItemTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding Source}"
+                           FontFamily="{Binding Source}"/>
+            </DataTemplate>
+        </ComboBox.ItemTemplate>
+    </ComboBox>
 
-        <!-- Font Size -->
-        <TextBlock Text="Size"
-                   Grid.Column="0"
-                   Grid.Row="2"/>
-        <TextBox Text="{Binding FontSizeValue, NotifyOnSourceUpdated=True}"
-                 FontSize="{Binding FontSizeValue}"
-                 Grid.Column="1"
-                 Grid.Row="2"/>
-        <Slider Value="{Binding FontSizeValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
-                VerticalAlignment="Center"
-                Grid.Column="2"
-                Minimum="7"
-                Maximum="42"
-                Grid.Row="2"/>
-        <Button Content="*"
-                Command="{Binding ApplyFontSizeCommand}"
-                Grid.Column="3"
-                Grid.Row="2"/>
+    <!-- Font Size -->
+    <TextBlock Text="Size"
+               Grid.Column="0"
+               Grid.Row="2"/>
+    <TextBox Text="{Binding FontSizeValue, NotifyOnSourceUpdated=True}"
+             FontSize="{Binding FontSizeValue}"
+             Grid.Column="1"
+             Grid.Row="2"/>
+    <Slider Value="{Binding FontSizeValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+            VerticalAlignment="Center"
+            Grid.Column="2"
+            Minimum="7"
+            Maximum="42"
+            Grid.Row="2"/>
+    <Button Content="*"
+            Command="{Binding ApplyFontSizeCommand}"
+            Grid.Column="3"
+            Grid.Row="2"/>
 
-        <!-- Font Weight -->
-        <TextBlock Text="Font Weight"
-                   Grid.Column="0"
-                   Grid.Row="3"/>
-        <ComboBox SelectedItem="{Binding FontWeight}"
-                  ItemsSource="{Binding FontWeightList, UpdateSourceTrigger=PropertyChanged}"
-                  Grid.Column="1"
-                  Grid.ColumnSpan="3"
-                  Grid.Row="3">
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}"
-                               FontWeight="{Binding}"/>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
-    </Grid>
-</MenuItem>
+    <!-- Font Weight -->
+    <TextBlock Text="Font Weight"
+               Grid.Column="0"
+               Grid.Row="3"/>
+    <ComboBox SelectedItem="{Binding FontWeight}"
+              ItemsSource="{Binding FontWeightList, UpdateSourceTrigger=PropertyChanged}"
+              Grid.Column="1"
+              Grid.ColumnSpan="3"
+              Grid.Row="3">
+        <ComboBox.ItemTemplate>
+            <DataTemplate>
+                <TextBlock Text="{Binding}"
+                           FontWeight="{Binding}"/>
+            </DataTemplate>
+        </ComboBox.ItemTemplate>
+    </ComboBox>
+</Grid>
 
 <!-- EOF -->
