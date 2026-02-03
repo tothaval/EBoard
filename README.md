@@ -341,9 +341,6 @@ With mousewheel you can change an elements z value. Ctrl + mousewheel changes an
 On some controls that display text ctrl+leftclick can be used to change the control, so that it allows for a change of the text. On Link and Image plugin ctrl+leftclick can be used to reset links. Double left click on mainwindow context will trigger showing or hiding of all mainwindow controls except the active screen.
 
 <h2>Final words:</h2>
-<<<<<<< Updated upstream
-Be advised, it is very likely that pluginbaseviewmodel and the iplugin interface will be target for renaming, deletion or addition of properties and methods in future updates. The concept is a research in progress. Until final decisions for plugin architecture have been achieved, you will have to recompile your plugin dlls if changes to pluginbaseviewmodel occured. I forgot to delete the Gold element link. I didn't include the picture because i am unsure about the license. If you want to see golden surfaces you will have to replace the link with a new one. Gold plugin could be used for any valueable picture, not just shiny metal.
-=======
 Be advised, it is very likely that PluginBaseViewModel, IPlugin interface and FluidUIBaseViewModel will be subject to changes like renaming, deletion or addition of properties and methods in future updates. The concept is a research in progress. Until final decisions for plugin architecture have been achieved, you will have to recompile your plugin dlls if changes to the plugin architecture occured.
 <br><br>
 I deleted the Gold element link. I didn't include the picture because i am unsure about the license. If you want to see golden surfaces you will have to replace the link with a new one and download a picture yourself. Gold plugin could be used for any valueable picture, not just shiny metal. It is not really necessary atm given the possiblities of the CAs.
@@ -353,4 +350,3 @@ Loading procedure is atm a serial process (parts of it could be run in parallel)
 If it is used as a project starter tool memory usage and speed won't matter anyway. After setting up instant access to relevant files or folders via Link or FileLinkArea plugin in a logical or graphical manner using screens, colors or whatever, changes to UI or switching screens will probably be limited to a few times per work session or only to the setup phase.
 <br><br>
 If it shall be used as a tool for creation of graphics or designs or whatever, memory usage and speed will matter. The prototype is only capable to serve such needs in a limited amount at its current stage. Further optimizations and plugins containing special workflows would be required for such.
->>>>>>> Stashed changes
