@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -31,8 +31,13 @@
 /// </p>
 namespace EBoardSDK.Views;
 
+using EBoardConfigManager.Helper;
+using EBoardSDK.Enums;
+using EBoardSDK.Models;
 using EBoardSDK.Models.FluidUIStand;
+using EBoardSDK.Utilities;
 using EBoardSDK.ViewModels;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -43,7 +48,7 @@ using System.Windows.Media;
 /// </summary>
 public partial class ElementView : UserControl
 {
-    private ElementViewModel _ElementViewModel;
+    private ElementViewModel? elementViewModel;
 
     private bool isDragging;
     private bool isResizing;
@@ -51,16 +56,12 @@ public partial class ElementView : UserControl
     private Point oldMousePosition = default;
     private Point position;
 
-    private UIElement visualParent;
-    private Canvas canvas;
+    private UIElement? visualParent;
+    private Canvas? canvas;
 
-    private RotateTransform rotateTransform = new();
-
-    private double x;
-    private double y;
+    private RotateTransform rotateTransform = new ();
 
     private int fallbackZ = 0;
-    private int z;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ElementView"/> class.
@@ -72,76 +73,30 @@ public partial class ElementView : UserControl
         this.SetPlacement();
     }
 
-    public Canvas Canvas => this.canvas;
+    public Canvas? Canvas => this.canvas;
 
     public bool IsDragging => this.isDragging;
 
     public Point Position => this.position;
 
-    public UIElement VisualParent => this.visualParent;
+    public UIElement? VisualParent => this.visualParent;
 
-    public RotateTransform RotateTransform
-{
-        get
-        {
-            return this.rotateTransform;
-        }
+    public double X { get; set; }
 
-        set
-        {
-            this.rotateTransform = value;
-        }
-    }
+    public double Y { get; set; }
 
-    public double X
-    {
-        get
-        {
-            return this.x;
-        }
-
-        set
-        {
-            this.x = value;
-        }
-    }
-
-    public double Y
-    {
-        get
-        {
-            return this.y;
-        }
-
-        set
-        {
-            this.y = value;
-        }
-    }
-
-    public int Z
-    {
-        get
-        {
-            return this.z;
-        }
-
-        set
-        {
-            this.z = value;
-        }
-    }
+    public int Z { get; set; }
 
     public void SetPlacement()
     {
         if (this.DataContext != null)
         {
-            this._ElementViewModel = (ElementViewModel)this.DataContext;
+            this.elementViewModel = (ElementViewModel)this.DataContext;
         }
 
-        if (this._ElementViewModel != null)
+        if (this.elementViewModel != null)
         {
-            var manager = new FluidUIStandManager(this._ElementViewModel);
+            var manager = new FluidUIStandManager(this.elementViewModel);
 
             this.X = manager.GetPosition().X;
             this.Y = manager.GetPosition().Y;
@@ -152,16 +107,14 @@ public partial class ElementView : UserControl
             Panel.SetZIndex(this.visualParent, this.Z);
 
             this.ElementBorder.RenderTransformOrigin = manager.GetTransformOriginPoint();
-            this.ElementBorder.RenderTransform = manager.GetRotateTransformValue();
-            this.RotateTransform = manager.GetRotateTransformValue();
         }
     }
 
     public void UpdatePlacement()
     {
-        if (this._ElementViewModel != null)
+        if (this.elementViewModel != null)
         {
-            var manager = new FluidUIStandManager(this._ElementViewModel);
+            var manager = new FluidUIStandManager(this.elementViewModel);
 
             this.X = Canvas.GetLeft(this.visualParent);
 
@@ -171,9 +124,6 @@ public partial class ElementView : UserControl
             {
                 Panel.SetZIndex(this.visualParent, manager.GetZ());
             }
-
-            this.ElementBorder.RenderTransformOrigin = manager.GetTransformOriginPoint();
-            this.ElementBorder.RenderTransform = manager.GetRotateTransformValue();
         }
     }
 
@@ -181,9 +131,9 @@ public partial class ElementView : UserControl
     {
         if (!Keyboard.IsKeyDown(Key.LeftCtrl) || !Keyboard.IsKeyDown(Key.RightCtrl))
         {
-            if (this._ElementViewModel != null && this._ElementViewModel.EBoardViewModel.FluidUI.Stand != null)
+            if (this.elementViewModel != null && this.elementViewModel.ScreenViewModel.FluidUI.Stand != null)
             {
-                if (this.Z < this._ElementViewModel.EBoardViewModel.FluidUI.Stand.Zmaximum && this.Z != this.fallbackZ)
+                if (this.Z < this.elementViewModel.ScreenViewModel.FluidUI.Stand.Zmaximum && this.Z != this.fallbackZ)
                 {
                     this.fallbackZ = this.Z;
                 }
@@ -193,7 +143,7 @@ public partial class ElementView : UserControl
 
                 this.position = e.GetPosition(this.visualParent);
 
-                this._ElementViewModel.EBoardViewModel?.BeginElementSelectionMovement(this._ElementViewModel);
+                this.elementViewModel.ScreenViewModel?.BeginElementSelectionMovement(this.elementViewModel);
 
                 this.oldMousePosition = e.GetPosition(this.canvas);
 
@@ -214,7 +164,7 @@ public partial class ElementView : UserControl
             return;
         }
 
-        if (e.LeftButton == MouseButtonState.Pressed && this._ElementViewModel != null)
+        if (e.LeftButton == MouseButtonState.Pressed && this.elementViewModel != null)
         {
             Point canvasRelativePosition = e.GetPosition(this.canvas);
 
@@ -231,7 +181,7 @@ public partial class ElementView : UserControl
 
             Point delta = (Point)(this.oldMousePosition - canvasRelativePosition);
 
-            this._ElementViewModel.EBoardViewModel.MoveElementSelection(this._ElementViewModel, delta);
+            this.elementViewModel.ScreenViewModel.MoveElementSelection(this.elementViewModel, delta);
 
             this.oldMousePosition = canvasRelativePosition;
         }
@@ -241,7 +191,7 @@ public partial class ElementView : UserControl
     {
         // if (!isDragging)
         //    return;
-        if (this._ElementViewModel != null && this._ElementViewModel.EBoardViewModel.FluidUI.Stand != null)
+        if (this.elementViewModel != null && this.elementViewModel.ScreenViewModel.FluidUI.Stand != null)
         {
             if (this.isDragging)
             {
@@ -251,19 +201,19 @@ public partial class ElementView : UserControl
 
                 this.Y = Canvas.GetTop(this.visualParent);
 
-                if (this.Z > this._ElementViewModel.EBoardViewModel.FluidUI.Stand.Zmaximum)
+                if (this.Z > this.elementViewModel.ScreenViewModel.FluidUI.Stand.Zmaximum)
                 {
                     this.Z = this.fallbackZ;
                 }
 
-                this._ElementViewModel.StopMovement();
+                this.elementViewModel.StopMovement();
 
                 Panel.SetZIndex(this.visualParent, this.Z);
 
-                this._ElementViewModel.EBoardViewModel?.StopElementSelectionMovement(this._ElementViewModel);
+                this.elementViewModel.ScreenViewModel?.StopElementSelectionMovement(this.elementViewModel);
             }
 
-            this._ElementViewModel.WasLastActive();
+            this.elementViewModel.WasLastActive();
         }
 
         e.Handled = true;
@@ -278,11 +228,11 @@ public partial class ElementView : UserControl
             this.canvas = VisualTreeHelper.GetParent(this.visualParent) as Canvas;
         }
 
-        this._ElementViewModel = (ElementViewModel)this.DataContext;
+        this.elementViewModel = (ElementViewModel)this.DataContext;
 
-        if (this._ElementViewModel != null)
+        if (this.elementViewModel != null)
         {
-            var manager = new FluidUIStandManager(this._ElementViewModel);
+            var manager = new FluidUIStandManager(this.elementViewModel);
 
             this.X = manager.GetPosition().X;
             this.Y = manager.GetPosition().Y;
@@ -292,10 +242,7 @@ public partial class ElementView : UserControl
             Canvas.SetTop(this.visualParent, this.Y);
             Panel.SetZIndex(this.visualParent, this.Z);
 
-            this.ElementBorder.RenderTransformOrigin = manager.GetTransformOriginPoint();
-            this.ElementBorder.RenderTransform = manager.GetRotateTransformValue();
-
-            this._ElementViewModel.SetView(this);
+            this.elementViewModel.SetView(this);
         }
     }
 
@@ -305,11 +252,16 @@ public partial class ElementView : UserControl
 
     private void Border_MouseWheel(object sender, MouseWheelEventArgs e)
     {
-        var manager = new FluidUIStandManager(this._ElementViewModel);
+        if (this.elementViewModel == null)
+        {
+            return;
+        }
+
+        var manager = new FluidUIStandManager(this.elementViewModel);
 
         if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
         {
-            if (this._ElementViewModel != null)
+            if (this.elementViewModel != null)
             {
                 manager.ApplyRotationAngleValueByMouseWheel(e.Delta);
             }
@@ -320,6 +272,15 @@ public partial class ElementView : UserControl
         manager.ApplyZIndexValueByMouseWheel(e.Delta);
 
         this.UpdatePlacement();
+    }
+
+    private void Element_Drop(object sender, DragEventArgs e)
+    {
+
+        if (e.Data.GetDataPresent(DataFormats.FileDrop) && this.elementViewModel != null)
+        {
+            this.elementViewModel.Drop(e, this.elementViewModel);
+        }
     }
 }
 

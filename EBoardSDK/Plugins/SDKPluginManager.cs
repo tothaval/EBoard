@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,36 +33,56 @@ namespace EBoardSDK.Plugins;
 
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUIDataBlock;
+using EBoardSDK.Models.FluidUIStand;
+using EBoardSDK.Plugins.Addons.Dice_n_Random;
 using EBoardSDK.Plugins.Addons.SoundMix;
+
 using EBoardSDK.Plugins.Areas.FileLinkArea;
 using EBoardSDK.Plugins.Areas.PluginArea;
 using EBoardSDK.Plugins.Areas.ShapeArea;
 using EBoardSDK.Plugins.Areas.TwoXThreeVImageArea;
-using EBoardSDK.Plugins.Elements.About;
+
+using EBoardSDK.Plugins.Eboard.About;
+using EBoardSDK.Plugins.Eboard.Coordinates;
+using EBoardSDK.Plugins.Eboard.EboardBrowser;
+using EBoardSDK.Plugins.Eboard.LogOutBar;
+using EBoardSDK.Plugins.Eboard.MainWindow;
+using EBoardSDK.Plugins.Eboard.Manual;
+using EBoardSDK.Plugins.Eboard.MenuBar;
+using EBoardSDK.Plugins.Eboard.PluginManager;
+using EBoardSDK.Plugins.Eboard.ScreenChanger;
+using EBoardSDK.Plugins.Eboard.ScreenControl;
+using EBoardSDK.Plugins.Eboard.ScreenDataBoard;
+using EBoardSDK.Plugins.Eboard.Summoner;
+
 using EBoardSDK.Plugins.Elements.BasicAV;
 using EBoardSDK.Plugins.Elements.EmptyLinear;
 using EBoardSDK.Plugins.Elements.EmptyRadial;
 using EBoardSDK.Plugins.Elements.Gold;
 using EBoardSDK.Plugins.Elements.Image;
 using EBoardSDK.Plugins.Elements.Link;
-using EBoardSDK.Plugins.Elements.Manual;
 using EBoardSDK.Plugins.Elements.Protocol;
 using EBoardSDK.Plugins.Elements.StandardText;
+
 using EBoardSDK.Plugins.Shapes.Ellipse;
 using EBoardSDK.Plugins.Shapes.Line;
 using EBoardSDK.Plugins.Shapes.Path;
+using EBoardSDK.Plugins.Shapes.Polygon;
 using EBoardSDK.Plugins.Shapes.Rectangle;
 using EBoardSDK.Plugins.Shapes.TextShape;
-using EBoardSDK.Plugins.Tools.Coordinates;
-using EBoardSDK.Plugins.Tools.PluginManager;
-using EBoardSDK.Plugins.Tools.Summoner;
+
+using EBoardSDK.Plugins.Tools.PolygonMaker;
 using EBoardSDK.Plugins.Tools.Uptime;
+
 using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
 using EBoardSDK.ViewModels;
 using Serilog;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Xml.Linq;
 
 public class SDKPluginManager
 {
@@ -75,23 +95,26 @@ public class SDKPluginManager
     private List<PluginRepresentationItem> foundShapes = new();
     private List<PluginRepresentationItem> foundAreas = new();
     private List<PluginRepresentationItem> foundTools = new();
+
+    private List<PluginRepresentationItem> foundEboard = new();
+    private List<PluginRepresentationItem> foundSystem = new();
+
     private List<PluginRepresentationItem> foundUnknown = new();
 
     /// <summary>
     /// a list of all plugins this eboardsdk contains.
     /// </summary>
-    private List<EBoardElementPluginBaseViewModel> SDKPlugins =
+    private List<PluginBaseViewModel> sDKPlugins =
         [
 
         // Addons
+        new Dice_n_RandomViewModel(),
         new SoundMixMainViewModel(), // saves and loads ecf data
 
         // Elements
-        new AboutViewModel(),
         new EmptyLinearViewModel(),
         new EmptyRadialViewModel(),
         new GoldViewModel(),
-        new ManualViewModel(),
 
         new ImageViewModel(), // saves and loads ecf data
         new LinkViewModel(), // saves and loads ecf data
@@ -103,6 +126,7 @@ public class SDKPluginManager
         new EllipseViewModel(),
         new LineViewModel(), // saves and loads ecf data
         new PathViewModel(), // saves and loads ecf data
+        new PolygonViewModel(), // saves and loads ecf data
         new RectangleViewModel(),
         new TextShapeViewModel(), // saves and loads ecf data
 
@@ -113,10 +137,24 @@ public class SDKPluginManager
         new TwoXThreeImageAreaViewModel(), // saves and loads ecf data
 
         // Tools
-        new CoordinatesViewModel(),
-        new PluginManagerViewModel(),
-        new SummonerViewModel(), // saves and loads ecf data (atm TODO)
+        new PolygonMakerViewModel(), // saves and loads ecf data
         new UptimeViewModel(),
+
+        // System
+
+        // Eboard
+        new AboutViewModel(),
+        new CoordinatesViewModel(),
+        new EboardBrowserViewModel(),
+        new LogOutBarViewModel(), // saves and loads ecf data
+        new ManualViewModel(),
+        new MainWindowViewModel(),
+        new MenuBarViewModel(), // saves and loads ecf data
+        new PluginManagerViewModel(),
+        new ScreenChangerViewModel(),
+        new ScreenControlViewModel(),
+        new ScreenDataBoardViewModel(),
+        new SummonerViewModel(), // saves and loads ecf data
         ];
 
     /// <summary>
@@ -142,36 +180,92 @@ public class SDKPluginManager
 
     public List<PluginRepresentationItem> FoundTools => this.foundTools;
 
+    public List<PluginRepresentationItem> FoundEboard => this.foundEboard;
+
+    public List<PluginRepresentationItem> FoundSystem => this.foundSystem;
+
     public List<PluginRepresentationItem> FoundUnknown => this.foundUnknown;
+
+    internal void DuplicatePlugin(ElementViewModel elementViewModel)
+    {
+        if (elementViewModel != null && elementViewModel.Plugin != null)
+        {
+            elementViewModel.PrepareCopy();
+
+            var wasSelected = false;
+
+            if (elementViewModel.IsSelected)
+            {
+                elementViewModel.SelectElement();
+                wasSelected = true;
+            }
+
+            for (int i = 0; i < elementViewModel.DuplicationCount; i++)
+            {
+                var copy = new FluidUIDeepCopyManager().DeepCopyIFluidUIContext(elementViewModel.FluidUI);
+
+                var element = ElementFactory.GetElementViewModel(elementViewModel.ScreenViewModel);
+
+                var plugin = this.InvokePluginByName(elementViewModel.Plugin.Name).Result;
+
+                if (plugin != null)
+                {
+                    plugin.SetElementViewModel(element);
+
+                    if (plugin.GetType().BaseType == typeof(EboardPluginBaseViewModel))
+                    {
+                        ((EboardPluginBaseViewModel)plugin).SetMainViewModel(elementViewModel.ScreenViewModel.MainViewModel);
+                    }
+
+                    plugin.RefreshInitialization();
+
+                    plugin.InsertModel(elementViewModel.Plugin.PluginModel);
+
+                    element.SetFluidUI(copy);
+                    element.Plugin = plugin;
+
+                    this.InvokeElementViewModelOnEboard(element);
+                }
+            }
+
+            if (wasSelected)
+            {
+                elementViewModel.SelectElement();
+            }
+        }
+    }
 
     internal void InvokeElementViewModelOnEboard(ElementViewModel element)
     {
-        if (element != null)
+        if (element != null && element.Plugin != null)
         {
+            var mainViewModel = element.ScreenViewModel.MainViewModel;
             var interfaces = element.Plugin.GetType().GetInterfaces();
 
             if (interfaces != null &&
                 interfaces.Any(x => x.Name.Equals(nameof(IPlugin))))
             {
-                var screenpolicies = element.EBoardViewModel.InstantiationPolicies;
+                var screenpolicies = element.ScreenViewModel.InstantiationPolicies;
 
-                if (screenpolicies == null || screenpolicies.Contains(EBoardSDK.Enums.ElementInstantiationPolicy.ValueNotSet))
+                if (screenpolicies == null || screenpolicies.Contains(EBoardSDK.Enums.InstantiationPolicy.ValueNotSet))
                 {
+                    mainViewModel.WriteToMessageStrip($"denied, screen settings forbid action, instantiation policy: ValueNotSet");
                     return;
                 }
 
-                if (element.Plugin.ElementScreenIntegrationConstraints == null)
+                if (element.Plugin.ScreenInstantiationConstraints == null)
                 {
+                    mainViewModel.WriteToMessageStrip($"denied, {element.Plugin.Name} plugin is missing ScreenInstantiationConstraints");
                     return;
                 }
 
-                if (element.Plugin.ElementScreenIntegrationConstraints.InstantiationPolicy == EBoardSDK.Enums.ElementInstantiationPolicy.OnePerScreen)
+                if (element.Plugin.ScreenInstantiationConstraints.InstantiationPolicy == EBoardSDK.Enums.InstantiationPolicy.OnePerScreen)
                 {
                     bool exists = false;
 
-                    element.EBoardViewModel.Elements.ToList().ForEach(foundelement =>
+                    element.ScreenViewModel.Elements.ToList().ForEach(foundelement =>
                     {
-                        if (element.Plugin.ElementPluginViewModel.Equals(foundelement.Plugin.ElementPluginViewModel))
+                        if (foundelement.Plugin != null && element.Plugin.PluginViewModelType.Equals(foundelement.Plugin.PluginViewModelType))
                         {
                             exists = true;
                         }
@@ -179,6 +273,8 @@ public class SDKPluginManager
 
                     if (exists)
                     {
+                        mainViewModel.WriteToMessageStrip($"{element.Plugin.Name} plugin settings forbid action, instantiation policy: {element.Plugin.ScreenInstantiationConstraints.InstantiationPolicy}, plugin detected on screen {new FluidUIDataBlockManager(element.ScreenViewModel).GetTitle()}");
+
                         return;
                     }
                 }
@@ -186,7 +282,7 @@ public class SDKPluginManager
                 element.UpdateSize();
                 element.UpdateStand();
 
-                element.EBoardViewModel.AddElement(element);
+                element.ScreenViewModel.AddElement(element);
             }
         }
     }
@@ -232,8 +328,8 @@ public class SDKPluginManager
                 catch (IOException ioex)
                 {
                     var ioexAdditionalMessage = string.Join(
-                        $"\n__{plugin.ElementPluginAssembly}\t",
-                        $"plugin load error: {plugin.PluginName}",
+                        $"\n__{plugin.PluginAssembly}\t",
+                        $"plugin load error: {plugin.Name}",
                         "ResourceDictionary path or file is corrupt");
                     Log.Error(ioex, ioexAdditionalMessage);
                 }
@@ -248,14 +344,22 @@ public class SDKPluginManager
         return plugin;
     }
 
-    internal void InvokePluginOnEboard<T>(T plugin, EBoardViewModel eBoardViewModel)
+    internal void InvokePluginNTimes<T>(T plugin, int count, ScreenViewModel eBoardViewModel)
+         where T : IPlugin?
+    {
+        for (int i = 0; i < count; i++)
+        {
+            this.InvokePluginOnEboard(plugin, eBoardViewModel);
+        }
+    }
+
+    internal void InvokePluginOnEboard<T>(T plugin, ScreenViewModel eBoardViewModel, Point? desiredPosition = null)
          where T : IPlugin?
     {
         if (eBoardViewModel != null && plugin != null)
         {
-            var elementViewModel = new ElementViewModel(eBoardViewModel);
-
-            plugin.SetEBoardAndElementViewModel(eBoardViewModel, elementViewModel);
+            var mainViewModel = eBoardViewModel.MainViewModel;
+            var elementViewModel = ElementFactory.GetElementViewModel(eBoardViewModel);
 
             var interfaces = plugin.GetType().GetInterfaces();
 
@@ -264,25 +368,27 @@ public class SDKPluginManager
             {
                 var screenpolicies = eBoardViewModel.InstantiationPolicies;
 
-                if (screenpolicies == null || screenpolicies.Contains(EBoardSDK.Enums.ElementInstantiationPolicy.ValueNotSet))
+                if (screenpolicies == null || screenpolicies.Contains(EBoardSDK.Enums.InstantiationPolicy.ValueNotSet))
                 {
+                    mainViewModel.WriteToMessageStrip($"denied, screen settings forbid action, instantiation policy: ValueNotSet");
                     return;
                 }
 
-                if (plugin.ElementScreenIntegrationConstraints == null)
+                if (plugin.ScreenInstantiationConstraints == null)
                 {
+                    mainViewModel.WriteToMessageStrip($"denied, {plugin.Name} plugin is missing ScreenInstantiationConstraints");
                     return;
                 }
 
-                if (plugin.ElementScreenIntegrationConstraints.InstantiationPolicy == EBoardSDK.Enums.ElementInstantiationPolicy.OnePerScreen)
+                if (plugin.ScreenInstantiationConstraints.InstantiationPolicy == EBoardSDK.Enums.InstantiationPolicy.OnePerScreen)
                 {
                     bool exists = false;
 
                     eBoardViewModel.Elements.ToList().ForEach(element =>
                     {
-                        if (element.Plugin.ElementPluginViewModel != null && plugin.ElementPluginViewModel != null)
+                        if (element.Plugin != null && element.Plugin.PluginViewModelType != null && plugin.PluginViewModelType != null)
                         {
-                            if (element.Plugin.ElementPluginViewModel.Equals(plugin.ElementPluginViewModel))
+                            if (element.Plugin.PluginViewModelType.Equals(plugin.PluginViewModelType))
                             {
                                 exists = true;
                             }
@@ -291,15 +397,28 @@ public class SDKPluginManager
 
                     if (exists)
                     {
+                        mainViewModel.WriteToMessageStrip($"{plugin.Name} plugin settings forbid action, instantiation policy: {plugin.ScreenInstantiationConstraints.InstantiationPolicy}, plugin instance detected on screen {new FluidUIDataBlockManager(eBoardViewModel).GetTitle()}");
+
                         return;
                     }
                 }
 
                 elementViewModel.Plugin = plugin;
 
-                elementViewModel.Plugin.SetEBoardAndElementViewModel(eBoardViewModel, elementViewModel);
+                if (elementViewModel.Plugin.GetType().BaseType == typeof(EboardPluginBaseViewModel))
+                {
+                    ((EboardPluginBaseViewModel)elementViewModel.Plugin).SetMainViewModel(elementViewModel.ScreenViewModel.MainViewModel);
+                }
 
                 elementViewModel.Plugin.RefreshInitialization();
+
+                elementViewModel.Plugin.SetElementViewModel(elementViewModel);
+
+                if (desiredPosition != null)
+                {
+                    var manager = new FluidUIStandManager(elementViewModel);
+                    manager.SetPosition((Point)desiredPosition);
+                }
 
                 eBoardViewModel.AddElement(elementViewModel);
             }
@@ -314,6 +433,8 @@ public class SDKPluginManager
         this.foundShapes.Clear();
         this.foundAreas.Clear();
         this.foundTools.Clear();
+        this.foundEboard.Clear();
+        this.foundSystem.Clear();
         this.foundUnknown.Clear();
 
         this.Initialize();
@@ -345,7 +466,6 @@ public class SDKPluginManager
             return;
         }
 
-
         var found = this.foundPlugins.Where(x => x != null && x.Equals(plugin)).FirstOrDefault();
 
         if (found == null)
@@ -371,6 +491,12 @@ public class SDKPluginManager
                 break;
             case Enums.PluginCategories.Tool:
                 this.foundTools.Remove(found);
+                break;
+            case Enums.PluginCategories.Eboard:
+                this.foundEboard.Remove(found);
+                break;
+            case Enums.PluginCategories.System:
+                this.foundSystem.Remove(found);
                 break;
             case Enums.PluginCategories.Unkown:
                 this.foundUnknown.Remove(found);
@@ -412,6 +538,12 @@ public class SDKPluginManager
                 case EBoardSDK.Enums.PluginCategories.Tool:
                     this.foundTools.Add(plugin);
                     break;
+                case EBoardSDK.Enums.PluginCategories.Eboard:
+                    this.foundEboard.Add(plugin);
+                    break;
+                case EBoardSDK.Enums.PluginCategories.System:
+                    this.foundSystem.Add(plugin);
+                    break;
                 case EBoardSDK.Enums.PluginCategories.Unkown:
                     this.foundUnknown.Add(plugin);
                     break;
@@ -446,16 +578,16 @@ public class SDKPluginManager
     {
         this.foundPlugins.Clear();
 
-        foreach (var x in this.SDKPlugins)
+        foreach (var x in this.sDKPlugins)
         {
             this.foundPlugins.Add(new PluginRepresentationItem()
             {
-                PluginCategory = x.PluginCategory,
-                PluginHeader = x.PluginHeader,
-                PluginLogo = x.PluginLogo,
-                PluginMainViewModelType = x.ElementPluginViewModel,
-                PluginName = x.PluginName,
-                ScreenConstraints = x.ElementScreenIntegrationConstraints,
+                PluginCategory = x.Category,
+                PluginHeader = x.Header,
+                PluginLogo = x.Logo,
+                PluginMainViewModelType = x.PluginViewModelType,
+                PluginName = x.Name,
+                ScreenConstraints = x.ScreenInstantiationConstraints,
             });
         }
 

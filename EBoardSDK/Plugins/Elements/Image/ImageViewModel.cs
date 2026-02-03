@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,18 +33,28 @@ namespace EBoardSDK.Plugins.Elements.Image;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardConfigManager.Enums;
-using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
+using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUISize;
+using EBoardSDK.Plugins.Elements.Link;
+using EBoardSDK.Plugins.Elements.Protocol.Models;
+using EBoardSDK.Plugins.Tools.Summoner;
 using EBoardSDK.SharedMethods;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+using Serilog;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-public partial class ImageViewModel : EBoardElementPluginBaseViewModel
+public partial class ImageViewModel : PluginBaseViewModel
 {
+    private readonly string pluginHeader = "Image Element";
+    private readonly string pluginName = "Image";
+
     private readonly string imageDataFileName = "imagedata.xml";
 
     [ObservableProperty]
@@ -60,54 +70,55 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
     [ObservableProperty]
     private double opacityValue = 1.0;
 
-    private string pluginHeader = "Image Element";
-    private string pluginName = "Image";
+    [ObservableProperty]
+    private Point ratio = new Point(1.0, 1.0);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageViewModel"/> class.
     /// </summary>
     public ImageViewModel()
     {
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.FullCopy);
+
+        this.SetMenuItemViewModel(new ImageMenuItemViewModel(this));
+        this.SetMenuItem(new ImageMenuItem(this.MenuItemViewModel!));
     }
 
     public bool IsImageNotSet => !this.IsLinked;
 
-    public override PluginCategories PluginCategory => PluginCategories.Element;
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Element;
 
-    public override ImageBrush PluginLogo { get; set; } = new();
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new();
 
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
 
-    public override string PluginHeader
-    {
-        get { return this.pluginHeader; }
-        set { this.pluginHeader = value; }
-    }
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
 
-    public override bool NoDefaultBorders { get; } = false;
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
 
-    public override string PluginName
-    {
-        get { return this.pluginName; }
-        set { this.pluginName = value; }
-    }
-
-    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
-
+    /// <inheritdoc/>
     public override ResourceDictionary ResourceDictionary => new();
 
-    public override Type? ElementPluginModel => null;
+    /// <inheritdoc/>
+    public override Type? PluginModelType => typeof(ImageModel);
 
-    public override Type ElementPluginView => typeof(ImageView);
-
-    public override Type ElementPluginViewModel => typeof(ImageViewModel);
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(ImageViewModel);
 
     public void SetLinkedFile(string path)
     {
         this.LinkFile(path);
     }
 
-    public override async Task<EBoardFeedbackMessage> Load(string path)
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
     {
         if (new DirectoryInfo(path).Exists)
         {
@@ -116,27 +127,26 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
 
         try
         {
-            var data = await Loader.LoadJsonFile<ImageModel>(path);
+            var data = await new SDKDataManager().LoadPluginContent<ImageModel>(path);
 
             if (data != null)
             {
-                this.LinkFile(data.LinkTargetPath);
+                this.ApplyModel(data);
 
-                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
+                return FeedbackMessageFactory.Success($"deserialized {path}");
             }
         }
         catch (Exception ex)
         {
-            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
+            return FeedbackMessageFactory.Exception(ex.Message);
         }
 
-        return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = string.Empty };
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(ImageModel).FullName}");
     }
 
-    public async override Task<EBoardFeedbackMessage> Save(string path)
+    /// <inheritdoc/>
+    public async override Task<EboardFeedbackMessage> Save(string path)
     {
-        EBoardFeedbackMessage? serializationResult = null;
-
         var model = new ImageModel() { LinkTargetPath = this.LinkTargetPath };
 
         if (new DirectoryInfo(path).Exists)
@@ -144,28 +154,94 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
             path = System.IO.Path.Combine(path, this.imageDataFileName);
         }
 
-        var result = Saver.SaveJsonFile(path, model);
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
 
-        return new EBoardFeedbackMessage()
+    /// <inheritdoc/>
+    public override void InsertModel<T>(T model)
+    {
+        if (model == null)
         {
-            ResultMessage = $"{path} :: saving eboard config: {result}",
-            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
-        };
+            return;
+        }
+
+        if (model is ImageModel imageModel)
+        {
+            this.ApplyModel(imageModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<ImageModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            this.Reset();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            this.Reset();
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new ImageModel(this);
+
+        this.SetModel(model);
+    }
+
+    internal void ResetImage()
+    {
+        this.IsLinked = false;
+        this.ImageBrush = null;
     }
 
     private void ApplyImage()
     {
-        var shared = new SharedMethod_UI();
         try
         {
-            this.ImageBrush = (ImageBrush)shared.ChangeBackgroundToImage(this.ImageBrush, this.LinkTargetPath);
+            var brush = FluidUIDesignDefaultPropertyFactory.GetImageBrush(this.LinkTargetPath);
 
-            this.IsLinked = true;
+            if (brush is ImageBrush)
+            {
+                this.ImageBrush = brush as ImageBrush;
+
+                this.IsLinked = true;
+            }
+
+            if (this.ElementViewModel == null)
+            {
+                return;
+            }
+
+            var manager = new FluidUISizeManager(this.ElementViewModel);
+
+            manager.SetWidth(50);
+            manager.SetHeight(50);
         }
         catch (Exception)
         {
             this.IsLinked = false;
         }
+    }
+
+    private void ApplyModel(ImageModel imageModel)
+    {
+        this.LinkFile(imageModel.LinkTargetPath ?? string.Empty);
     }
 
     private void LinkFile(string fileName)
@@ -189,14 +265,54 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
 
     partial void OnOpacityValueChanged(double value)
     {
+        if (this.ImageBrush == null)
+        {
+            return;
+        }
+
         this.ImageBrush.Opacity = value;
+    }
+
+    partial void OnRatioChanged(Point value)
+    {
+        if (this.ElementViewModel == null || this.ElementViewModel.ElementView == null)
+        {
+            return;
+        }
+
+        var manager = new FluidUISizeManager(this.ElementViewModel);
+
+        var width = manager.GetWidth();
+        var height = manager.GetHeight();
+
+        if (width == -1)
+        {
+            var actual = this.ElementViewModel.ElementView.ActualWidth;
+
+            width = (int)actual;
+        }
+
+        if (height == -1)
+        {
+            var actual = this.ElementViewModel.ElementView.ActualHeight;
+
+            height = (int)actual;
+        }
+
+        var sizeX = width * value.X;
+
+        var sizeY = height * value.Y;
+
+        manager.SetWidth(sizeX);
+        manager.SetHeight(sizeY);
+
+        this.Ratio = new Point(1, 1);
     }
 
     [RelayCommand]
     private void Reset()
     {
-        this.IsLinked = false;
-        this.ImageBrush = null;
+        this.ResetImage();
     }
 
     [RelayCommand]

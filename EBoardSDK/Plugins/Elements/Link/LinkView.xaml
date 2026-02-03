@@ -10,19 +10,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -54,16 +54,11 @@
         <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
             <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="0 0 10 0"/>
         </Style>
 
         <Style TargetType="Button">
-            <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
 
             <Setter Property="Template">
                 <Setter.Value>
@@ -96,10 +91,61 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        
+        <Style TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
 
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="DefaultButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="3"                            
+                                CornerRadius="5" 
+                                MinWidth="50"
+                                MinHeight="25"
+                                Margin="5"
+                                Padding="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background"
+                                    TargetName="DefaultButtonBorder"
+                                    Value="{Binding ElementViewModel.FluidUI.Design.Highlight}"/>
+                                <!--<Setter Property="Foreground"
+                                        Value="{Binding MainViewModel.FluidUI.Design.Highlight}"/>-->
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
         <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
             <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border}"/>
-            <Setter Property="BorderThickness" Value="3"/>
             <Setter Property="TextBlock.Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
             <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
             <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
@@ -200,20 +246,24 @@
             </Button.InputBindings>
 
             <Button.ToolTip>
-                <ToolTip Content="{Binding LinkTargetPath, NotifyOnSourceUpdated=True}"/>
+                <ToolTip Content="{Binding ToolTipContent, NotifyOnSourceUpdated=True}"
+                         Visibility="{Binding HideToolTip, Converter={StaticResource InverseVisibilityToCollapsed}}"/>
             </Button.ToolTip>
 
             <Button.Content>
                 <Border  Margin="5"  HorizontalAlignment="Stretch">
-                    <Border.ContextMenu>
+                    <!--<Border.ContextMenu>
                         <ContextMenu Background="{Binding ElementViewModel.FluidUI.Design.Background}"
                                      Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
                                      BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
                                      Style="{StaticResource ContextMenuStyle}">
                             <MenuItem Header="{Binding EditText, NotifyOnSourceUpdated=True}" Style="{StaticResource menuitem}"
                             Command="{Binding EditLinkTargetNameCommand}"/>
+
+                            <ToggleButton Content="extended tooltip"
+                                          IsChecked="{Binding ExtendedToolTip}"/>
                         </ContextMenu>
-                    </Border.ContextMenu>
+                    </Border.ContextMenu>-->
 
                     <Grid >
                         <Grid.RowDefinitions>

@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -35,28 +35,53 @@ using EBoardSDK.Controls.FluidUIDataBlock.FluidUIIndexText;
 using EBoardSDK.Controls.FluidUIDataBlock.FluidUIKeyText;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
+using EBoardSDK.Interfaces.FluidUIDataBlock;
 using EBoardSDK.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
+/// <summary>
+/// This class is tasked with manipulation of <see cref="IFluidUIDataBlockModel"/> instances
+/// and has getter and setter methods that get values or apply changes. It requires an
+/// instance of a <see cref="FluidUIBaseViewModel"/> and will manipulate the font model
+/// within its <see cref="IFluidUIContext"/>.
+/// </summary>
 internal class FluidUIDataBlockManager : IFluidUIManager
 {
-    private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIBaseViewModel viewModel;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUIDataBlockManager"/> class.
     /// </summary>
     /// <param name="viewModel"></param>
-    internal FluidUIDataBlockManager(EboardFluidUIBaseViewModel viewModel)
+    internal FluidUIDataBlockManager(FluidUIBaseViewModel viewModel)
     {
         this.viewModel = viewModel;
     }
 
-    public void Reset()
+    /// <summary>
+    /// Resets FluidUI-DataBlock properties to initial values
+    /// and updates EboardFluidUIBaseViewModel.
+    /// </summary>
+    /// <param name="calledByIFluidUIContextManager"></param>
+    public void Reset(bool calledByIFluidUIContextManager = false)
     {
         this.viewModel.FluidUI.DataBlock?.SetInitialValues();
+
+        this.ClearIndexTextList();
+        this.ClearKeyTextList();
+        this.ClearTextAndTitle();
+        this.SetInitialIndexTextQuadValues();
+        this.SetInitialKeyTextQuadValues();
+        this.SetShowToolTip(true);
+
+        if (!calledByIFluidUIContextManager)
+        {
+            this.viewModel.SetFluidUIByUser(this.viewModel.FluidUI);
+        }
 
         this.viewModel.UpdateDataBlock();
     }
@@ -153,6 +178,16 @@ internal class FluidUIDataBlockManager : IFluidUIManager
         }
 
         return null;
+    }
+
+    internal List<FluidUIIndexText>? GetIndexTextList()
+    {
+        return this.viewModel.FluidUI.DataBlock?.IndexTextList;
+    }
+
+    internal List<FluidUIKeyText>? GetKeyTextList()
+    {
+        return this.viewModel.FluidUI.DataBlock?.KeyTextList;
     }
 
     internal ObservableCollection<FluidUIIndexTextViewModel>? GetFluidUIIndexTextViewModelObservableCollection()
@@ -314,6 +349,11 @@ internal class FluidUIDataBlockManager : IFluidUIManager
     {
         this.SetTitle(title);
         this.SetText(text);
+    }
+
+    internal void UndoLastFluidUIChange()
+    {
+        this.viewModel.ResetFluidUIToPrevious();
     }
 
     private int AddFluidUIIndexTextToList()

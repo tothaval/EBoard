@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -40,15 +40,13 @@ namespace EBoardSDK.Models.FluidUISize;
 using EBoardSDK.Interfaces.FluidUISize;
 using System.Windows;
 
+/// <summary>
+/// Provides properties for FluidUI-Size logic
+/// and is the model class for state serialization
+/// or deserialization.
+/// </summary>
 public class FluidUISizeModel : IFluidUISizeModel
 {
-    private CornerRadius cornerRadius = default;
-    private Thickness borderThickness = default;
-    private Thickness padding = default;
-    private Thickness margin = default;
-    private double width = double.NaN;
-    private double height = double.NaN;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUISizeModel"/> class.
     /// </summary>
@@ -56,99 +54,62 @@ public class FluidUISizeModel : IFluidUISizeModel
     {
     }
 
+    /// <inheritdoc/>
     public event Action? PropertyChangedEvent;
 
-    public double Width
-    {
-        get
-        {
-            return this.width;
-        }
+    /// <inheritdoc/>
+    public double Width { get; set; } = double.NaN;
 
-        set
-        {
-            this.width = value;
-        }
-    }
+    /// <inheritdoc/>
+    public double Height { get; set; } = double.NaN;
 
-    public double Height
-    {
-        get
-        {
-            return this.height;
-        }
+    /// <inheritdoc/>
+    public double ScaleX { get; set; } = 1.0;
 
-        set
-        {
-            this.height = value;
-        }
-    }
+    /// <inheritdoc/>
+    public double ScaleY { get; set; } = 1.0;
 
-    public Thickness Margin
-    {
-        get
-        {
-            return this.margin;
-        }
+    /// <inheritdoc/>
+    public Thickness Margin { get; set; } = new Thickness(5);
 
-        set
-        {
-            this.margin = value;
-        }
-    }
+    /// <inheritdoc/>
+    public Thickness Padding { get; set; } = new Thickness(5);
 
-    public Thickness Padding
-    {
-        get
-        {
-            return this.padding;
-        }
+    /// <inheritdoc/>
+    public Thickness BorderThickness { get; set; } = new Thickness(2, 2, 2, 2);
 
-        set
-        {
-            this.padding = value;
-        }
-    }
+    /// <inheritdoc/>
+    public CornerRadius CornerRadius { get; set; } = new CornerRadius(5, 5, 5, 5);
 
-    public Thickness BorderThickness
-    {
-        get
-        {
-            return this.borderThickness;
-        }
-
-        set
-        {
-            this.borderThickness = value;
-        }
-    }
-
-    public CornerRadius CornerRadius
-    {
-        get
-        {
-            return this.cornerRadius;
-        }
-
-        set
-        {
-            this.cornerRadius = value;
-        }
-    }
-
+    /// <inheritdoc/>
     public void Dispose()
     {
     }
 
+    /// <inheritdoc/>
     public void SetInitialValues()
     {
         this.Width = double.NaN;
         this.Height = double.NaN;
 
+        this.ScaleX = 1.0;
+        this.ScaleY = 1.0;
+
         this.Margin = new Thickness(5);
         this.Padding = new Thickness(5);
         this.BorderThickness = new Thickness(2, 2, 2, 2);
         this.CornerRadius = new CornerRadius(5, 5, 5, 5);
+    }
+
+    /// <inheritdoc/>
+    public void UpdateValues()
+    {
+        this.InvokePropertyChangedEvent();
+    }
+
+    private void InvokePropertyChangedEvent()
+    {
+        this.PropertyChangedEvent?.Invoke();
     }
 }
 

@@ -37,6 +37,7 @@ namespace EBoard;
 
 using CommunityToolkit.Mvvm.DependencyInjection;
 using EBoardSDK;
+using EBoardSDK.Utilities.Factories;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.IO;
@@ -74,8 +75,8 @@ public partial class App : Application
 
         Window window = new Window()
         {
-            Background = new SolidColorBrush(Colors.Transparent),
-            Foreground = new SolidColorBrush(Colors.Transparent),
+            Background = FluidUIDesignDefaultPropertyFactory.TransparentSolidColorBrush,
+            Foreground = FluidUIDesignDefaultPropertyFactory.TransparentSolidColorBrush,
             AllowsTransparency = true,
             WindowStyle = WindowStyle.None,
             Left = -50,

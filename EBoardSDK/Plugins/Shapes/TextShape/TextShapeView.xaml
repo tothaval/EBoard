@@ -10,19 +10,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -54,15 +54,11 @@
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="0 0 10 0"/>
         </Style>
 
         <Style TargetType="Button">
-            <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderThickness" Value="3"/>
 
             <Setter Property="Template">
                 <Setter.Value>
@@ -110,7 +106,6 @@
 
         <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border}"/>
-            <Setter Property="BorderThickness" Value="3"/>
             <Setter Property="TextBlock.Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
             <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Background}"/>
@@ -152,68 +147,20 @@
                          Style="{StaticResource ContextMenuStyle}">
 
                 <TextBlock Text="{Binding ViewModel.FluidUI.DataBlock.Title, NotifyOnSourceUpdated=True}"/>
-
-                <MenuItem Header="Duplicate"
+            
+                <MenuItem Header="Shape"
                           Style="{StaticResource menuitem}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Text="{Binding DuplicationCount, UpdateSourceTrigger=Default, Delay=5}"
-                             Grid.Column="0"/>
-                        <Button Content="Duplicate"
-                                Command="{Binding DuplicateNTimesCommand}"
-                                Grid.Column="1"/>
-                    </Grid>
-                </MenuItem>
-
-                <MenuItem Header="Edit"
-                          Style="{StaticResource menuitem}">
-                    <MenuItem Header="Text"
+                    <MenuItem Header="Edit Text"
                               Command="{Binding EditTextCommand}" 
                               Style="{StaticResource menuitem}"/>
 
-                    <MenuItem Header="Scale"
-                        Style="{StaticResource menuitem}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition Height="auto"/>
-                            </Grid.RowDefinitions>
-
-                            <TextBox Text="{Binding ScaleX, UpdateSourceTrigger=Default, Delay=5}"
-                               Width="100"
-                               Grid.Column="0"
-                               Grid.Row="0"/>
-
-                            <Slider Value="{Binding ScaleX, UpdateSourceTrigger=PropertyChanged, Delay=1}"
-                              Grid.Column="1"
-                              Grid.Row="0"/>
-
-                            <TextBox Text="{Binding ScaleY, UpdateSourceTrigger=Default, Delay=5}"
-                               Width="100"
-                               Grid.Column="0"
-                               Grid.Row="1"/>
-
-                            <Slider Value="{Binding ScaleY, UpdateSourceTrigger=PropertyChanged, Delay=1}"
-                              Grid.Column="1"
-                              Grid.Row="1"/>
-                        </Grid>
-                    </MenuItem>
-                </MenuItem>
-
-                <esdkfuim:FluidUIMenuView DataContext="{Binding ViewModel.FluidUIMenuViewModel, NotifyOnSourceUpdated=True}"
-                                          Style="{StaticResource menuitem}"/>
-
-                <MenuItem Header="Delete"
+                    <MenuItem Header="Delete"
                           Command="{Binding DeleteElementCommand}"
                           Style="{StaticResource menuitem}"/>
+                </MenuItem>
+          
+                <esdkfuim:FluidUIMenuView DataContext="{Binding ViewModel.FluidUIMenuViewModel, NotifyOnSourceUpdated=True}"
+                                          Style="{StaticResource menuitem}"/>
             </ContextMenu>
         </Grid.ContextMenu>
 
@@ -330,8 +277,13 @@
 
         <Border Background="{Binding ViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"
                 BorderBrush="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"
-                Visibility="{Binding ResetText, Converter={StaticResource VisibilityToCollapsed}}"
-                Padding="10">
+                BorderThickness="{Binding ViewModel.FluidUI.Size.BorderThickness}"
+                Padding="{Binding ViewModel.FluidUI.Size.Padding}"
+                
+                Width="{Binding ViewModel.FluidUI.Size.Width}"
+                Height="{Binding ViewModel.FluidUI.Size.Height}"
+                
+                Visibility="{Binding ResetText, Converter={StaticResource VisibilityToCollapsed}}">
             <Grid >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

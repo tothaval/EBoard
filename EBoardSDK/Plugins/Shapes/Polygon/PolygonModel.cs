@@ -1,0 +1,69 @@
+﻿// <copyright file="PolygonModel.cs" company=".">
+// Stephan Kammel
+// </copyright>
+/// license
+///
+/// <b>ad-hoc license terms eboard prototype</b><br>
+/// <br>
+/// <br>
+/// contact: kammel@posteo.de
+/// <br>
+/// <p>
+/// until a license has been chosen, you may
+/// use the software or parts of it under the following conditions:<br><br>
+/// 1.)
+/// If you want to distribute or use the source code or a derived binary
+/// of the EBoard project for commercial purposes, you need to contact
+/// the project team for authorization and payment details.
+/// You may use the source or a derived binary for non commercial
+/// purposes free of charge. In order to do so, copy this adhoc terms
+/// and a link to the repository to any source code file that uses code
+/// derived from this project and to the folder that holds the compiled source code.
+///
+/// 2.)
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+/// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+/// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+/// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+/// OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+/// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+/// OTHER DEALINGS IN THE SOFTWARE.
+/// </p>
+namespace EBoardSDK.Plugins.Shapes.Polygon;
+
+using EBoardSDK.Models;
+using System.Collections.ObjectModel;
+using System.Windows;
+
+/// <summary>
+/// Serializable data model for <see cref="PolygonView"/>.
+/// </summary>
+public class PolygonModel
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PolygonModel"/> class.
+    /// </summary>
+    public PolygonModel()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PolygonModel"/> class.
+    /// </summary>
+    /// <param name="polygonViewModel">Desired is the instance that has to be stored.</param>
+    public PolygonModel(PolygonViewModel polygonViewModel)
+    {
+        this.Points = polygonViewModel.Points;
+        this.PolygonReady = polygonViewModel.PolygonReady;
+
+        this.FluidUIContext = (FluidUIContext)polygonViewModel.ViewModel.FluidUI;
+    }
+
+    public bool PolygonReady { get; set; }
+
+    public ObservableCollection<Point> Points { get; set; }
+
+    public FluidUIContext FluidUIContext { get; set; } = new FluidUIContext();
+}
+
+// EOF

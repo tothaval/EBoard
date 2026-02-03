@@ -8,13 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Controls\BrushSetup\RadialBrushSetup\RadialBrushSetupView.xaml~RFc7f64e.TMP" />
-    <None Remove="Plugins\Elements\Gold\yellow-1845394.jpg" />
-    <None Remove="stylecop.json" />
-    <None Remove="ViewModels\ElementViewModel.cs~RF2ba99c.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
 
@@ -34,6 +27,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\FluidUIDataBlock\FluidUIDataBlockSetupMenuItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FluidUIDesign\FluidUIDesignSetupMenuItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FluidUIFont\FluidUIFontSetupMenuItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FluidUISize\FluidUISizeSetupMenuItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FluidUIStand\FluidUIStandSetupMenuItem.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Plugins\Elements\BasicAV\BasicAVMainView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -52,13 +60,13 @@
     <Compile Update="Plugins\Elements\EmptyRadial\EmptyRadialView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Plugins\Tools\Summoner\SummonerView.xaml.cs">
+    <Compile Update="Plugins\Eboard\Summoner\SummonerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Plugins\Tools\UptimeTimer\UptimeTimerView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\EBoardBrowserView.xaml.cs">
+    <Compile Update="Views\NavigationContextView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\EBoardView.xaml.cs">
@@ -67,34 +75,20 @@
     <Compile Update="Views\ElementView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\MainWindowLogoutBar.xaml.cs">
+    <Compile Update="Plugins\Eboard\LogOutBar\LogOutBarView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\MainWindowMenuBar.xaml.cs">
+    <Compile Update="Plugins\Eboard\MenuBar\MenuBarView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\SplashScreen.xaml.cs">
+    <Compile Update="Windows\SplashScreen.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Plugins\Addons\Snake\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Plugins\Elements\Gold\yellow-1845394.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Plugins\Elements\Gold\gold-textur-tapete.jpg">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Update="Plugins\Elements\Gold\metallischer-goldhintergrund.jpg">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
+    <Folder Include="Plugins\System\" />
   </ItemGroup>
 
 </Project>

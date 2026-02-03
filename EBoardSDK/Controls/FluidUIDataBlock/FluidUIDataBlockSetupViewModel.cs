@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -52,8 +52,12 @@ using System.Collections.ObjectModel;
 /// </summary>
 public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUIDataBlockSetup
 {
-    private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIBaseViewModel viewModel;
     private FluidUIDataBlockManager fluidUIDataBlockManager;
+
+    private FluidUIStandSettings fluidUIStandSettings = FluidUIStandSettings.NoStandContextArea;
+
+    private bool templateCreation;
 
     private FluidUISelectionViewModel loadSelectionViewModel;
     private FluidUISelectionViewModel saveSelectionViewModel;
@@ -98,9 +102,13 @@ public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUI
     /// Initializes a new instance of the <see cref="FluidUIDataBlockSetupViewModel"/> class.
     /// </summary>
     /// <param name="eboardFluidUIBaseViewModel"></param>
-    public FluidUIDataBlockSetupViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel)
+    /// <param name="fluidUIStandSettings"></param>
+    /// <param name="templateCreation"></param>
+    public FluidUIDataBlockSetupViewModel(FluidUIBaseViewModel eboardFluidUIBaseViewModel, FluidUIStandSettings fluidUIStandSettings, bool templateCreation)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
+        this.fluidUIStandSettings = fluidUIStandSettings;
+        this.templateCreation = templateCreation;
 
         this.fluidUIDataBlockManager = new FluidUIDataBlockManager(this.ViewModel);
 
@@ -108,109 +116,53 @@ public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUI
         this.saveSelectionViewModel = new FluidUISelectionViewModel(this.ViewModel, this.SaveFluidUIConfiguration);
 
         this.Setup();
-
-        this.OnPropertyChanged(nameof(this.InverseIndexTextListIsEmpty));
-        this.OnPropertyChanged(nameof(this.InverseKeyTextListIsEmpty));
-        this.OnPropertyChanged(nameof(this.QuadIndexTexts));
-        this.OnPropertyChanged(nameof(this.QuadKeyTexts));
-
-        this.OnPropertyChanged(nameof(this.LoadSelectionViewModel));
-        this.OnPropertyChanged(nameof(this.SaveSelectionViewModel));
-
-        this.OnPropertyChanged(nameof(this.ViewModel));
     }
 
-    public event Action PropertyChangedEvent;
+    /// <inheritdoc/>
+    public event Action? PropertyChangedEvent;
+
+    public bool HasStand => !(this.fluidUIStandSettings == FluidUIStandSettings.NoStandContextArea);
+
+    public bool TemplateCreation => this.templateCreation;
 
     public FluidUISelectionViewModel LoadSelectionViewModel => this.loadSelectionViewModel;
 
     public FluidUISelectionViewModel SaveSelectionViewModel => this.saveSelectionViewModel;
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
 
     public bool InverseIndexTextListIsEmpty => this.FluidUIIndexTexts.Count != 0;
 
     public bool InverseKeyTextListIsEmpty => this.FluidUIKeyTexts.Count != 0;
 
+    /// <inheritdoc/>
     public void Dispose()
     {
     }
 
+    /// <inheritdoc/>
     public void SetInitialValues()
     {
     }
 
-    private IFluidUIContext ApplyConfigurationTargetOnDeepCopy()
+    /// <inheritdoc/>
+    public void UpdateValues()
     {
-        var manager = new FluidUIDeepCopyManager();
-        var copy = manager.DeepCopyIFluidUIContext(this.ViewModel.FluidUI);
-
-        this.ProcessConfigurationTarget(copy, this.SaveSelectionViewModel.ConfigurationTarget);
-
-        return copy;
-    }
-
-    private void ProcessConfigurationTarget(IFluidUIContext fluiduiconfig, ConfigurationTargets configurationTarget)
-    {
-        if (configurationTarget != ConfigurationTargets.All)
-        {
-            if (configurationTarget != ConfigurationTargets.DataBlock)
-            {
-                fluiduiconfig.DataBlock = null;
-            }
-
-            if (configurationTarget != ConfigurationTargets.Design)
-            {
-                fluiduiconfig.Design = null;
-            }
-
-            if (configurationTarget != ConfigurationTargets.Font)
-            {
-                fluiduiconfig.Font = null;
-            }
-
-            if (configurationTarget != ConfigurationTargets.Size)
-            {
-                fluiduiconfig.Size = null;
-            }
-
-            if (configurationTarget != ConfigurationTargets.Stand)
-            {
-                fluiduiconfig.Stand = null;
-            }
-        }
+        this.Setup();
     }
 
     private async void LoadFluidUIConfiguration()
     {
-        var folder = "eboard/fluidui/";
-        var helper = new SharedMethod_UI();
+        var manager = new FluidUIContextManager(this.ViewModel);
 
-        var filename = await helper.GetFileToLoad(folder, $"files (*.{helper.FluidUIConfigurationFileExtension})|*.{helper.FluidUIConfigurationFileExtension}");
-
-        if (filename != null && Loader.FileExists(filename))
-        {
-            var fluiduiconfig = await Loader.LoadJsonFile<FluidUIContext>(filename);
-
-            if (fluiduiconfig != null)
-            {
-                this.ProcessConfigurationTarget(fluiduiconfig, this.LoadSelectionViewModel.ConfigurationTarget);
-
-                fluiduiconfig.Design?.LoadBrushesFromColorData();
-
-                this.viewModel.SetFluidUI(fluiduiconfig);
-            }
-        }
+        await manager.LoadFluidUIConfiguration(this.LoadSelectionViewModel);
     }
 
     private async void SaveFluidUIConfiguration()
     {
-        var copy = this.ApplyConfigurationTargetOnDeepCopy();
+        var manager = new FluidUIContextManager(this.ViewModel);
 
-        var helper = new SharedMethod_UI();
-        var path = await new SharedMethod_UI().SetSaveFileName(helper.FluidUIConfigurationFileExtension);
-
-        _ = Saver.SaveJsonFile(path, copy);
+        await manager.SaveFluidUIConfiguration(this.SaveSelectionViewModel);
     }
 
     private void Setup()
@@ -243,6 +195,18 @@ public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUI
         this.QuadKeyTexts = this.fluidUIDataBlockManager.GetKeyTextQuadViewModels();
 
         this.SelectedKeyTextQuadValue = this.QuadKeyTexts.FirstOrDefault()!;
+
+        this.OnPropertyChanged(nameof(this.InverseIndexTextListIsEmpty));
+        this.OnPropertyChanged(nameof(this.InverseKeyTextListIsEmpty));
+        this.OnPropertyChanged(nameof(this.QuadIndexTexts));
+        this.OnPropertyChanged(nameof(this.QuadKeyTexts));
+
+        this.OnPropertyChanged(nameof(this.LoadSelectionViewModel));
+        this.OnPropertyChanged(nameof(this.SaveSelectionViewModel));
+
+        this.OnPropertyChanged(nameof(this.HasStand));
+        this.OnPropertyChanged(nameof(this.TemplateCreation));
+        this.OnPropertyChanged(nameof(this.ViewModel));
     }
 
     partial void OnShowToolTipChanged(bool value)
@@ -275,6 +239,67 @@ public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUI
         this.OnPropertyChanged(nameof(this.FluidUIIndexText));
 
         this.OnPropertyChanged(nameof(this.InverseIndexTextListIsEmpty));
+    }
+
+    [RelayCommand]
+    private void CopyConfiguration()
+    {
+        var mainViewModel = this.ViewModel as MainViewModel;
+        var navigation = this.ViewModel as NavigationContextViewModel;
+        var screen = this.ViewModel as ScreenViewModel;
+        var element = this.ViewModel as ElementViewModel;
+
+        if (navigation != null)
+        {
+            mainViewModel = navigation.MainViewModel;
+        }
+
+        if (screen != null)
+        {
+            mainViewModel = screen.MainViewModel;
+        }
+
+        if (element != null)
+        {
+            mainViewModel = element.ScreenViewModel.MainViewModel;
+        }
+
+        var manager = new FluidUIContextManager(this.ViewModel);
+        var copy = manager.GetCustomFluidUIConfiguration(this.LoadSelectionViewModel);
+
+        mainViewModel?.LoadIFluidUIContextCopy(copy);
+    }
+
+    [RelayCommand]
+    private void PasteConfiguration(object? parameter)
+    {
+        var mainViewModel = this.ViewModel as MainViewModel;
+        var navigation = this.ViewModel as NavigationContextViewModel;
+        var screen = this.ViewModel as ScreenViewModel;
+        var element = this.ViewModel as ElementViewModel;
+
+        if (navigation != null)
+        {
+            mainViewModel = navigation.MainViewModel;
+        }
+
+        if (screen != null)
+        {
+            mainViewModel = screen.MainViewModel;
+        }
+
+        if (element != null)
+        {
+            mainViewModel = element.ScreenViewModel.MainViewModel;
+        }
+
+        if (mainViewModel != null && mainViewModel.FluidUIContextCopy != null)
+        {
+            var manager = new FluidUIContextManager(this.ViewModel);
+            var copy = manager.GetCustomFluidUIContextCopy(this.LoadSelectionViewModel, mainViewModel.FluidUIContextCopy);
+
+            this.ViewModel.SetFluidUIByUser(copy);
+        }
     }
 
     [RelayCommand]
@@ -390,6 +415,12 @@ public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUI
     private void ResetDataBlockTextAndTitle()
     {
         this.fluidUIDataBlockManager.SetupTitleAndText("fluid ui context", "fluid ui context description");
+    }
+
+    [RelayCommand]
+    private void ResetConfigurationToPrevious()
+    {
+        this.fluidUIDataBlockManager.UndoLastFluidUIChange();
     }
 }
 

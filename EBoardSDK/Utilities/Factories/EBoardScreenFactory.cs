@@ -1,4 +1,4 @@
-﻿// <copyright file="EBoardScreenFactory.cs" company=".">
+﻿// <copyright file="EboardScreenFactory.cs" company=".">
 // Stephan Kammel
 // </copyright>
 /// license
@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -39,82 +39,9 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 
-public static class EBoardScreenFactory
+public static class EboardScreenFactory
 {
-    public static EBoardViewModel GetEBoardViewModelByEboardScreen(EboardScreen eboardScreen, MainViewModel mainViewModel)
-    {
-        if (eboardScreen.EBoardScreenContext == null)
-        {
-            eboardScreen.EBoardScreenContext = new FluidUIContext();
-            eboardScreen.EBoardScreenContext.SetInitialValues();
-        }
-
-        var eBoardViewModel = new EBoardViewModel(mainViewModel, eboardScreen);
-
-        ObservableCollection<ElementViewModel> elementViewModels = [];
-
-        eboardScreen.Elements.Select(x => x).ToList().ForEach(
-        async element =>
-        {
-            ElementViewModel elementViewModel = new ElementViewModel(eBoardViewModel, element);
-
-            Type? type_PluginViewModel = Type.GetType(element.AssemblyName);
-
-            if (type_PluginViewModel != null)
-            {
-                EBoardElementPluginBaseViewModel? externalPlugin = Activator.CreateInstance(type_PluginViewModel) as EBoardElementPluginBaseViewModel;
-
-                if (externalPlugin != null)
-                {
-                    externalPlugin.SetEBoardAndElementViewModel(eBoardViewModel, elementViewModel);
-
-                    externalPlugin.RefreshInitialization();
-
-                    externalPlugin.PluginHeader = element.PluginHeader;
-
-                    var contentPath = element.ContentFilePath;
-
-                    if (!string.IsNullOrWhiteSpace(contentPath))
-                    {
-                        await externalPlugin.Load(contentPath);
-                    }
-
-                    try
-                    {
-                        var app = Application.Current;
-
-                        app?.Resources?.MergedDictionaries?.Add(externalPlugin.ResourceDictionary);
-
-                        elementViewModel.Plugin = externalPlugin;
-                    }
-                    catch (IOException ioex)
-                    {
-                        var ioexAdditionalMessage = string.Join(
-                            $"\n__{type_PluginViewModel}\t",
-                            $"plugin load error: {externalPlugin.PluginName}",
-                            "ResourceDictionary path or file is corrupt");
-
-                        Log.Error(ioex, ioexAdditionalMessage);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(ex, "unhandled exception");
-                        throw;
-                    }
-                }
-            }
-
-            elementViewModel.Redraw();
-
-            elementViewModels.Add(elementViewModel);
-        });
-
-        eBoardViewModel.Elements = elementViewModels;
-
-        return eBoardViewModel;
-    }
-
-    public static EboardScreen GetNewEboardScreen(string name, int depth, double width, double height)
+    internal static EboardScreen GetEboardScreen(string name, int depth, double width, double height)
     {
         var fluidui = new FluidUIContext();
         fluidui.SetInitialValues();
@@ -137,9 +64,78 @@ public static class EBoardScreenFactory
 
         return new EboardScreen
         {
-            EBID = $"EBoard_{DateTime.Now.Ticks}",
+            EBID = new EboardIdFactory().GetScreenId(),
             EBoardScreenContext = fluidui,
         };
+    }
+
+    internal static ScreenViewModel GetScreenViewModel(MainViewModel mainViewModel, EboardScreen? eboardScreen = null)
+    {
+        if (eboardScreen == null)
+        {
+            return new ScreenViewModel(mainViewModel, GetEboardScreen("default", 100, 640, 320));
+        }
+
+        var screenViewModel = MapEboardScreenDataToScreenViewModel(mainViewModel, eboardScreen);
+
+        return screenViewModel;
+    }
+
+    private static ScreenViewModel MapEboardScreenDataToScreenViewModel(MainViewModel mainViewModel, EboardScreen eboardScreen)
+    {
+        var screenViewModel = new ScreenViewModel(mainViewModel, eboardScreen);
+
+        eboardScreen.Elements.Select(x => x).ToList().ForEach(
+        async element =>
+        {
+            ElementViewModel elementViewModel = ElementFactory.GetElementViewModel(screenViewModel, element);
+
+            Type? pluginType = Type.GetType(element.AssemblyName);
+
+            if (pluginType != null)
+            {
+                if (Activator.CreateInstance(pluginType) is PluginBaseViewModel externalPlugin)
+                {
+                    externalPlugin.SetElementViewModel(elementViewModel);
+
+                    var contentPath = element.ContentFilePath;
+
+                    if (!string.IsNullOrWhiteSpace(contentPath))
+                    {
+                        await externalPlugin.Load(contentPath);
+                    }
+
+                    try
+                    {
+                        var app = Application.Current;
+
+                        app?.Resources?.MergedDictionaries?.Add(externalPlugin.ResourceDictionary);
+
+                        elementViewModel.Plugin = externalPlugin;
+                    }
+                    catch (IOException ioex)
+                    {
+                        var ioexAdditionalMessage = string.Join(
+                            $"\n__{pluginType}\t",
+                            $"plugin load error: {externalPlugin.Name}",
+                            "ResourceDictionary path or file is corrupt");
+
+                        Log.Error(ioex, ioexAdditionalMessage);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "unhandled exception");
+                        throw;
+                    }
+                }
+
+                elementViewModel.Redraw();
+
+                screenViewModel.AddElement(elementViewModel);
+            }
+        });
+
+        return screenViewModel;
     }
 }
 

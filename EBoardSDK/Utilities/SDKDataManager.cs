@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -34,11 +34,15 @@ namespace EBoardSDK.Utilities;
 using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardConfigManager.Models;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUIDataBlock;
+using EBoardSDK.Models.FluidUIDesign;
 using EBoardSDK.Plugins;
-using EBoardSDK.Plugins.Elements.About;
-using EBoardSDK.Plugins.Elements.Manual;
+using EBoardSDK.Plugins.Eboard.About;
+using EBoardSDK.Plugins.Eboard.Manual;
+using EBoardSDK.Utilities.Factories;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -60,6 +64,63 @@ public class SDKDataManager
     public SDKDataManager()
     {
         this.Initialize();
+    }
+
+    internal static IFluidUIContext DefaultFluidUIContext => new FluidUIContext() { DataBlock = new FluidUIDataBlockModel() { Title = "default" } };
+
+    internal SupportedFileTypeCategories filenameCheck(FileInfo fileInfo)
+    {
+        // TODO implement mime check or something better suited
+        SupportedFileTypeCategories fileTypeCategory = SupportedFileTypeCategories.Unknown;
+
+        if (fileInfo.Extension.Equals(".stf"))
+        {
+            return SupportedFileTypeCategories.Eboard;
+        }
+
+        if (fileInfo.Extension.Equals(".edf")
+            || fileInfo.Extension.Equals(".fcf"))
+        {
+            return SupportedFileTypeCategories.FluidUI;
+        }
+
+        if (fileInfo.Extension.Equals(".png")
+            || fileInfo.Extension.Equals(".jpg")
+            || fileInfo.Extension.Equals(".jpeg"))
+        {
+            return SupportedFileTypeCategories.Image;
+        }
+
+        if (fileInfo.Extension.Equals(".dll")
+            || fileInfo.Extension.Equals(".pif"))
+        {
+            return SupportedFileTypeCategories.Plugin;
+        }
+
+        if (fileInfo.Extension.Equals(".wav")
+            || fileInfo.Extension.Equals(".mpeg")
+            || fileInfo.Extension.Equals(".mp3"))
+        {
+            return SupportedFileTypeCategories.Sound;
+        }
+
+        return fileTypeCategory;
+    }
+
+    public async Task<T?> LoadPluginContent<T>(string path)
+    {
+        var data = await Loader.LoadJsonFile<T>(path);
+
+        return data;
+    }
+
+    public async Task<EboardFeedbackMessage> SavePluginContent<T>(T model, string path)
+    {
+        var result = Saver.SaveJsonFile(path, model);
+
+        var message = $"{path} :: {model?.GetType().FullName ?? "model was null"} :: saving plugin content: {result}";
+
+        return FeedbackMessageFactory.Determine(EBoardTaskResult.Success, Result.Success, result, message);
     }
 
     /// <summary>
@@ -265,14 +326,14 @@ public class SDKDataManager
                 var assembly = Assembly.LoadFrom(dllfile.FullName);
                 var types = assembly.GetExportedTypes();
 
-                var baseType = types.Where(dlltype => dlltype.BaseType != null && dlltype.BaseType.Equals(typeof(EBoardElementPluginBaseViewModel))).Any();
+                var baseType = types.Where(dlltype => dlltype.BaseType != null && dlltype.BaseType.Equals(typeof(PluginBaseViewModel))).Any();
 
                 if (!baseType)
                 {
                     return;
                 }
 
-                var baseviewmodeltype = types.Where(dlltype => dlltype.BaseType!.Equals(typeof(EBoardElementPluginBaseViewModel))).FirstOrDefault();
+                var baseviewmodeltype = types.Where(dlltype => dlltype.BaseType!.Equals(typeof(PluginBaseViewModel))).FirstOrDefault();
 
                 if (baseviewmodeltype == null)
                 {
@@ -281,7 +342,7 @@ public class SDKDataManager
 
                 try
                 {
-                    var baseviewmodel = Activator.CreateInstance(baseviewmodeltype) as EBoardElementPluginBaseViewModel;
+                    var baseviewmodel = Activator.CreateInstance(baseviewmodeltype) as PluginBaseViewModel;
 
                     if (baseviewmodel != null)
                     {
@@ -302,12 +363,12 @@ public class SDKDataManager
 
                         plugins.Add(new PluginRepresentationItem()
                         {
-                            PluginName = baseviewmodel.PluginName,
-                            PluginHeader = baseviewmodel.PluginHeader,
-                            PluginLogo = baseviewmodel.PluginLogo,
-                            PluginCategory = baseviewmodel.PluginCategory,
-                            ScreenConstraints = baseviewmodel.ElementScreenIntegrationConstraints,
-                            PluginMainViewModelType = baseviewmodel.ElementPluginViewModel,
+                            PluginName = baseviewmodel.Name,
+                            PluginHeader = baseviewmodel.Header,
+                            PluginLogo = baseviewmodel.Logo,
+                            PluginCategory = baseviewmodel.Category,
+                            ScreenConstraints = baseviewmodel.ScreenInstantiationConstraints,
+                            PluginMainViewModelType = baseviewmodel.PluginViewModelType,
                         });
                     }
                 }
@@ -335,13 +396,13 @@ public class SDKDataManager
     /// </summary>
     /// <param name="eboardConfig"></param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-    internal async Task<EBoardFeedbackMessage> SaveEboardConfigAsync(EboardConfig eboardConfig)
+    internal async Task<EboardFeedbackMessage> SaveEboardConfigAsync(EboardConfig eboardConfig)
     {
         var dataLocations = await this.GetDataLocationsAsync();
 
         if (this.assemblyLocation == null || dataLocations == null || eboardConfig == null)
         {
-            return new EBoardFeedbackMessage()
+            return new EboardFeedbackMessage()
             {
                 ResultMessage = $"SDKDataManager.SaveEboardConfigAsync ::: assemblyLocation or local dataLocations or parameter manual is null",
                 TaskResult = EBoardTaskResult.Failure,
@@ -354,14 +415,14 @@ public class SDKDataManager
         {
             var result = Saver.SaveJsonFile<EboardConfig>(configFilePath, eboardConfig);
 
-            return new EBoardFeedbackMessage()
+            return new EboardFeedbackMessage()
             {
                 ResultMessage = $"{configFilePath} :: saving eboard config: {result}",
                 TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
             };
         }
 
-        return new EBoardFeedbackMessage()
+        return new EboardFeedbackMessage()
         {
             ResultMessage = "fileInfo string corrupted or operation unsuccessful",
             TaskResult = EBoardTaskResult.Failure,
@@ -374,9 +435,9 @@ public class SDKDataManager
     /// <param name="elements"></param>
     /// <param name="screenfolderpath"></param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-    internal async Task<List<EBoardFeedbackMessage>> SaveElementConfigsAsync(List<ElementConfig> elements, string screenfolderpath)
+    internal async Task<List<EboardFeedbackMessage>> SaveElementConfigsAsync(List<ElementConfig> elements, string screenfolderpath)
     {
-        List<EBoardFeedbackMessage> feedbackMessages = [];
+        List<EboardFeedbackMessage> feedbackMessages = [];
 
         elements.AsParallel().ForAll(
            async element =>
@@ -387,7 +448,7 @@ public class SDKDataManager
 
                if (contentSaveResult == null)
                {
-                   contentSaveResult = new EBoardFeedbackMessage()
+                   contentSaveResult = new EboardFeedbackMessage()
                    {
                        ResultMessage = $"{contentpath} :: saving element content {element.ID}: {contentSaveResult?.Exception?.Message}",
                        TaskResult = EBoardTaskResult.Unknown,
@@ -402,7 +463,7 @@ public class SDKDataManager
 
                var result = Saver.SaveJsonFile<ElementConfig>(path, element);
 
-               feedbackMessages.Add(new EBoardFeedbackMessage()
+               feedbackMessages.Add(new EboardFeedbackMessage()
                {
                    ResultMessage = $"{path} :: saving element {element.ID}: {result}",
                    TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
@@ -417,15 +478,15 @@ public class SDKDataManager
     /// </summary>
     /// <param name="eboardScreens"></param>
     /// <returns>A <see cref="Task{TResult}"/> representing the result of the asynchronous operation.</returns>
-    internal async Task<List<EBoardFeedbackMessage>> SaveEboardScreensAsync(List<EboardScreen> eboardScreens)
+    internal async Task<List<EboardFeedbackMessage>> SaveEboardScreensAsync(List<EboardScreen> eboardScreens)
     {
-        List<EBoardFeedbackMessage> feedbackMessages = [];
+        List<EboardFeedbackMessage> feedbackMessages = [];
 
         var dataLocations = await this.GetDataLocationsAsync();
 
         if (dataLocations == null)
         {
-            feedbackMessages.Add(new EBoardFeedbackMessage()
+            feedbackMessages.Add(new EboardFeedbackMessage()
             {
                 ResultMessage = $"SDKDataManager.SaveEboardScreensAsync::: dataLocations is null",
                 TaskResult = EBoardTaskResult.Failure,
@@ -457,7 +518,7 @@ public class SDKDataManager
                            var resultMessage = $"{path} :: saving eboard {escreen.ID}: {result}";
                            var taskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown;
 
-                           feedbackMessages.Add(new EBoardFeedbackMessage()
+                           feedbackMessages.Add(new EboardFeedbackMessage()
                            {
                                ResultMessage = resultMessage,
                                TaskResult = taskResult,
@@ -469,7 +530,13 @@ public class SDKDataManager
                            {
                                var escreenElementSaveResult = await this.SaveElementConfigsAsync(escreen.Elements, elementfolderpath);
 
-                               feedbackMessages.AddRange(escreenElementSaveResult);
+                               foreach (var item in escreenElementSaveResult)
+                               {
+                                   if (item != null)
+                                   {
+                                       feedbackMessages.Add(item);
+                                   }
+                               }
                            }
                        });
             }
@@ -477,7 +544,7 @@ public class SDKDataManager
             {
                 Log.Error(aoorex.Message);
 
-                feedbackMessages.Add(new EBoardFeedbackMessage()
+                feedbackMessages.Add(new EboardFeedbackMessage()
                 {
                     ResultMessage = aoorex.Message,
                     TaskResult = EBoardTaskResult.Exception,
@@ -487,7 +554,7 @@ public class SDKDataManager
             {
                 Log.Error(ex.Message);
 
-                feedbackMessages.Add(new EBoardFeedbackMessage()
+                feedbackMessages.Add(new EboardFeedbackMessage()
                 {
                     ResultMessage = ex.Message,
                     TaskResult = EBoardTaskResult.Exception,

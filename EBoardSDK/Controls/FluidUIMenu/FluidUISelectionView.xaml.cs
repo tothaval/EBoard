@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -31,7 +31,6 @@
 /// </p>
 namespace EBoardSDK.Controls.FluidUIMenu;
 
-using EBoardSDK.Enums;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -50,8 +49,8 @@ public partial class FluidUISelectionView : UserControl
 
     public string ConfirmationButtonContent
     {
-        get { return (string)GetValue(ConfirmationButtonContentProperty); }
-        set { SetValue(ConfirmationButtonContentProperty, value); }
+        get { return (string)this.GetValue(ConfirmationButtonContentProperty); }
+        set { this.SetValue(ConfirmationButtonContentProperty, value); }
     }
 
     // Using a DependencyProperty as the backing store for ConfirmationButtonContent.  This enables animation, styling, binding, etc...
@@ -60,14 +59,13 @@ public partial class FluidUISelectionView : UserControl
 
     public bool ConfirmationButtonVisible
     {
-        get { return (bool)GetValue(ConfirmationButtonVisibleProperty); }
-        set { SetValue(ConfirmationButtonVisibleProperty, value); }
+        get { return (bool)this.GetValue(ConfirmationButtonVisibleProperty); }
+        set { this.SetValue(ConfirmationButtonVisibleProperty, value); }
     }
 
     // Using a DependencyProperty as the backing store for ConfirmationButtonVisible.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty ConfirmationButtonVisibleProperty =
         DependencyProperty.Register("ConfirmationButtonVisible", typeof(bool), typeof(FluidUISelectionView), new PropertyMetadata(true));
-
 }
 
 // EOF

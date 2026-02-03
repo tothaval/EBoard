@@ -44,14 +44,10 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 
-/// <summary>
-/// TODO +
-/// refactor and continue development, í am just fixing crude stuff
-/// </summary>
 public partial class NotesViewModel : ObservableObject
 {
     private ElementViewModel? elementViewModel;
-    private EBoardViewModel? eboardViewModel;
+    private ScreenViewModel? eboardViewModel;
 
     private ObservableCollection<ProtocolViewModel> _notes;
 
@@ -79,7 +75,7 @@ public partial class NotesViewModel : ObservableObject
         }
     }
 
-    public EboardFluidUIBaseViewModel? ViewModel => this.elementViewModel;
+    public FluidUIBaseViewModel? ViewModel => this.elementViewModel;
 
     public ProtocolViewModel Note
     {
@@ -130,7 +126,7 @@ public partial class NotesViewModel : ObservableObject
         }
     }
 
-    internal void SetEBoardAndElementViewModel(EBoardViewModel eboardViewModel, ElementViewModel elementViewModel)
+    internal void SetEBoardAndElementViewModel(ScreenViewModel eboardViewModel, ElementViewModel elementViewModel)
     {
         if (eboardViewModel != null)
         {
@@ -215,7 +211,7 @@ public partial class NotesViewModel : ObservableObject
 
             if (this.eboardViewModel != null && this.elementViewModel != null)
             {
-                protocol.SetEBoardAndElementViewModel(this.eboardViewModel, this.elementViewModel);
+                protocol.SetElementViewModel(this.elementViewModel);
             }
 
             this._notes?.Insert(0, protocol);

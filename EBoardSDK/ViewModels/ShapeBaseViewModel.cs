@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,52 +33,61 @@ namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardConfigManager.Enums;
-using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.FluidUIMenu;
+using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
 using EBoardSDK.Plugins;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
 using System;
 using System.Windows;
 using System.Windows.Media;
 
-public abstract partial class ShapeBaseViewModel : EBoardElementPluginBaseViewModel, IDisposable
+public abstract partial class ShapeBaseViewModel : PluginBaseViewModel, IDisposable
 {
-    private EboardFluidUIBaseViewModel viewModel = new();
+    private FluidUIBaseViewModel viewModel = new ();
 
-    private FluidUIMenuViewModel fluidUIMenuViewModel;
+    private FluidUIMenuViewModel? fluidUIMenuViewModel;
 
     [ObservableProperty]
     private double strokeThickness = 1.0;
 
     [ObservableProperty]
-    private int duplicationCount = 1;
+    private bool hideElement = true;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeBaseViewModel"/> class.
     /// </summary>
     protected ShapeBaseViewModel()
     {
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.FullCopy);
     }
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
 
     public FluidUIMenuViewModel? FluidUIMenuViewModel => this.fluidUIMenuViewModel;
 
+    /// <inheritdoc/>
     public override void RefreshInitialization()
     {
         if (this.ElementViewModel != null)
         {
-            this.SetFluidUIViewModel(this.ViewModel ?? new EboardFluidUIBaseViewModel());
+            if (this.ViewModel == null)
+            {
+                this.viewModel = new FluidUIBaseViewModel();
+            }
 
-            this.ViewModel?.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this.ViewModel, this.ElementViewModel, this.ElementViewModel?.EBoardViewModel, fluidUIContextHasStand: true));
+            this.ChangeElementVisibility(this.HideElement);
 
             this.ElementViewModel?.Redraw();
 
             this.OnPropertyChanged(nameof(this.ElementViewModel));
             this.OnPropertyChanged(nameof(this.ViewModel));
             this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
+            this.OnPropertyChanged(nameof(this.HideElement));
         }
     }
 
@@ -86,116 +95,114 @@ public abstract partial class ShapeBaseViewModel : EBoardElementPluginBaseViewMo
     {
         if (this.ViewModel == null)
         {
-            this.viewModel = new();
+            this.viewModel = new ();
             this.OnPropertyChanged(nameof(this.ViewModel));
         }
 
-        this.ViewModel?.SetFluidUI(fluidUIContext);
-        this.ViewModel?.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this.ViewModel, this.ElementViewModel, this.ElementViewModel?.EBoardViewModel, fluidUIContextHasStand: true));
-
-        this.OnPropertyChanged(nameof(this.ElementViewModel));
-        this.OnPropertyChanged(nameof(this.ViewModel));
-        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
-    }
-
-    public void SetFluidUIViewModel(EboardFluidUIBaseViewModel? fluidUIViewModel)
-    {
-        this.viewModel = fluidUIViewModel ?? new EboardFluidUIBaseViewModel();
-
-        if (this.ElementViewModel != null)
+        if (fluidUIContext == null)
         {
-            if (this.ElementViewModel.FluidUI.Design != null)
-            {
-                this.ElementViewModel.FluidUI.Design.Background = new SolidColorBrush(Colors.Transparent);
-                this.ElementViewModel.FluidUI.Design.Foreground = new SolidColorBrush(Colors.Transparent);
-                this.ElementViewModel.FluidUI.Design.Border = new SolidColorBrush(Colors.Transparent);
-            }
-
-            if (this.ElementViewModel.FluidUI.Size != null)
-            {
-                this.ElementViewModel.FluidUI.Size.Margin = new Thickness(0);
-                this.ElementViewModel.FluidUI.Size.Padding = new Thickness(0);
-                this.ElementViewModel.FluidUI.Size.BorderThickness = new Thickness(0);
-                this.ElementViewModel.FluidUI.Size.CornerRadius = new CornerRadius(0);
-            }
-
-            if (this.ViewModel != null && this.ViewModel.FluidUI.Size != null)
-            {
-                this.ViewModel.FluidUI.Size.Margin = new Thickness(0);
-                this.ViewModel.FluidUI.Size.Padding = new Thickness(0);
-                this.ViewModel.FluidUI.Size.CornerRadius = new CornerRadius(0);
-            }
-
-            this.ElementViewModel.Redraw();
+            return;
         }
 
+        this.ViewModel?.SetFluidUI(fluidUIContext);
+
+        // TODO rebuild shape, and develop new shape ui menu
+        //if (this.ElementViewModel != null)
+        //{
+        //    this.ViewModel?.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this.ViewModel, this.ElementViewModel, this.ElementViewModel?.ScreenViewModel, fluidUIContextHasStand: true));
+        //}
+
         this.OnPropertyChanged(nameof(this.ElementViewModel));
         this.OnPropertyChanged(nameof(this.ViewModel));
         this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
     }
 
-    public void Dispose()
+    public void SetFluidUIViewModel(FluidUIBaseViewModel? fluidUIViewModel)
+    {
+        this.viewModel = fluidUIViewModel ?? new FluidUIBaseViewModel();
+
+        this.OnPropertyChanged(nameof(this.ElementViewModel));
+        this.OnPropertyChanged(nameof(this.ViewModel));
+        this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
+    }
+
+    /// <inheritdoc/>
+    public override void Dispose()
     {
     }
 
-    public override async Task<EBoardFeedbackMessage> Load(string path)
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
     {
         try
         {
-            var data = await Loader.LoadJsonFile<FluidUIContext>(path);
+            var data = await new SDKDataManager().LoadPluginContent<FluidUIContext>(path);
 
             if (data != null)
             {
-                var fluidUIViewModel = new EboardFluidUIBaseViewModel();
-                data.Design?.LoadBrushesFromColorData();
+                var fluidUIViewModel = new FluidUIBaseViewModel();
                 fluidUIViewModel.SetFluidUI(data);
 
                 this.SetFluidUIViewModel(fluidUIViewModel);
 
                 this.RefreshInitialization();
 
-                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
+                return FeedbackMessageFactory.Success($"deserialized {path}");
             }
         }
         catch (Exception ex)
         {
-            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
+            return FeedbackMessageFactory.Exception(ex.Message);
         }
 
-        return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = string.Empty };
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(FluidUIContext).FullName}");
     }
 
-    public override async Task<EBoardFeedbackMessage> Save(string path)
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Save(string path)
     {
-        EBoardFeedbackMessage? serializationResult = null;
-
         var model = this.ViewModel.FluidUI;
 
-        var result = Saver.SaveJsonFile(path, model);
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
 
-        return new EBoardFeedbackMessage()
+    private void ChangeElementVisibility(bool hideElementsChanged)
+    {
+        if (hideElementsChanged)
         {
-            ResultMessage = $"{path} :: saving eboard config: {result}",
-            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
-        };
+            if (this.ElementViewModel != null)
+            {
+                if (this.ElementViewModel.FluidUI.Design != null)
+                {
+                    this.ElementViewModel.FluidUI.Design.Background = FluidUIDesignDefaultPropertyFactory.TransparentSolidColorBrush;
+                }
+
+                this.ElementViewModel.Redraw();
+            }
+
+            return;
+        }
+
+        if (this.ElementViewModel != null)
+        {
+            if (this.ElementViewModel.FluidUI.Design != null)
+            {
+                this.ElementViewModel.FluidUI.Design.Background = FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+            }
+
+            this.ElementViewModel.Redraw();
+        }
+    }
+
+    partial void OnHideElementChanged(bool value)
+    {
+        this.ChangeElementVisibility(value);
     }
 
     [RelayCommand]
     private void DeleteElement(object s)
     {
-        if (this.ElementViewModel != null)
-        {
-            this.ElementViewModel.EBoardViewModel.RemoveElement(this.ElementViewModel);
-        }
-    }
-
-    [RelayCommand]
-    private void DuplicateNTimes()
-    {
-        if (this.EBoardViewModel != null)
-        {
-            this.ElementViewModel.EBoardViewModel.GetWindowMenuBarViewModel().InvokePluginNTimes(this.ElementPluginViewModel, this.DuplicationCount);
-        }
+        this.ElementViewModel?.ScreenViewModel.RemoveElement(this.ElementViewModel);
     }
 }
 

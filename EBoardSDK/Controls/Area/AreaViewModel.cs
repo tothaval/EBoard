@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,13 +33,11 @@ namespace EBoardSDK.Controls.Area;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins;
 using EBoardSDK.ViewModels;
-using System.Security.Cryptography;
 
 public partial class AreaViewModel<T> : ObservableObject
-        where T : EBoardElementPluginBaseViewModel
+        where T : PluginBaseViewModel
 {
     private ElementViewModel elementViewModel;
 
@@ -49,6 +47,9 @@ public partial class AreaViewModel<T> : ObservableObject
 
     [ObservableProperty]
     private bool isMatrixChangeable = true;
+
+    [ObservableProperty]
+    private bool showMatrixControls = true;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AreaViewModel{T}"/> class.
@@ -125,29 +126,40 @@ public partial class AreaViewModel<T> : ObservableObject
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
+    internal void TriggerMatrixVisibilityChange()
+    {
+        this.ShowMatrixControls = !this.ShowMatrixControls;
+    }
+
     [RelayCommand]
-    public void AddLine()
+    private void AddLine()
     {
         this.AreaVerticalOuterViewModel?.AddLine();
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
     [RelayCommand]
-    public void RemoveLine()
+    private void RemoveLine()
     {
         this.AreaVerticalOuterViewModel?.RemoveLine();
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
     [RelayCommand]
-    public void AddRow()
+    private void AddRow()
     {
         this.AreaVerticalOuterViewModel?.AddRow();
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 
     [RelayCommand]
-    public void RemoveRow()
+    private void ChangeShowMatrixControls()
+    {
+        this.TriggerMatrixVisibilityChange();
+    }
+
+    [RelayCommand]
+    private void RemoveRow()
     {
         this.AreaVerticalOuterViewModel?.RemoveRow();
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));

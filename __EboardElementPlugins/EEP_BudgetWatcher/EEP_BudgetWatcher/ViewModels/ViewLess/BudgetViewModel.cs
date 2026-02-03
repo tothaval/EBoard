@@ -306,7 +306,12 @@ public partial class BudgetViewModel : ObservableObject
 
     private decimal GetBudgetPerDay()
     {
-        var result = CurrentBalance / (decimal)DaysLeftPercentage;
+        decimal result = 0.0m;
+
+        if (DaysLeftPercentage != 0.0)
+        {
+            result = CurrentBalance / (decimal)DaysLeftPercentage;
+        }
 
         //return result > -1 ? result : result * -1;
         return result;

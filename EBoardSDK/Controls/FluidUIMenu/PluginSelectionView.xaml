@@ -10,19 +10,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -40,9 +40,9 @@
              xmlns:enums="clr-namespace:EBoardSDK.Enums"
              xmlns:System="clr-namespace:System;assembly=mscorlib"
              d:DataContext="{d:DesignInstance Type=local:PluginSelectionViewModel}"
-             FontSize="{Binding ViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
-             FontFamily="{Binding ViewModel.FluidUI.Font.FontFamily,NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
-             FontWeight="{Binding ViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
+             FontSize="{Binding FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
+             FontFamily="{Binding FluidUI.Font.FontFamily,NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
+             FontWeight="{Binding FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
              mc:Ignorable="d" 
              ClipToBounds="True"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -54,13 +54,15 @@
                 <x:Type TypeName="enums:SelectionTargets"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
+        
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+        </Style>
 
         <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
-            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
-            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="0 0 10 0"/>
         </Style>
 
         <!-- combobox style: https://stackoverflow.com/questions/16392670/custom-combobox-in-wpf-application-->
@@ -76,38 +78,37 @@
           Grid.ColumnSpan="2"
           CornerRadius="5"
           Background="Transparent"
-          BorderBrush="{Binding ViewModel.FluidUI.Design.Border}"
+          BorderBrush="{Binding FluidUI.Design.Border}"
           BorderThickness="3" />
                 <Border 
           Grid.Column="0"
           CornerRadius="0" 
           Margin="1" 
           Background="Transparent"
-          BorderBrush="{Binding ViewModel.FluidUI.Design.Border}"
+          BorderBrush="{Binding FluidUI.Design.Border}"
           BorderThickness="0,0,3,0" />
                 <Path 
-          x:Name="Arrow"
+                    x:Name="Arrow"
                     Margin="0 0 5 0"
-          Grid.Column="1"     
-          Fill="{Binding ViewModel.FluidUI.Design.Foreground}"
-          HorizontalAlignment="Center"
-          VerticalAlignment="Center"
-          Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"
-        />
+                    Grid.Column="1"     
+                    Fill="{Binding FluidUI.Design.Foreground}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Data="M0,0 L0,2 L4,6 L8,2 L8,0 L4,4 z"/>
             </Grid>
             <ControlTemplate.Triggers>
                 <Trigger Property="ToggleButton.IsMouseOver" Value="true">
-                    <Setter TargetName="Border" Property="Background" Value="{Binding ViewModel.FluidUI.Design.Highlight}" />
+                    <Setter TargetName="Border" Property="Background" Value="{Binding FluidUI.Design.Highlight}" />
                 </Trigger>
                 <Trigger Property="ToggleButton.IsChecked" Value="true">
-                    <Setter TargetName="Border" Property="Background" Value="{Binding ViewModel.FluidUI.Design.Highlight}" />
+                    <Setter TargetName="Border" Property="Background" Value="{Binding FluidUI.Design.Highlight}" />
                 </Trigger>
-                --><!--<Trigger Property="IsEnabled" Value="False">
-        <Setter TargetName="Border" Property="Background" Value="#EEEEEE" />
-        <Setter TargetName="Border" Property="BorderBrush" Value="#AAAAAA" />
-        <Setter Property="Foreground" Value="#888888"/>
-        <Setter TargetName="Arrow" Property="Fill" Value="#888888" />
-    </Trigger>--><!--
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter TargetName="Border" Property="Background" Value="#EEEEEE" />
+                    <Setter TargetName="Border" Property="BorderBrush" Value="#AAAAAA" />
+                    <Setter Property="Foreground" Value="#888888"/>
+                    <Setter TargetName="Arrow" Property="Fill" Value="#888888" />
+                </Trigger>
             </ControlTemplate.Triggers>
         </ControlTemplate>-->
 
@@ -125,7 +126,7 @@
             <Setter Property="ScrollViewer.CanContentScroll" Value="true"/>
             <Setter Property="MinWidth" Value="64"/>
             <Setter Property="MinHeight" Value="32"/>
-            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
             <Setter Property="TextBlock.TextAlignment" Value="Right"/>
             <Setter Property="Template">
@@ -145,7 +146,7 @@
                                               Content="{TemplateBinding SelectionBoxItem}"
                                               ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                               ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                              Margin="3,3,33,3"
+                                              Margin="3,3,3,3"
                                               VerticalAlignment="Center"     
                                               HorizontalAlignment="Right"/>
 
@@ -155,10 +156,10 @@
                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                      HorizontalContentAlignment="Right"
                                      VerticalAlignment="Center" 
-                                     Margin="3,3,33,3"
+                                     Margin="3,3,3,3"
                                      Focusable="True" 
-                                     Background="{Binding ViewModel.FluidUI.Design.Background}"
-                                     Foreground="{Binding ViewModel.FluidUI.Design.Foreground}"
+                                     Background="{Binding FluidUI.Design.Background}"
+                                     Foreground="{Binding FluidUI.Design.Foreground}"
                                      Visibility="Hidden"
                                      IsReadOnly="{TemplateBinding IsReadOnly}"/>
                             <Popup 
@@ -175,9 +176,9 @@
                                       MinWidth="{TemplateBinding ActualWidth}"
                                       MaxHeight="{TemplateBinding MaxDropDownHeight}">
                                     <Border x:Name="DropDownBorder"
-                                            Background="{Binding ViewModel.FluidUI.Design.Background}"
+                                            Background="{Binding FluidUI.Design.Background}"
                                             BorderThickness="2"
-                                            BorderBrush="{Binding ViewModel.FluidUI.Design.Border}"/>
+                                            BorderBrush="{Binding FluidUI.Design.Border}"/>
                                     <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
                                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
                                     </ScrollViewer>
@@ -190,7 +191,7 @@
                                 <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+                                <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
                             </Trigger>
                             <Trigger Property="IsGrouping" Value="true">
                                 <Setter Property="ScrollViewer.CanContentScroll" Value="false"/>
@@ -216,7 +217,7 @@
         <!-- SimpleStyles: ComboBoxItem -->
         <!--<Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
             <Setter Property="SnapsToDevicePixels" Value="true"/>
-            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
             <Setter Property="OverridesDefaultStyle" Value="true"/>
             <Setter Property="Template">
@@ -227,14 +228,14 @@
                                 Padding="2 2 5 2"
                                 SnapsToDevicePixels="true">
                             <TextBlock Text="{Binding}"
-                                       Foreground="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                                       Foreground="{Binding FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsHighlighted" Value="true">
-                                <Setter TargetName="Border" Property="Background" Value="{Binding ViewModel.FluidUI.Design.Highlight}"/>
+                                <Setter TargetName="Border" Property="Background" Value="{Binding FluidUI.Design.Highlight}"/>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+                                <Setter Property="Foreground" Value="{Binding FluidUI.Design.Foreground}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -255,7 +256,8 @@
 
         <ComboBox ItemsSource="{Binding Source={StaticResource selectionTargetsEnum}, NotifyOnSourceUpdated=True}"
                   SelectedItem="{Binding SelectionTarget}"
-                  Foreground="{Binding ViewModel.FluidUI.Design.Foreground}"
+                  Foreground="{Binding FluidUI.Design.Foreground}"
+                  Visibility="{Binding SingleSelectionTarget, Converter={StaticResource InverseVisibilityToCollapsed}}"
                   Grid.Column="0"
                   Grid.Row="0">
 
@@ -269,7 +271,7 @@
 
         <ComboBox ItemsSource="{Binding SelectedPlugins, NotifyOnSourceUpdated=True}"
                   SelectedItem="{Binding SelectedPlugin}"
-                  Foreground="{Binding ViewModel.FluidUI.Design.Foreground}"
+                  Foreground="{Binding FluidUI.Design.Foreground}"
                   Visibility="{Binding IsTitleSelected, Converter={StaticResource InverseVisibilityToCollapsed}}"
                   Grid.Column="1"
                   Grid.Row="0">
@@ -283,9 +285,9 @@
         </ComboBox>
 
         <TextBox Text="{Binding TitleString, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
-                             Visibility="{Binding IsTitleSelected, Converter={StaticResource VisibilityToCollapsed}}"
-                             Grid.Column="1"
-                             Grid.Row="0"/>
+                 Visibility="{Binding IsTitleSelected, Converter={StaticResource VisibilityToCollapsed}}"
+                 Grid.Column="1"
+                 Grid.Row="0"/>
     </Grid>
 </UserControl>
 

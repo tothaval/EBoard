@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -38,7 +38,7 @@ using System;
 
 public partial class FluidUIIndexTextViewModel : ObservableObject
 {
-    private readonly EboardFluidUIBaseViewModel viewModel;
+    private readonly FluidUIBaseViewModel viewModel;
     private readonly FluidUIIndexText indexText;
 
     [ObservableProperty]
@@ -55,7 +55,7 @@ public partial class FluidUIIndexTextViewModel : ObservableObject
     /// </summary>
     /// <param name="viewModel"></param>
     /// <param name="fluidUIIndexText"></param>
-    public FluidUIIndexTextViewModel(EboardFluidUIBaseViewModel viewModel, FluidUIIndexText fluidUIIndexText)
+    public FluidUIIndexTextViewModel(FluidUIBaseViewModel viewModel, FluidUIIndexText fluidUIIndexText)
     {
         this.viewModel = viewModel;
         this.indexText = fluidUIIndexText;
@@ -73,7 +73,7 @@ public partial class FluidUIIndexTextViewModel : ObservableObject
     /// <param name="viewModel"></param>
     /// <param name="fluidUIIndexText"></param>
     /// <param name="index"></param>
-    public FluidUIIndexTextViewModel(EboardFluidUIBaseViewModel viewModel, FluidUIIndexText fluidUIIndexText, int index)
+    public FluidUIIndexTextViewModel(FluidUIBaseViewModel viewModel, FluidUIIndexText fluidUIIndexText, int index)
     {
         this.viewModel = viewModel;
         this.indexText = fluidUIIndexText;
@@ -85,11 +85,14 @@ public partial class FluidUIIndexTextViewModel : ObservableObject
         this.OnPropertyChanged(nameof(this.ViewModel));
     }
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
 
     partial void OnIndexChanged(int value)
     {
         this.indexText.Index = value;
+
+        //var manager = new FluidUIDataBlockManager(this.ViewModel);
+        //manager.set
     }
 
     partial void OnTextChanged(string value)

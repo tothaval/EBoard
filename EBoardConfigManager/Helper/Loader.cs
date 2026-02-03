@@ -136,7 +136,7 @@ public static class Loader
     {
         if (string.IsNullOrWhiteSpace(file) || !File.Exists(file))
         {
-            return (T)Activator.CreateInstance(typeof(T));
+            return default;
         }
 
         try
@@ -175,7 +175,7 @@ public static class Loader
             Log.Error(e, s);
         }
 
-        return Activator.CreateInstance<T>();
+        return default;
     }
 }
 

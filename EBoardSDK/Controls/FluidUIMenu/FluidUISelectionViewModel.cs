@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -35,17 +35,12 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Enums;
 using EBoardSDK.Models;
-using EBoardSDK.SharedMethods;
 using EBoardSDK.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 public partial class FluidUISelectionViewModel : ObservableObject
 {
-    private EboardFluidUIBaseViewModel viewModel;
+    private FluidUIBaseViewModel viewModel;
 
     private Action? buttonClickAction;
 
@@ -53,29 +48,44 @@ public partial class FluidUISelectionViewModel : ObservableObject
     private bool allConfiguration = true;
 
     [ObservableProperty]
-    private bool dataConfiguration = false;
+    private bool dataConfiguration;
 
     [ObservableProperty]
-    private bool designConfiguration = false;
+    private bool designConfiguration;
 
     [ObservableProperty]
-    private bool fontConfiguration = false;
+    private bool fontConfiguration;
 
     [ObservableProperty]
-    private bool sizeConfiguration = false;
+    private bool sizeConfiguration;
 
     [ObservableProperty]
-    private bool standConfiguration = false;
+    private bool standConfiguration;
 
     [ObservableProperty]
-    private ConfigurationTargets configurationTarget = ConfigurationTargets.All;
+    private FluidUIConfigurationSetting all = new(ConfigurationTargets.All) { Selected = true };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting dataBlock = new(ConfigurationTargets.DataBlock) { Selected = false };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting design = new(ConfigurationTargets.Design) { Selected = false };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting font = new(ConfigurationTargets.Font) { Selected = false };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting size = new(ConfigurationTargets.Size) { Selected = false };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting stand = new(ConfigurationTargets.Stand) { Selected = false };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUISelectionViewModel"/> class.
     /// </summary>
     /// <param name="viewModel"></param>
     /// <param name="buttonClickAction"></param>
-    public FluidUISelectionViewModel(EboardFluidUIBaseViewModel viewModel, Action? buttonClickAction)
+    public FluidUISelectionViewModel(FluidUIBaseViewModel viewModel, Action? buttonClickAction)
     {
         this.viewModel = viewModel;
         this.buttonClickAction = buttonClickAction;
@@ -83,70 +93,71 @@ public partial class FluidUISelectionViewModel : ObservableObject
         this.OnPropertyChanged(nameof(this.ViewModel));
     }
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
+
+    partial void OnAllConfigurationChanging(bool oldValue, bool newValue)
+    {
+        if (newValue)
+        {
+            this.dataConfiguration = false;
+            this.designConfiguration = false;
+            this.fontConfiguration = false;
+            this.sizeConfiguration = false;
+            this.standConfiguration = false;
+        }
+    }
 
     partial void OnAllConfigurationChanged(bool value)
     {
+        this.All.Selected = value;
+
         if (value)
         {
-            this.ConfigurationTarget = ConfigurationTargets.All;
-
-            this.DataConfiguration = false;
-            this.DesignConfiguration = false;
-            this.FontConfiguration = false;
-            this.SizeConfiguration = false;
-            this.StandConfiguration = false;
+            this.OnPropertyChanged(nameof(this.DataConfiguration));
+            this.OnPropertyChanged(nameof(this.DesignConfiguration));
+            this.OnPropertyChanged(nameof(this.FontConfiguration));
+            this.OnPropertyChanged(nameof(this.SizeConfiguration));
+            this.OnPropertyChanged(nameof(this.StandConfiguration));
         }
     }
 
     partial void OnDataConfigurationChanged(bool value)
     {
-        if (value)
-        {
-            this.ConfigurationTarget = ConfigurationTargets.DataBlock;
-            this.SetSaveAllConfiguration(false);
-        }
+        this.DataBlock.Selected = value;
+
+        this.SetAllConfigurationFalse();
     }
 
     partial void OnDesignConfigurationChanged(bool value)
     {
-        if (value)
-        {
-            this.ConfigurationTarget = ConfigurationTargets.Design;
-            this.SetSaveAllConfiguration(false);
-        }
+        this.Design.Selected = value;
+        this.SetAllConfigurationFalse();
     }
 
     partial void OnFontConfigurationChanged(bool value)
     {
-        if (value)
-        {
-            this.ConfigurationTarget = ConfigurationTargets.Font;
-            this.SetSaveAllConfiguration(false);
-        }
+        this.Font.Selected = value;
+        this.SetAllConfigurationFalse();
     }
 
     partial void OnSizeConfigurationChanged(bool value)
     {
-        if (value)
-        {
-            this.ConfigurationTarget = ConfigurationTargets.Size;
-            this.SetSaveAllConfiguration(false);
-        }
+        this.Size.Selected = value;
+        this.SetAllConfigurationFalse();
     }
 
     partial void OnStandConfigurationChanged(bool value)
     {
-        if (value)
-        {
-            this.ConfigurationTarget = ConfigurationTargets.Stand;
-            this.SetSaveAllConfiguration(false);
-        }
+        this.Stand.Selected = value;
+        this.SetAllConfigurationFalse();
     }
 
-    private void SetSaveAllConfiguration(bool value)
+    private void SetAllConfigurationFalse()
     {
-        this.AllConfiguration = value;
+        if (this.AllConfiguration)
+        {
+            this.AllConfiguration = false;
+        }
     }
 
     [RelayCommand]

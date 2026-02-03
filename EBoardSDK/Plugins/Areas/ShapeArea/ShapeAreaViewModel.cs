@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -32,29 +32,34 @@
 namespace EBoardSDK.Plugins.Areas.ShapeArea;
 
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using EBoardConfigManager.Enums;
-using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.Area;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
-using EBoardSDK.Plugins.Elements.StandardText;
-using EBoardSDK.Plugins.Tools.Coordinates;
-using EBoardSDK.Plugins.Tools.Summoner;
+using EBoardSDK.Models;
+using EBoardSDK.Plugins.Areas.PluginArea;
+using EBoardSDK.Plugins.Eboard.Summoner;
+using EBoardSDK.Plugins.Elements.Link;
+using EBoardSDK.Plugins.Elements.Protocol.Models;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+using Serilog;
 using System;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
-public partial class ShapeAreaViewModel : EBoardElementPluginBaseViewModel
+public partial class ShapeAreaViewModel : PluginBaseViewModel
 {
+    private readonly string pluginHeader = "Shape Area";
+    private readonly string pluginName = "ShapeArea";
+
     [ObservableProperty]
     private bool pluginTypeSelected = false;
 
     [ObservableProperty]
-    private EBoardElementPluginBaseViewModel? selectedPlugin = null;
+    private PluginBaseViewModel? selectedPlugin = null;
 
     [ObservableProperty]
     private string userCommandString = ">";
@@ -62,40 +67,43 @@ public partial class ShapeAreaViewModel : EBoardElementPluginBaseViewModel
     [ObservableProperty]
     private IPlugin? summonee;
 
-    private string pluginHeader = "Shape Area";
-    private string pluginName = "ShapeArea";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeAreaViewModel"/> class.
     /// </summary>
     public ShapeAreaViewModel()
     {
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.FullCopy);
     }
 
     public AreaViewModel<ShapeSummonerViewModel> AreaViewModel { get; set; }
 
-    public override PluginCategories PluginCategory => PluginCategories.Area;
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Area;
 
-    public override bool NoDefaultBorders { get; } = false;
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new ();
 
-    public override ImageBrush PluginLogo { get; set; } = new();
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
 
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
 
-    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
 
-    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+    /// <inheritdoc/>
+    public override ResourceDictionary ResourceDictionary => new ();
 
-    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
+    /// <inheritdoc/>
+    public override Type? PluginModelType => typeof(PluginAreaModel);
 
-    public override ResourceDictionary ResourceDictionary => new();
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(ShapeAreaViewModel);
 
-    public override Type? ElementPluginModel => null;
-
-    public override Type ElementPluginView => typeof(ShapeAreaView);
-
-    public override Type ElementPluginViewModel => typeof(ShapeAreaViewModel);
-
+    /// <inheritdoc/>
     public override void RefreshInitialization()
     {
         if (this.ElementViewModel != null)
@@ -107,67 +115,117 @@ public partial class ShapeAreaViewModel : EBoardElementPluginBaseViewModel
         }
     }
 
-    public override async Task<EBoardFeedbackMessage> Load(string path)
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
     {
         try
         {
-            var data = await Loader.LoadJsonFile<ShapeAreaModel>(path);
+            var data = await new SDKDataManager().LoadPluginContent<PluginAreaModel>(path);
 
-            // TODO ggf hier und andernorts generisch machen und refactorn
-            if (data != null)
+            if (data != null && data.Summonees != null && this.ElementViewModel != null)
             {
-                var counter = 0;
+                this.ApplyModel(data);
 
-                // TODO stuff
-                //foreach (var linkModelList in data.Links)
-                //{
-                //    this.AreaViewModel.AddHorizontal();
-
-                //    var linkViewModels = new List<LinkViewModel>();
-
-                //    foreach (var linkModel in linkModelList)
-                //    {
-                //        // ggf ueber Konstruktor refaktoring verkuerzen
-                //        var linkVM = new LinkViewModel();
-
-                //        linkVM.SetEBoardAndElementViewModel(this.EBoardViewModel, this.ElementViewModel);
-
-                //        linkVM.InsertLinkModel(linkModel);
-
-                //        linkViewModels.Add(linkVM);
-                //    }
-
-                //    this.AreaViewModel.InsertViewModelList(linkViewModels, counter);
-
-                //    counter++;
-                //}
-
-                this.OnPropertyChanged(nameof(this.AreaViewModel));
-
-                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
+                return FeedbackMessageFactory.Success($"deserialized {path}");
             }
         }
         catch (Exception ex)
         {
-            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
+            return FeedbackMessageFactory.Exception(ex.Message);
         }
 
-        return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = "" };
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(PluginAreaModel).FullName}");
     }
 
-    public async override Task<EBoardFeedbackMessage> Save(string path)
+    /// <inheritdoc/>
+    public async override Task<EboardFeedbackMessage> Save(string path)
     {
-        EBoardFeedbackMessage? serializationResult = null;
+        var model = new PluginAreaModel(this);
 
-        var model = new ShapeAreaModel(this);
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
 
-        var result = Saver.SaveJsonFile(path, model);
-
-        return new EBoardFeedbackMessage()
+    /// <inheritdoc/>
+    public override void InsertModel<T>(T model)
+    {
+        if (model == null)
         {
-            ResultMessage = $"{path} :: saving eboard config: {result}",
-            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
-        };
+            return;
+        }
+
+        if (model is PluginAreaModel pluginAreaModel)
+        {
+            this.ApplyModel(pluginAreaModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<PluginAreaModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new PluginAreaModel(this);
+
+        this.SetModel(model);
+    }
+
+    private void ApplyModel(PluginAreaModel pluginAreaModel)
+    {
+        if (this.ElementViewModel == null || this.AreaViewModel == null)
+        {
+            return;
+        }
+
+        this.AreaViewModel.ShowMatrixControls = pluginAreaModel.ShowMatrixControls;
+
+        var counter = 0;
+
+        foreach (var modelList in pluginAreaModel.Summonees)
+        {
+            this.AreaViewModel.AddHorizontal();
+
+            var viewModels = new List<ShapeSummonerViewModel>();
+
+            foreach (var model in modelList)
+            {
+                var vm = new ShapeSummonerViewModel();
+
+                vm.SetElementViewModel(this.ElementViewModel);
+
+                vm.InsertModel(model);
+
+                viewModels.Add(vm);
+            }
+
+            this.AreaViewModel.InsertViewModelList(viewModels, counter);
+
+            counter++;
+        }
+
+        this.OnPropertyChanged(nameof(this.AreaViewModel));
     }
 }
 

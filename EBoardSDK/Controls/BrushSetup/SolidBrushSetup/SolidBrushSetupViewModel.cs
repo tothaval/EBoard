@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -34,18 +34,19 @@ namespace EBoardSDK.Controls.BrushSetup.SolidBrushSetup;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Enums;
+using EBoardSDK.Utilities.Factories;
 using EBoardSDK.ViewModels;
 using System.Windows.Media;
 
 public partial class SolidBrushSetupViewModel : ObservableObject, IDisposable
 {
-    private readonly EboardFluidUIBaseViewModel viewModel;
+    private readonly FluidUIBaseViewModel viewModel;
     private readonly BrushTargets brushTargets;
 
     private Action okAction;
 
     [ObservableProperty]
-    private Brush colorBrush;
+    private Brush colorBrush = FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
 
     [ObservableProperty]
     private string colorStringValue = string.Empty;
@@ -73,51 +74,49 @@ public partial class SolidBrushSetupViewModel : ObservableObject, IDisposable
     /// </summary>
     /// <param name="viewModel"></param>
     /// <param name="brushTargets"></param>
-    /// <param name="okResult"></param>
-    public SolidBrushSetupViewModel(EboardFluidUIBaseViewModel viewModel, BrushTargets brushTargets, Action okResult)
+    /// <param name="okAction"></param>
+    public SolidBrushSetupViewModel(FluidUIBaseViewModel viewModel, BrushTargets brushTargets, Action okAction)
     {
         this.viewModel = viewModel;
-        this.okAction = okResult;
+        this.okAction = okAction;
         this.brushTargets = brushTargets;
 
         _ = this.SetColorBrushToFluidUIDesignValue();
 
+        this.Refresh();
+    }
+
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
+
+    private Color ActualColor => Color.FromArgb(this.AlphaValue, this.RedValue, this.GreenValue, this.BlueValue);
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+    }
+
+    public void Refresh()
+    {
         this.OnPropertyChanged(nameof(this.ColorBrush));
         this.OnPropertyChanged(nameof(this.ColorStringValue));
         this.OnPropertyChanged(nameof(this.ColorValue));
     }
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
-
-    public void Dispose()
+    internal void SetColorValue(Color color)
     {
+        this.ColorBrush = FluidUIDesignDefaultPropertyFactory.GetSolidColorBrush(color);
+        this.ColorStringValue = color.ToString();
+        this.ColorValue = color;
+
+        this.RedValue = color.R;
+        this.GreenValue = color.G;
+        this.BlueValue = color.B;
+
+        this.AlphaValue = color.A;
     }
 
-    private Brush SetColorBrushToFluidUIDesignValue()
+    private void UpdateSliderPositions()
     {
-        Brush? brush;
-
-        switch (this.brushTargets)
-        {
-            case BrushTargets.Background:
-                brush = this.ViewModel.FluidUI.Design.Background;
-                break;
-            case BrushTargets.Border:
-                brush = this.ViewModel.FluidUI.Design.Border;
-                break;
-            case BrushTargets.Foreground:
-                brush = this.ViewModel.FluidUI.Design.Foreground;
-                break;
-            case BrushTargets.Highlight:
-                brush = this.ViewModel.FluidUI.Design.Highlight;
-                break;
-            default:
-                brush = new SolidColorBrush();
-                break;
-        }
-
-        this.ColorBrush = brush;
-
         if (this.ColorBrush != null)
         {
             if (this.ColorBrush.GetType().Equals(typeof(SolidColorBrush)))
@@ -135,42 +134,76 @@ public partial class SolidBrushSetupViewModel : ObservableObject, IDisposable
                 this.BlueValue = c.B;
             }
         }
+    }
+
+    private Brush SetColorBrushToFluidUIDesignValue()
+    {
+        Brush? brush;
+
+        switch (this.brushTargets)
+        {
+            case BrushTargets.Background:
+                brush = this.ViewModel.FluidUI.Design?.Background ?? FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+                break;
+            case BrushTargets.Border:
+                brush = this.ViewModel.FluidUI.Design?.Border ?? FluidUIDesignDefaultPropertyFactory.BorderDefaultSolidColorBrush;
+                break;
+            case BrushTargets.Foreground:
+                brush = this.ViewModel.FluidUI.Design?.Foreground ?? FluidUIDesignDefaultPropertyFactory.ForegroundDefaultSolidColorBrush;
+                break;
+            case BrushTargets.Highlight:
+                brush = this.ViewModel.FluidUI.Design?.Highlight ?? FluidUIDesignDefaultPropertyFactory.HighlightDefaultSolidColorBrush;
+                break;
+            default:
+                brush = FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+                break;
+        }
+
+        if (this.ColorBrush != brush)
+        {
+            this.ColorBrush = brush;
+
+            this.UpdateSliderPositions();
+        }
 
         return brush;
     }
 
     partial void OnColorValueChanged(Color value)
     {
-        ColorBrush = new SolidColorBrush(value);
-
-        ColorStringValue = value.ToString();
+        if (value != this.ColorValue)
+        {
+            this.UpdateSliderPositions();
+        }
     }
 
     partial void OnGreyscaleValueChanged(byte value)
     {
-        RedValue = value;
-        GreenValue = value;
-        BlueValue = value;
+        this.RedValue = value;
+        this.GreenValue = value;
+        this.BlueValue = value;
+
+        this.SetColorValue(this.ActualColor);
     }
 
     partial void OnRedValueChanged(byte value)
     {
-        ColorValue = Color.FromArgb(AlphaValue, RedValue, GreenValue, BlueValue);
+        this.SetColorValue(this.ActualColor);
     }
 
     partial void OnGreenValueChanged(byte value)
     {
-        ColorValue = Color.FromArgb(AlphaValue, RedValue, GreenValue, BlueValue);
+        this.SetColorValue(this.ActualColor);
     }
 
     partial void OnBlueValueChanged(byte value)
     {
-        ColorValue = Color.FromArgb(AlphaValue, RedValue, GreenValue, BlueValue);
+        this.SetColorValue(this.ActualColor);
     }
 
     partial void OnAlphaValueChanged(byte value)
     {
-        ColorValue = Color.FromArgb(value, ColorValue.R, ColorValue.G, ColorValue.B);
+        this.SetColorValue(this.ActualColor);
     }
 
     [RelayCommand]

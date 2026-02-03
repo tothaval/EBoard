@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,57 +33,67 @@ namespace EBoardSDK.Plugins.Areas.FileLinkArea;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardConfigManager.Enums;
-using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.Area;
 using EBoardSDK.Enums;
+using EBoardSDK.Models;
 using EBoardSDK.Plugins.Elements.Link;
+using EBoardSDK.Plugins.Elements.Protocol.Models;
+using EBoardSDK.Plugins.Tools.Summoner;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+using Serilog;
 using System;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
-public partial class FileLinkAreaViewModel : EBoardElementPluginBaseViewModel
+public partial class FileLinkAreaViewModel : PluginBaseViewModel
 {
+    private readonly string pluginHeader = "FileLink Area";
+    private readonly string pluginName = "FileLinkArea";
+
     [ObservableProperty]
     private string executeAllLinksButtonContent = "\n*\n*\n*\n";
-
-    private string pluginHeader = "FileLink Area";
-    private string pluginName = "FileLinkArea";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileLinkAreaViewModel"/> class.
     /// </summary>
     public FileLinkAreaViewModel()
     {
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.FullCopy);
     }
 
     public AreaViewModel<LinkViewModel> AreaViewModel { get; set; }
 
-    public override PluginCategories PluginCategory => PluginCategories.Area;
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Area;
 
-    public override bool NoDefaultBorders { get; } = false;
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new();
 
-    public override ImageBrush PluginLogo { get; set; } = new();
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
 
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
 
-    public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
 
-    public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
-
-    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
-
+    /// <inheritdoc/>
     public override ResourceDictionary ResourceDictionary => new();
 
-    public override Type? ElementPluginModel => null;
+    /// <inheritdoc/>
+    public override Type? PluginModelType => typeof(FileLinkAreaModel);
 
-    public override Type ElementPluginView => typeof(FileLinkAreaView);
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(FileLinkAreaViewModel);
 
-    public override Type ElementPluginViewModel => typeof(FileLinkAreaViewModel);
-
+    /// <inheritdoc/>
     public override void RefreshInitialization()
     {
         if (this.ElementViewModel != null)
@@ -95,67 +105,117 @@ public partial class FileLinkAreaViewModel : EBoardElementPluginBaseViewModel
         }
     }
 
-    public override async Task<EBoardFeedbackMessage> Load(string path)
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
     {
         try
         {
-            var data = await Loader.LoadJsonFile<FileLinkAreaModel>(path);
+            var data = await new SDKDataManager().LoadPluginContent<FileLinkAreaModel>(path);
 
-            // TODO ggf hier und andernorts generisch machen und refactorn
-            if (data != null)
+            if (data != null && this.ElementViewModel != null)
             {
-                var counter = 0;
+                this.ApplyModel(data);
 
-                // TODO stuff
-                foreach (var linkModelList in data.Links)
-                {
-                    this.AreaViewModel.AddHorizontal();
-
-                    var linkViewModels = new List<LinkViewModel>();
-
-                    foreach (var linkModel in linkModelList)
-                    {
-                        // ggf ueber Konstruktor refaktoring verkuerzen
-                        var linkVM = new LinkViewModel();
-
-                        linkVM.SetEBoardAndElementViewModel(this.EBoardViewModel, this.ElementViewModel);
-
-                        linkVM.InsertLinkModel(linkModel);
-
-                        linkViewModels.Add(linkVM);
-                    }
-
-                    this.AreaViewModel.InsertViewModelList(linkViewModels, counter);
-
-                    counter++;
-                }
-
-                this.OnPropertyChanged(nameof(this.AreaViewModel));
-
-                return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
+                return FeedbackMessageFactory.Success($"deserialized {path}");
             }
         }
         catch (Exception ex)
         {
-            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
+            return FeedbackMessageFactory.Exception(ex.Message);
         }
 
-        return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = "" };
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(FileLinkAreaModel).FullName}");
     }
 
-    public async override Task<EBoardFeedbackMessage> Save(string path)
+    /// <inheritdoc/>
+    public async override Task<EboardFeedbackMessage> Save(string path)
     {
-        EBoardFeedbackMessage? serializationResult = null;
-
         var model = new FileLinkAreaModel(this);
 
-        var result = Saver.SaveJsonFile(path, model);
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
 
-        return new EBoardFeedbackMessage()
+    /// <inheritdoc/>
+    public override void InsertModel<T>(T model)
+    {
+        if (model == null)
         {
-            ResultMessage = $"{path} :: saving eboard config: {result}",
-            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
-        };
+            return;
+        }
+
+        if (model is FileLinkAreaModel fileLinkAreaModel)
+        {
+            this.ApplyModel(fileLinkAreaModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<FileLinkAreaModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new FileLinkAreaModel(this);
+
+        this.SetModel(model);
+    }
+
+    private void ApplyModel(FileLinkAreaModel fileLinkAreaModel)
+    {
+        if (this.ElementViewModel == null || this.AreaViewModel == null)
+        {
+            return;
+        }
+
+        this.AreaViewModel.ShowMatrixControls = fileLinkAreaModel.ShowMatrixControls;
+
+        var counter = 0;
+
+        foreach (var linkModelList in fileLinkAreaModel.Links)
+        {
+            this.AreaViewModel.AddHorizontal();
+
+            var linkViewModels = new List<LinkViewModel>();
+
+            foreach (var linkModel in linkModelList)
+            {
+                var linkVM = new LinkViewModel();
+
+                linkVM.SetElementViewModel(this.ElementViewModel);
+
+                linkVM.InsertModel(linkModel);
+
+                linkViewModels.Add(linkVM);
+            }
+
+            this.AreaViewModel.InsertViewModelList(linkViewModels, counter);
+
+            counter++;
+        }
+
+        this.OnPropertyChanged(nameof(this.AreaViewModel));
     }
 
     [RelayCommand]

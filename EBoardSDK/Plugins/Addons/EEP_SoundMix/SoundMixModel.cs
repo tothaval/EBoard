@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -32,19 +32,15 @@
 namespace EBoardSDK.Plugins.Addons.EEP_SoundMix;
 
 using EBoardSDK.Plugins.Addons.SoundMix;
+using EBoardSDK.Plugins.Areas.ShapeArea;
 using EBoardSDK.Plugins.Elements.BasicAV;
-using System;
 using System.Collections.Generic;
-using System.Xml.Serialization;
 
-[Serializable]
+/// <summary>
+/// Serializable data model for <see cref="SoundMixMainView"/>.
+/// </summary>
 public class SoundMixModel
 {
-    [XmlIgnore]
-    private readonly SoundMixMainViewModel soundMixMainViewModel;
-
-    public List<List<BasicAVModel>> Links { get; set; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundMixModel"/> class.
     /// </summary>
@@ -55,13 +51,17 @@ public class SoundMixModel
     /// <summary>
     /// Initializes a new instance of the <see cref="SoundMixModel"/> class.
     /// </summary>
-    /// <param name="soundMixMainViewModel"></param>
+    /// <param name="soundMixMainViewModel">Desired is the instance that has to be stored.</param>
     public SoundMixModel(SoundMixMainViewModel soundMixMainViewModel)
     {
-        this.soundMixMainViewModel = soundMixMainViewModel;
-        this.Links = new();
+        this.ShowMatrixControls = soundMixMainViewModel.AreaViewModel.ShowMatrixControls;
 
         var areavm = soundMixMainViewModel.AreaViewModel;
+
+        if (areavm == null)
+        {
+            return;
+        }
 
         foreach (var item in areavm.AreaVerticalOuterViewModel.HorizontalInnerViewModels)
         {
@@ -77,6 +77,10 @@ public class SoundMixModel
             this.Links.Add(list);
         }
     }
+
+    public List<List<BasicAVModel>> Links { get; set; } = new ();
+
+    public bool ShowMatrixControls { get; set; } = true;
 }
 
 // EOF

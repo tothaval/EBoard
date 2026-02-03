@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -37,72 +37,59 @@ using EBoardSDK.Controls.FluidUIDesign;
 using EBoardSDK.Controls.FluidUIFont;
 using EBoardSDK.Controls.FluidUISize;
 using EBoardSDK.Controls.FluidUIStand;
+using EBoardSDK.Enums;
 using EBoardSDK.ViewModels;
 using System;
 
-/// <summary>
-/// TODO: benötigte ViewModel für ValueChanges aus den FluidUI Models rausholen und hier mit rein?.
-/// </summary>
 public partial class FluidUIMenuViewModel : ObservableObject, IDisposable
 {
-    private FluidUIDataBlockSetupViewModel? fluidUIDataBlockSetupViewModel;
-    private FluidUIDesignSetupViewModel? fluidUIDesignSetupViewModel;
-    private FluidUIFontSetupViewModel? fluidUIFontSetupViewModel;
-    private FluidUISizeSetupViewModel? fluidUISizeSetupViewModel;
-    private FluidUIStandSetupViewModel? fluidUIStandSetupViewModel;
+    private FluidUIDataBlockSetupMenuItemViewModel? fluidUIDataBlockSetupViewModel;
+    private FluidUIDesignSetupMenuItemViewModel? fluidUIDesignSetupViewModel;
+    private FluidUIFontSetupMenuItemViewModel? fluidUIFontSetupViewModel;
+    private FluidUISizeSetupMenuItemViewModel? fluidUISizeSetupViewModel;
+    private FluidUIStandSetupMenuItemViewModel? fluidUIStandSetupViewModel;
 
-    private EboardFluidUIBaseViewModel viewModel;
-    private EboardFluidUIBaseViewModel outerViewModel;
+    private FluidUIBaseViewModel viewModel;
+    private FluidUIBaseViewModel? outerViewModel;
 
-    private EBoardViewModel? eBoardViewModel;
-    private bool fluidUIContextHasStand;
+    private FluidUIStandSettings fluidUIStandSettings = FluidUIStandSettings.NoStandContextArea;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="FluidUIMenuViewModel"/> class.
-    /// </summary>
-    /// <param name="eboardFluidUIBaseViewModel"></param>
-    /// <param name="eBoardViewModel"></param>
-    /// <param name="fluidUIContextHasStand"></param>
-    public FluidUIMenuViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel, EBoardViewModel? eBoardViewModel = null, bool fluidUIContextHasStand = false)
-    {
-        this.viewModel = eboardFluidUIBaseViewModel;
-
-        this.eBoardViewModel = eBoardViewModel;
-        this.fluidUIContextHasStand = fluidUIContextHasStand;
-
-        this.CreateViewModels();
-    }
+    private ScreenViewModel? eBoardViewModel;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUIMenuViewModel"/> class.
     /// </summary>
     /// <param name="eboardFluidUIBaseViewModel"></param>
-    /// <param name="outerViewModel"></param>
-    /// <param name="eBoardViewModel"></param>
-    /// <param name="fluidUIContextHasStand"></param>
-    public FluidUIMenuViewModel(EboardFluidUIBaseViewModel eboardFluidUIBaseViewModel, EboardFluidUIBaseViewModel outerViewModel, EBoardViewModel? eBoardViewModel = null, bool fluidUIContextHasStand = false)
+    /// <param name="fluidUIStandSettings"></param>
+    /// <param name="screenViewModel"></param>
+    public FluidUIMenuViewModel(FluidUIBaseViewModel eboardFluidUIBaseViewModel, FluidUIStandSettings fluidUIStandSettings, ScreenViewModel? screenViewModel = null)
     {
         this.viewModel = eboardFluidUIBaseViewModel;
-        this.outerViewModel = outerViewModel;
 
-        this.eBoardViewModel = eBoardViewModel;
-        this.fluidUIContextHasStand = fluidUIContextHasStand;
+        this.eBoardViewModel = screenViewModel;
+
+        this.fluidUIStandSettings = fluidUIStandSettings;
+
+        this.OnPropertyChanged(nameof(this.FluidUIContextHasStand));
 
         this.CreateViewModels();
     }
 
-    public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
 
-    public FluidUIDataBlockSetupViewModel FluidUIDataBlockSetupViewModel => this.fluidUIDataBlockSetupViewModel;
+    public bool FluidUIContextHasStand => !(this.fluidUIStandSettings == FluidUIStandSettings.NoStandContextArea);
 
-    public FluidUIDesignSetupViewModel FluidUIDesignSetupViewModel => this.fluidUIDesignSetupViewModel;
+    public FluidUIDataBlockSetupMenuItemViewModel FluidUIDataBlockSetupViewModel => this.fluidUIDataBlockSetupViewModel;
 
-    public FluidUIFontSetupViewModel FluidUIFontSetupViewModel => this.fluidUIFontSetupViewModel;
+    public FluidUIDesignSetupMenuItemViewModel FluidUIDesignSetupViewModel => this.fluidUIDesignSetupViewModel;
 
-    public FluidUISizeSetupViewModel FluidUISizeSetupViewModel => this.fluidUISizeSetupViewModel;
+    public FluidUIFontSetupMenuItemViewModel FluidUIFontSetupViewModel => this.fluidUIFontSetupViewModel;
 
-    public FluidUIStandSetupViewModel FluidUIStandSetupViewModel => this.fluidUIStandSetupViewModel;
+    public FluidUISizeSetupMenuItemViewModel FluidUISizeSetupViewModel => this.fluidUISizeSetupViewModel;
 
+    public FluidUIStandSetupMenuItemViewModel FluidUIStandSetupViewModel => this.fluidUIStandSetupViewModel;
+
+    /// <inheritdoc/>
     public void Dispose()
     {
         this.DeleteViewModels();
@@ -110,19 +97,19 @@ public partial class FluidUIMenuViewModel : ObservableObject, IDisposable
 
     internal void CreateFluidUIDataBlockSetupViewModel()
     {
-        this.fluidUIDataBlockSetupViewModel = new FluidUIDataBlockSetupViewModel(this.ViewModel);
+        this.fluidUIDataBlockSetupViewModel = new FluidUIDataBlockSetupMenuItemViewModel(this.ViewModel, this.fluidUIStandSettings);
         this.OnPropertyChanged(nameof(this.FluidUIDataBlockSetupViewModel));
     }
 
     internal void CreateFluidUIDesignSetupViewModel()
     {
-        this.fluidUIDesignSetupViewModel = new FluidUIDesignSetupViewModel(this.ViewModel);
+        this.fluidUIDesignSetupViewModel = new FluidUIDesignSetupMenuItemViewModel(this.ViewModel);
         this.OnPropertyChanged(nameof(this.FluidUIDesignSetupViewModel));
     }
 
     internal void CreateFluidUIFontSetupViewModel()
     {
-        this.fluidUIFontSetupViewModel = new FluidUIFontSetupViewModel(this.ViewModel);
+        this.fluidUIFontSetupViewModel = new FluidUIFontSetupMenuItemViewModel(this.ViewModel);
         this.OnPropertyChanged(nameof(this.FluidUIFontSetupViewModel));
     }
 
@@ -130,12 +117,12 @@ public partial class FluidUIMenuViewModel : ObservableObject, IDisposable
     {
         if (this.outerViewModel == null)
         {
-            this.fluidUISizeSetupViewModel = new FluidUISizeSetupViewModel(this.ViewModel);
+            this.fluidUISizeSetupViewModel = new FluidUISizeSetupMenuItemViewModel(this.ViewModel);
         }
         else
         {
             // TODO: neues View und ViewModel für Shapes
-            this.fluidUISizeSetupViewModel = new FluidUISizeSetupViewModel(this.ViewModel);
+            this.fluidUISizeSetupViewModel = new FluidUISizeSetupMenuItemViewModel(this.ViewModel);
         }
 
         this.OnPropertyChanged(nameof(this.FluidUISizeSetupViewModel));
@@ -143,14 +130,12 @@ public partial class FluidUIMenuViewModel : ObservableObject, IDisposable
 
     internal void CreateFluidUIStandSetupViewModel()
     {
-        if (this.outerViewModel == null)
+        if (!this.FluidUIContextHasStand)
         {
-            this.fluidUIStandSetupViewModel = new FluidUIStandSetupViewModel(this.ViewModel, this.eBoardViewModel, this.fluidUIContextHasStand);
+            return;
         }
-        else
-        {
-            this.fluidUIStandSetupViewModel = new FluidUIStandSetupViewModel(this.ViewModel, this.outerViewModel, this.eBoardViewModel, this.fluidUIContextHasStand);
-        }
+
+        this.fluidUIStandSetupViewModel = new FluidUIStandSetupMenuItemViewModel(this.ViewModel, this.fluidUIStandSettings, this.eBoardViewModel!);
 
         this.OnPropertyChanged(nameof(this.FluidUIStandSetupViewModel));
     }

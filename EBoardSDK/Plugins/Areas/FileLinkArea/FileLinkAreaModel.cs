@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -31,34 +31,36 @@
 /// </p>
 namespace EBoardSDK.Plugins.Areas.FileLinkArea;
 
+using EBoardSDK.Plugins.Areas.PluginArea;
 using EBoardSDK.Plugins.Elements.Link;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
-internal class FileLinkAreaModel
+/// <summary>
+/// Serializable data model for <see cref="FileLinkAreaView"/>.
+/// </summary>
+public class FileLinkAreaModel
 {
-    [JsonIgnore]
-    private readonly FileLinkAreaViewModel fileLinkAreaViewModel;
-
-    internal List<List<LinkModel>> Links { get; set; }
-
     /// <summary>
     /// Initializes a new instance of the <see cref="FileLinkAreaModel"/> class.
     /// </summary>
-    internal FileLinkAreaModel()
+    public FileLinkAreaModel()
     {
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FileLinkAreaModel"/> class.
     /// </summary>
-    /// <param name="fileLinkAreaViewModel"></param>
-    internal FileLinkAreaModel(FileLinkAreaViewModel fileLinkAreaViewModel)
+    /// <param name="fileLinkAreaViewModel">Desired is the instance that has to be stored.</param>
+    public FileLinkAreaModel(FileLinkAreaViewModel fileLinkAreaViewModel)
     {
-        this.fileLinkAreaViewModel = fileLinkAreaViewModel;
-        this.Links = new();
-
         var areavm = fileLinkAreaViewModel.AreaViewModel;
+
+        if (areavm == null)
+        {
+            return;
+        }
+
+        this.ShowMatrixControls = fileLinkAreaViewModel.AreaViewModel.ShowMatrixControls;
 
         foreach (var item in areavm.AreaVerticalOuterViewModel.HorizontalInnerViewModels)
         {
@@ -74,6 +76,10 @@ internal class FileLinkAreaModel
             this.Links.Add(list);
         }
     }
+
+    public List<List<LinkModel>> Links { get; set; } = new ();
+
+    public bool ShowMatrixControls { get; set; } = true;
 }
 
 // EOF

@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -33,21 +33,34 @@ namespace EBoardSDK.Plugins.Elements.BasicAV;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardConfigManager.Enums;
-using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
+using EBoardSDK.Models;
+using EBoardSDK.Plugins.Elements.Link;
+using EBoardSDK.Plugins.Elements.Protocol.Models;
+using EBoardSDK.Plugins.Tools.Summoner;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
 using Microsoft.Win32;
+using Serilog;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Threading;
 
-public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
+/// <summary>
+/// Plugin for media playing. Uses a WPF framework <see cref="MediaElement"/>
+/// and offers limited amount of controls to use it.
+/// </summary>
+public partial class BasicAVMainViewModel : PluginBaseViewModel
 {
+    private readonly string pluginHeader = "BasicAV player";
+    private readonly string pluginName = "BasicAV";
+
     private bool mediaPlayerIsPlaying = false;
 
     private bool userIsDraggingSlider = false;
@@ -88,15 +101,15 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     [ObservableProperty]
     private MediaElement? media;
 
-    private string pluginHeader = "BasicAV player";
-
-    private string pluginName = "BasicAV";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="BasicAVMainViewModel"/> class.
     /// </summary>
     public BasicAVMainViewModel()
     {
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.FullCopy);
+
         this.Volume = 0.5;
 
         DispatcherTimer timer = new DispatcherTimer();
@@ -105,122 +118,105 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
         timer.Start();
     }
 
-    private void Timer_Tick(object? sender, EventArgs e)
-    {
-        if (this.Media != null)
-        {
-            if (this.Media.Source != null
-                && this.Media.NaturalDuration.HasTimeSpan
-                && !this.userIsDraggingSlider)
-            {
-                this.PlayTimeSpan = this.Media.Position.TotalSeconds;
-                this.MaximumPlayTime = this.Media.NaturalDuration.TimeSpan.TotalSeconds;
-            }
-        }
-    }
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Element;
 
-    public override PluginCategories PluginCategory => PluginCategories.Element;
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new ();
 
-    public override ImageBrush PluginLogo { get; set; } = new();
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
 
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
 
-    public override string PluginHeader
-    {
-        get { return this.pluginHeader; }
-        set { this.pluginHeader = value; }
-    }
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
 
-    public override bool NoDefaultBorders { get; } = false;
+    /// <inheritdoc/>
+    public override ResourceDictionary ResourceDictionary => new ();
 
-    public override string PluginName
-    {
-        get { return this.pluginName; }
-        set { this.pluginName = value; }
-    }
+    /// <inheritdoc/>
+    public override Type? PluginModelType => typeof(BasicAVModel);
 
-    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(BasicAVMainViewModel);
 
-    public override ResourceDictionary ResourceDictionary => new();
-
-    public override Type? ElementPluginModel => null;
-
-    public override Type ElementPluginView => typeof(BasicAVMainView);
-
-    public override Type ElementPluginViewModel => typeof(BasicAVMainViewModel);
-
-    public bool InsertBasicAVModel(BasicAVModel basicAVModel)
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
     {
         try
         {
-            if (basicAVModel != null)
-            {
-                this.FileName = basicAVModel.Filename;
-                this.Filepath = basicAVModel.Filepath;
-                this.Volume = basicAVModel.Volume;
-
-                if (!string.IsNullOrWhiteSpace(this.Filepath))
-                {
-                    var fileInfo = new FileInfo(this.Filepath);
-
-                    if (fileInfo.Exists)
-                    {
-                        if (this.Media != null)
-                        {
-                            this.Media.Source = new Uri(this.Filepath);
-                            this.Media.Position = TimeSpan.FromSeconds(basicAVModel.PlayTimeSpan);
-                            this.MaximumPlayTime = this.Media.NaturalDuration.TimeSpan.TotalSeconds;
-                            this.PlayTimeSpan = basicAVModel.PlayTimeSpan;
-                        }
-                    }
-                }
-
-                return true;
-            }
-        }
-        catch (Exception ex)
-        {
-            var msg = ex;
-        }
-
-        return false;
-    }
-
-    public override async Task<EBoardFeedbackMessage> Load(string path)
-    {
-        try
-        {
-            var data = await Loader.LoadJsonFile<BasicAVModel>(path)!;
+            var data = await new SDKDataManager().LoadPluginContent<BasicAVModel>(path);
 
             if (data != null)
             {
-                if (this.InsertBasicAVModel(data))
-                {
-                    return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
-                }
+                this.InsertModel(data);
+
+                return FeedbackMessageFactory.Success($"deserialized {path}");
             }
         }
         catch (Exception ex)
         {
-            return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Exception, ResultMessage = ex.Message };
+            return FeedbackMessageFactory.Exception(ex.Message);
         }
 
-        return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Unknown, ResultMessage = string.Empty };
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(BasicAVModel).FullName}");
     }
 
-    public override async Task<EBoardFeedbackMessage> Save(string path)
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Save(string path)
     {
         var model = new BasicAVModel(this);
 
-        EBoardFeedbackMessage? serializationResult = null;
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
 
-        var result = Saver.SaveJsonFile(path, model);
-
-        return new EBoardFeedbackMessage()
+    /// <inheritdoc/>
+    public override void InsertModel<T>(T model)
+    {
+        if (model == null)
         {
-            ResultMessage = $"{path} :: saving eboard config: {result}",
-            TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
-        };
+            return;
+        }
+
+        if (model is BasicAVModel basicAVModel)
+        {
+            this.ApplyModel(basicAVModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<BasicAVModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new BasicAVModel(this);
+
+        this.SetModel(model);
     }
 
     public void StatusBarDragCompleted()
@@ -237,6 +233,43 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     {
         this.userIsDraggingSlider = true;
         this.Media?.Pause();
+    }
+
+    private void ApplyModel(BasicAVModel basicAVModel)
+    {
+        this.FileName = basicAVModel.Filename;
+        this.Filepath = basicAVModel.Filepath;
+        this.Volume = basicAVModel.Volume;
+
+        if (!string.IsNullOrWhiteSpace(this.Filepath))
+        {
+            var fileInfo = new FileInfo(this.Filepath);
+
+            if (fileInfo.Exists)
+            {
+                if (this.Media != null)
+                {
+                    this.Media.Source = new Uri(this.Filepath);
+                    this.Media.Position = TimeSpan.FromSeconds(basicAVModel.PlayTimeSpan);
+                    this.MaximumPlayTime = this.Media.NaturalDuration.TimeSpan.TotalSeconds;
+                    this.PlayTimeSpan = basicAVModel.PlayTimeSpan;
+                }
+            }
+        }
+    }
+
+    private void Timer_Tick(object? sender, EventArgs e)
+    {
+        if (this.Media != null)
+        {
+            if (this.Media.Source != null
+                && this.Media.NaturalDuration.HasTimeSpan
+                && !this.userIsDraggingSlider)
+            {
+                this.PlayTimeSpan = this.Media.Position.TotalSeconds;
+                this.MaximumPlayTime = this.Media.NaturalDuration.TimeSpan.TotalSeconds;
+            }
+        }
     }
 
     partial void OnPlayTimeSpanChanged(double value)

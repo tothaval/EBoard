@@ -10,19 +10,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoardSDK.Controls.Area"
+             xmlns:sm="clr-namespace:EBoardSDK.SharedMethods"
              d:DataContext="{d:DesignInstance Type=local:AreaViewModel`1}"
              FontSize="{Binding ElementViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
              FontFamily="{Binding ElementViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
@@ -46,8 +47,6 @@
              Background="Transparent">
 
     <UserControl.Resources>
-        <BooleanToVisibilityConverter x:Key="booltovis"/>
-        
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
             <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
         </Style>
@@ -56,14 +55,11 @@
             <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="0 0 10 0"/>
         </Style>
 
         <Style TargetType="Button" x:Key="btn">
-            <Setter Property="BorderThickness" Value="2" />
             <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
-            
+
             <!--<Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -90,118 +86,167 @@
                 </Trigger>
             </Style.Triggers>-->
         </Style>
-        
+
+        <Style TargetType="MenuItem" BasedOn="{StaticResource MenuItemStyle}" x:Key="menuitem">
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border}"/>
+            <Setter Property="TextBlock.Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Highlight}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Border" x:Key="hideBorder">
+            <Setter Property="Visibility" Value="{Binding ShowMatrixControls, Converter={StaticResource VisibilityToCollapsed}}"/>
+        </Style>
+
     </UserControl.Resources>
-    
-    <Grid Margin="5"
+
+    <Border>
+        <Border.ContextMenu>
+            <ContextMenu Background="{Binding ElementViewModel.FluidUI.Design.Background}"
+                         BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
+                         Style="{StaticResource ContextMenuStyle}">                
+                <MenuItem Header="#"
+                          Command="{Binding ChangeShowMatrixControlsCommand}"
+                          Style="{StaticResource menuitem}"/>
+            </ContextMenu>
+        </Border.ContextMenu>
+        
+        <Grid Margin="5"
           HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-        <Button Background="Transparent"
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Style="{StaticResource hideBorder}"
+                Grid.Column="0"
+                Grid.Row="1">
+                <Button Background="Transparent"
                 Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
                 Style="{StaticResource btn}"
-                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource booltovis}}"
+                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource VisibilityToCollapsed}}"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Content="-"
                 Width="20"
                 Height="50"
-                Grid.Column="0"
-                Grid.Row="1"
                 Command="{Binding RemoveLineCommand}"/>
+            </Border>
 
-        <Button Background="{Binding ElementViewModel.FluidUI.Design.Foreground}"
+            <Border Style="{StaticResource hideBorder}"
+                Grid.Column="0"                
+                Grid.Row="2">
+                <Button Background="{Binding ElementViewModel.FluidUI.Design.Foreground}"
                 Foreground="{Binding ElementViewModel.FluidUI.Design.Background}"
                 Style="{StaticResource btn}"
-                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource booltovis}}"
+                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource VisibilityToCollapsed}}"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 TextBlock.TextAlignment="Center"
                 Content="+"
                 Width="20"
                 Height="50"
-                Grid.Column="0"                
-                Grid.Row="2"
                 Command="{Binding AddLineCommand}"/>
+            </Border>
 
-        <Button Background="Transparent"
+            <Border Style="{StaticResource hideBorder}"
+                Grid.Column="1"
+                Grid.Row="0">
+                <Button Background="Transparent"
                 Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
                 Style="{StaticResource btn}"
-                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource booltovis}}"
+                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource VisibilityToCollapsed}}"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Content="-"
                 Width="50"
                 Height="20"
-                Grid.Column="1"
-                Grid.Row="0"
                 Command="{Binding RemoveRowCommand}"/>
+            </Border>
 
-        <Button Background="{Binding ElementViewModel.FluidUI.Design.Foreground}"
+            <Border Style="{StaticResource hideBorder}"
+                Grid.Column="2"
+                Grid.Row="0">
+                <Button Background="{Binding ElementViewModel.FluidUI.Design.Foreground}"
                 Foreground="{Binding ElementViewModel.FluidUI.Design.Background}"
                 Style="{StaticResource btn}"
-                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource booltovis}}"
+                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource VisibilityToCollapsed}}"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Content="+"
                 Width="50"
                 Height="20"
-                Grid.Column="2"
-                Grid.Row="0"
                 Command="{Binding AddRowCommand}"/>
+            </Border>
 
-        <Border BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
-                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource booltovis}}"
-                Margin="20 0 0 0"
-                MinWidth="25"
+            <Border Style="{StaticResource hideBorder}"
                 Grid.Column="3"
                 Grid.Row="0">
-            <TextBlock Text="{Binding AreaVerticalOuterViewModel.HorizontalCount}"
-                       HorizontalAlignment="Right"/>
-        </Border>
+                <Border BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
+                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource VisibilityToCollapsed}}"
+                Margin="20 0 0 0"
+                MinWidth="25">
+                    <TextBlock Text="{Binding AreaVerticalOuterViewModel.HorizontalCount}"
+                           HorizontalAlignment="Right"/>
+                </Border>
+            </Border>
 
-        <Border BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
-                Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource booltovis}}"
-                Margin="0 20 0 0"
-                MinHeight="25"
-                Grid.Column="0"
-                Grid.Row="3">
-            <TextBlock Text="{Binding AreaVerticalOuterViewModel.VerticalCount}"
+            <Border Style="{StaticResource hideBorder}"
+                    Grid.Column="0"
+                    Grid.Row="3">
+                <Border BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
+                    Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource VisibilityToCollapsed}}"
+                    Margin="0 20 0 0"
+                    MinHeight="25">
+                    <TextBlock Text="{Binding AreaVerticalOuterViewModel.VerticalCount}"
+                       Visibility="{Binding Path=IsMatrixChangeable, Converter={StaticResource VisibilityToCollapsed}}"
                        TextAlignment="Center"
                        Margin="0"
                        Padding="0"/>
-        </Border>
+                </Border>
+            </Border>
 
-        <Border Grid.Column="1"
+            <Border Grid.Column="1"
                 Grid.ColumnSpan="4"
                 Grid.Row="1"
                 Grid.RowSpan="4"
                 Background="Transparent"
                 HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch">
-            <local:AreaVerticalOuterView DataContext="{Binding AreaVerticalOuterViewModel}"
+                VerticalAlignment="Stretch"
+                Visibility="Visible">
+
+                <local:AreaVerticalOuterView DataContext="{Binding AreaVerticalOuterViewModel}"
                                          HorizontalAlignment="Stretch"
                                          VerticalAlignment="Stretch"
                                          HorizontalContentAlignment="Stretch"
                                          VerticalContentAlignment="Stretch"
                                          Background="Transparent"/>
-        </Border>
-    </Grid>
+            </Border>
+        </Grid>
+    </Border>
 </UserControl>
 
 <!-- EOF -->

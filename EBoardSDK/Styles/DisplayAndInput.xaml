@@ -10,19 +10,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -37,7 +37,7 @@
 
     <sm:InverseBooleanToVisibilityCollapsedConverter x:Key="InverseVisibilityToCollapsed"/>
     <sm:BooleanToVisibilityCollapsedConverter x:Key="VisibilityToCollapsed"/>
-
+    
     <Style TargetType="Grid">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Focusable" Value="False"/>
@@ -60,14 +60,27 @@
         <Setter Property="Orientation" Value="Vertical"/>
     </Style>
 
+    <Style TargetType="TabControl" x:Key="DefaultTabControl">
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <Style TargetType="TabItem" x:Key="DefaultTabItem">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="3 0 3 1"/>
+    </Style>
+
     <Style TargetType="TextBlock" x:Key="DefaultTextBlock">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="MinWidth" Value="50"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
     </Style>
 
     <Style TargetType="TextBox" x:Key="DefaultTextBox">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="MinWidth" Value="50"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="0 0 10 0"/>
     </Style>
 
     <Style TargetType="ToolTip" x:Key="DefaultToolTip">

@@ -9,19 +9,19 @@
 /// contact: kammel@posteo.de
 /// <br>
 /// <p>
-/// until a license has been chosen, you may 
+/// until a license has been chosen, you may
 /// use the software or parts of it under the following conditions:<br><br>
 /// 1.)
 /// If you want to distribute or use the source code or a derived binary
 /// of the EBoard project for commercial purposes, you need to contact
 /// the project team for authorization and payment details.
-/// You may use the source or a derived binary for non commercial 
+/// You may use the source or a derived binary for non commercial
 /// purposes free of charge. In order to do so, copy this adhoc terms
 /// and a link to the repository to any source code file that uses code
 /// derived from this project and to the folder that holds the compiled source code.
 ///
 /// 2.)
-/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 /// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 /// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 /// IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
@@ -37,20 +37,27 @@ using System.Text.Json.Serialization;
 
 public class ElementConfig
 {
-    [JsonIgnore]
-    private EBoardViewModel eBoardViewModel;
+    public ElementConfig()
+    {
+    }
 
-    [JsonIgnore]
-    private ElementViewModel elementViewModel;
+    public ElementConfig(ElementViewModel elementViewModel)
+    {
+        this.ElementContext = (FluidUIContext)elementViewModel.FluidUI;
+        this.EID = elementViewModel.EID;
+        this.ID = elementViewModel.ScreenViewModel.Elements.IndexOf(elementViewModel);
+
+        if (elementViewModel.Plugin != null)
+        {
+            this.Plugin = elementViewModel.Plugin;
+            this.PluginName = elementViewModel.Plugin.Name;
+            this.PluginType = elementViewModel.Plugin.PluginViewModelType.FullName ?? string.Empty;
+            this.AssemblyName = elementViewModel.Plugin.PluginViewModelType.AssemblyQualifiedName ?? string.Empty;
+        }
+    }
 
     [JsonIgnore]
     public IPlugin Plugin { get; set; }
-
-    [JsonIgnore]
-    public EBoardViewModel EBoardViewModel => this.eBoardViewModel;
-
-    [JsonIgnore]
-    public ElementViewModel ElementViewModel => this.elementViewModel;
 
     /// <summary>
     /// Gets or sets element ID, built using $"Element_{DateTime().Ticks} on first
@@ -64,25 +71,11 @@ public class ElementConfig
 
     public FluidUIContext ElementContext { get; set; }
 
-    /// <summary>
-    /// a string representation of an assembly, where the element type can be found.
-    /// </summary>
-    public string PluginHeader { get; set; } = string.Empty;
-
-    // unification effort due to reduction, build abstraction layer can be removed and simplified
-    // loading can be simplified, but element as fluidUIDesign container needs some rework
-    // every fluidUIDesign can implement certain features, and maybe should be required to do so.
     public string PluginName { get; set; } = string.Empty;
 
     public string PluginType { get; set; } = string.Empty;
 
     public string AssemblyName { get; set; } = string.Empty;
-
-    public void SetEBoardAndElementViewModel(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel)
-    {
-        this.eBoardViewModel = eBoardViewModel;
-        this.elementViewModel = elementViewModel;
-    }
 }
 
 // EOF

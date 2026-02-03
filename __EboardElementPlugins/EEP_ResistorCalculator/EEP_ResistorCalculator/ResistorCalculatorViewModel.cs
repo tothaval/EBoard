@@ -34,14 +34,19 @@ namespace EEP_ResistorCalculator;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EBoardSDK;
 using EBoardSDK.Enums;
+using EBoardSDK.Models;
 using EBoardSDK.Plugins;
+using EBoardSDK.Plugins.Tools.Summoner;
+using EBoardSDK.Utilities.Factories;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
-public partial class ResistorCalculatorViewModel : EBoardElementPluginBaseViewModel
+public partial class ResistorCalculatorViewModel : PluginBaseViewModel
 {
+    private readonly string pluginHeader = "ResistorCalculator Element";
+    private readonly string pluginName = "ResistorCalculator";
+
     [ObservableProperty]
     private SolidColorBrush band1ColorIndicatorRectangle = new SolidColorBrush(Colors.Black);
 
@@ -54,44 +59,47 @@ public partial class ResistorCalculatorViewModel : EBoardElementPluginBaseViewMo
     [ObservableProperty]
     private SolidColorBrush band4ColorIndicatorRectangle = new SolidColorBrush(Colors.Black);
 
-    private string pluginHeader = "ResistorCalculator Element";
-    private string pluginName = "ResistorCalculator";
-
     public ResistorCalculatorViewModel()
     {
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.OnlyFluidUI);
     }
 
-    public override PluginCategories PluginCategory => PluginCategories.Element;
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Element;
 
-    public override bool NoDefaultBorders { get; } = false;
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new();
 
-    public override ImageBrush PluginLogo { get; set; } = new();
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
 
-    public override UserControl Plugin => (UserControl)Activator.CreateInstance(ElementPluginView)!;
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
 
-    public override string PluginHeader { get { return pluginHeader; } set { pluginHeader = value; } }
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
 
-    public override string PluginName { get { return pluginName; } set { pluginName = value; } }
-
-    public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
-
+    /// <inheritdoc/>
     public override ResourceDictionary? ResourceDictionary => new() { Source = new Uri("/EEP_ResistorCalculator;component/DefaultResourceDictionary.xaml", uriKind: UriKind.Relative) };
 
-    public override Type? ElementPluginModel => null;
+    /// <inheritdoc/>
+    public override Type? PluginModelType => null;
 
-    public override Type ElementPluginView => typeof(ResistorCalculatorView);
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(ResistorCalculatorViewModel);
 
-    public override Type ElementPluginViewModel => typeof(ResistorCalculatorViewModel);
-
-    public override Task<EBoardFeedbackMessage> Load(string path)
+    /// <inheritdoc/>
+    public override Task<EboardFeedbackMessage> Load(string path)
     {
-
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty load call" });
+        return Task.FromResult(FeedbackMessageFactory.EmptyCallSuccess("Load(string path)"));
     }
 
-    public override Task<EBoardFeedbackMessage> Save(string path)
+    /// <inheritdoc/>
+    public override Task<EboardFeedbackMessage> Save(string path)
     {
-        return Task.FromResult(new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = "empty save call" });
+        return Task.FromResult(FeedbackMessageFactory.EmptyCallSuccess("Save(string path)"));
     }
 }
 

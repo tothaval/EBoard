@@ -36,5 +36,24 @@
     <ProjectReference Include="..\__EboardElementPlugins\EEP_ResistorCalculator\EEP_ResistorCalculator\EEP_ResistorCalculator.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="RuntimeTextTemplate1.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>RuntimeTextTemplate1.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="RuntimeTextTemplate1.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>RuntimeTextTemplate1.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 	
 </Project>
