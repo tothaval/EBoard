@@ -31,7 +31,12 @@
 /// </p>
 namespace EBoardSDK.Plugins.Shapes.Ellipse;
 
+<<<<<<< Updated upstream
+=======
+using System.Windows;
+>>>>>>> Stashed changes
 using System.Windows.Controls;
+using System.Windows.Shapes;
 
 /// <summary>
 /// Interaktionslogik für EllipseView.xaml.
@@ -44,6 +49,23 @@ public partial class EllipseView : UserControl
     public EllipseView()
     {
         this.InitializeComponent();
+    }
+
+    private void UserControl_Drop(object sender, System.Windows.DragEventArgs e)
+    {
+        var dataContext = this.DataContext;
+
+        if (e.Data.GetDataPresent(DataFormats.FileDrop) && dataContext != null)
+        {
+            var viewModel = dataContext as EllipseViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.Drop(e);
+            }
+        }
+
+        e.Handled = true;
     }
 }
 

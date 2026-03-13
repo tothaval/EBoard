@@ -30,6 +30,7 @@
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
 namespace EBoardSDK.Interfaces;
+
 /// <summary>
 /// This interface for Fluid UI model classes aims to provide
 /// a way to access value change moments within the models.

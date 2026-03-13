@@ -114,7 +114,13 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+<<<<<<< Updated upstream:EBoardSDK/Plugins/Tools/PluginManager/PluginManagerView.xaml
         <TextBlock Text="{Binding PluginHeader}"
+=======
+        
+        <TextBlock Text="{Binding Header}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/PluginManager/PluginManagerView.xaml
                    Grid.Column="0"
                    Grid.Row="0"/>
 

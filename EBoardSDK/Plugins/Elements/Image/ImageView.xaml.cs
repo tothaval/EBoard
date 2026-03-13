@@ -31,7 +31,9 @@
 /// </p>
 namespace EBoardSDK.Plugins.Elements.Image;
 
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 /// <summary>
 /// Interaktionslogik für ImageView.xaml.
@@ -44,6 +46,32 @@ public partial class ImageView : UserControl
     public ImageView()
     {
         this.InitializeComponent();
+
+        this.PopulateComboBoxes();
+    }
+
+    private void PopulateComboBoxes()
+    {
+        var imageStretchEnumValues = Enum.GetValues(typeof(Stretch));
+        this.CbxImageStretch.ItemsSource = imageStretchEnumValues.Cast<Stretch>().ToList();
+
+        var horizontalAlignementEnumValues = Enum.GetValues(typeof(HorizontalAlignment));
+        this.CbxHorizontalAlignment.ItemsSource = horizontalAlignementEnumValues.Cast<HorizontalAlignment>().ToList();
+
+        var verticalAlignementEnumValues = Enum.GetValues(typeof(VerticalAlignment));
+        this.CbxVerticalAlignment.ItemsSource = verticalAlignementEnumValues.Cast<VerticalAlignment>().ToList();
+    }
+
+    private void Grid_Drop(object sender, System.Windows.DragEventArgs e)
+    {
+        var dataContext = this.DataContext;
+
+        if (dataContext is ImageViewModel imageViewModel)
+        {
+            imageViewModel.SetDroppedImageFile(e);
+        }
+
+        e.Handled = true;
     }
 }
 

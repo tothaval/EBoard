@@ -35,7 +35,6 @@ using EBoardSDK.Models;
 using EBoardSDK.Plugins;
 using EBoardSDK.ViewModels;
 using Serilog;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
 

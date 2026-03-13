@@ -172,6 +172,11 @@
                       Grid.Row="0"
                       IsChecked="{Binding AllConfiguration}"/>
 
+        <ToggleButton Content="Nothing"
+                      Grid.Column="3"
+                      Grid.Row="0"
+                      IsChecked="{Binding NothingConfiguration}"/>
+
         <ToggleButton Content="Data"
                       Grid.Column="0"
                       Grid.Row="1"

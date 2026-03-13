@@ -36,6 +36,12 @@ using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins.Elements.Image;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+using Serilog;
+>>>>>>> Stashed changes
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -51,6 +57,19 @@ public partial class TwoXThreeImageAreaViewModel : EBoardElementPluginBaseViewMo
     /// </summary>
     public TwoXThreeImageAreaViewModel()
     {
+<<<<<<< Updated upstream
+=======
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.FullCopy);
+
+        this.ImageViewModel1.SetContainerIsArea();
+        this.ImageViewModel2.SetContainerIsArea();
+        this.ImageViewModel3.SetContainerIsArea();
+        this.ImageViewModel4.SetContainerIsArea();
+        this.ImageViewModel5.SetContainerIsArea();
+        this.ImageViewModel6.SetContainerIsArea();
+>>>>>>> Stashed changes
     }
 
     public ImageViewModel ImageViewModel1 { get; } = new();

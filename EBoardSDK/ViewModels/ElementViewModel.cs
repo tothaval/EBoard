@@ -43,6 +43,7 @@ using CommunityToolkit.Mvvm.Input;
 using EBoardSDK.Controls.FluidUIMenu;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUIDataBlock;
 using EBoardSDK.Models.FluidUIDesign;
 using EBoardSDK.Models.FluidUISize;
 using EBoardSDK.Models.FluidUIStand;
@@ -50,6 +51,7 @@ using EBoardSDK.Plugins.Tools.Coordinates;
 using EBoardSDK.Views;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 /// <summary>
 /// TODO: refactoring to further reduce code towards the necessary minimum and nothing more.
@@ -275,7 +277,12 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
             this.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this, eBoardViewModel: this.eBoardViewModel, fluidUIContextHasStand: true));
         }
 
-        this.FluidUIMenuViewModel.CreateViewModels();
+        this.FluidUIMenuViewModel?.CreateViewModels();
+    }
+
+    internal void Delete(bool confirmRemove = true)
+    {
+        this.screenViewModel?.RemoveElement(this, confirmRemove);
     }
 
     internal override void TriggerRedraw()
@@ -314,6 +321,39 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
         }
     }
 
+    protected override void HideControl0Changed(bool value)
+    {
+        var manager = new FluidUIContextManager(this);
+        manager.SetHideControl(value, 0);
+
+        this.ChangeElementVisibility(value);
+
+        if (this.HideControl1 == true && value)
+        {
+            this.HideControl1 = false;
+        }
+    }
+
+    protected override void HideControl1Changed(bool value)
+    {
+        var manager = new FluidUIContextManager(this);
+        manager.SetHideControl(value, 1);
+
+        if (this.HideControl0 == true && value)
+        {
+            this.HideControl0 = false;
+        }
+    }
+
+    protected override void HideControl2Changed(bool value)
+    {
+        var contextmanager = new FluidUIContextManager(this);
+        contextmanager.SetHideControl(value, 2);
+
+        var manager = new FluidUIDataBlockManager(this);
+        manager.SetShowToolTip(!value);
+    }
+
     private void ChangeSelection_CornerRadiusValue(QuadValue<int> cornerRadius)
     {
         this.eBoardViewModel?.ChangeSelection_CornerRadius(this, cornerRadius);
@@ -342,12 +382,66 @@ public partial class ElementViewModel : EboardFluidUIBaseViewModel, IElementSele
     partial void OnPluginChanged(IPlugin value)
     {
         this.OnPropertyChanged(nameof(this.FluidUI));
+<<<<<<< Updated upstream
+=======
+        this.OnPropertyChanged(nameof(this.CopyAllowed));
+    }
+
+    private void ChangeElementVisibility(bool hideElementsChanged)
+    {
+        var manager = new FluidUIDesignManager(this);
+
+        if (hideElementsChanged)
+        {
+            manager.SetBrush(manager.GetBrush(BrushTargets.Background), BrushTargets.HideElementFallback);
+            manager.SetBrush(FluidUIDesignDefaultPropertyFactory.TransparentSolidColorBrush, BrushTargets.Background);
+
+            this.Redraw();
+
+            return;
+        }
+
+        manager.SetBrush(manager.GetBrush(BrushTargets.HideElementFallback), BrushTargets.Background);
+
+        this.Redraw();
+>>>>>>> Stashed changes
     }
 
     [RelayCommand]
     private void DeleteElement(object s)
     {
+<<<<<<< Updated upstream
         this.eBoardViewModel?.RemoveElement(this);
+=======
+        this.screenViewModel?.MainViewModel.DeepCopyElementToElementCopyList(this, moveCopy: false);
+    }
+
+    [RelayCommand]
+    private void Delete(object s)
+    {
+        this.Delete();
+    }
+
+    [RelayCommand]
+    private void DuplicateNTimes()
+    {
+        this.Duplicate();
+    }
+
+    [RelayCommand]
+    private void Move()
+    {
+        if (this.ScreenViewModel.MainViewModel.DeepCopyElementToElementCopyList(this, moveCopy: true))
+        {
+            this.Delete();
+        }
+    }
+
+    [RelayCommand]
+    private void Save()
+    {
+        // TODO implement, write elementconfig to designated location
+>>>>>>> Stashed changes
     }
 
     [RelayCommand]

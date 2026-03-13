@@ -29,8 +29,15 @@
 /// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
+<<<<<<< Updated upstream:EBoardSDK/Plugins/Elements/Manual/ManualView.xaml.cs
 namespace EBoardSDK.Plugins.Elements.Manual;
 
+=======
+namespace EBoardSDK.Plugins.Shapes.Polygon;
+using EBoardSDK.Plugins.Shapes.Ellipse;
+
+using System.Windows;
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Shapes/Polygon/PolygonView.xaml.cs
 using System.Windows.Controls;
 
 /// <summary>
@@ -44,6 +51,23 @@ public partial class ManualView : UserControl
     public ManualView()
     {
         this.InitializeComponent();
+    }
+
+    private void UserControl_Drop(object sender, System.Windows.DragEventArgs e)
+    {
+        var dataContext = this.DataContext;
+
+        if (e.Data.GetDataPresent(DataFormats.FileDrop) && dataContext != null)
+        {
+            var viewModel = dataContext as PolygonViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.Drop(e);
+            }
+        }
+
+        e.Handled = true;
     }
 }
 

@@ -45,11 +45,36 @@ using System.Windows.Media;
 
 public class FluidUIDesignModel : IFluidUIDesignModel
 {
+<<<<<<< Updated upstream
     private Brush background = new SolidColorBrush(Colors.White);
     private Brush border = new SolidColorBrush(Colors.Black);
     private Brush foreground = new SolidColorBrush(Colors.DarkGray);
     private Brush highlight = new SolidColorBrush(Colors.DarkGoldenrod);
     private Brush selectionFallbackBrush = new SolidColorBrush(Colors.WhiteSmoke);
+=======
+    private bool onBackgroundLoad = true;
+    private bool onForegroundLoad = true;
+    private bool onBorderLoad = true;
+    private bool onHighlightLoad = true;
+    private bool onSelectionFallbackLoad = true;
+
+    private double opacity = FluidUIDesignDefaultPropertyFactory.DefaultOpacity;
+
+    private Brush background = FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+    private Brush foreground = FluidUIDesignDefaultPropertyFactory.ForegroundDefaultSolidColorBrush;
+    private Brush border = FluidUIDesignDefaultPropertyFactory.BorderDefaultSolidColorBrush;
+    private Brush highlight = FluidUIDesignDefaultPropertyFactory.HighlightDefaultSolidColorBrush;
+    private Brush selectionFallbackBrush = FluidUIDesignDefaultPropertyFactory.SelectionFallbackDefaultSolidColorBrush;
+
+    private Brush hideElementFallbackBrush = FluidUIDesignDefaultPropertyFactory.SelectionFallbackDefaultSolidColorBrush;
+
+    private FluidUIBrushModel backgroundColor = new(FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush);
+    private FluidUIBrushModel foregroundColor = new(FluidUIDesignDefaultPropertyFactory.ForegroundDefaultSolidColorBrush);
+    private FluidUIBrushModel borderColor = new(FluidUIDesignDefaultPropertyFactory.BorderDefaultSolidColorBrush);
+    private FluidUIBrushModel highlightColor = new(FluidUIDesignDefaultPropertyFactory.HighlightDefaultSolidColorBrush);
+    private FluidUIBrushModel selectionFallbackColor = new(FluidUIDesignDefaultPropertyFactory.SelectionFallbackDefaultSolidColorBrush);
+    private FluidUIBrushModel hideElementFallbackColor = new(FluidUIDesignDefaultPropertyFactory.SelectionFallbackDefaultSolidColorBrush);
+>>>>>>> Stashed changes
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUIDesignModel"/> class.
@@ -95,9 +120,38 @@ public class FluidUIDesignModel : IFluidUIDesignModel
         }
     }
 
+<<<<<<< Updated upstream
     // foreground brush related properties, foreground is used for text color
     [JsonIgnore]
     public Brush Foreground
+=======
+    // store background brush while user control object is highlighted due to selection or due to having focus
+    [JsonIgnore]
+    public Brush HideElementFallbackBrush
+    {
+        get
+        {
+            return this.selectionFallbackBrush;
+        }
+
+        set
+        {
+            if (this.hideElementFallbackBrush != value)
+            {
+                this.hideElementFallbackBrush = value;
+
+                this.InvokePropertyChangedEvent();
+            }
+
+            if (!this.onSelectionFallbackLoad)
+            {
+                this.hideElementFallbackColor = new FluidUIBrushModel(value);
+            }
+        }
+    }
+
+    public FluidUIBrushModel BackgroundColor
+>>>>>>> Stashed changes
     {
         get
         {
@@ -158,7 +212,34 @@ public class FluidUIDesignModel : IFluidUIDesignModel
 
     public string ImagePath { get; set; } = string.Empty;
 
+<<<<<<< Updated upstream
     public string ImageForegroundPath { get; set; } = string.Empty;
+=======
+    public FluidUIBrushModel HideElementFallbackColor
+    {
+        get
+        {
+            return this.hideElementFallbackColor;
+        }
+
+        set
+        {
+            this.hideElementFallbackColor = value;
+
+            if (this.onSelectionFallbackLoad)
+            {
+                this.BuildBrushesFromFluidUIBrushModel(BrushTargets.SelectionFallback).Wait();
+            }
+        }
+    }
+
+    public double Opacity
+    {
+        get
+        {
+            return this.opacity;
+        }
+>>>>>>> Stashed changes
 
     public string ImageBorderPath { get; set; } = string.Empty;
 
@@ -205,11 +286,56 @@ public class FluidUIDesignModel : IFluidUIDesignModel
         this.Border = new SolidColorBrush(Colors.Black);
         this.SelectionFallbackBrush = new SolidColorBrush(Colors.WhiteSmoke);
 
+<<<<<<< Updated upstream
         this.BackgroundColor = new ColorDataModel(this.Background);
         this.BorderColor = new ColorDataModel(this.Border);
         this.ForegroundColor = new ColorDataModel(this.Foreground);
         this.HighlightColor = new ColorDataModel(this.Highlight);
         this.SelectionFallbackColor = new ColorDataModel(this.SelectionFallbackBrush);
+=======
+    internal async Task BuildBrushesFromFluidUIBrushModel(BrushTargets brushTargets)
+    {
+        switch (brushTargets)
+        {
+            case BrushTargets.Background:
+                this.background = await new FluidUIBrushManager(this.backgroundColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.BackgroundDefaultSolidColorBrush;
+                this.onBackgroundLoad = false;
+                break;
+            case BrushTargets.Foreground:
+                this.foreground = await new FluidUIBrushManager(this.foregroundColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.ForegroundDefaultSolidColorBrush;
+                this.onForegroundLoad = false;
+                break;
+            case BrushTargets.Border:
+                this.border = await new FluidUIBrushManager(this.borderColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.BorderDefaultSolidColorBrush;
+                this.onBorderLoad = false;
+                break;
+            case BrushTargets.Highlight:
+                this.highlight = await new FluidUIBrushManager(this.highlightColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.HighlightDefaultSolidColorBrush;
+                this.onHighlightLoad = false;
+                break;
+            case BrushTargets.SelectionFallback:
+                this.selectionFallbackBrush = await new FluidUIBrushManager(this.selectionFallbackColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.SelectionFallbackDefaultSolidColorBrush;
+                this.onSelectionFallbackLoad = false;
+                break;
+            case BrushTargets.HideElementFallback:
+                this.hideElementFallbackBrush = await new FluidUIBrushManager(this.hideElementFallbackColor).GetBrush() ?? FluidUIDesignDefaultPropertyFactory.SelectionFallbackDefaultSolidColorBrush;
+                this.onSelectionFallbackLoad = false;
+                break;
+            default:
+                break;
+        }
+    }
+
+    /// <inheritdoc/>
+    public void UpdateValues()
+    {
+        this.InvokePropertyChangedEvent();
+    }
+
+    private void InvokePropertyChangedEvent()
+    {
+        this.PropertyChangedEvent?.Invoke();
+>>>>>>> Stashed changes
     }
 }
 

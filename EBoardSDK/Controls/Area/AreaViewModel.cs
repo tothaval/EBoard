@@ -43,10 +43,6 @@ public partial class AreaViewModel<T> : ObservableObject
 {
     private ElementViewModel elementViewModel;
 
-    public ElementViewModel ElementViewModel => this.elementViewModel;
-
-    public AreaVerticalOuterViewModel<T> AreaVerticalOuterViewModel { get; }
-
     [ObservableProperty]
     private bool isMatrixChangeable = true;
 
@@ -69,7 +65,12 @@ public partial class AreaViewModel<T> : ObservableObject
 
         this.IsMatrixChangeable = true;
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
+        this.OnPropertyChanged(nameof(this.ElementViewModel));
     }
+
+    public ElementViewModel ElementViewModel => this.elementViewModel;
+
+    public AreaVerticalOuterViewModel<T> AreaVerticalOuterViewModel { get; }
 
     public void SetElementViewModel(ElementViewModel elementViewModel)
     {
@@ -150,6 +151,13 @@ public partial class AreaViewModel<T> : ObservableObject
     public void RemoveRow()
     {
         this.AreaVerticalOuterViewModel?.RemoveRow();
+        this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
+    }
+
+    [RelayCommand]
+    private void ResetArea()
+    {
+        this.AreaVerticalOuterViewModel?.ResetArea();
         this.OnPropertyChanged(nameof(this.AreaVerticalOuterViewModel));
     }
 }

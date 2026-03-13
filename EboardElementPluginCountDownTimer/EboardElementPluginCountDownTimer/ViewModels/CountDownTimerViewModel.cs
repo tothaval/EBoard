@@ -37,6 +37,10 @@ using EboardElementPluginCountDownTimer.Views;
 using EBoardSDK;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Windows;

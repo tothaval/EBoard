@@ -84,6 +84,7 @@ public partial class AreaHorizontalInnerViewModel<T> : ObservableObject
     public void AddElement(T plugin)
     {
         plugin.RefreshInitialization();
+        plugin.SetContainerIsArea();
         this.Elements?.Add(plugin);
 
         this.OnPropertyChanged(nameof(this.Elements));
@@ -97,7 +98,12 @@ public partial class AreaHorizontalInnerViewModel<T> : ObservableObject
         {
             if (this.elementViewModel != null)
             {
+<<<<<<< Updated upstream
                 instance.SetEBoardAndElementViewModel(this.elementViewModel.EBoardViewModel, this.elementViewModel);
+=======
+                instance.SetElementViewModel(this.elementViewModel);
+                instance.SetContainerIsArea();
+>>>>>>> Stashed changes
                 instance.RefreshInitialization();
             }
 

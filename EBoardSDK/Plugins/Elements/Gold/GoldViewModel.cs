@@ -33,6 +33,12 @@ namespace EBoardSDK.Plugins.Elements.Gold;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUISize;
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -61,7 +67,34 @@ public partial class GoldViewModel : EBoardElementPluginBaseViewModel
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
 
+<<<<<<< Updated upstream
     public override string PluginHeader
+=======
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
+
+    /// <inheritdoc/>
+    public override ResourceDictionary ResourceDictionary => new ();
+
+    /// <inheritdoc/>
+    public override Type? PluginModelType => null;
+
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(GoldViewModel);
+
+    public override void RefreshInitialization()
+    {
+        if (this.ElementViewModel != null)
+        {
+            var manager = new FluidUISizeManager(this.ElementViewModel);
+
+            manager.SetWidth(600.0);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override Task<EboardFeedbackMessage> Load(string path)
+>>>>>>> Stashed changes
     {
         get { return this.pluginHeader; }
         set { this.pluginHeader = value; }

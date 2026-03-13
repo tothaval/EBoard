@@ -38,6 +38,11 @@ using EBoardConfigManager.Helper;
 using EBoardSDK;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using EEP_BudgetWatcher.Models;
 using EEP_BudgetWatcher.Resources;
 using EEP_BudgetWatcher.Views;

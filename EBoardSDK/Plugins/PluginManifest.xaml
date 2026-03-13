@@ -36,8 +36,14 @@
                     
                     xmlns:SoundMix="clr-namespace:EBoardSDK.Plugins.Addons.SoundMix"  
                     
+<<<<<<< Updated upstream
                     xmlns:About="clr-namespace:EBoardSDK.Plugins.Elements.About"   
                     xmlns:EmptyLinear="clr-namespace:EBoardSDK.Plugins.Elements.EmptyLinear"                    
+=======
+                    xmlns:basicAV="clr-namespace:EBoardSDK.Plugins.Elements.BasicAV"
+                    xmlns:Empty="clr-namespace:EBoardSDK.Plugins.Elements.Empty"
+                    xmlns:EmptyLinear="clr-namespace:EBoardSDK.Plugins.Elements.EmptyLinear"
+>>>>>>> Stashed changes
                     xmlns:EmptyRadial="clr-namespace:EBoardSDK.Plugins.Elements.EmptyRadial"
                     xmlns:Gold="clr-namespace:EBoardSDK.Plugins.Elements.Gold"     
                     xmlns:Image="clr-namespace:EBoardSDK.Plugins.Elements.Image"
@@ -79,6 +85,10 @@
         <basicAV:BasicAVMainView/>
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type Empty:EmptyViewModel}">
+        <Empty:EmptyView/>
+    </DataTemplate>
+    
     <DataTemplate DataType="{x:Type EmptyLinear:EmptyLinearViewModel}">
         <EmptyLinear:EmptyLinearView/>
     </DataTemplate>

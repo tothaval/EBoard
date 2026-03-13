@@ -59,9 +59,25 @@ public interface IPlugin : IFluidUI
 
     public abstract PluginCategories PluginCategory { get; }
 
+<<<<<<< Updated upstream
     public abstract string PluginHeader { get; set; }
 
     public abstract string PluginName { get; set; }
+=======
+    /// <summary>
+    /// Gets a value indicating whether the Plugin is
+    /// instantiated within an area or not.
+    /// <see cref="ElementViewModel"/> context menu.
+    /// </summary>
+    public bool ContainerIsArea { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the Plugin has a
+    /// menu item. The value is used for Visibility in
+    /// <see cref="ElementViewModel"/> context menu.
+    /// </summary>
+    public abstract bool MenuItemSet { get; }
+>>>>>>> Stashed changes
 
     public ResourceDictionary ResourceDictionary { get; }
 
@@ -89,6 +105,34 @@ public interface IPlugin : IFluidUI
 
     public void SetEBoardAndElementViewModel(EBoardViewModel eBoardViewModel, ElementViewModel elementViewModel);
 
+<<<<<<< Updated upstream
+=======
+    /// <summary>
+    /// This function serves as a setter for the <see cref="IPlugin.ContainerIsArea"/> property.
+    /// </summary>
+    /// <param name="containerIsArea">Indicates whether the plugin is instanciated within an area
+    /// control or not.</param>
+    public void SetContainerIsArea(bool containerIsArea = true);
+
+    /// <summary>
+    /// This function serves as a setter for the <see cref="ElementViewModel"/> instance property
+    /// that contains the Plugin.
+    /// </summary>
+    /// <param name="elementViewModel">Desired is the Element CA instance that contains the Plugin.</param>
+    public void SetElementViewModel(ElementViewModel elementViewModel);
+
+    /// <summary>
+    /// This function is used to apply a <see cref="IFluidUIContext"/> to a field
+    /// for the inherited <see cref="IFluidUI.FluidUI"/> property.
+    /// </summary>
+    /// <param name="fluidUIContext">The <see cref="IFluidUIContext"/> that replaces the old value.</param>
+    public void SetFluidUI(IFluidUIContext fluidUIContext);
+
+    /// <summary>
+    /// This function is called when the <see cref="ElementView"/> was set in the
+    /// Element CA that contains the Plugin.
+    /// </summary>
+>>>>>>> Stashed changes
     public void ViewWasSet();
 }
 

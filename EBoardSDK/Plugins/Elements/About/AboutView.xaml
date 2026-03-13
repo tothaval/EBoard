@@ -84,7 +84,12 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
+<<<<<<< Updated upstream:EBoardSDK/Plugins/Elements/About/AboutView.xaml
             <TextBlock Text="{Binding PluginHeader}"
+=======
+            <TextBlock Text="{Binding Header}"
+                       Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/About/AboutView.xaml
                        Margin="0 0 0 10"
                        Grid.Row="0"/>
 

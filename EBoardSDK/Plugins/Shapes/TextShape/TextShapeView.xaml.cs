@@ -30,6 +30,12 @@
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
 namespace EBoardSDK.Plugins.Shapes.TextShape;
+<<<<<<< Updated upstream
+=======
+
+using EBoardSDK.Plugins.Shapes.Ellipse;
+using System.Windows;
+>>>>>>> Stashed changes
 using System.Windows.Controls;
 
 /// <summary>
@@ -43,6 +49,23 @@ public partial class TextShapeView : UserControl
     public TextShapeView()
     {
         this.InitializeComponent();
+    }
+
+    private void UserControl_Drop(object sender, System.Windows.DragEventArgs e)
+    {
+        var dataContext = this.DataContext;
+
+        if (e.Data.GetDataPresent(DataFormats.FileDrop) && dataContext != null)
+        {
+            var viewModel = dataContext as TextShapeViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.Drop(e);
+            }
+        }
+
+        e.Handled = true;
     }
 }
 

@@ -30,6 +30,8 @@
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
 namespace EBoardSDK.Plugins.Shapes.Line;
+using EBoardSDK.Plugins.Shapes.Ellipse;
+using System.Windows;
 using System.Windows.Controls;
 
 /// <summary>
@@ -43,6 +45,23 @@ public partial class LineView : UserControl
     public LineView()
     {
         this.InitializeComponent();
+    }
+
+    private void UserControl_Drop(object sender, System.Windows.DragEventArgs e)
+    {
+        var dataContext = this.DataContext;
+
+        if (e.Data.GetDataPresent(DataFormats.FileDrop) && dataContext != null)
+        {
+            var viewModel = dataContext as LineViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.Drop(e, brushTarget: Enums.BrushTargets.Border);
+            }
+        }
+
+        e.Handled = true;
     }
 }
 

@@ -46,22 +46,131 @@
              Padding="{Binding ElementViewModel.FluidUI.Size.Padding}">
 
     <UserControl.Resources>
-        <Style TargetType="Button">
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="MinWidth" Value="25"/>
+        </Style>
+
+        <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="CaretBrush" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="10 5"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="MaxWidth" Value="100"/>
+            <Setter Property="MaxHeight" Value="50"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style TargetType="StatusBarItem">
             <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Background}"/>
             <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="FontFamily" Value="{Binding ElementViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontSize" Value="{Binding ElementViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding ElementViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
+        </Style>
+
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="DefaultButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="3"                            
+                                CornerRadius="5" 
+                                MinWidth="50"
+                                MinHeight="25"
+                                Margin="5"
+                                Padding="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ToggleButton">
             <Setter Property="HorizontalAlignment" Value="Stretch"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="MinHeight" Value="20"/>
-            <Setter Property="MinWidth" Value="20"/>
+
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="BorderBrush" Value="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderThickness" Value="3"/>
+
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="DefaultButtonBorder"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="3"                            
+                                CornerRadius="5" 
+                                MinWidth="50"
+                                MinHeight="25"
+                                Margin="5"
+                                Padding="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background"
+                                    TargetName="DefaultButtonBorder"
+                                    Value="{Binding ElementViewModel.FluidUI.Design.Highlight}"/>
+                                <!--<Setter Property="Foreground"
+                                        Value="{Binding MainViewModel.FluidUI.Design.Highlight}"/>-->
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </UserControl.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -70,43 +179,112 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="{Binding ElementPluginName}" FontSize="10" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                   Grid.Column="0" Grid.ColumnSpan="4"
+        <TextBlock Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Grid.Column="2"
+                   Grid.ColumnSpan="3"
                    Grid.Row="0"/>
 
-        <Button Grid.Column="0"
-                Grid.Row="2"
-                Content="{Binding SelectButtonContent}"
-                Command="{Binding SelectCommand}"/>
+        <UniformGrid Rows="1"
+                     Grid.Column="2"
+                     Grid.Row="1">
+            <Button Content="{Binding SelectButtonContent}"
+                    Command="{Binding SelectCommand}"/>
 
-            <Button Grid.Column="1"
-                Grid.Row="2"
-                Content="{Binding PlayButtonContent}"
-                Command="{Binding PlayCommand}"/>
+            <ToggleButton Content="replay"
+                          IsChecked="{Binding ActivateReplay, UpdateSourceTrigger=PropertyChanged}"
+                          Visibility="{Binding IsMediaSelected, Converter={StaticResource VisibilityToCollapsed}}"/>
 
-            <Button Grid.Column="2"
-                Grid.Row="2"
-                Content="{Binding PauseButtonContent}"
-                Command="{Binding PauseCommand}"/>
+            <ToggleButton Content="unlink"
+                          IsChecked="{Binding UnlinkOnEnd, UpdateSourceTrigger=PropertyChanged}"
+                          Visibility="{Binding IsMediaSelected, Converter={StaticResource VisibilityToCollapsed}}"/>
+        </UniformGrid>
 
-            <Button Grid.Column="3"
-                Grid.Row="2"
-                Content="{Binding StopButtonContent}"
-                Command="{Binding StopCommand}"/>
+        <!--<Border Visibility="{Binding ContainerIsArea, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                Grid.Column="1"
+                Grid.Row="1"
+                Grid.RowSpan="5">
+            <ToggleButton Content="&lt;"
+                      IsChecked="{Binding ShowGroupToggleButton}"
+                      Visibility="{Binding IsMediaSelected, Converter={StaticResource VisibilityToCollapsed}}"
+                      HorizontalAlignment="Left"
+                      Padding="0"
+                      Margin="0"
+                      HorizontalContentAlignment="Left"/>
+        </Border>
+
+        <Border Visibility="{Binding ContainerIsArea, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                Grid.Column="0"
+                Grid.Row="1"
+                Grid.RowSpan="4">
+            <UniformGrid Columns="1"
+                         Visibility="{Binding ShowGroupToggleButton, Converter={StaticResource VisibilityToCollapsed}}">
+                <ToggleButton Content="group"
+                      IsChecked="{Binding IsGrouped, UpdateSourceTrigger=PropertyChanged}"
+                      Grid.Column="4"
+                      Grid.Row="1"
+                      Grid.RowSpan="5"/>
+                <TextBox Text="{Binding ProcessingOrder, UpdateSourceTrigger=PropertyChanged, Delay=200}"
+                     Visibility="{Binding IsGrouped, Converter={StaticResource VisibilityToCollapsed}}"
+                     HorizontalContentAlignment="Center"/>
+            </UniformGrid>
+        </Border>-->
+
+        <Border Visibility="{Binding ContainerIsArea, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                Grid.Column="3"
+                Grid.Row="1"
+                Grid.RowSpan="5">
+            <ToggleButton Content="&gt;"
+                          IsChecked="{Binding ShowDestructToggleButton}"
+                          Visibility="{Binding IsMediaSelected, Converter={StaticResource VisibilityToCollapsed}}"
+                          HorizontalAlignment="Left"
+                          Padding="0"
+                          Margin="0"
+                          HorizontalContentAlignment="Left"/>
+        </Border>
+
+        <Border Visibility="{Binding ContainerIsArea, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                Grid.Column="4"
+                Grid.Row="1"
+                Grid.RowSpan="5">
+            <ToggleButton Content="destruct"
+                          IsChecked="{Binding DestructOnEnd, UpdateSourceTrigger=PropertyChanged}"
+                          Visibility="{Binding ShowDestructToggleButton, Converter={StaticResource VisibilityToCollapsed}}"/>
+        </Border>
+
+        <UniformGrid Visibility="{Binding IsMediaSelected, Converter={StaticResource VisibilityToCollapsed}}"
+                     Grid.Column="2"
+                     Grid.Row="2"
+                     Rows="1">
+            <Button Content="{Binding PlayButtonContent}"
+                    Command="{Binding PlayCommand}"/>
+
+            <Button Content="{Binding PauseButtonContent}"
+                    Command="{Binding PauseCommand}"/>
+
+            <Button Content="{Binding StopButtonContent}"
+                    Command="{Binding StopCommand}"/>
+        </UniformGrid>
 
         <!--<MediaElement Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Volume="{Binding Volume, NotifyOnSourceUpdated=True}"/>-->
 
-        <Border Grid.Column="0" Grid.ColumnSpan="4"
+        <Border Visibility="{Binding IsMediaSelected, Converter={StaticResource VisibilityToCollapsed}}"
+                Grid.Column="2"
                 Grid.Row="1">
             <ContentControl Content="{Binding Media}"/>
         </Border>
 
-        <StatusBar x:Name="ui_statusBar" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"
+        <StatusBar x:Name="ui_statusBar"
+                   Grid.Row="3"
+                   Grid.Column="2"
                    Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
-                   Background="{Binding ElementViewModel.FluidUI.Design.Background}">
+                   Background="{Binding ElementViewModel.FluidUI.Design.Background}"
+                   Visibility="{Binding IsMediaSelected, Converter={StaticResource VisibilityToCollapsed}}">
 
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -128,7 +306,8 @@
                 <TextBlock Text="{Binding PlayTimeString, NotifyOnSourceUpdated=True}"/>
             </StatusBarItem>
 
-            <StatusBarItem Grid.Column="1" HorizontalContentAlignment="Stretch">
+            <StatusBarItem Grid.Column="1"
+                           HorizontalContentAlignment="Stretch">
                 <Slider Name="sliProgress"
                         Thumb.DragStarted="sliProgress_DragStarted"
                         Thumb.DragCompleted="sliProgress_DragCompleted"
@@ -143,16 +322,24 @@
                 <TextBlock Text="{Binding MaximumPlayTimeString, NotifyOnSourceUpdated=True}"/>
             </StatusBarItem>
 
-            <StatusBarItem Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" HorizontalContentAlignment="Stretch">
-                <ProgressBar Name="pbVolume" MinWidth="50" Height="12" MouseWheel="Grid_MouseWheel"
-                             Maximum="1" Value="{Binding Volume, NotifyOnSourceUpdated=True}" />
+            <StatusBarItem Grid.Column="0"
+                           Grid.ColumnSpan="3"
+                           Grid.Row="1"
+                           HorizontalContentAlignment="Stretch">
+                <ProgressBar Name="pbVolume"
+                             MinWidth="50"
+                             Height="12"
+                             MouseWheel="Grid_MouseWheel"
+                             Maximum="1"
+                             Value="{Binding Volume, NotifyOnSourceUpdated=True}" />
             </StatusBarItem>
 
         </StatusBar>
 
-        <TextBlock Text="{Binding FileName}" FontSize="10"
-                   Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
-                   Grid.Column="0" Grid.ColumnSpan="4"
+        <TextBlock Text="{Binding FileName}"
+                   ToolTip="{Binding FileName}"
+                   MaxWidth="200"
+                   Grid.Column="2"
                    Grid.Row="4"/>
     </Grid>
 </UserControl>

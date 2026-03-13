@@ -1,6 +1,8 @@
 ﻿// <copyright file="BasicAVModel.cs" company=".">
 // Stephan Kammel
 // </copyright>
+using CommunityToolkit.Mvvm.ComponentModel;
+
 /// license
 ///
 /// <b>ad-hoc license terms eboard prototype</b><br>
@@ -62,11 +64,30 @@ public class BasicAVModel
         this.PlayTimeSpan = basicAVMainViewModel.PlayTimeSpan;
 
         this.Volume = basicAVMainViewModel.Volume;
+
+        this.ActivateReplay = basicAVMainViewModel.ActivateReplay;
+        this.DestructOnEnd = basicAVMainViewModel.DestructOnEnd;
+        this.IsGrouped = basicAVMainViewModel.IsGrouped;
+        this.ShowDestructToggleButton = basicAVMainViewModel.ShowDestructToggleButton;
+        this.ShowGroupToggleButton = basicAVMainViewModel.ShowGroupToggleButton;
+        this.UnlinkOnEnd = basicAVMainViewModel.UnlinkOnEnd;
     }
 
     public string Filename { get; set; } = string.Empty;
 
     public string Filepath { get; set; } = string.Empty;
+
+    public bool ActivateReplay { get; set; } = false;
+
+    public bool DestructOnEnd { get; set; } = false;
+
+    public bool IsGrouped { get; set; } = false;
+
+    public bool ShowDestructToggleButton { get; set; } = false;
+
+    public bool ShowGroupToggleButton { get; set; } = false;
+
+    public bool UnlinkOnEnd { get; set; } = false;
 
     public double PlayTimeSpan { get; set; } = 0.0;
 

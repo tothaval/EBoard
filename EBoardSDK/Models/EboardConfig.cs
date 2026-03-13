@@ -30,6 +30,11 @@
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
 namespace EBoardSDK.Models;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Utilities;
+using EBoardSDK.ViewModels;
+>>>>>>> Stashed changes
 
 public class EboardConfig
 {

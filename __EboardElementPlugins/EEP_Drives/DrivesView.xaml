@@ -54,12 +54,23 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
+<<<<<<< Updated upstream
         <TextBox Text="{Binding PluginHeader}"
                  Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
                  Style="{StaticResource txtbx}"
                  IsReadOnlyCaretVisible="False"
                  IsHitTestVisible="False"
                  Grid.Row="0"/>
+=======
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   FontWeight="Bold"
+                   Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"/>
+>>>>>>> Stashed changes
 
         <Border Grid.Row="1"
                 BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"

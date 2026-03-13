@@ -36,6 +36,11 @@ using CommunityToolkit.Mvvm.Input;
 using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using EBoardSDK.ViewModels;
 using Serilog;
 using System;
@@ -72,6 +77,8 @@ public partial class PathViewModel : ShapeBaseViewModel
     /// </summary>
     public PathViewModel()
     {
+        //this.SetMenuItemViewModel(new PathMenuItemViewModel(this));
+        //this.SetMenuItem(new PathMenuItem(this.MenuItemViewModel!));
     }
 
     public bool ResetPath => !this.PathEntered;
@@ -154,9 +161,60 @@ public partial class PathViewModel : ShapeBaseViewModel
 
         return new EBoardFeedbackMessage()
         {
+<<<<<<< Updated upstream
             ResultMessage = $"{path} :: saving eboard config: {result}",
             TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
         };
+=======
+            return;
+        }
+
+        if (model is PathModel pathModel)
+        {
+            this.ApplyModel(pathModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<PathModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new PathModel(this);
+
+        this.SetModel(model);
+    }
+
+    private void ApplyModel(PathModel pathModel)
+    {
+        this.PathString = pathModel.PathString;
+        this.PathEntered = pathModel.PathEntered;
+
+        this.ApplyShapeModel(pathModel);
+>>>>>>> Stashed changes
     }
 
     partial void OnPathStringChanged(string value)

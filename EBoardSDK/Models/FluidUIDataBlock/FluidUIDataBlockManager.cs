@@ -58,7 +58,23 @@ internal class FluidUIDataBlockManager : IFluidUIManager
     {
         this.viewModel.FluidUI.DataBlock?.SetInitialValues();
 
+<<<<<<< Updated upstream
         this.viewModel.UpdateDataBlock();
+=======
+        this.ClearIndexTextList();
+        this.ClearKeyTextList();
+        this.ClearTextAndTitle();
+        this.SetInitialIndexTextQuadValues();
+        this.SetInitialKeyTextQuadValues();
+        this.SetShowToolTip(true);
+
+        if (!calledByIFluidUIContextManager)
+        {
+            this.viewModel.SetFluidUIByUser(this.viewModel.FluidUI);
+        }
+
+        this.viewModel.ClearDataBlock();
+>>>>>>> Stashed changes
     }
 
     internal void ClearIndexTextList()

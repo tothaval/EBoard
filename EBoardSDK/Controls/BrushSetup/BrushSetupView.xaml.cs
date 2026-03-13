@@ -31,7 +31,9 @@
 /// </p>
 namespace EBoardSDK.Controls.BrushSetup;
 
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 /// <summary>
 /// Interaktionslogik für BrushSetupView.xaml.

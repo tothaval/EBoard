@@ -30,6 +30,8 @@
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
 namespace EBoardSDK.Plugins.Shapes.Path;
+using EBoardSDK.Plugins.Shapes.Ellipse;
+using System.Windows;
 using System.Windows.Controls;
 
 /// <summary>
@@ -43,6 +45,23 @@ public partial class PathView : UserControl
     public PathView()
     {
         this.InitializeComponent();
+    }
+
+    private void UserControl_Drop(object sender, System.Windows.DragEventArgs e)
+    {
+        var dataContext = this.DataContext;
+
+        if (e.Data.GetDataPresent(DataFormats.FileDrop) && dataContext != null)
+        {
+            var viewModel = dataContext as PathViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.Drop(e);
+            }
+        }
+
+        e.Handled = true;
     }
 }
 

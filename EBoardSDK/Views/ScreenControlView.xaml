@@ -42,34 +42,55 @@
              xmlns:enums="clr-namespace:EBoardSDK.Enums"
              xmlns:fuim="clr-namespace:EBoardSDK.Controls.FluidUIMenu"
              x:Name="EBoard_EBoardSettings"
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
              d:DataContext="{d:DesignInstance Type=vms:ScreenControlViewModel}"
              FontSize="{Binding ViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
              FontFamily="{Binding ViewModel.FluidUI.Font.FontFamily,NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
              FontWeight="{Binding ViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
+=======
+             d:DataContext="{d:DesignInstance Type=local:ScreenControlViewModel}"
+             FontSize="{Binding ScreenViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
+             FontFamily="{Binding ScreenViewModel.FluidUI.Font.FontFamily,NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
+             FontWeight="{Binding ScreenViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
              mc:Ignorable="d" 
              ClipToBounds="True"
              d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.Resources>
         <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}" >
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+=======
+            <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
             <Setter Property="Margin" Value="0 10 10 10"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
 
         <Style TargetType="TextBox" BasedOn="{StaticResource DefaultTextBox}">
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+=======
+            <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ScreenViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Padding" Value="0 0 10 0"/>
         </Style>
 
         <Style TargetType="Button">
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
             <Setter Property="BorderThickness" Value="3"/>
+=======
+            <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="BorderBrush" Value="{Binding ScreenViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
 
             <Setter Property="Template">
                 <Setter.Value>
@@ -92,18 +113,28 @@
 
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
                     <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
                     <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+=======
+                    <Setter Property="Background" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
                 </Trigger>
 
                 <Trigger Property="IsMouseOver" Value="False">
                     <Setter Property="Background" Value="Transparent"/>
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
                     <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+=======
+                    <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style TargetType="Slider" BasedOn="{StaticResource DefaultHorizontalSlider}">
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
         </Style>
@@ -118,20 +149,48 @@
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
                     <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Background}"/>
+=======
+            <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style TargetType="TabControl" BasedOn="{StaticResource DefaultTabControl}">
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+
+        <Style TargetType="TabItem" BasedOn="{StaticResource DefaultTabItem}">
+            <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="BorderBrush" Value="{Binding ScreenViewModel.FluidUI.Design.Border}"/>
+
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground}"/>
+                    <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Background}"/>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
                 </Trigger>
 
                 <Trigger Property="IsSelected" Value="False">
                     <Setter Property="Background" Value="Transparent"/>
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
                     <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
                 </Trigger>
 
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Highlight}"/>
                     <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Background}"/>
+=======
+                    <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding ScreenViewModel.FluidUI.Design.Highlight}"/>
+                    <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Background}"/>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
                 </Trigger>
 
                 <Trigger Property="IsMouseOver" Value="False">
                     <Setter Property="Background" Value="Transparent"/>
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
                     <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
                 </Trigger>
             </Style.Triggers>
@@ -148,46 +207,118 @@
         <TabControl Background="Transparent">
             <TabItem Header="Plugins">
                 <!-- arrangement 
+=======
+                    <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="ToolTip" BasedOn="{StaticResource DefaultToolTip}">
+            <Setter Property="Background" Value="{Binding ScreenViewModel.FluidUI.Design.Background}"/>
+            <Setter Property="BorderBrush" Value="{Binding ScreenViewModel.FluidUI.Design.Border}"/>
+            <Setter Property="Foreground" Value="{Binding ScreenViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="FontSize" Value="{Binding ScreenViewModel.FluidUI.Font.FontSize}"/>
+            <Setter Property="FontFamily" Value="{Binding ScreenViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"/>
+            <Setter Property="FontWeight" Value="{Binding ScreenViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Border Background="{Binding ScreenViewModel.FluidUI.Design.Background}"
+            BorderBrush="{Binding ScreenViewModel.FluidUI.Design.Border}"
+            BorderThickness="{Binding ScreenViewModel.FluidUI.Size.BorderThickness}"
+            CornerRadius="{Binding ScreenViewModel.FluidUI.Size.CornerRadius}"
+            Padding="{Binding ScreenViewModel.FluidUI.Size.Padding}"
+            Margin="{Binding ScreenViewModel.FluidUI.Size.Margin}"
+            Opacity="{Binding ScreenViewModel.FluidUI.Design.Opacity}">
+        <Border.ToolTip>
+            <ToolTip Content="{Binding ScreenViewModel.FluidUI.DataBlock.Text}"/>
+
+        </Border.ToolTip>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Border Visibility="{Binding InstantiatedAsElement, Converter={StaticResource VisibilityToCollapsed}}"
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="4">
+                <TextBlock FontWeight="Bold"
+                       Text="{Binding Name}"
+                       Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
+                       Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Left"/>
+            </Border>
+            
+            <TabControl Grid.Row="1">
+                <TabItem Header="Plugins">
+                    <!-- arrangement 
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
         TODO: move to separate view and implement new viewmodel-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
 
-                    <!-- Button >Select< ComboBox >SelectionTargets< ComboBox >Plugins<-->
-                    <Button Content="Select" Command="{Binding SelectCommand}"
+                        <!-- Button >Select< ComboBox >SelectionTargets< ComboBox >Plugins<-->
+                        <Button Content="Select" Command="{Binding SelectCommand}"
                             Grid.Column="0"
                             Grid.Row="0"/>
 
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
                     <Button Content="Copy"
                             IsEnabled="False"
                             Command="{Binding CopyCommand}"
                             Grid.Column="0"
+=======
+                        <Button Content="Duplicate"
+                            Command="{Binding DuplicateCommand}"
+                            Grid.Column="0"
                             Grid.Row="1"/>
 
-                    <Button Content="Clear" Command="{Binding ClearCommand}"
+                        <Button Content="Copy"
+                            Command="{Binding CopyCommand}"
+                            Grid.Column="1"
+                            Grid.Row="1"/>
+
+                        <Button Content="Move"
+                            Command="{Binding MoveCommand}"
+                            Grid.Column="2"
+                            Grid.Row="1"/>
+
+                        <Button Content="Paste"
+                            Command="{Binding PasteCommand}"
+                            Grid.Column="3"
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
+                            Grid.Row="1"/>
+
+                        <Button Content="Clear" Command="{Binding ClearCommand}"
                             Grid.Column="0"
                             Grid.Row="2"/>
 
-                    <fuim:PluginSelectionView DataContext="{Binding PluginSelectionViewModel}"
+                        <fuim:PluginSelectionView DataContext="{Binding PluginSelectionViewModel}"
                                               Grid.Column="1"
                                               Grid.Row="0"/>
-                </Grid>
-            </TabItem>
+                    </Grid>
+                </TabItem>
 
-            <TabItem Header="FluidUI">
-                <!-- arrangement 
+                <TabItem Header="FluidUI">
+                    <!-- arrangement 
         TODO: move to separate view and implement new viewmodel-->
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
@@ -201,23 +332,90 @@
 
                     <!-- Button >Reset< ComboBox >ConfigurationTargets< -->
                     <Button Content="Reset" Command="{Binding ResetSelectedCommand}"
+=======
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+
+                        <!-- Button >Reset< ComboBox >ConfigurationTargets< -->
+                        <Button Content="Reset" Command="{Binding ResetConfigurationOnSelectedCommand}"
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
                             Grid.Column="0"
                             Grid.Row="0"/>
 
-                    <Button Content="Load" Command="{Binding LoadConfigurationOnSelectedCommand}"
+                        <Button Content="Load" Command="{Binding LoadConfigurationOnSelectedCommand}"
                             Grid.Column="0"
                             Grid.Row="1"/>
 
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
                     <fuim:FluidUISelectionView DataContext="{Binding FluidUISelectionViewModel}"
+=======
+                        <Border Background="{Binding ScreenViewModel.FluidUI.Design.Foreground}"
+                            BorderBrush="{Binding ScreenViewModel.FluidUI.Design.Border}"                            
+                            BorderThickness="2"
+                            CornerRadius="5"
+                            Margin="0 5"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Center"                            
+                            Grid.Column="1"
+                            Grid.Row="0"
+                            Grid.RowSpan="3"/>
+
+                        <fuim:FluidUISelectionView DataContext="{Binding FluidUISelectionViewModel}"
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
                                                ConfirmationButtonVisible="False"
                                                Grid.Column="1"
                                                Grid.Row="0"
                                                Grid.RowSpan="2"/>
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
                     <!--<ComboBox ItemsSource="{Binding Source={StaticResource configurationTargetsEnum}, NotifyOnSourceUpdated=True}"
+=======
+
+                        <Button Content="Apply" Command="{Binding ApplyConfigurationOnSelectedCommand}"
+                            Grid.Column="0"
+                            Grid.Row="2"/>
+
+                        <TabControl Grid.Column="2"
+                                Grid.Row="2">
+                            <TabItem Header="Data">
+                                <fluidUIDataBlock:FluidUIDataBlockSetupView DataContext="{Binding FluidUIDataBlockSetupViewModel}"/>
+                            </TabItem>
+
+                            <TabItem Header="Design">
+                                <fluidUIDesign:FluidUIDesignSetupView DataContext="{Binding FluidUIDesignSetupViewModel}"/>
+                            </TabItem>
+
+                            <TabItem Header="Font">
+                                <fluidUIFont:FluidUIFontSetupView DataContext="{Binding FluidUIFontSetupViewModel}"/>
+                            </TabItem>
+
+                            <TabItem Header="Size">
+                                <fluidUISize:FluidUISizeSetupView DataContext="{Binding FluidUISizeSetupViewModel}"/>
+                            </TabItem>
+
+                            <TabItem Header="Stand">
+                                <fluidUIStand:FluidUIStandSetupView DataContext="{Binding FluidUIStandSetupViewModel}"/>
+                            </TabItem>
+                        </TabControl>
+                        <!-- arrangement 
+        TODO: move to separate view and implement new viewmodel
+                    add tabcontrol with fluid ui sub menus -->
+                        <!--<ComboBox ItemsSource="{Binding Source={StaticResource configurationTargetsEnum}, NotifyOnSourceUpdated=True}"
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
                           SelectedItem="{Binding ConfigurationTarget}"
                           Foreground="{Binding ViewModel.FluidUI.Design.Foreground}"
                             Grid.Column="1"
                           Grid.Row="1"/>-->
+<<<<<<< Updated upstream:EBoardSDK/Views/ScreenControlView.xaml
                     
 
                 </Grid>
@@ -225,80 +423,88 @@
             
             <TabItem Header="Commands">
                 <!-- arrangement 
+=======
+                    </Grid>
+                </TabItem>
+
+                <TabItem Header="Commands">
+                    <!-- arrangement 
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/ScreenControl/ScreenControlView.xaml
         TODO: move to separate view and implement new viewmodel-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
 
-                </Grid>
-            </TabItem>
+                    </Grid>
+                </TabItem>
 
-            <TabItem Header="Grouping">
-                <!-- arrangement 
+                <TabItem Header="Grouping">
+                    <!-- arrangement 
         TODO: move to separate view and implement new viewmodel-->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
 
-                    <TextBlock Text="Arrangement Rotation"
+                        <TextBlock Text="Arrangement Rotation"
                        Grid.Column="0"
                        Grid.Row="0"/>
-                    <TextBox Text="{Binding ArrangementRotationValue, NotifyOnSourceUpdated=True}"
+                        <TextBox Text="{Binding ArrangementRotationValue, NotifyOnSourceUpdated=True}"
                        Grid.Column="1"
                        Grid.Row="0"/>
-                    <Slider Value="{Binding ArrangementRotationValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                        <Slider Value="{Binding ArrangementRotationValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                     Minimum="-90"
                     Maximum="90"
                     Width="361"
                     Grid.Column="2"
                     Grid.Row="0"/>
 
-                    <TextBlock Text="Arrangement Offset"
+                        <TextBlock Text="Arrangement Offset"
                        Grid.Column="0"
                        Grid.Row="1"/>
-                    <TextBox Text="{Binding ArrangementOffsetValue, NotifyOnSourceUpdated=True}"
+                        <TextBox Text="{Binding ArrangementOffsetValue, NotifyOnSourceUpdated=True}"
                        Grid.Column="1"
                        Grid.Row="1"/>
-                    <Slider Value="{Binding ArrangementOffsetValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
+                        <Slider Value="{Binding ArrangementOffsetValue, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, UpdateSourceTrigger=PropertyChanged}"
                     Minimum="-90"
                     Maximum="90"
                     Width="361"
                     Grid.Column="2"
                     Grid.Row="1"/>
 
-                    <Button Content="Line" Command="{Binding ArrangeGroupAsLineCommand}"
+                        <Button Content="Line" Command="{Binding ArrangeGroupAsLineCommand}"
                     Grid.Column="0"
                     Grid.Row="2"/>
-                    <Button Visibility="Hidden" IsEnabled="False" Content="Square" Command="{Binding ArrangeGroupAsSquareCommand}"
+                        <Button Visibility="Hidden" IsEnabled="False" Content="Square" Command="{Binding ArrangeGroupAsSquareCommand}"
                     Grid.Column="1"
                     Grid.Row="2"/>
-                    <Button Visibility="Hidden" IsEnabled="False" Content="Random 10x10" Command="{Binding ArrangeGroupAsRandomMatrix10x10Command}"
+                        <Button Visibility="Hidden" IsEnabled="False" Content="Random 10x10" Command="{Binding ArrangeGroupAsRandomMatrix10x10Command}"
                     Grid.Column="2"
                     Grid.Row="2"/>
-                </Grid>
-            </TabItem>
-        </TabControl>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
     </Border>
 </UserControl>
 

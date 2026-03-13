@@ -36,24 +36,33 @@ using CommunityToolkit.Mvvm.Input;
 using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.FluidUIMenu;
+<<<<<<< Updated upstream
 using EBoardSDK.Interfaces;
+=======
+using EBoardSDK.Enums;
+>>>>>>> Stashed changes
 using EBoardSDK.Models;
 using EBoardSDK.Plugins;
 using System;
-using System.Windows;
-using System.Windows.Media;
 
 public abstract partial class ShapeBaseViewModel : EBoardElementPluginBaseViewModel, IDisposable
 {
+<<<<<<< Updated upstream
     private EboardFluidUIBaseViewModel viewModel = new();
 
     private FluidUIMenuViewModel fluidUIMenuViewModel;
 
+=======
+>>>>>>> Stashed changes
     [ObservableProperty]
     private double strokeThickness = 1.0;
 
     [ObservableProperty]
+<<<<<<< Updated upstream
     private int duplicationCount = 1;
+=======
+    private bool hasStroke = true;
+>>>>>>> Stashed changes
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeBaseViewModel"/> class.
@@ -62,26 +71,48 @@ public abstract partial class ShapeBaseViewModel : EBoardElementPluginBaseViewMo
     {
     }
 
+<<<<<<< Updated upstream
     public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
 
     public FluidUIMenuViewModel? FluidUIMenuViewModel => this.fluidUIMenuViewModel;
 
+=======
+    public FluidUIMenuViewModel? FluidUIMenuViewModel => this.fluidUIMenuViewModel;
+
+    public void ApplyShapeModel(ShapeModel shapeModel)
+    {
+        this.HasStroke = shapeModel.HasStroke;
+        this.StrokeThickness = shapeModel.StrokeThickness;
+
+        this.SetFluidUI(shapeModel.FluidUIContext);
+    }
+
+    /// <inheritdoc/>
+>>>>>>> Stashed changes
     public override void RefreshInitialization()
     {
         if (this.ElementViewModel != null)
         {
+<<<<<<< Updated upstream
             this.SetFluidUIViewModel(this.ViewModel ?? new EboardFluidUIBaseViewModel());
 
             this.ViewModel?.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this.ViewModel, this.ElementViewModel, this.ElementViewModel?.EBoardViewModel, fluidUIContextHasStand: true));
 
+=======
+            if (this.FluidUIMenuViewModel == null)
+            {
+                this.CreateFluidUIMenuViewModel();
+            }
+
+>>>>>>> Stashed changes
             this.ElementViewModel?.Redraw();
 
             this.OnPropertyChanged(nameof(this.ElementViewModel));
-            this.OnPropertyChanged(nameof(this.ViewModel));
             this.OnPropertyChanged(nameof(this.FluidUIMenuViewModel));
         }
     }
 
+<<<<<<< Updated upstream
     public void SetFluidUIContext(IFluidUIContext fluidUIContext)
     {
         if (this.ViewModel == null)
@@ -135,6 +166,10 @@ public abstract partial class ShapeBaseViewModel : EBoardElementPluginBaseViewMo
     }
 
     public void Dispose()
+=======
+    /// <inheritdoc/>
+    public override void Dispose()
+>>>>>>> Stashed changes
     {
     }
 
@@ -146,11 +181,15 @@ public abstract partial class ShapeBaseViewModel : EBoardElementPluginBaseViewMo
 
             if (data != null)
             {
+<<<<<<< Updated upstream
                 var fluidUIViewModel = new EboardFluidUIBaseViewModel();
                 data.Design?.LoadBrushesFromColorData();
                 fluidUIViewModel.SetFluidUI(data);
+=======
+                this.SetFluidUI(data);
+>>>>>>> Stashed changes
 
-                this.SetFluidUIViewModel(fluidUIViewModel);
+                this.CreateFluidUIMenuViewModel();
 
                 this.RefreshInitialization();
 
@@ -167,17 +206,30 @@ public abstract partial class ShapeBaseViewModel : EBoardElementPluginBaseViewMo
 
     public override async Task<EBoardFeedbackMessage> Save(string path)
     {
+<<<<<<< Updated upstream
         EBoardFeedbackMessage? serializationResult = null;
 
         var model = this.ViewModel.FluidUI;
+=======
+        var model = this.FluidUI;
+>>>>>>> Stashed changes
 
         var result = Saver.SaveJsonFile(path, model);
 
+<<<<<<< Updated upstream
         return new EBoardFeedbackMessage()
         {
             ResultMessage = $"{path} :: saving eboard config: {result}",
             TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
         };
+=======
+    internal override void CreateFluidUIMenuViewModel()
+    {
+        if (this.fluidUIMenuViewModel == null)
+        {
+            this.SetFluidUIMenuViewModel(new FluidUIMenuViewModel(this, Enums.FluidUIStandSettings.NoStandContextArea));
+        }
+>>>>>>> Stashed changes
     }
 
     [RelayCommand]

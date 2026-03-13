@@ -37,6 +37,11 @@ public enum BrushTargets
     Border,
     Foreground,
     Highlight,
+<<<<<<< Updated upstream
+=======
+    SelectionFallback,
+    HideElementFallback,
+>>>>>>> Stashed changes
 }
 
 // EOF

@@ -86,6 +86,7 @@
         </Style>
     </UserControl.Resources>
 
+<<<<<<< Updated upstream
     <Grid Background="{Binding ImageBrush}">
         <Grid.ContextMenu>
             <ContextMenu  Background="{Binding ElementViewModel.FluidUI.Design.Background}"
@@ -121,6 +122,151 @@
                                 LargeChange="0.1"
                                 Grid.Row="2"/>
                     </Grid>
+=======
+    <Grid AllowDrop="True"
+          Drop="Grid_Drop"
+          MinWidth="10"
+          MinHeight="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid.ContextMenu>
+            <ContextMenu Style="{StaticResource ContextMenuStyle}"
+                         Background="{Binding ElementViewModel.FluidUI.Design.Background}"
+                         BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}">
+
+                <MenuItem Header="Hide"
+                          Style="{StaticResource menuitem}"
+                          Visibility="{Binding ContainerIsArea, Converter={StaticResource InverseVisibilityToCollapsed}}">
+                    <ToggleButton Content="Hide Element"
+                                  IsChecked="{Binding ElementViewModel.HideControl0}"
+                                  HorizontalAlignment="Left"/>
+                    <ToggleButton Content="Hide Shape"
+                                  IsChecked="{Binding ElementViewModel.HideControl1}"
+                                  HorizontalAlignment="Left"/>
+                </MenuItem>
+
+                <MenuItem Header="Image Size"
+                          Style="{StaticResource menuitem}">
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Ratio"
+                       Grid.Row="0"/>
+
+                        <TextBox Text="{Binding Ratio, UpdateSourceTrigger=PropertyChanged, Delay=1000}"
+                     Grid.Row="1"/>
+                    </Grid>
+                </MenuItem>
+                
+                <MenuItem Header="Image Setup"
+                          Visibility="{Binding IsImageNotSet, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                          Style="{StaticResource menuitem}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Stretch -->
+                        <TextBlock Text="Image Stretch"
+                         Grid.Column="0"
+                         Grid.Row="0"/>
+                        <ComboBox SelectedItem="{Binding SelectedImageStretch, UpdateSourceTrigger=PropertyChanged}"
+                                  
+                              x:Name="CbxImageStretch"
+                              Grid.Column="1"
+                              Grid.Row="0">
+                            <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                           Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <!-- Horizontal Alignement -->
+                        <TextBlock Text="Horizontal Alignment"
+                         Grid.Column="0"
+                         Grid.Row="1"/>
+                        <ComboBox SelectedItem="{Binding SelectedHorizontalAlignment, UpdateSourceTrigger=PropertyChanged}"                              
+                              x:Name="CbxHorizontalAlignment"
+                              Grid.Column="1"
+                              Grid.Row="1">
+                            <!--<ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                     Foreground="Red"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>-->
+                        </ComboBox>
+
+                        <!-- Vertical Alignement -->
+                        <TextBlock Text="Vertical Alignment"
+                         Grid.Column="0"
+                         Grid.Row="2"/>
+                        <ComboBox SelectedItem="{Binding SelectedVerticalAlignment, UpdateSourceTrigger=PropertyChanged}"                              
+                              x:Name="CbxVerticalAlignment"
+                              Grid.Column="1"
+                              Grid.Row="2">
+                            <!--<ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}"
+                                     Foreground="Red"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>-->
+                        </ComboBox>
+
+                        <Grid Grid.Row="3"
+                              Grid.Column="0"
+                              Grid.ColumnSpan="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="Opacity"
+                       Grid.Row="0"/>
+
+                            <TextBox Text="{Binding OpacityValue}"
+                        TextWrapping="NoWrap"
+                        Width="200"
+                        Padding="0 0 15 0"
+                        Grid.Row="1"/>
+
+                            <Slider Value="{Binding OpacityValue}"
+                                    Background="{Binding ElementViewModel.FluidUI.Design.Background}"
+                                    Minimum="0"
+                                    Maximum="1"
+                                    Width="200"
+                                    SmallChange="0.05"
+                                    LargeChange="0.1"
+                                    Grid.Row="2"/>
+                        </Grid>
+                    </Grid>
+                </MenuItem>
+
+                <MenuItem Header="Reset"
+                          Command="{Binding ResetCommand}"
+                          Style="{StaticResource menuitem}"/>
+>>>>>>> Stashed changes
             </ContextMenu>
         </Grid.ContextMenu>
 
@@ -132,10 +278,28 @@
             <MouseBinding Gesture="Control+Leftclick" Command="{Binding ResetCommand}"/>
         </Grid.InputBindings>
 
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   FontWeight="Bold"
+                   Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"/>
+
         <Button Content="+"
                 Command="{Binding SetImageCommand}"
                 Style="{StaticResource DefaultButtonStyle}"
-                Visibility="{Binding IsImageNotSet, Converter={StaticResource VisibilityToCollapsed}}"/>
+                Visibility="{Binding IsImageNotSet, Converter={StaticResource VisibilityToCollapsed}}"
+                Grid.Row="1"/>
+
+        <Image Source="{Binding LinkTargetPath}"
+               Stretch="{Binding SelectedImageStretch}"
+               HorizontalAlignment="{Binding SelectedHorizontalAlignment}"
+               VerticalAlignment="{Binding SelectedVerticalAlignment}"
+               Opacity="{Binding OpacityValue}"
+               Visibility="{Binding IsImageNotSet, Converter={StaticResource InverseVisibilityToCollapsed}}"
+               Grid.Row="1"/>
     </Grid>
 </UserControl>
 

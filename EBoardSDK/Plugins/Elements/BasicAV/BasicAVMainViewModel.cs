@@ -36,6 +36,12 @@ using CommunityToolkit.Mvvm.Input;
 using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Models;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -51,6 +57,8 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     private bool mediaPlayerIsPlaying = false;
 
     private bool userIsDraggingSlider = false;
+
+    private DispatcherTimer? timer = null;
 
     [ObservableProperty]
     private string playTimeString = "00:00:00";
@@ -86,11 +94,35 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     private double volume;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsMediaSelected))]
     private MediaElement? media;
 
+<<<<<<< Updated upstream
     private string pluginHeader = "BasicAV player";
 
     private string pluginName = "BasicAV";
+=======
+    [ObservableProperty]
+    private bool activateReplay = false;
+
+    [ObservableProperty]
+    private bool destructOnEnd = false;
+
+    [ObservableProperty]
+    private bool isGrouped = false;
+
+    [ObservableProperty]
+    private bool showDestructToggleButton = false;
+
+    [ObservableProperty]
+    private bool showGroupToggleButton = false;
+
+    [ObservableProperty]
+    private bool unlinkOnEnd = false;
+
+    [ObservableProperty]
+    private int processingOrder;
+>>>>>>> Stashed changes
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BasicAVMainViewModel"/> class.
@@ -98,13 +130,9 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     public BasicAVMainViewModel()
     {
         this.Volume = 0.5;
-
-        DispatcherTimer timer = new DispatcherTimer();
-        timer.Interval = TimeSpan.FromSeconds(0.5);
-        timer.Tick += this.Timer_Tick;
-        timer.Start();
     }
 
+<<<<<<< Updated upstream
     private void Timer_Tick(object? sender, EventArgs e)
     {
         if (this.Media != null)
@@ -120,6 +148,15 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     }
 
     public override PluginCategories PluginCategory => PluginCategories.Element;
+=======
+    public bool IsMediaSelected => this.Media != null;
+
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Element;
+
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new();
+>>>>>>> Stashed changes
 
     public override ImageBrush PluginLogo { get; set; } = new();
 
@@ -131,7 +168,12 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
         set { this.pluginHeader = value; }
     }
 
+<<<<<<< Updated upstream
     public override bool NoDefaultBorders { get; } = false;
+=======
+    /// <inheritdoc/>
+    public override ResourceDictionary ResourceDictionary => new();
+>>>>>>> Stashed changes
 
     public override string PluginName
     {
@@ -141,6 +183,7 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
 
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
+<<<<<<< Updated upstream
     public override ResourceDictionary ResourceDictionary => new();
 
     public override Type? ElementPluginModel => null;
@@ -150,6 +193,34 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
     public override Type ElementPluginViewModel => typeof(BasicAVMainViewModel);
 
     public bool InsertBasicAVModel(BasicAVModel basicAVModel)
+=======
+    public override void Dispose()
+    {
+        base.Dispose();
+
+        this.PlayTimeSpan = 0.0;
+        this.MaximumPlayTime = 0.0;
+        this.FileName = "select a media file";
+        this.Filepath = string.Empty;
+
+        if (this.Media != null)
+        {
+            this.Media.Stop();
+            this.Media.Close();
+            this.Media = null;
+        }
+
+        if (this.timer != null)
+        {
+            this.timer.Stop();
+            this.timer.Tick -= this.Timer_Tick;
+            this.timer = null;
+        }
+    }
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
+>>>>>>> Stashed changes
     {
         try
         {
@@ -239,6 +310,106 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
         this.Media?.Pause();
     }
 
+<<<<<<< Updated upstream
+=======
+    internal void SetMediaFile(FileInfo fileInfo, bool startPlaying = false)
+    {
+        if (!fileInfo.Exists)
+        {
+            return;
+        }
+
+        if (this.timer != null)
+        {
+            this.timer.Stop();
+            this.timer.Tick -= this.Timer_Tick;
+            this.timer = null;
+        }
+
+        if (this.Media == null)
+        {
+            this.Media = new MediaElement()
+            {
+                LoadedBehavior = MediaState.Manual,
+                UnloadedBehavior = MediaState.Manual,
+            };
+        }
+
+        if (this.Media != null)
+        {
+            this.Media.Stop();
+            this.Media.Close();
+
+            this.Media.Source = new Uri(fileInfo.FullName);
+            this.Filepath = fileInfo.FullName;
+        }
+
+        if (startPlaying)
+        {
+            this.Play();
+        }
+    }
+
+    private void ApplyModel(BasicAVModel basicAVModel)
+    {
+        this.Volume = basicAVModel.Volume;
+        this.FileName = basicAVModel.Filename;
+        this.Filepath = basicAVModel.Filepath;
+
+        if (!string.IsNullOrWhiteSpace(basicAVModel.Filepath))
+        {
+            var fileInfo = new FileInfo(this.Filepath);
+
+            this.SetMediaFile(fileInfo, false);
+
+            this.PlayTimeSpan = basicAVModel.PlayTimeSpan;
+
+            if (this.Media != null)
+            {
+                this.Media.Position = TimeSpan.FromSeconds(this.PlayTimeSpan);
+            }
+        }
+
+        this.ActivateReplay = basicAVModel.ActivateReplay;
+        this.DestructOnEnd = basicAVModel.DestructOnEnd;
+        this.IsGrouped = basicAVModel.IsGrouped;
+        this.ShowDestructToggleButton = basicAVModel.ShowDestructToggleButton;
+        this.ShowGroupToggleButton = basicAVModel.ShowGroupToggleButton;
+        this.UnlinkOnEnd = basicAVModel.UnlinkOnEnd;
+    }
+
+    private void Timer_Tick(object? sender, EventArgs e)
+    {
+        if (this.Media != null)
+        {
+            if (this.Media.Source != null
+                && this.Media.NaturalDuration.HasTimeSpan
+                && !this.userIsDraggingSlider)
+            {
+                this.PlayTimeSpan = this.Media.Position.TotalSeconds;
+                this.MaximumPlayTime = this.Media.NaturalDuration.TimeSpan.TotalSeconds;
+
+                var isOnEndPosition = this.Media.Position.TotalSeconds == this.Media.NaturalDuration.TimeSpan.TotalSeconds;
+
+                if (isOnEndPosition && this.ActivateReplay)
+                {
+                    this.PlayTimeSpan = 0.0;
+                }
+
+                if (isOnEndPosition && this.DestructOnEnd)
+                {
+                    this.ElementViewModel?.Delete(confirmRemove: false);
+                }
+
+                if (isOnEndPosition && this.UnlinkOnEnd)
+                {
+                    this.Dispose();
+                }
+            }
+        }
+    }
+
+>>>>>>> Stashed changes
     partial void OnPlayTimeSpanChanged(double value)
     {
         if (Media != null && Media.Source != null)
@@ -264,20 +435,71 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
         }
     }
 
+    partial void OnActivateReplayChanged(bool value)
+    {
+        if (value && this.DestructOnEnd)
+        {
+            this.DestructOnEnd = false;
+        }
+
+        if (value && this.UnlinkOnEnd)
+        {
+            this.UnlinkOnEnd = false;
+        }
+    }
+
+    partial void OnDestructOnEndChanged(bool value)
+    {
+        if (value && this.ActivateReplay)
+        {
+            this.ActivateReplay = false;
+        }
+
+        if (value && this.UnlinkOnEnd)
+        {
+            this.UnlinkOnEnd = false;
+        }
+    }
+
+    partial void OnUnlinkOnEndChanged(bool value)
+    {
+        if (value && this.ActivateReplay)
+        {
+            this.ActivateReplay = false;
+        }
+
+        if (value && this.DestructOnEnd)
+        {
+            this.DestructOnEnd = false;
+        }
+    }
+
     [RelayCommand]
     private void Pause()
     {
-        if (this.mediaPlayerIsPlaying)
+        if (this.mediaPlayerIsPlaying && this.timer != null)
         {
             this.Media?.Pause();
+
+            this.timer.Stop();
         }
     }
 
     [RelayCommand]
     private void Play()
     {
+        if (this.timer == null)
+        {
+            this.timer = new DispatcherTimer();
+            this.timer.Interval = TimeSpan.FromSeconds(0.5);
+            this.timer.Tick += this.Timer_Tick;
+        }
+
         if (this.Media != null && this.Media.Source != null)
         {
+            this.Media.Position = TimeSpan.FromSeconds(this.PlayTimeSpan);
+
+            this.timer.Start();
             this.Media.Play();
             this.mediaPlayerIsPlaying = true;
         }
@@ -294,31 +516,21 @@ public partial class BasicAVMainViewModel : EBoardElementPluginBaseViewModel
             "All files (*.*)|*.*";
         if (openFileDialog.ShowDialog() == true)
         {
-            if (this.Media == null)
-            {
-                this.Media = new MediaElement()
-                {
-                    LoadedBehavior = MediaState.Manual,
-                    UnloadedBehavior = MediaState.Manual,
-                };
-            }
-
-            if (this.Media != null)
-            {
-                this.Media.Source = new Uri(openFileDialog.FileName);
-                this.Filepath = openFileDialog.FileName;
-                this.FileName = openFileDialog.SafeFileName;
-            }
+            this.FileName = openFileDialog.SafeFileName;
+            this.Filepath = openFileDialog.FileName;
+            this.SetMediaFile(new FileInfo(openFileDialog.FileName), false);
         }
     }
 
     [RelayCommand]
     private void Stop()
     {
-        if (this.mediaPlayerIsPlaying)
+        if (this.mediaPlayerIsPlaying && this.timer != null)
         {
             this.Media?.Stop();
             this.mediaPlayerIsPlaying = false;
+
+            this.timer.Stop();
         }
     }
 }

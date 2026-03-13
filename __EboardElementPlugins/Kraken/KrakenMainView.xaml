@@ -99,14 +99,25 @@
     
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   FontWeight="Bold"
+                   Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"/>
+
         <TextBlock Text="{Binding EboardViewModelTitle}"
-                   Grid.Row="0"/>
+                   Grid.Row="1"/>
         
         <TextBlock Text="{Binding EboardViewModelData}"
-                   Grid.Row="1"/>
+                   Grid.Row="2"/>
     </Grid>
 </UserControl>
 

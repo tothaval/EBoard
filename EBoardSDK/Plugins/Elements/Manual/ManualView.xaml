@@ -106,7 +106,12 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
+<<<<<<< Updated upstream:EBoardSDK/Plugins/Elements/Manual/ManualView.xaml
         <TextBlock Text="{Binding PluginHeader}"
+=======
+        <TextBlock Text="{Binding Header}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/Manual/ManualView.xaml
                    Grid.Row="0"/>
 
         <TabControl Background="Transparent"

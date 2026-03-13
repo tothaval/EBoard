@@ -122,9 +122,14 @@
                    Grid.Column="0"
                    Grid.ColumnSpan="2"
                    FontWeight="Bold"
+<<<<<<< Updated upstream
                    Text="{Binding PluginHeader}"
+=======
+                   Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+>>>>>>> Stashed changes
                    TextWrapping="Wrap"
-                   HorizontalAlignment="Center"/>
+                   HorizontalAlignment="Left"/>
 
         <TextBlock Grid.Row="1"
                    Grid.Column="0"

@@ -1,6 +1,10 @@
 ﻿// <copyright file="ImageModel.cs" company=".">
 // Stephan Kammel
 // </copyright>
+using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows;
+using System.Windows.Media;
+
 /// license
 ///
 /// <b>ad-hoc license terms eboard prototype</b><br>
@@ -33,7 +37,36 @@ namespace EBoardSDK.Plugins.Elements.Image;
 
 public class ImageModel
 {
+<<<<<<< Updated upstream
     public string LinkTargetPath { get; set; }
+=======
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ImageModel"/> class.
+    /// </summary>
+    public ImageModel()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ImageModel"/> class.
+    /// </summary>
+    /// <param name="imageViewModel">Desired is the view model that has to be saved.</param>
+    public ImageModel(ImageViewModel imageViewModel)
+    {
+        this.LinkTargetPath = imageViewModel.LinkTargetPath;
+        this.SelectedHorizontalAlignment = imageViewModel.SelectedHorizontalAlignment;
+        this.SelectedImageStretch = imageViewModel.SelectedImageStretch;
+        this.SelectedVerticalAlignment = imageViewModel.SelectedVerticalAlignment;
+    }
+
+    public string? LinkTargetPath { get; set; }
+
+    public HorizontalAlignment SelectedHorizontalAlignment { get; set; } = HorizontalAlignment.Center;
+
+    public Stretch SelectedImageStretch { get; set; } = Stretch.Fill;
+
+    public VerticalAlignment SelectedVerticalAlignment { get; set; } = VerticalAlignment.Center;
+>>>>>>> Stashed changes
 }
 
 // EOF

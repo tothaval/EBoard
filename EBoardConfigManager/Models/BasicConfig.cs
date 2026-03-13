@@ -31,7 +31,13 @@
 /// </p>
 namespace EBoardConfigManager.Models;
 
+<<<<<<< Updated upstream:EBoardConfigManager/Models/BasicConfig.cs
 public class BasicConfig
+=======
+using EBoardSDK.Enums;
+
+public class FluidUIConfigurationSetting
+>>>>>>> Stashed changes:EBoardSDK/Models/FluidUIConfigurationSetting.cs
 {
     public int EBoardCount { get; set; } = 1;
 

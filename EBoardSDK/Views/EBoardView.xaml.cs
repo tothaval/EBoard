@@ -32,6 +32,10 @@
 namespace EBoardSDK.Views;
 
 using EBoardSDK.ViewModels;
+<<<<<<< Updated upstream
+=======
+using System.Windows;
+>>>>>>> Stashed changes
 using System.Windows.Controls;
 
 /// <summary>
@@ -60,7 +64,16 @@ public partial class EBoardView : UserControl
     {
         if (this.DataContext != null)
         {
+<<<<<<< Updated upstream
             this.eboardViewModel = (EBoardViewModel)this.DataContext;
+=======
+            var dc = this.DataContext as ScreenViewModel;
+
+            if (dc != null)
+            {
+                this.eboardViewModel = (ScreenViewModel)this.DataContext;
+            }
+>>>>>>> Stashed changes
         }
 
         if (this.eboardViewModel != null)
@@ -68,6 +81,29 @@ public partial class EBoardView : UserControl
             this.eboardViewModel.SetView(this);
         }
     }
+<<<<<<< Updated upstream
+=======
+
+    private void EBoardView_DataContextChanged(object sender, System.Windows.DependencyPropertyChangedEventArgs e)
+    {
+        this.SetViewToDataContext();
+    }
+
+    private void EBoard_Board_Drop(object sender, System.Windows.DragEventArgs e)
+    {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        {
+            if (this.eboardViewModel != null)
+            {
+                var coords = e.GetPosition(this);
+
+                this.eboardViewModel.Drop(e, coords: coords);
+            }
+        }
+
+        e.Handled = true;
+    }
+>>>>>>> Stashed changes
 }
 
 // EOF

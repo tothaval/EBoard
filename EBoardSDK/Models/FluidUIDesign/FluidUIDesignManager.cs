@@ -162,6 +162,11 @@ internal class FluidUIDesignManager : IFluidUIManager
                     break;
             }
         }
+<<<<<<< Updated upstream
+=======
+
+        return FluidUIDesignDefaultPropertyFactory.CreateImageBrush(path);
+>>>>>>> Stashed changes
     }
 
     internal void SwitchBorderToBorder()

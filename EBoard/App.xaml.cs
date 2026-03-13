@@ -41,7 +41,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System.IO;
 using System.Windows;
-using System.Windows.Media;
 
 /// <summary>
 /// Interaction logic for App.xaml .

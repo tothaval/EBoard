@@ -35,7 +35,14 @@ using EBoardSDK.Plugins.Elements.Link;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+<<<<<<< Updated upstream:EBoardSDK/Plugins/Areas/ShapeArea/ShapeAreaModel.cs
 internal class ShapeAreaModel
+=======
+/// <summary>
+/// Serializable data model for <see cref="PolygonView"/>.
+/// </summary>
+public class PolygonModel : ShapeModel
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Shapes/Polygon/PolygonModel.cs
 {
     [JsonIgnore]
     private readonly ShapeAreaViewModel shapeAreaViewModel;
@@ -52,6 +59,7 @@ internal class ShapeAreaModel
     /// <summary>
     /// Initializes a new instance of the <see cref="ShapeAreaModel"/> class.
     /// </summary>
+<<<<<<< Updated upstream:EBoardSDK/Plugins/Areas/ShapeArea/ShapeAreaModel.cs
     /// <param name="shapeAreaViewModel"></param>
     internal ShapeAreaModel(ShapeAreaViewModel shapeAreaViewModel)
     {
@@ -75,6 +83,19 @@ internal class ShapeAreaModel
         //    this.Links.Add(list);
         //}
     }
+=======
+    /// <param name="polygonViewModel">Desired is the instance that has to be stored.</param>
+    public PolygonModel(PolygonViewModel polygonViewModel)
+        : base(polygonViewModel)
+    {
+        this.Points = polygonViewModel.Points;
+        this.PolygonReady = polygonViewModel.PolygonReady;
+    }
+
+    public bool PolygonReady { get; set; }
+
+    public ObservableCollection<Point> Points { get; set; }
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Shapes/Polygon/PolygonModel.cs
 }
 
 // EOF

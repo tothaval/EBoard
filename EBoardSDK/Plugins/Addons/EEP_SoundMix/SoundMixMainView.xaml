@@ -51,12 +51,13 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="SoundMix"
+        <TextBlock Text="{Binding Name}"
                    FontSize="64"
                    FontWeight="Bold"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"                   
                    Grid.Row="0"/>
 
         <controls:AreaView DataContext="{Binding AreaViewModel}"

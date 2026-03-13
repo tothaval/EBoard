@@ -43,8 +43,6 @@ using EBoardSDK.Models.FluidUIFont;
 using EBoardSDK.Models.FluidUISize;
 using EBoardSDK.Models.FluidUIStand;
 using EBoardSDK.ViewModels;
-using System.Windows;
-using System.Windows.Media;
 
 internal class FluidUIContextManager : IFluidUIManager
 {
@@ -59,7 +57,23 @@ internal class FluidUIContextManager : IFluidUIManager
         this.viewModel = viewModel;
     }
 
+<<<<<<< Updated upstream
     public void Reset()
+=======
+    public IFluidUIContext ApplyConfigurationTarget(IFluidUIContext fluiduiconfig, FluidUISelectionViewModel configuration)
+    {
+        this.ProcessConfigurationTarget(fluiduiconfig, configuration);
+
+        return fluiduiconfig;
+    }
+
+    /// <summary>
+    /// Resets all FluidUI properties to initial values
+    /// and updates EboardFluidUIBaseViewModel.
+    /// </summary>
+    /// <param name="calledByIFluidUIContextManager"></param>
+    public void Reset(bool calledByIFluidUIContextManager = false)
+>>>>>>> Stashed changes
     {
         new FluidUIDataBlockManager(this.viewModel).Reset();
         new FluidUIDesignManager(this.viewModel).Reset();
@@ -169,6 +183,151 @@ internal class FluidUIContextManager : IFluidUIManager
             Position = new System.Windows.Point(5, 5),
         };
     }
+<<<<<<< Updated upstream
+=======
+
+    internal async Task<IFluidUIContext?> GetFluidUIConfigurationFromFile(FluidUISelectionViewModel configuration)
+    {
+        var folder = "eboard/fluidui/";
+        var helper = new SharedMethod_UI();
+
+        var filename = await helper.GetFileToLoad(folder, $"files (*.{helper.FluidUIConfigurationFileExtension})|*.{helper.FluidUIConfigurationFileExtension}");
+
+        if (filename != null && Loader.FileExists(filename))
+        {
+            var fluiduiconfig = await Loader.LoadJsonFile<FluidUIContext>(filename);
+
+            if (fluiduiconfig != null)
+            {
+                this.ProcessConfigurationTarget(fluiduiconfig, configuration);
+
+                return fluiduiconfig;
+            }
+        }
+
+        return null;
+    }
+
+    internal async Task LoadFluidUIConfiguration(FluidUISelectionViewModel configuration)
+    {
+        var fluiduiconfig = await this.GetFluidUIConfigurationFromFile(configuration);
+
+        if (fluiduiconfig != null)
+        {
+            this.viewModel.SetFluidUIByUser(fluiduiconfig);
+        }
+    }
+
+    internal IFluidUIContext GetCustomFluidUIConfiguration(FluidUISelectionViewModel configuration)
+    {
+        var manager = new FluidUIDeepCopyManager();
+        var copy = manager.DeepCopyIFluidUIContext(this.viewModel.FluidUI);
+
+        this.ProcessConfigurationTarget(copy, configuration);
+
+        return copy;
+    }
+
+    internal IFluidUIContext GetCustomFluidUIContextCopy(FluidUISelectionViewModel configuration, IFluidUIContext fluidUIContext)
+    {
+        var manager = new FluidUIDeepCopyManager();
+        var copy = manager.DeepCopyIFluidUIContext(fluidUIContext);
+
+        this.ProcessConfigurationTarget(copy, configuration);
+
+        return copy;
+    }
+
+    internal async Task SaveFluidUIConfiguration(FluidUISelectionViewModel configuration)
+    {
+        var copy = this.GetCustomFluidUIConfiguration(configuration);
+
+        var helper = new SharedMethod_UI();
+        var path = await new SharedMethod_UI().SetSaveFileName(helper.FluidUIConfigurationFileExtension);
+
+        _ = Saver.SaveJsonFile(path, copy);
+    }
+
+    internal void SetHideControl(bool value, int number)
+    {
+        if (number < 0 || number > 7)
+        {
+            return;
+        }
+
+        switch (number)
+        {
+            case 0:
+                this.viewModel.FluidUI.HideControl0 = value;
+                break;
+            case 1:
+                this.viewModel.FluidUI.HideControl1 = value;
+                break;
+            case 2:
+                this.viewModel.FluidUI.HideControl2 = value;
+                break;
+            case 3:
+                this.viewModel.FluidUI.HideControl3 = value;
+                break;
+            case 4:
+                this.viewModel.FluidUI.HideControl4 = value;
+                break;
+            case 5:
+                this.viewModel.FluidUI.HideControl5 = value;
+                break;
+            case 6:
+                this.viewModel.FluidUI.HideControl6 = value;
+                break;
+            case 7:
+                this.viewModel.FluidUI.HideControl7 = value;
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void ProcessConfigurationTarget(IFluidUIContext fluiduiconfig, FluidUISelectionViewModel configuration)
+    {
+        if (configuration.All.Selected)
+        {
+            return;
+        }
+
+        if (!configuration.DataBlock.Selected)
+        {
+            fluiduiconfig.DataBlock = null;
+        }
+
+        if (!configuration.Design.Selected)
+        {
+            fluiduiconfig.Design = null;
+        }
+
+        if (!configuration.Font.Selected)
+        {
+            fluiduiconfig.Font = null;
+        }
+
+        if (!configuration.Size.Selected)
+        {
+            fluiduiconfig.Size = null;
+        }
+
+        if (!configuration.Stand.Selected)
+        {
+            fluiduiconfig.Stand = null;
+        }
+
+        if (configuration.Nothing.Selected)
+        {
+            fluiduiconfig.DataBlock = null;
+            fluiduiconfig.Design = null;
+            fluiduiconfig.Font = null;
+            fluiduiconfig.Size = null;
+            fluiduiconfig.Stand = null;
+        }
+    }
+>>>>>>> Stashed changes
 }
 
 // EOF

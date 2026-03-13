@@ -31,12 +31,16 @@
 /// </p>
 namespace EBoardSDK.Views;
 
+<<<<<<< Updated upstream:EBoardSDK/Views/SplashScreen.xaml.cs
 using System.Windows;
 
 /// <summary>
 /// Interaktionslogik für SplashScreen.xaml .
 /// </summary>
 public partial class SplashScreen : Window
+=======
+internal class EboardIdFactory
+>>>>>>> Stashed changes:EBoardSDK/Utilities/Factories/EboardIdFactory.cs
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="SplashScreen"/> class.

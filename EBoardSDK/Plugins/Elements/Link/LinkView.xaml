@@ -134,13 +134,23 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   FontWeight="Bold"
+                   Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Left"/>
+        
         <Button Command="{Binding LinkFileCommand}"
                 Visibility="{Binding IsLinkEmpty, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}"
                 Grid.Column="0"
-                Grid.Row="0">
+                Grid.Row="1">
             <TextBlock>
                 <Run Text="file"/>
                 <LineBreak/>
@@ -151,7 +161,7 @@
         <Button Command="{Binding LinkFolderCommand}"
                 Visibility="{Binding IsLinkEmpty, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}"
                 Grid.Column="1"
-                Grid.Row="0">
+                Grid.Row="1">
             <TextBlock>
                 <Run Text="folder"/>
                 <LineBreak/>
@@ -162,7 +172,7 @@
         <Button Command="{Binding LinkWebCommand}"
                 Visibility="{Binding IsLinkEmpty, NotifyOnSourceUpdated=True, Converter={StaticResource VisibilityToCollapsed}}"
                 Grid.Column="3"
-                Grid.Row="0">
+                Grid.Row="1">
             <TextBlock>
                 <Run Text="web"/>
                 <LineBreak/>                
@@ -194,7 +204,7 @@
         <Button Command="{Binding ExecuteLinkTargetCommand}"
                 Visibility="{Binding IsLinked, Converter={StaticResource VisibilityToCollapsed}}"
                 Grid.Column="0"
-                Grid.Row="0">
+                Grid.Row="1">
             <Button.InputBindings>
                 <MouseBinding Gesture="Control+Leftclick" Command="{Binding ResetCommand}"/>
             </Button.InputBindings>
