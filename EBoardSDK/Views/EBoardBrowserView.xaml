@@ -209,8 +209,16 @@
             </ContextMenu>
         </Border.ContextMenu>
 
+<<<<<<< Updated upstream:EBoardSDK/Views/EBoardBrowserView.xaml
         <Grid >
             
+=======
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/EboardBrowser/EboardBrowserView.xaml
             <!-- mask cuts out the central buttons if both sides are hidden and width and height is NaN -->
             <!--<Grid.OpacityMask>
                 <VisualBrush Visual="{Binding ElementName=mask}"/>
@@ -220,9 +228,28 @@
                     Background="{Binding FluidUI.Design.Background}"
                     CornerRadius="{Binding FluidUI.Size.CornerRadius, NotifyOnSourceUpdated=True}"/>-->
 
+<<<<<<< Updated upstream:EBoardSDK/Views/EBoardBrowserView.xaml
             <Border Padding="{Binding FluidUI.Size.Padding}"
                     Width="{Binding FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
                     Height="{Binding FluidUI.Size.Height, NotifyOnSourceUpdated=True}">
+=======
+            <Border Visibility="{Binding InstantiatedAsElement, Converter={StaticResource VisibilityToCollapsed}}"
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4">
+                <TextBlock FontWeight="Bold"
+                       Text="{Binding Name}"
+                       Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
+                       Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Left"/>
+            </Border>
+
+            <Border Padding="{Binding NavigationContextViewModel.FluidUI.Size.Padding}"
+                    Width="{Binding NavigationContextViewModel.FluidUI.Size.Width, NotifyOnSourceUpdated=True}"
+                    Height="{Binding NavigationContextViewModel.FluidUI.Size.Height, NotifyOnSourceUpdated=True}"
+                    Grid.Row="1">
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/EboardBrowser/EboardBrowserView.xaml
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>

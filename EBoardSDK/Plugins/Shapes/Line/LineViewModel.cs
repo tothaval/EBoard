@@ -32,9 +32,18 @@
 namespace EBoardSDK.Plugins.Shapes.Line;
 
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Models;
+using EBoardSDK.Plugins.Shapes.TextShape;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using EBoardSDK.ViewModels;
+using Serilog;
 using System;
 using System.Reflection;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -50,6 +59,8 @@ public partial class LineViewModel : ShapeBaseViewModel
     /// </summary>
     public LineViewModel()
     {
+        //this.SetMenuItemViewModel(new LineMenuItemViewModel(this));
+        //this.SetMenuItem(new LineMenuItem(this.MenuItemViewModel!));
     }
 
     public override PluginCategories PluginCategory => PluginCategories.Shape;
@@ -76,11 +87,98 @@ public partial class LineViewModel : ShapeBaseViewModel
 
     public override ResourceDictionary ResourceDictionary => new();
 
+<<<<<<< Updated upstream
     public override Type? ElementPluginModel => null;
 
     public override Type ElementPluginView => typeof(LineView);
 
     public override Type ElementPluginViewModel => typeof(LineViewModel);
+=======
+    /// <inheritdoc/>
+    public override Type? PluginModelType => typeof(ShapeModel);
+
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(LineViewModel);
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
+    {
+        try
+        {
+            var data = await new SDKDataManager().LoadPluginContent<ShapeModel>(path);
+
+            if (data != null)
+            {
+                this.ApplyShapeModel(data);
+
+                this.RefreshInitialization();
+
+                return FeedbackMessageFactory.Success($"deserialized {path}");
+            }
+        }
+        catch (Exception ex)
+        {
+            return FeedbackMessageFactory.Exception(ex.Message);
+        }
+
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(TextShapeModel).FullName}");
+    }
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Save(string path)
+    {
+        var model = new ShapeModel(this);
+
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
+
+    /// <inheritdoc/>
+    public override void InsertModel<T>(T model)
+    {
+        if (model == null)
+        {
+            return;
+        }
+
+        if (model is ShapeModel shapeModel)
+        {
+            this.ApplyShapeModel(shapeModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<ShapeModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyShapeModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new ShapeModel(this);
+
+        this.SetModel(model);
+    }
+>>>>>>> Stashed changes
 }
 
 // EOF

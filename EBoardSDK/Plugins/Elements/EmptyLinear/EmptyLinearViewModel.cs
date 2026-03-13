@@ -32,7 +32,16 @@
 namespace EBoardSDK.Plugins.Elements.EmptyLinear;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using EBoardSDK.Controls.BrushSetup.LinearBrushSetup;
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUIDesign;
+using EBoardSDK.Plugins.Elements.StandardText;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,11 +49,23 @@ using System.Windows.Media;
 
 public partial class EmptyLinearViewModel : EBoardElementPluginBaseViewModel
 {
+<<<<<<< Updated upstream
+=======
+    private readonly string pluginName = "EmptyLinear";
+    private readonly string pluginHeader = "Empty Linear";
+
+    private LinearBrushSetupViewModel linearBrushViewModel;
+
+>>>>>>> Stashed changes
     [ObservableProperty]
     private string content = "\t\t\t\n\n\n";
 
     [ObservableProperty]
+<<<<<<< Updated upstream
     private LinearGradientBrush background = new LinearGradientBrush(
+=======
+    private LinearGradientBrush background = new(
+>>>>>>> Stashed changes
         [new GradientStop(Colors.AliceBlue, 0.0), new GradientStop(Colors.Navy, 0.5)],
         new Point(0, 0),
         new Point(0.5, 1));
@@ -72,6 +93,7 @@ public partial class EmptyLinearViewModel : EBoardElementPluginBaseViewModel
         set { this.pluginHeader = value; }
     }
 
+<<<<<<< Updated upstream
     public override string PluginName
     {
         get { return this.pluginName; }
@@ -100,6 +122,106 @@ public partial class EmptyLinearViewModel : EBoardElementPluginBaseViewModel
 
     private void InstantiateProperties()
     {
+=======
+    public LinearBrushSetupViewModel LinearBrush => this.linearBrushViewModel;
+
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Element;
+
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new();
+
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
+
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
+
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
+
+    /// <inheritdoc/>
+    public override ResourceDictionary ResourceDictionary => new();
+
+    /// <inheritdoc/>
+    public override Type? PluginModelType => null;
+
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(EmptyLinearViewModel);
+
+    /// <inheritdoc/>
+    public override void RefreshInitialization()
+    {
+        base.RefreshInitialization();
+
+        if (this.ElementViewModel != null && this.LinearBrush == null)
+        {
+            this.linearBrushViewModel = new LinearBrushSetupViewModel(this.ElementViewModel, BrushTargets.Background, okAction: this.SetBackground);
+
+            this.LinearBrush?.SetBrush(this.Background);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
+    {
+        try
+        {
+            var data = await new SDKDataManager().LoadPluginContent<FluidUIBrushModel>(path);
+
+            if (data != null)
+            {
+                var manager = new FluidUIBrushManager(data);
+                var brush = await manager.GetBrush();
+
+                if (this.ElementViewModel != null)
+                {
+                    this.linearBrushViewModel = new LinearBrushSetupViewModel(this.ElementViewModel, BrushTargets.Background, okAction: this.SetBackground);
+                }
+
+                if (brush != null && brush.GetType().Equals(typeof(LinearGradientBrush)))
+                {
+                    this.LinearBrush.SetBrush(brush);
+
+                    this.Background = this.LinearBrush.Brush;
+                    this.OnPropertyChanged(nameof(this.LinearBrush));
+
+                    return FeedbackMessageFactory.Success($"deserialized {path}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return FeedbackMessageFactory.Exception(ex.Message);
+        }
+
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(StandardTextModel).FullName}");
+    }
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Save(string path)
+    {
+        var model = new FluidUIBrushModel();
+
+        model.BrushTypeName = "LinearGradientBrush";
+        model.BrushTypeEnum = BrushTypes.LinearGradientBrush;
+
+        model.GradientPoints.Add(new System.Windows.Point(this.LinearBrush.StartPoint.X, this.LinearBrush.StartPoint.Y));
+        model.GradientPoints.Add(new System.Windows.Point(this.LinearBrush.EndPoint.X, this.LinearBrush.EndPoint.Y));
+
+        foreach ((Color, double) item in this.LinearBrush.GsList)
+        {
+            model.GradientColors.Add(item.Item1);
+            model.GradientStops.Add(item.Item2);
+        }
+
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
+
+    private void SetBackground()
+    {
+        this.Background = this.LinearBrush.Brush;
+>>>>>>> Stashed changes
     }
 }
 

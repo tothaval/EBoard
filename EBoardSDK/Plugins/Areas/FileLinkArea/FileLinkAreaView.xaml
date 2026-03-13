@@ -97,27 +97,39 @@
         </Style>
     </UserControl.Resources>
 
-    <Border >
+    <Border>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
+            
+            <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   FontWeight="Bold"
+                   Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Left"/>
+            
+
             <Button Content="{Binding ExecuteAllLinksButtonContent}"
                     Command="{Binding ExecuteAllLinksCommand}"
                     Grid.Column="0"
-                    Grid.Row="1"/>
+                    Grid.Row="2"/>
 
             <controls:AreaView DataContext="{Binding AreaViewModel}"
                                HorizontalAlignment="Center"
                                Grid.Column="1"
-                               Grid.Row="0"
+                               Grid.Row="1"
                                Grid.RowSpan="3"/>
         </Grid>
     </Border>

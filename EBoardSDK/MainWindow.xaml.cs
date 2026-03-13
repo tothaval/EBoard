@@ -31,9 +31,16 @@
 /// </p>
 namespace EBoardSDK;
 
+<<<<<<< Updated upstream:EBoardSDK/MainWindow.xaml.cs
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+=======
+using EBoardSDK.Utilities.Factories;
+using EBoardSDK.ViewModels;
+using System.Windows;
+using System.Windows.Input;
+>>>>>>> Stashed changes:EBoardSDK/Windows/MainWindow.xaml.cs
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml.
@@ -108,7 +115,21 @@ public partial class MainWindow : Window
 
     private void Minimize_Click(object sender, RoutedEventArgs e)
     {
+<<<<<<< Updated upstream:EBoardSDK/MainWindow.xaml.cs
         this.WindowState = System.Windows.WindowState.Minimized;
+=======
+        this.MinimizeMainWindow();
+    }
+
+    private void EboardMainWindow_Drop(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop) && this.viewModel != null)
+        {
+            this.viewModel.Drop(e);
+        }
+
+        e.Handled = true;
+>>>>>>> Stashed changes:EBoardSDK/Windows/MainWindow.xaml.cs
     }
 }
 

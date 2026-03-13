@@ -36,7 +36,24 @@ using EBoardSDK.Models.FluidUIFont;
 using EBoardSDK.Models.FluidUISize;
 using EBoardSDK.Models.FluidUIStand;
 
+<<<<<<< Updated upstream
 public interface IFluidUIContext : IFluidUIChangedAction
+=======
+/// <summary>
+/// This interface contains every FluidUI model class as property
+/// blueprint. The model classes are:
+/// <see cref="FluidUIDataBlockModel"/>,
+/// <see cref="FluidUIDesignModel"/>,
+/// <see cref="FluidUIFontModel"/>,
+/// <see cref="FluidUISizeModel"/>,
+/// <see cref="FluidUIStandModel"/>.
+/// <para/>
+/// Any FluidUI model class has a manager class, that allows
+/// changes to the model in a comfortable and easy to maintain
+/// manner.
+/// </summary>
+public interface IFluidUIContext : IHideControl, IFluidUIChangedAction
+>>>>>>> Stashed changes
 {
     public FluidUIDataBlockModel? DataBlock { get; set; }
 

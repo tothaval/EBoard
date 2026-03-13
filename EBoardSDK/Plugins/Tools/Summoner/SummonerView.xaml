@@ -149,10 +149,17 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
                    FontWeight="Bold"
+<<<<<<< Updated upstream:EBoardSDK/Plugins/Tools/Summoner/SummonerView.xaml
                    Text="{Binding PluginHeader}"
+=======
+                   Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/Summoner/SummonerView.xaml
                    TextWrapping="Wrap"
-                   HorizontalAlignment="Center"/>
+                   HorizontalAlignment="Left"/>
 
                 <TextBox Grid.Row="1"
                  Text="{Binding UserCommandString, UpdateSourceTrigger=PropertyChanged}"

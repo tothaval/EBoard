@@ -42,7 +42,6 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 public partial class PluginManagerViewModel : EBoardElementPluginBaseViewModel

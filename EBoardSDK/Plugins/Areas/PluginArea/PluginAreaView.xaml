@@ -119,10 +119,26 @@
         </Style>
     </UserControl.Resources>
 
-    <Border Visibility="{Binding PluginTypeSelected, Converter={StaticResource VisibilityToCollapsed}}">
-        <controls:AreaView DataContext="{Binding AreaViewModel}"
-                                   HorizontalAlignment="Center"/>
+    <Border>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
 
+            <TextBlock Grid.Row="0"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="2"
+                       FontWeight="Bold"
+                       Text="{Binding Name}"
+                       Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Center"/>
+
+            <controls:AreaView DataContext="{Binding AreaViewModel}"
+                               HorizontalAlignment="Center"
+                               Grid.Row="1"/>
+        </Grid>
     </Border>
 </UserControl>
 

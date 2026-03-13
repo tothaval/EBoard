@@ -60,6 +60,44 @@ public class FluidUIContext : IFluidUIContext
     {
     }
 
+<<<<<<< Updated upstream
+=======
+    /// <inheritdoc/>
+    public event Action? PropertyChangedEvent;
+
+    public bool HideControl0 { get; set; }
+
+    public bool HideControl1 { get; set; }
+
+    public bool HideControl2 { get; set; }
+
+    public bool HideControl3 { get; set; }
+
+    public bool HideControl4 { get; set; }
+
+    public bool HideControl5 { get; set; }
+
+    public bool HideControl6 { get; set; }
+
+    public bool HideControl7 { get; set; }
+
+    /// <inheritdoc/>
+    public FluidUIDataBlockModel? DataBlock { get; set; } = new FluidUIDataBlockModel();
+
+    /// <inheritdoc/>
+    public FluidUIDesignModel? Design { get; set; } = new FluidUIDesignModel();
+
+    /// <inheritdoc/>
+    public FluidUIFontModel? Font { get; set; } = new FluidUIFontModel();
+
+    /// <inheritdoc/>
+    public FluidUISizeModel? Size { get; set; } = new FluidUISizeModel();
+
+    /// <inheritdoc/>
+    public FluidUIStandModel? Stand { get; set; } = new FluidUIStandModel();
+
+    /// <inheritdoc/>
+>>>>>>> Stashed changes
     public void Dispose()
     {
         this.DataBlock?.Dispose();

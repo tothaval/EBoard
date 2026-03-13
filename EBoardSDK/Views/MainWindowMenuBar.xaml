@@ -161,6 +161,74 @@
             <Setter Property="FontSize" Value="{Binding ScreenFontManagement.FontSize, NotifyOnSourceUpdated=True}" />
             <Setter Property="FontFamily" Value="{Binding ScreenFontManagement.FontFamily, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
             <Setter Property="FontWeight" Value="{Binding ScreenFontManagement.FontWeight, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
+<<<<<<< Updated upstream:EBoardSDK/Views/MainWindowMenuBar.xaml
+=======
+            <Setter Property="StaysOpenOnClick" Value="False"/>
+            <Setter Property="BorderThickness" Value="3"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                        <Grid SnapsToDevicePixels="true">
+                            <DockPanel x:Name="dp" >
+                                <ContentPresenter x:Name="Icon"
+                                              ContentSource="Icon"
+                                              Margin="0" 
+                                              VerticalAlignment="Center"/>
+                                <Path x:Name="GlyphPanel"
+                                      FlowDirection="LeftToRight"
+                                      Margin="0"
+                                      Visibility="Collapsed"
+                                      VerticalAlignment="Center"/>
+                                <ContentPresenter x:Name="content"
+                                                  ContentSource="Header"
+                                                  Margin="10 5" 
+                                                  RecognizesAccessKey="True"/>
+                            </DockPanel>
+                            <Popup x:Name="PART_Popup"
+                                   AllowsTransparency="true"
+                                   Focusable="false"
+                                   IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                   PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}"
+                                   Placement="Right" VerticalOffset="0" HorizontalOffset="-10">
+
+                                <Border 
+                                    Background="{TemplateBinding Background}"
+                                    Opacity="{Binding DataContext.MenuBar.ScreenBrushManagement.Opacity, RelativeSource={RelativeSource AncestorType=winds:MainWindow, Mode=FindAncestor}}"
+                                    CornerRadius="5"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                        BorderBrush="{TemplateBinding BorderBrush}">
+                                    <ScrollViewer x:Name="SubMenuScrollViewer"
+                                                  CanContentScroll="true"
+                                                  Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+                                        <Grid RenderOptions.ClearTypeHint="Enabled">
+                                            <ItemsPresenter x:Name="ItemsPresenter"
+                                                            KeyboardNavigation.DirectionalNavigation="Cycle"
+                                                            Grid.IsSharedSizeScope="true"
+                                                            Margin="5, 2, 5, 2"                                                        
+                                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                            KeyboardNavigation.TabNavigation="Cycle"/>
+                                        </Grid>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <!--<ControlTemplate.Triggers>
+
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter Property="TextBlock.Foreground" Value="{DynamicResource SelectedEboardBrowserBrushHighlight}"/>
+                        </Trigger>
+
+                        <Trigger Property="IsHighlighted" Value="False">
+                            <Setter Property="TextBlock.Foreground" Value="{DynamicResource SelectedEboardBrowserBrushForeground}"/>
+                        </Trigger>
+
+                    </ControlTemplate.Triggers>-->
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/MenuBar/MenuBarView.xaml
 
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
@@ -179,7 +247,11 @@
 
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
+<<<<<<< Updated upstream:EBoardSDK/Views/MainWindowMenuBar.xaml
             <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Foreground, NotifyOnSourceUpdated=True, RelativeSource={RelativeSource AncestorType=Menu}}"/>
+=======
+            <Setter Property="Foreground" Value="{Binding ScreenBrushManagement.Foreground, NotifyOnSourceUpdated=True}"/>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/MenuBar/MenuBarView.xaml
             <Setter Property="FontSize" Value="{Binding ScreenFontManagement.FontSize, NotifyOnSourceUpdated=True}" />
             <Setter Property="FontFamily" Value="{Binding ScreenFontManagement.FontFamily, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
             <Setter Property="FontWeight" Value="{Binding ScreenFontManagement.FontWeight, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" />
@@ -229,27 +301,77 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
+<<<<<<< Updated upstream:EBoardSDK/Views/MainWindowMenuBar.xaml
+=======
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Border Visibility="{Binding InstantiatedAsElement, Converter={StaticResource VisibilityToCollapsed}}"
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="4">
+            <TextBlock FontWeight="Bold"
+                       Text="{Binding Name}"
+                       Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
+                       Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Left"/>
+        </Border>
+
+        <Border Background="{Binding MainViewModel.FluidUI.Design.Background}"
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
+                Grid.Row="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Visibility="{Binding InstantiatedAsElement, Converter={StaticResource VisibilityToCollapsed}}"/>
+
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/MenuBar/MenuBarView.xaml
         <ToggleButton Content="Eboard Browser"
                       FontSize="{Binding MainViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
                       IsChecked="{Binding EBoardBrowserSwitch,
                 NotifyOnSourceUpdated=True,
                 UpdateSourceTrigger=PropertyChanged}"
+<<<<<<< Updated upstream:EBoardSDK/Views/MainWindowMenuBar.xaml
                       Grid.Column="0"/>
 
         <ToggleButton Content="Screen Control"
+=======
+                      Grid.Column="0"
+                Grid.Row="1"/>
+
+        <Border Visibility="{Binding InvokeOnly, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                Grid.Column="1"
+                Grid.Row="1">
+
+            <ToggleButton Content="Screen Control"
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/MenuBar/MenuBarView.xaml
                       FontSize="{Binding MainViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"    
                       IsChecked="{Binding ScreenControlSwitch,
                 NotifyOnSourceUpdated=True,
                 UpdateSourceTrigger=PropertyChanged}"
+<<<<<<< Updated upstream:EBoardSDK/Views/MainWindowMenuBar.xaml
                       Grid.Column="1"/>
+=======
+                      Visibility="{Binding IsActiveScreenNotNull, Converter={StaticResource VisibilityToCollapsed}}"/>
+        </Border>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/MenuBar/MenuBarView.xaml
 
         <Border Background="{Binding ScreenBrushManagement.Background}"
                 BorderBrush="{Binding ScreenBrushManagement.Border}"
                 BorderThickness="3"
                 CornerRadius="5"
-                Grid.Column="2">
+                Grid.Column="2"
+                Grid.Row="1">
             <Menu Foreground="{Binding ScreenBrushManagement.Foreground}"
+<<<<<<< Updated upstream:EBoardSDK/Views/MainWindowMenuBar.xaml
                   Background="Transparent">
+=======
+                  Opacity="{Binding ScreenBrushManagement.Opacity}"
+                  Background="{Binding ScreenBrushManagement.Background}">
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/MenuBar/MenuBarView.xaml
                 <MenuItem Header="Addons"
                           Style="{StaticResource menuitem}"
                           ItemsSource="{Binding FoundAddons}"

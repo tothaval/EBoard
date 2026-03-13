@@ -31,7 +31,11 @@
 /// </p>
 namespace EBoardSDK.Plugins.Elements.About;
 
+<<<<<<< Updated upstream:EBoardSDK/Plugins/Elements/About/AboutModel.cs
 using System.Text.Json.Serialization;
+=======
+using EBoardSDK.Plugins.Eboard.Summoner;
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/Coordinates/CoordinatesModel.cs
 
 public class AboutModel
 {

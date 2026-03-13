@@ -36,5 +36,8 @@
     <ProjectReference Include="..\__EboardElementPlugins\EEP_ResistorCalculator\EEP_ResistorCalculator\EEP_ResistorCalculator.csproj" />
   </ItemGroup>
 
+<<<<<<< Updated upstream
 	
+=======
+>>>>>>> Stashed changes
 </Project>

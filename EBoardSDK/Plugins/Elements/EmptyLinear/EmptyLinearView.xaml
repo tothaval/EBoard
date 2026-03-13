@@ -37,6 +37,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoardSDK.Plugins.Elements.EmptyLinear"
+             xmlns:linear="clr-namespace:EBoardSDK.Controls.BrushSetup.LinearBrushSetup"
              d:DataContext="{d:DesignInstance Type=local:EmptyLinearViewModel}"
              FontSize="{Binding ElementViewModel.FluidUI.Font.FontSize, NotifyOnSourceUpdated=True}"
              FontFamily="{Binding ElementViewModel.FluidUI.Font.FontFamily, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True}"
@@ -49,24 +50,36 @@
             <Setter Property="Foreground" Value="{Binding ElementViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
         </Style>
     </UserControl.Resources>
-    
-        <Grid HorizontalAlignment="Stretch"
+
+    <Grid HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch"
                      Margin="{Binding ElementViewModel.FluidUI.Size.Margin}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0"
-                       Text="{Binding PluginHeader}"
-                       TextWrapping="Wrap"
-                       HorizontalAlignment="Center"/>
+        <Grid.ContextMenu>
+            <ContextMenu Background="{Binding ElementViewModel.FluidUI.Design.Background}"
+                         BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
+                         Style="{StaticResource ContextMenuStyle}">
 
-            <TextBlock Grid.Row="1"
+                <!-- test of feature without surrounding MenuItem -->
+                <linear:LinearBrushSetupView DataContext="{Binding LinearBrush}"/>
+
+            </ContextMenu>
+        </Grid.ContextMenu>
+
+        <TextBlock Grid.Row="0"
+                   Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Left"/>
+
+        <TextBlock Grid.Row="1"
                        Text="{Binding Content}"
                        Background="{Binding Background}"/>
-        </Grid>
+    </Grid>
 </UserControl>
 
 <!-- EOF -->

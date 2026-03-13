@@ -33,12 +33,23 @@ namespace EBoardSDK.Enums;
 
 public enum ElementInstantiationPolicy
 {
+<<<<<<< Updated upstream:EBoardSDK/Enums/ElementInstantiationPolicy.cs
     Unique,
     Global,
     OnePerScreen,
     DefaultScreenTypesOnly,
     Unconstrained,
     ValueNotSet,
+=======
+    Eboard,
+    FluidUI,
+    Image,
+    Plugin,
+    Media,
+    Text,
+
+    Unknown,
+>>>>>>> Stashed changes:EBoardSDK/Enums/SupportedFileTypeCategories.cs
 }
 
 // EOF

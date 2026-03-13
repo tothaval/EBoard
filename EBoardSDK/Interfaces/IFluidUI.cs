@@ -1,6 +1,12 @@
 ﻿// <copyright file="IFluidUI.cs" company=".">
 // Stephan Kammel
 // </copyright>
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Controls.FluidUIMenu;
+using EBoardSDK.Enums;
+
+>>>>>>> Stashed changes
 /// license
 ///
 /// <b>ad-hoc license terms eboard prototype</b><br>
@@ -33,6 +39,19 @@ namespace EBoardSDK.Interfaces;
 public interface IFluidUI : IFluidUIChangedAction
 {
     public IFluidUIContext FluidUI { get; }
+<<<<<<< Updated upstream
+=======
+
+    /// <summary>
+    /// Gets the FluidUIMenuViewModel instance or null.
+    /// </summary>
+    public FluidUIMenuViewModel? FluidUIMenuViewModel { get; }
+
+    /// <summary>
+    /// Gets the FluidUI Context Area configuration data.
+    /// </summary>
+    public abstract FluidUIContextAreas ContextArea { get; }
+>>>>>>> Stashed changes
 }
 
 // EOF

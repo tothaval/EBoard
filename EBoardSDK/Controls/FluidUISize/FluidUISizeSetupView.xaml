@@ -189,45 +189,120 @@
         </Grid>
     </MenuItem>
 
+<<<<<<< Updated upstream
     <MenuItem Header="Margin" Style="{StaticResource menuitem}">
         <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding ViewModel.FluidUIMenuViewModel.FluidUISizeSetupViewModel.MarginQuadSetup}"
+=======
+        <MenuItem Header="Scale"
+                  Style="{StaticResource menuitem}"
+                  Grid.Row="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBox Text="{Binding ScaleX, UpdateSourceTrigger=Default, Delay=5}"
+       Width="100"
+       Grid.Column="0"
+       Grid.Row="0"/>
+
+                <Slider Value="{Binding ScaleX, UpdateSourceTrigger=PropertyChanged, Delay=1}"
+      Grid.Column="1"
+      Grid.Row="0"/>
+
+                <TextBox Text="{Binding ScaleY, UpdateSourceTrigger=Default, Delay=5}"
+       Width="100"
+       Grid.Column="0"
+       Grid.Row="1"/>
+
+                <Slider Value="{Binding ScaleY, UpdateSourceTrigger=PropertyChanged, Delay=1}"
+      Grid.Column="1"
+      Grid.Row="1"/>
+            </Grid>
+        </MenuItem>
+
+        <MenuItem Header="Margin" Style="{StaticResource menuitem}"
+                  Grid.Row="2">
+            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding MarginQuadSetup}"
+>>>>>>> Stashed changes
                                               Maximum="50"
                                               Value1="Left"
                                               Value2="Top"
                                               Value3="Right"
                                               Value4="Bottom"
+<<<<<<< Updated upstream
                                               OKCommand="{Binding ResetMarginCommand}"/>
     </MenuItem>
 
     <MenuItem Header="Padding" Style="{StaticResource menuitem}">
         <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding ViewModel.FluidUIMenuViewModel.FluidUISizeSetupViewModel.PaddingQuadSetup}"
+=======
+                                              OKCommand="{Binding ResetMarginCommand, RelativeSource={RelativeSource AncestorType=MenuItem, Mode=FindAncestor}}"/>
+        </MenuItem>
+
+        <MenuItem Header="Padding" Style="{StaticResource menuitem}"
+                  Grid.Row="3">
+            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding PaddingQuadSetup}"
+>>>>>>> Stashed changes
                                               Maximum="50"
                                               Value1="Left"
                                               Value2="Top"
                                               Value3="Right"
                                               Value4="Bottom"
+<<<<<<< Updated upstream
                                               OKCommand="{Binding ResetPaddingCommand}"/>
     </MenuItem>
 
     <MenuItem Header="Thickness" Style="{StaticResource menuitem}">
         <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding ViewModel.FluidUIMenuViewModel.FluidUISizeSetupViewModel.ThicknessQuadSetup}"
+=======
+                                              OKCommand="{Binding ResetPaddingCommand, RelativeSource={RelativeSource AncestorType=MenuItem, Mode=FindAncestor}}"/>
+        </MenuItem>
+
+        <MenuItem Header="Thickness" Style="{StaticResource menuitem}"
+                  Grid.Row="4">
+            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding ThicknessQuadSetup}"
+>>>>>>> Stashed changes
                                               Maximum="100"
                                               Value1="Left"
                                               Value2="Top"
                                               Value3="Right"
                                               Value4="Bottom"
+<<<<<<< Updated upstream
                                               OKCommand="{Binding ResetThicknessCommand}"/>
     </MenuItem>
 
     <MenuItem Header="Corners" Style="{StaticResource menuitem}">
         <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding ViewModel.FluidUIMenuViewModel.FluidUISizeSetupViewModel.CornerRadiusQuadSetup}"
+=======
+                                              OKCommand="{Binding ResetThicknessCommand, RelativeSource={RelativeSource AncestorType=MenuItem, Mode=FindAncestor}}"/>
+        </MenuItem>
+
+        <MenuItem Header="Corners" Style="{StaticResource menuitem}"
+                  Grid.Row="5">
+            <esdkCtrlQuadSetup:QuadValueSetupView DataContext="{Binding CornerRadiusQuadSetup}"
+>>>>>>> Stashed changes
                                               Maximum="100"
                                               Value1="TopLeft"
                                               Value2="TopRight"
                                               Value3="BottomRight"
                                               Value4="BottomLeft"
+<<<<<<< Updated upstream
                                               OKCommand="{Binding ResetCornersCommand}"/>
     </MenuItem>
 </MenuItem>
+=======
+                                              OKCommand="{Binding ResetCornersCommand, RelativeSource={RelativeSource AncestorType=MenuItem, Mode=FindAncestor}}"/>
+        </MenuItem>
+        
+    </Grid>
+</UserControl>
+>>>>>>> Stashed changes
 
 <!-- EOF -->

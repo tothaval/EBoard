@@ -321,6 +321,19 @@ public partial class ElementView : UserControl
 
         this.UpdatePlacement();
     }
+<<<<<<< Updated upstream
+=======
+
+    private void Element_Drop(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetDataPresent(DataFormats.FileDrop) && this.elementViewModel != null)
+        {
+            this.elementViewModel.Drop(e);
+        }
+
+        e.Handled = true;
+    }
+>>>>>>> Stashed changes
 }
 
 // EOF

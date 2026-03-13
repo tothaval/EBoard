@@ -53,7 +53,14 @@ public partial class FluidUISelectionViewModel : ObservableObject
     private bool allConfiguration = true;
 
     [ObservableProperty]
+<<<<<<< Updated upstream
     private bool dataConfiguration = false;
+=======
+    private bool nothingConfiguration;
+
+    [ObservableProperty]
+    private bool dataConfiguration;
+>>>>>>> Stashed changes
 
     [ObservableProperty]
     private bool designConfiguration = false;
@@ -68,7 +75,29 @@ public partial class FluidUISelectionViewModel : ObservableObject
     private bool standConfiguration = false;
 
     [ObservableProperty]
+<<<<<<< Updated upstream
     private ConfigurationTargets configurationTarget = ConfigurationTargets.All;
+=======
+    private FluidUIConfigurationSetting all = new(ConfigurationTargets.All) { Selected = true };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting nothing = new(ConfigurationTargets.Nothing) { Selected = false };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting dataBlock = new(ConfigurationTargets.DataBlock) { Selected = false };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting design = new(ConfigurationTargets.Design) { Selected = false };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting font = new(ConfigurationTargets.Font) { Selected = false };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting size = new(ConfigurationTargets.Size) { Selected = false };
+
+    [ObservableProperty]
+    private FluidUIConfigurationSetting stand = new(ConfigurationTargets.Stand) { Selected = false };
+>>>>>>> Stashed changes
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FluidUISelectionViewModel"/> class.
@@ -83,6 +112,7 @@ public partial class FluidUISelectionViewModel : ObservableObject
         this.OnPropertyChanged(nameof(this.ViewModel));
     }
 
+<<<<<<< Updated upstream
     public EboardFluidUIBaseViewModel ViewModel => this.viewModel;
 
     partial void OnAllConfigurationChanged(bool value)
@@ -96,6 +126,55 @@ public partial class FluidUISelectionViewModel : ObservableObject
             this.FontConfiguration = false;
             this.SizeConfiguration = false;
             this.StandConfiguration = false;
+=======
+    public FluidUIBaseViewModel ViewModel => this.viewModel;
+
+    private void SetAllConfigurationFalse()
+    {
+        if (this.AllConfiguration)
+        {
+            this.AllConfiguration = false;
+        }
+
+        if (this.NothingConfiguration)
+        {
+            this.NothingConfiguration = false;
+        }
+    }
+
+    private void SetEveryConfigurationToFalse()
+    {
+        this.NothingConfiguration = false;
+        this.DataConfiguration = false;
+        this.DesignConfiguration = false;
+        this.FontConfiguration = false;
+        this.SizeConfiguration = false;
+        this.StandConfiguration = false;
+    }
+
+    partial void OnAllConfigurationChanging(bool oldValue, bool newValue)
+    {
+        if (newValue)
+        {
+            this.SetEveryConfigurationToFalse();
+        }
+    }
+
+    partial void OnAllConfigurationChanged(bool value)
+    {
+        this.All.Selected = value;
+    }
+
+    partial void OnNothingConfigurationChanged(bool value)
+    {
+        if (value)
+        {
+            this.SetEveryConfigurationToFalse();
+            this.SetAllConfigurationFalse();
+
+            this.nothingConfiguration = value;
+            this.OnPropertyChanged(nameof(this.NothingConfiguration));
+>>>>>>> Stashed changes
         }
     }
 
@@ -144,11 +223,14 @@ public partial class FluidUISelectionViewModel : ObservableObject
         }
     }
 
+<<<<<<< Updated upstream
     private void SetSaveAllConfiguration(bool value)
     {
         this.AllConfiguration = value;
     }
 
+=======
+>>>>>>> Stashed changes
     [RelayCommand]
     private async void ApplyFluidUIConfiguration()
     {

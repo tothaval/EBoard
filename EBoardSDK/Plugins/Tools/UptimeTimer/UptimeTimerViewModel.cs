@@ -34,6 +34,10 @@ namespace EBoardSDK.Plugins.Tools.Uptime;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EBoardSDK.Enums;
 using EBoardSDK.Models;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;

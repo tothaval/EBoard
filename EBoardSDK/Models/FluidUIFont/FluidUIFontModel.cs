@@ -119,7 +119,11 @@ public class FluidUIFontModel : IFluidUIFontModel
 
         set
         {
+<<<<<<< Updated upstream
             if (this.fontFamily != value)
+=======
+            if (this.fontWeightValue != value && value > 0)
+>>>>>>> Stashed changes
             {
                 this.fontFamily = value;
                 this.FontFamilyName = value.Source;

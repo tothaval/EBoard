@@ -35,6 +35,7 @@ namespace EBoardSDK.Enums;
 public enum ConfigurationTargets
 {
     All,
+    Nothing,
     DataBlock,
     Design,
     Font,

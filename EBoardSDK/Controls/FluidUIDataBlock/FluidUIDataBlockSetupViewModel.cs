@@ -33,16 +33,13 @@ namespace EBoardSDK.Controls.FluidUIDataBlock;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.FluidUIDataBlock.FluidUIIndexText;
 using EBoardSDK.Controls.FluidUIDataBlock.FluidUIKeyText;
 using EBoardSDK.Controls.FluidUIMenu;
 using EBoardSDK.Enums;
-using EBoardSDK.Interfaces;
 using EBoardSDK.Interfaces.FluidUIDataBlock;
 using EBoardSDK.Models;
 using EBoardSDK.Models.FluidUIDataBlock;
-using EBoardSDK.SharedMethods;
 using EBoardSDK.ViewModels;
 using System;
 using System.Collections.ObjectModel;
@@ -278,6 +275,70 @@ public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUI
     }
 
     [RelayCommand]
+<<<<<<< Updated upstream
+=======
+    private void CopyConfiguration()
+    {
+        var mainViewModel = this.ViewModel as MainViewModel;
+        var navigation = this.ViewModel as NavigationContextViewModel;
+        var screen = this.ViewModel as ScreenViewModel;
+        var element = this.ViewModel as ElementViewModel;
+
+        if (navigation != null)
+        {
+            mainViewModel = navigation.MainViewModel;
+        }
+
+        if (screen != null)
+        {
+            mainViewModel = screen.MainViewModel;
+        }
+
+        if (element != null)
+        {
+            mainViewModel = element.ScreenViewModel.MainViewModel;
+        }
+
+        var manager = new FluidUIContextManager(this.ViewModel);
+        var copy = manager.GetCustomFluidUIConfiguration(this.SaveSelectionViewModel);
+
+        mainViewModel?.LoadIFluidUIContextCopy(copy);
+    }
+
+    [RelayCommand]
+    private void PasteConfiguration(object? parameter)
+    {
+        var mainViewModel = this.ViewModel as MainViewModel;
+        var navigation = this.ViewModel as NavigationContextViewModel;
+        var screen = this.ViewModel as ScreenViewModel;
+        var element = this.ViewModel as ElementViewModel;
+
+        if (navigation != null)
+        {
+            mainViewModel = navigation.MainViewModel;
+        }
+
+        if (screen != null)
+        {
+            mainViewModel = screen.MainViewModel;
+        }
+
+        if (element != null)
+        {
+            mainViewModel = element.ScreenViewModel.MainViewModel;
+        }
+
+        if (mainViewModel != null && mainViewModel.FluidUIContextCopy != null)
+        {
+            var manager = new FluidUIContextManager(this.ViewModel);
+            var copy = manager.GetCustomFluidUIContextCopy(this.LoadSelectionViewModel, mainViewModel.FluidUIContextCopy);
+
+            this.ViewModel.SetFluidUIByUser(copy);
+        }
+    }
+
+    [RelayCommand]
+>>>>>>> Stashed changes
     private void DeleteIndexText()
     {
         if (this.FluidUIIndexText == null)
@@ -387,9 +448,9 @@ public partial class FluidUIDataBlockSetupViewModel : ObservableObject, IFluidUI
     }
 
     [RelayCommand]
-    private void ResetDataBlockTextAndTitle()
+    private void ResetDataBlock()
     {
-        this.fluidUIDataBlockManager.SetupTitleAndText("fluid ui context", "fluid ui context description");
+        this.fluidUIDataBlockManager.Reset();
     }
 }
 

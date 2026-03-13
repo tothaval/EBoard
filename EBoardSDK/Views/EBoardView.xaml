@@ -37,8 +37,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:EBoardSDK.Views"
+<<<<<<< Updated upstream
              xmlns:vms="clr-namespace:EBoardSDK.ViewModels"
              d:DataContext="{d:DesignInstance Type=vms:EBoardViewModel}"
+=======
+             xmlns:vms="clr-namespace:EBoardSDK.ViewModels"             
+             d:DataContext="{d:DesignInstance Type=vms:ScreenViewModel}"
+>>>>>>> Stashed changes
              xmlns:esdkfuim="clr-namespace:EBoardSDK.Controls.FluidUIMenu"
              xmlns:esdkCtrlQuadSetup="clr-namespace:EBoardSDK.Controls.QuadValueSetup"
              x:Name="EBoard_Board"

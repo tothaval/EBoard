@@ -291,14 +291,14 @@
                 <TextBlock Text="Title"
                            Grid.Column="0"
                            Grid.Row="1"/>
-                <TextBlock Text="{Binding EBoardViewModel.FluidUI.DataBlock.Title}"
+                <TextBlock Text="{Binding ScreenViewModel.FluidUI.DataBlock.Title}"
                            Grid.Column="1"
                            Grid.Row="1"/>
 
                 <TextBlock Text="Text"
                            Grid.Column="0"
                            Grid.Row="2"/>
-                <TextBlock Text="{Binding EBoardViewModel.FluidUI.DataBlock.Text}"
+                <TextBlock Text="{Binding ScreenViewModel.FluidUI.DataBlock.Text}"
                            TextAlignment="Left"
                            HorizontalAlignment="Left"
                            TextWrapping="WrapWithOverflow"

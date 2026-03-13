@@ -44,6 +44,7 @@ using System.Windows;
 
 public partial class ScreenSetupViewModel : ObservableObject
 {
+<<<<<<< Updated upstream
     private EBoardBrowserViewModel viewModel;
     private EBoardViewModel eBoardViewModel;
 
@@ -52,6 +53,10 @@ public partial class ScreenSetupViewModel : ObservableObject
     private readonly string txtRemoveEboardQuestion = "Delete selected screen(s)?";
 
     private readonly string txtRemoveEboardsTitle = "Delete screen(s) confirmation";
+=======
+    private NavigationContextViewModel viewModel;
+    private ScreenViewModel? screenViewModel;
+>>>>>>> Stashed changes
 
     [ObservableProperty]
     private string eBoardName = "new";
@@ -90,12 +95,17 @@ public partial class ScreenSetupViewModel : ObservableObject
     /// Initializes a new instance of the <see cref="ScreenSetupViewModel"/> class.
     /// </summary>
     /// <param name="eBoardBrowserViewModel"></param>
+<<<<<<< Updated upstream
     /// <param name="eBoardViewModel"></param>
     public ScreenSetupViewModel(EBoardBrowserViewModel eBoardBrowserViewModel, EBoardViewModel eBoardViewModel)
+=======
+    public ScreenSetupViewModel(NavigationContextViewModel eBoardBrowserViewModel)
+>>>>>>> Stashed changes
     {
         this.viewModel = eBoardBrowserViewModel;
         this.eBoardViewModel = eBoardViewModel;
 
+<<<<<<< Updated upstream
         var sizeManager = new FluidUISizeManager(this.EBoardViewModel);
 
         this.EBoardName = new FluidUIDataBlockManager(this.EBoardViewModel).GetTitle();
@@ -106,19 +116,52 @@ public partial class ScreenSetupViewModel : ObservableObject
         this.EBoardCreatedDate = this.EBoardViewModel.GetCreatedDate();
 
         this.GetCounts();
+=======
+        if (this.ViewModel.EboardBrowserViewModel.SelectedEboard != null)
+        {
+            this.screenViewModel = this.ViewModel.EboardBrowserViewModel.SelectedEboard;
 
-        this.OnPropertyChanged(nameof(this.EBoardViewModel));
+            var sizeManager = new FluidUISizeManager(this.ScreenViewModel);
+
+            this.EboardName = new FluidUIDataBlockManager(this.ScreenViewModel).GetTitle();
+            this.EboardWidth = sizeManager.GetWidth();
+            this.EboardHeight = sizeManager.GetHeight();
+            this.EboardDepth = new FluidUIStandManager(this.ScreenViewModel).GetZmaximum();
+            this.EboardOpacity = new FluidUIDesignManager(this.ScreenViewModel).GetOpacity();
+
+            this.EboardCreatedDate = this.ScreenViewModel.GetCreatedDate();
+
+            this.ScreenViewModel.PropertyChanged += this.EBoardViewModel_PropertyChanged;
+        }
+>>>>>>> Stashed changes
+
+        this.OnPropertyChanged(nameof(this.ScreenViewModel));
         this.OnPropertyChanged(nameof(this.ViewModel));
     }
 
+<<<<<<< Updated upstream
+=======
+    public NavigationContextViewModel ViewModel => this.viewModel;
+
+    public ScreenViewModel ScreenViewModel => this.screenViewModel;
+
+    public void Dispose()
+    {
+        if (this.ScreenViewModel != null)
+        {
+            this.ScreenViewModel.PropertyChanged -= this.EBoardViewModel_PropertyChanged;
+        }
+    }
+
+>>>>>>> Stashed changes
     internal void GetCounts()
     {
-        this.TotalPluginCount = this.EBoardViewModel.GetTotalCount();
-        this.AddonCount = this.EBoardViewModel.GetPluginCategoryCount(Enums.PluginCategories.Addon);
-        this.ElementCount = this.EBoardViewModel.GetPluginCategoryCount(Enums.PluginCategories.Element);
-        this.ShapeCount = this.EBoardViewModel.GetPluginCategoryCount(Enums.PluginCategories.Shape);
-        this.AreaCount = this.EBoardViewModel.GetPluginCategoryCount(Enums.PluginCategories.Area);
-        this.ToolCount = this.EBoardViewModel.GetPluginCategoryCount(Enums.PluginCategories.Tool);
+        this.TotalPluginCount = this.ScreenViewModel.GetTotalCount();
+        this.AddonCount = this.ScreenViewModel.GetPluginCategoryCount(Enums.PluginCategories.Addon);
+        this.ElementCount = this.ScreenViewModel.GetPluginCategoryCount(Enums.PluginCategories.Element);
+        this.ShapeCount = this.ScreenViewModel.GetPluginCategoryCount(Enums.PluginCategories.Shape);
+        this.AreaCount = this.ScreenViewModel.GetPluginCategoryCount(Enums.PluginCategories.Area);
+        this.ToolCount = this.ScreenViewModel.GetPluginCategoryCount(Enums.PluginCategories.Tool);
     }
 
     public EBoardBrowserViewModel ViewModel => this.viewModel;
@@ -127,36 +170,36 @@ public partial class ScreenSetupViewModel : ObservableObject
 
     partial void OnEBoardDepthChanged(int value)
     {
-        if (this.EBoardViewModel != null)
+        if (this.ScreenViewModel != null)
         {
-            var manager = new FluidUIStandManager(this.EBoardViewModel);
+            var manager = new FluidUIStandManager(this.ScreenViewModel);
             manager.SetZmaximum(value);
         }
     }
 
     partial void OnEBoardNameChanged(string value)
     {
-        if (this.EBoardViewModel != null)
+        if (this.ScreenViewModel != null)
         {
-            var manager = new FluidUIDataBlockManager(this.EBoardViewModel);
+            var manager = new FluidUIDataBlockManager(this.ScreenViewModel);
             manager.SetTitle(value);
         }
     }
 
     partial void OnNewEBoardWidthChanged(double value)
     {
-        if (this.EBoardViewModel != null)
+        if (this.ScreenViewModel != null)
         {
-            var manager = new FluidUISizeManager(this.EBoardViewModel);
+            var manager = new FluidUISizeManager(this.ScreenViewModel);
             manager.SetWidth(value);
         }
     }
 
     partial void OnNewEBoardHeightChanged(double value)
     {
-        if (this.EBoardViewModel != null)
+        if (this.ScreenViewModel != null)
         {
-            var manager = new FluidUISizeManager(this.EBoardViewModel);
+            var manager = new FluidUISizeManager(this.ScreenViewModel);
             manager.SetHeight(value);
         }
     }
@@ -232,11 +275,18 @@ public partial class ScreenSetupViewModel : ObservableObject
     [RelayCommand]
     private void EditEBoardParameters()
     {
-        if (this.EBoardViewModel != null)
+        if (this.ScreenViewModel != null)
         {
+<<<<<<< Updated upstream
             var dataManager = new FluidUIDataBlockManager(this.EBoardViewModel);
             var sizeManager = new FluidUISizeManager(this.EBoardViewModel);
             var standManager = new FluidUIStandManager(this.EBoardViewModel);
+=======
+            var dataManager = new FluidUIDataBlockManager(this.ScreenViewModel);
+            var designManager = new FluidUIDesignManager(this.ScreenViewModel);
+            var sizeManager = new FluidUISizeManager(this.ScreenViewModel);
+            var standManager = new FluidUIStandManager(this.ScreenViewModel);
+>>>>>>> Stashed changes
 
             dataManager.SetTitle(this.EBoardName);
 

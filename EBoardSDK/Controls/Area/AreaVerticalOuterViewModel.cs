@@ -32,7 +32,10 @@
 namespace EBoardSDK.Controls.Area;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+<<<<<<< Updated upstream
 using EBoardSDK.Interfaces;
+=======
+>>>>>>> Stashed changes
 using EBoardSDK.Plugins;
 using EBoardSDK.ViewModels;
 using System.Collections.ObjectModel;
@@ -153,6 +156,13 @@ public partial class AreaVerticalOuterViewModel<T> : ObservableObject
         }
 
         this.OnPropertyChanged(nameof(this.HorizontalInnerViewModels));
+    }
+
+    public void ResetArea()
+    {
+        this.HorizontalCount = 0;
+        this.VerticalCount = 0;
+        this.HorizontalInnerViewModels.Clear();
     }
 
     public void SetElementViewModel(ElementViewModel elementViewModel)

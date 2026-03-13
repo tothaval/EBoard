@@ -151,6 +151,8 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
 
     public bool FluidUIContextHasStand => this.fluidUIContextHasStand;
 
+    public bool FluidUIContextHasStand => !(this.fluidUIStandSettings == FluidUIStandSettings.NoStandContextArea);
+
     public void ApplyFluidUIStandValues()
     {
         this.XPosition = (int)this.fluidUIStandManager.GetPosition().X;
@@ -283,6 +285,7 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
 
     partial void OnXPositionChanged(int value)
     {
+<<<<<<< Updated upstream
         this.fluidUIStandManager.SetX(value);
 
         if (this.outerViewModel != null)
@@ -290,10 +293,14 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
             this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
             //this.ViewModel.UpdateStand();
         }
+=======
+        this.fluidUIStandManager.SetX((double)value);
+>>>>>>> Stashed changes
     }
 
     partial void OnYPositionChanged(int value)
     {
+<<<<<<< Updated upstream
         this.fluidUIStandManager.SetY(value);
 
         if (this.outerViewModel != null)
@@ -301,6 +308,9 @@ public partial class FluidUIStandSetupViewModel : ObservableObject, IFluidUIStan
             this.ViewModel.FluidUI.Stand = outerViewModel.FluidUI.Stand;
             //this.ViewModel.UpdateStand();
         }
+=======
+        this.fluidUIStandManager.SetY((double)value);
+>>>>>>> Stashed changes
     }
 
     partial void OnXTransformOriginChanged(double value)

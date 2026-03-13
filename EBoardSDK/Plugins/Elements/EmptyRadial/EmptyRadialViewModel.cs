@@ -32,7 +32,16 @@
 namespace EBoardSDK.Plugins.Elements.EmptyRadial;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using EBoardSDK.Controls.BrushSetup.RadialBrushSetup;
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUIDesign;
+using EBoardSDK.Plugins.Elements.StandardText;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,6 +49,14 @@ using System.Windows.Media;
 
 public partial class EmptyRadialViewModel : EBoardElementPluginBaseViewModel
 {
+<<<<<<< Updated upstream
+=======
+    private readonly string pluginHeader = "Empty Radial";
+    private readonly string pluginName = "EmptyRadial";
+
+    private RadialBrushSetupViewModel radialBrushViewModel;
+
+>>>>>>> Stashed changes
     [ObservableProperty]
     private string content = "\t\t\t\n\n\n";
 
@@ -73,6 +90,7 @@ public partial class EmptyRadialViewModel : EBoardElementPluginBaseViewModel
         set { this.pluginHeader = value; }
     }
 
+<<<<<<< Updated upstream
     public override string PluginName
     {
         get { return this.pluginName; }
@@ -101,6 +119,107 @@ public partial class EmptyRadialViewModel : EBoardElementPluginBaseViewModel
 
     private void InstantiateProperties()
     {
+=======
+    public RadialBrushSetupViewModel RadialBrush => this.radialBrushViewModel;
+
+    /// <inheritdoc/>
+    public override PluginCategories Category => PluginCategories.Element;
+
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new();
+
+    /// <inheritdoc/>
+    public override string Header => this.pluginHeader;
+
+    /// <inheritdoc/>
+    public override string Name => this.pluginName;
+
+    /// <inheritdoc/>
+    public override Assembly? PluginAssembly => Assembly.GetAssembly(this.PluginViewModelType);
+
+    /// <inheritdoc/>
+    public override ResourceDictionary ResourceDictionary => new();
+
+    /// <inheritdoc/>
+    public override Type? PluginModelType => null;
+
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(EmptyRadialViewModel);
+
+    /// <inheritdoc/>
+    public override void RefreshInitialization()
+    {
+        base.RefreshInitialization();
+
+        if (this.ElementViewModel != null && this.RadialBrush == null)
+        {
+            this.radialBrushViewModel = new RadialBrushSetupViewModel(this.ElementViewModel, BrushTargets.Background, okAction: this.SetBackground);
+
+            this.RadialBrush?.SetBrush(this.Background);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
+    {
+        try
+        {
+            var data = await new SDKDataManager().LoadPluginContent<FluidUIBrushModel>(path);
+
+            if (data != null)
+            {
+                var manager = new FluidUIBrushManager(data);
+                var brush = await manager.GetBrush();
+
+                if (this.ElementViewModel != null)
+                {
+                    this.radialBrushViewModel = new RadialBrushSetupViewModel(this.ElementViewModel, BrushTargets.Background, okAction: this.SetBackground);
+
+                }
+
+                if (brush != null && brush.GetType().Equals(typeof(RadialGradientBrush)))
+                {
+                    this.RadialBrush.SetBrush(brush);
+
+                    this.Background = this.RadialBrush.Brush;
+                    this.OnPropertyChanged(nameof(this.RadialBrush));
+
+                    return FeedbackMessageFactory.Success($"deserialized {path}");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return FeedbackMessageFactory.Exception(ex.Message);
+        }
+
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(StandardTextModel).FullName}");
+    }
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Save(string path)
+    {
+        var model = new FluidUIBrushModel();
+
+        model.BrushTypeName = "RadialGradientBrush";
+        model.BrushTypeEnum = BrushTypes.RadialGradientBrush;
+
+        model.GradientPoints.Add(new System.Windows.Point(this.RadialBrush.CenterPoint.X, this.RadialBrush.CenterPoint.Y));
+        model.GradientPoints.Add(new System.Windows.Point(this.RadialBrush.OriginPoint.X, this.RadialBrush.OriginPoint.Y));
+
+        foreach ((Color, double) item in this.RadialBrush.GsList)
+        {
+            model.GradientColors.Add(item.Item1);
+            model.GradientStops.Add(item.Item2);
+        }
+
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
+
+    private void SetBackground()
+    {
+        this.Background = this.RadialBrush.Brush;
+>>>>>>> Stashed changes
     }
 }
 

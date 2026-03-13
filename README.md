@@ -7,6 +7,26 @@ contact via email: kammel@posteo.de
 <h2>Project description:</h2>
 Eboard is a prototype and serves as an experimental platform for research and development of fluid user interfaces, developed using MVVM pattern and C#/WPF.
 <br><br>
+<<<<<<< Updated upstream
+=======
+It can install plugins to enhance its features. It is very flexible in regards of customization. Due to its plugin architecture and rapid ui customization, features can be added swift and designed fast. It has no online functionalities yet, with the exception of linking web site adresses to a plugin. Its state is saved in a bunch of json files with different models. It has a limited set of productivity features for office work due to file and directory links, writing, designing and some features for media consumption of images, music and videos.
+
+<h2>Project status 2026-03-13:</h2>
+The previous project status remains mostly unchanged by this build and is part of this document. February 2026 was mostly spent on other projects, so there wasn't much time for eboard. February saw much contemplation, reflection and playful testing of the new features.
+<br><br>
+ The readme has not been updated besides Project status 2026-03-13 text.
+ <br><br>
+ Recent development activity was mainly focused on debugging the last build and improving Drag'n'Drop functionality for FluidUIContext files and other file types. Minor improvements have been added to existing plugins (EmptyRadial, EmptyLinear, Shapes, BasicAV, Image). An Empty plugin was added. Shape context menus have been fixed, but they are not yet optimized.
+ <br><br>
+ All plugins now derive from FluidUIBaseViewModel as well as IPlugin. IPlugin was changed. So far, Shapes are the only plugin category that uses the new plugin FluidUI possibilities.
+<br><br>
+ElementViewModel context menu has a new submenu called "Hide" which allows for visibility changes of certain controls. The feature is not optimized. When hiding the Element, the element ca background is set to transparent. Context Menu background derives from this property and will be transparent as well. This will be fixed in upcoming builds. The context menu can be used, but requires additional precision because only the Foreground covered areas can be clicked as long as Hide-Element is checked.
+<br><br>
+Loading of models for ShapeArea is still broken and delivers only partially correct results. This will also be fixed in upcoming builds. Element-Move is only working for some plugins atm.
+<br><br>
+Drop of audio or video files will invoke BasicAV plugins with the file selected. If dropped on mainwindow ca the file will start playing, if dropped on screen or BasicAV it will just invoke and select the file or only select the file. Image drops will change ca background properties. Other files will be invoked as Link plugin either on default coordinates (mainwindow ca drop) or at the mouse coordinates (screen ca drop).
+
+>>>>>>> Stashed changes
 <h2>Project questions:</h2>
 How does the ability to change a variety of properties at once in a very limited amount of time affect stress, creativity, concenctration, motivation and workflow?
 What are the minimum required steps per task? What is the maximum of features needed for supporting personal or small to minor art, educational, administrative or business projects?

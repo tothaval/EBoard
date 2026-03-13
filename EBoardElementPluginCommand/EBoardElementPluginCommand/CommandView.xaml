@@ -45,48 +45,56 @@
              FontWeight="{Binding ElementViewModel.FluidUI.Font.FontWeight, NotifyOnSourceUpdated=True}"
              Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}">
 
-        <Grid MinHeight="150"
+    <Grid MinHeight="150"
               MinWidth="150"
               Background="{Binding ElementViewModel.FluidUI.Design.Background}"
               Margin="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
 
-            <Label Content="{Binding EpicText, NotifyOnSourceUpdated=True}"
-                   MinWidth="150"
-                   Grid.Row="0"
-                   Grid.Column="0"/>
+        <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   FontWeight="Bold"
+                   Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"/>
 
-            <TextBox Text="{Binding StdOut, NotifyOnSourceUpdated=True}"
-                     MinWidth="150"
-                     IsReadOnly="True"
-                     IsReadOnlyCaretVisible="True"
-                     Grid.Row="1"
-                     Grid.Column="0"
-                     TextWrapping="Wrap"/>
+        <Label Content="{Binding EpicText, NotifyOnSourceUpdated=True}"
+               MinWidth="150"
+               Grid.Row="1"
+               Grid.Column="0"/>
 
-            <TextBox Text="{Binding StdIn, UpdateSourceTrigger=PropertyChanged}" 
-                     MinWidth="150"
-                     AcceptsReturn="False"
-                     Grid.Row="2"
-                     HorizontalAlignment="Left"
-                     VerticalAlignment="Top">
-                <TextBox.InputBindings>
-                    <KeyBinding 
-                        Key="Enter" 
-                        Command="{Binding EnterKeyPressedCommand}" 
-                        CommandParameter="{Binding Path=Text, RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
-                </TextBox.InputBindings>
+        <TextBox Text="{Binding StdOut, NotifyOnSourceUpdated=True}"
+                 MinWidth="150"
+                 IsReadOnly="True"
+                 IsReadOnlyCaretVisible="True"
+                 Grid.Row="2"
+                 Grid.Column="0"
+                 TextWrapping="Wrap"/>
 
-            </TextBox>
-        </Grid>        
+        <TextBox Text="{Binding StdIn, UpdateSourceTrigger=PropertyChanged}" 
+                 MinWidth="150"
+                 AcceptsReturn="False"
+                 Grid.Row="3"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Top">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter"
+                            Command="{Binding EnterKeyPressedCommand}"
+                            CommandParameter="{Binding Path=Text, RelativeSource={RelativeSource AncestorType={x:Type TextBox}}}" />
+            </TextBox.InputBindings>
+        </TextBox>
+    </Grid>
 </UserControl>
 
 <!-- EOF -->

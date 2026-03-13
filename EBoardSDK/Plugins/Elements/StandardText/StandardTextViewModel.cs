@@ -39,10 +39,17 @@ using EBoardSDK.Enums;
 using EBoardSDK.Interfaces.FluidUIText;
 using EBoardSDK.Models;
 using EBoardSDK.Models.FluidUIFont;
+<<<<<<< Updated upstream
 using EBoardSDK.Plugins.Shapes.TextShape;
 using EBoardSDK.SharedMethods;
 using EBoardSDK.ViewModels;
 using System.Collections.ObjectModel;
+=======
+using EBoardSDK.SharedMethods;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+using Serilog;
+>>>>>>> Stashed changes
 using System.IO;
 using System.Reflection;
 using System.Windows;

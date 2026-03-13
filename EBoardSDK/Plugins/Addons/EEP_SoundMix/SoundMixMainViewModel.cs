@@ -37,6 +37,12 @@ using EBoardSDK.Controls.Area;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins.Addons.EEP_SoundMix;
 using EBoardSDK.Plugins.Elements.BasicAV;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+using Serilog;
+>>>>>>> Stashed changes
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -158,9 +164,91 @@ public partial class SoundMixMainViewModel : EBoardElementPluginBaseViewModel
 
         return new EBoardFeedbackMessage()
         {
+<<<<<<< Updated upstream
             ResultMessage = $"{path} :: saving eboard config: {result}",
             TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
         };
+=======
+            return;
+        }
+
+        if (model is SoundMixModel soundMixModel)
+        {
+            this.ApplyModel(soundMixModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<SoundMixModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new SoundMixModel(this);
+
+        this.SetModel(model);
+    }
+
+    private void ApplyModel(SoundMixModel soundMixModel)
+    {
+        this.RefreshInitialization();
+
+        if (this.ElementViewModel == null || this.AreaViewModel == null)
+        {
+            return;
+        }
+
+        this.AreaViewModel.ShowMatrixControls = soundMixModel.ShowMatrixControls;
+
+        this.data = soundMixModel;
+
+        var counter = 0;
+
+        foreach (var basicAVModelList in this.data.Links)
+        {
+            this.AreaViewModel?.AddHorizontal();
+
+            var basicAVViewModels = new List<BasicAVMainViewModel>();
+
+            foreach (var basicAVModel in basicAVModelList)
+            {
+                var basicAVWM = new BasicAVMainViewModel();
+                basicAVWM.SetElementViewModel(this.ElementViewModel);
+
+                basicAVWM.InsertModel(basicAVModel);
+
+                basicAVViewModels.Add(basicAVWM);
+            }
+
+            this.AreaViewModel?.InsertViewModelList(basicAVViewModels, counter);
+
+            counter++;
+        }
+
+        this.OnPropertyChanged(nameof(this.AreaViewModel));
+>>>>>>> Stashed changes
     }
 }
 

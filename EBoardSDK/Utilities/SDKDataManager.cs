@@ -36,6 +36,10 @@ using EBoardConfigManager.Helper;
 using EBoardConfigManager.Models;
 using EBoardSDK.Interfaces;
 using EBoardSDK.Models;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Models.FluidUIDataBlock;
+>>>>>>> Stashed changes
 using EBoardSDK.Plugins;
 using EBoardSDK.Plugins.Elements.About;
 using EBoardSDK.Plugins.Elements.Manual;
@@ -62,6 +66,74 @@ public class SDKDataManager
         this.Initialize();
     }
 
+<<<<<<< Updated upstream
+=======
+    internal static IFluidUIContext DefaultFluidUIContext => new FluidUIContext() { DataBlock = new FluidUIDataBlockModel() { Title = "default" } };
+
+    internal SupportedFileTypeCategories FilenameCheck(FileInfo fileInfo)
+    {
+        // TODO implement mime check or something better suited
+        SupportedFileTypeCategories fileTypeCategory = SupportedFileTypeCategories.Unknown;
+
+        var extension = fileInfo.Extension.ToLower();
+
+        if (extension.Equals(".stf"))
+        {
+            return SupportedFileTypeCategories.Text;
+        }
+
+        if (extension.Equals(".edf")
+            || extension.Equals(".fcf"))
+        {
+            return SupportedFileTypeCategories.FluidUI;
+        }
+
+        if (extension.Equals(".png")
+            || extension.Equals(".jpg")
+            || extension.Equals(".jpeg"))
+        {
+            return SupportedFileTypeCategories.Image;
+        }
+
+        if (extension.Equals(".dll")
+            || extension.Equals(".pif"))
+        {
+            return SupportedFileTypeCategories.Plugin;
+        }
+
+        if (extension.Equals(".aiff")
+            || extension.Equals(".avi")
+            || extension.Equals(".mpeg")
+            || extension.Equals(".mp3")
+            || extension.Equals(".m4a")
+            || extension.Equals(".mp4")
+            || extension.Equals(".mkv")
+            || extension.Equals(".wma")
+            || extension.Equals(".3gp"))
+        {
+            return SupportedFileTypeCategories.Media;
+        }
+
+        return fileTypeCategory;
+    }
+
+    public async Task<T?> LoadPluginContent<T>(string path)
+    {
+        var data = await Loader.LoadJsonFile<T>(path);
+
+        return data;
+    }
+
+    public async Task<EboardFeedbackMessage> SavePluginContent<T>(T model, string path)
+    {
+        var result = Saver.SaveJsonFile(path, model);
+
+        var message = $"{path} :: {model?.GetType().FullName ?? "model was null"} :: saving plugin content: {result}";
+
+        return FeedbackMessageFactory.Determine(EBoardTaskResult.Success, Result.Success, result, message);
+    }
+
+>>>>>>> Stashed changes
     /// <summary>
     ///
     /// </summary>

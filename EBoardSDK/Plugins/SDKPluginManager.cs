@@ -40,6 +40,7 @@ using EBoardSDK.Plugins.Areas.ShapeArea;
 using EBoardSDK.Plugins.Areas.TwoXThreeVImageArea;
 using EBoardSDK.Plugins.Elements.About;
 using EBoardSDK.Plugins.Elements.BasicAV;
+using EBoardSDK.Plugins.Elements.Empty;
 using EBoardSDK.Plugins.Elements.EmptyLinear;
 using EBoardSDK.Plugins.Elements.EmptyRadial;
 using EBoardSDK.Plugins.Elements.Gold;
@@ -87,7 +88,11 @@ public class SDKPluginManager
         new SoundMixMainViewModel(), // saves and loads ecf data
 
         // Elements
+<<<<<<< Updated upstream
         new AboutViewModel(),
+=======
+        new EmptyViewModel(),
+>>>>>>> Stashed changes
         new EmptyLinearViewModel(),
         new EmptyRadialViewModel(),
         new GoldViewModel(),

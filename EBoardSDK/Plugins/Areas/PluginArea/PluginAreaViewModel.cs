@@ -37,11 +37,19 @@ using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.Area;
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream
 using EBoardSDK.Interfaces;
 using EBoardSDK.Plugins.Elements.Link;
 using EBoardSDK.Plugins.Elements.StandardText;
 using EBoardSDK.Plugins.Tools.Coordinates;
 using EBoardSDK.Plugins.Tools.Summoner;
+=======
+using EBoardSDK.Models;
+using EBoardSDK.Plugins.Eboard.Summoner;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+using Serilog;
+>>>>>>> Stashed changes
 using System;
 using System.CodeDom;
 using System.Reflection;
@@ -62,11 +70,16 @@ public partial class PluginAreaViewModel : EBoardElementPluginBaseViewModel
     {
     }
 
-    public AreaViewModel<SummonerViewModel> AreaViewModel { get; set; } = new ();
+    public AreaViewModel<SummonerViewModel> AreaViewModel { get; set; }
 
     public override PluginCategories PluginCategory => PluginCategories.Area;
 
+<<<<<<< Updated upstream
     public override bool NoDefaultBorders { get; } = false;
+=======
+    /// <inheritdoc/>
+    public override ImageBrush Logo { get; set; } = new();
+>>>>>>> Stashed changes
 
     public override ImageBrush PluginLogo { get; set; } = new();
 
@@ -74,7 +87,12 @@ public partial class PluginAreaViewModel : EBoardElementPluginBaseViewModel
 
     public override string PluginHeader { get { return this.pluginHeader; } set { this.pluginHeader = value; } }
 
+<<<<<<< Updated upstream
     public override string PluginName { get { return this.pluginName; } set { this.pluginName = value; } }
+=======
+    /// <inheritdoc/>
+    public override ResourceDictionary ResourceDictionary => new();
+>>>>>>> Stashed changes
 
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
@@ -90,10 +108,17 @@ public partial class PluginAreaViewModel : EBoardElementPluginBaseViewModel
     {
         if (this.ElementViewModel != null)
         {
-            this.AreaViewModel = new AreaViewModel<SummonerViewModel>(this.ElementViewModel);
+            if (this.AreaViewModel == null)
+            {
+                this.AreaViewModel = new AreaViewModel<SummonerViewModel>(this.ElementViewModel);
+            }
+
+            if (this.AreaViewModel.ElementViewModel == null)
+            {
+                this.AreaViewModel.SetElementViewModel(this.ElementViewModel);
+            }
 
             this.OnPropertyChanged(nameof(this.AreaViewModel));
-            this.OnPropertyChanged(nameof(this.ElementViewModel));
         }
     }
 
@@ -155,9 +180,90 @@ public partial class PluginAreaViewModel : EBoardElementPluginBaseViewModel
 
         return new EBoardFeedbackMessage()
         {
+<<<<<<< Updated upstream
             ResultMessage = $"{path} :: saving eboard config: {result}",
             TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
         };
+=======
+            return;
+        }
+
+        if (model is PluginAreaModel pluginAreaModel)
+        {
+            this.ApplyModel(pluginAreaModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<PluginAreaModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new PluginAreaModel(this);
+
+        this.SetModel(model);
+    }
+
+    private void ApplyModel(PluginAreaModel pluginAreaModel)
+    {
+        this.RefreshInitialization();
+
+        if (this.ElementViewModel == null || this.AreaViewModel == null)
+        {
+            return;
+        }
+
+        this.AreaViewModel.ShowMatrixControls = pluginAreaModel.ShowMatrixControls;
+
+        var counter = 0;
+
+        foreach (var modelList in pluginAreaModel.Summonees)
+        {
+            this.AreaViewModel.AddHorizontal();
+
+            var viewModels = new List<SummonerViewModel>();
+
+            foreach (var model in modelList)
+            {
+                var vm = new SummonerViewModel();
+
+                vm.SetElementViewModel(this.ElementViewModel);
+
+                vm.InsertModel(model);
+
+                viewModels.Add(vm);
+            }
+
+            this.AreaViewModel.InsertViewModelList(viewModels, counter);
+
+            counter++;
+        }
+
+        this.OnPropertyChanged(nameof(this.AreaViewModel));
+>>>>>>> Stashed changes
     }
 }
 

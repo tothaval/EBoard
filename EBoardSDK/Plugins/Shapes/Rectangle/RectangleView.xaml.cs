@@ -29,22 +29,39 @@
 /// ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 /// OTHER DEALINGS IN THE SOFTWARE.
 /// </p>
-namespace EBoardSDK.Plugins.Shapes.Rectangle
-{
-    using System.Windows.Controls;
+namespace EBoardSDK.Plugins.Shapes.Rectangle;
+using EBoardSDK.Plugins.Shapes.Ellipse;
+using System.Windows;
+using System.Windows.Controls;
 
+/// <summary>
+/// Interaktionslogik für RectangleView.xaml.
+/// </summary>
+public partial class RectangleView : UserControl
+{
     /// <summary>
-    /// Interaktionslogik für RectangleView.xaml.
+    /// Initializes a new instance of the <see cref="RectangleView"/> class.
     /// </summary>
-    public partial class RectangleView : UserControl
+    public RectangleView()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RectangleView"/> class.
-        /// </summary>
-        public RectangleView()
+        this.InitializeComponent();
+    }
+
+    private void UserControl_Drop(object sender, System.Windows.DragEventArgs e)
+    {
+        var dataContext = this.DataContext;
+
+        if (e.Data.GetDataPresent(DataFormats.FileDrop) && dataContext != null)
         {
-            this.InitializeComponent();
+            var viewModel = dataContext as RectangleViewModel;
+
+            if (viewModel != null)
+            {
+                viewModel.Drop(e);
+            }
         }
+
+        e.Handled = true;
     }
 }
 

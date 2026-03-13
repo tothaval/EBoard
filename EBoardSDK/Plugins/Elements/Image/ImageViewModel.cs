@@ -36,19 +36,28 @@ using CommunityToolkit.Mvvm.Input;
 using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Models;
+using EBoardSDK.Models.FluidUISize;
+>>>>>>> Stashed changes
 using EBoardSDK.SharedMethods;
 using System.IO;
 using System.Reflection;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 public partial class ImageViewModel : EBoardElementPluginBaseViewModel
 {
+<<<<<<< Updated upstream
     private readonly string imageDataFileName = "imagedata.xml";
 
     [ObservableProperty]
     private ImageBrush? imageBrush = new();
+=======
+    private readonly string pluginHeader = "Image Element";
+    private readonly string pluginName = "Image";
+>>>>>>> Stashed changes
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsImageNotSet))]
@@ -63,11 +72,29 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
     private string pluginHeader = "Image Element";
     private string pluginName = "Image";
 
+    [ObservableProperty]
+    private HorizontalAlignment selectedHorizontalAlignment = HorizontalAlignment.Center;
+
+    [ObservableProperty]
+    private Stretch selectedImageStretch = Stretch.Fill;
+
+    [ObservableProperty]
+    private VerticalAlignment selectedVerticalAlignment = VerticalAlignment.Center;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageViewModel"/> class.
     /// </summary>
     public ImageViewModel()
     {
+<<<<<<< Updated upstream
+=======
+        this.ScreenInstantiationConstraints = new InstantiationAndCopyConstraints(
+            elementInstantiationPolicy: InstantiationPolicy.Unconstrained,
+            copyConstraints: CopyConstraints.FullCopy);
+
+        //this.SetMenuItemViewModel(new ImageMenuItemViewModel(this));
+        //this.SetMenuItem(new ImageMenuItem(this.MenuItemViewModel!));
+>>>>>>> Stashed changes
     }
 
     public bool IsImageNotSet => !this.IsLinked;
@@ -109,11 +136,6 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
 
     public override async Task<EBoardFeedbackMessage> Load(string path)
     {
-        if (new DirectoryInfo(path).Exists)
-        {
-            path = System.IO.Path.Combine(path, this.imageDataFileName);
-        }
-
         try
         {
             var data = await Loader.LoadJsonFile<ImageModel>(path);
@@ -135,6 +157,7 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
 
     public async override Task<EBoardFeedbackMessage> Save(string path)
     {
+<<<<<<< Updated upstream
         EBoardFeedbackMessage? serializationResult = null;
 
         var model = new ImageModel() { LinkTargetPath = this.LinkTargetPath };
@@ -143,31 +166,121 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
         {
             path = System.IO.Path.Combine(path, this.imageDataFileName);
         }
+=======
+        var model = new ImageModel(this);
+>>>>>>> Stashed changes
 
         var result = Saver.SaveJsonFile(path, model);
 
         return new EBoardFeedbackMessage()
         {
+<<<<<<< Updated upstream
             ResultMessage = $"{path} :: saving eboard config: {result}",
             TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
         };
+=======
+            return;
+        }
+
+        if (model is ImageModel imageModel)
+        {
+            this.ApplyModel(imageModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<ImageModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            this.Reset();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            this.Reset();
+        }
     }
 
-    private void ApplyImage()
+    public override void PrepareCopy()
     {
+        var model = new ImageModel(this);
+
+        this.SetModel(model);
+    }
+
+    internal void ResetImage()
+    {
+        this.IsLinked = false;
+        this.LinkTargetPath = string.Empty;
+        this.OpacityValue = 1.0;
+        this.Ratio = new Point(1, 1);
+>>>>>>> Stashed changes
+    }
+
+    internal void SetDroppedImageFile(System.Windows.DragEventArgs e)
+    {
+<<<<<<< Updated upstream
         var shared = new SharedMethod_UI();
         try
         {
             this.ImageBrush = (ImageBrush)shared.ChangeBackgroundToImage(this.ImageBrush, this.LinkTargetPath);
 
             this.IsLinked = true;
-        }
-        catch (Exception)
+=======
+        string[]? files = e.Data.GetData(DataFormats.FileDrop) as string[];
+
+        if (files == null || files.Length == 0)
         {
-            this.IsLinked = false;
+            return;
+>>>>>>> Stashed changes
+        }
+
+        foreach (var item in files)
+        {
+            var fileInfo = new FileInfo(item);
+
+            if (!fileInfo.Exists)
+            {
+                continue;
+            }
+
+            var filetype = new SDKDataManager().FilenameCheck(fileInfo);
+
+            if (filetype != SupportedFileTypeCategories.Image)
+            {
+                continue;
+            }
+
+            this.SetLinkedFile(item);
+            break;
         }
     }
 
+<<<<<<< Updated upstream
+=======
+    private void ApplyModel(ImageModel imageModel)
+    {
+        this.LinkFile(imageModel.LinkTargetPath ?? string.Empty);
+
+        this.SelectedHorizontalAlignment = imageModel.SelectedHorizontalAlignment;
+        this.SelectedImageStretch = imageModel.SelectedImageStretch;
+        this.SelectedVerticalAlignment = imageModel.SelectedVerticalAlignment;
+    }
+
+>>>>>>> Stashed changes
     private void LinkFile(string fileName)
     {
         try
@@ -178,7 +291,7 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
             {
                 this.LinkTargetPath = fileInfo.FullName;
 
-                this.ApplyImage();
+                this.IsLinked = true;
             }
         }
         catch (Exception)
@@ -187,9 +300,46 @@ public partial class ImageViewModel : EBoardElementPluginBaseViewModel
         }
     }
 
+<<<<<<< Updated upstream
     partial void OnOpacityValueChanged(double value)
     {
         this.ImageBrush.Opacity = value;
+=======
+    partial void OnRatioChanged(Point value)
+    {
+        if (this.ElementViewModel == null || this.ElementViewModel.ElementView == null)
+        {
+            return;
+        }
+
+        var manager = new FluidUISizeManager(this.ElementViewModel);
+
+        var width = manager.GetWidth();
+        var height = manager.GetHeight();
+
+        if (width == -1)
+        {
+            var actual = this.ElementViewModel.ElementView.ActualWidth;
+
+            width = (int)actual;
+        }
+
+        if (height == -1)
+        {
+            var actual = this.ElementViewModel.ElementView.ActualHeight;
+
+            height = (int)actual;
+        }
+
+        var sizeX = width * value.X;
+
+        var sizeY = height * value.Y;
+
+        manager.SetWidth(sizeX);
+        manager.SetHeight(sizeY);
+
+        this.Ratio = new Point(1, 1);
+>>>>>>> Stashed changes
     }
 
     [RelayCommand]

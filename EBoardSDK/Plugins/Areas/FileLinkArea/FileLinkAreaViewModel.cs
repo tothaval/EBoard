@@ -38,6 +38,12 @@ using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.Area;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins.Elements.Link;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+using Serilog;
+>>>>>>> Stashed changes
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -88,10 +94,17 @@ public partial class FileLinkAreaViewModel : EBoardElementPluginBaseViewModel
     {
         if (this.ElementViewModel != null)
         {
-            this.AreaViewModel = new AreaViewModel<LinkViewModel>(this.ElementViewModel);
+            if (this.AreaViewModel == null)
+            {
+                this.AreaViewModel = new AreaViewModel<LinkViewModel>(this.ElementViewModel);
+            }
+
+            if (this.AreaViewModel.ElementViewModel == null)
+            {
+                this.AreaViewModel.SetElementViewModel(this.ElementViewModel);
+            }
 
             this.OnPropertyChanged(nameof(this.AreaViewModel));
-            this.OnPropertyChanged(nameof(this.ElementViewModel));
         }
     }
 
@@ -153,9 +166,90 @@ public partial class FileLinkAreaViewModel : EBoardElementPluginBaseViewModel
 
         return new EBoardFeedbackMessage()
         {
+<<<<<<< Updated upstream
             ResultMessage = $"{path} :: saving eboard config: {result}",
             TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
         };
+=======
+            return;
+        }
+
+        if (model is FileLinkAreaModel fileLinkAreaModel)
+        {
+            this.ApplyModel(fileLinkAreaModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<FileLinkAreaModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new FileLinkAreaModel(this);
+
+        this.SetModel(model);
+    }
+
+    private void ApplyModel(FileLinkAreaModel fileLinkAreaModel)
+    {
+        this.RefreshInitialization();
+
+        if (this.ElementViewModel == null || this.AreaViewModel == null)
+        {
+            return;
+        }
+
+        this.AreaViewModel.ShowMatrixControls = fileLinkAreaModel.ShowMatrixControls;
+
+        var counter = 0;
+
+        foreach (var linkModelList in fileLinkAreaModel.Links)
+        {
+            this.AreaViewModel.AddHorizontal();
+
+            var linkViewModels = new List<LinkViewModel>();
+
+            foreach (var linkModel in linkModelList)
+            {
+                var linkVM = new LinkViewModel();
+
+                linkVM.SetElementViewModel(this.ElementViewModel);
+
+                linkVM.InsertModel(linkModel);
+
+                linkViewModels.Add(linkVM);
+            }
+
+            this.AreaViewModel.InsertViewModelList(linkViewModels, counter);
+
+            counter++;
+        }
+
+        this.OnPropertyChanged(nameof(this.AreaViewModel));
+>>>>>>> Stashed changes
     }
 
     [RelayCommand]

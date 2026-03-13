@@ -36,12 +36,12 @@ using EBoardSDK.Controls.QuadValueSetup;
 using EBoardSDK.Enums;
 using EBoardSDK.Models;
 using EBoardSDK.Models.FluidUISize;
+using EBoardSDK.Plugins.Elements.BasicAV;
 using EBoardSDK.ViewModels;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 public class SharedMethod_UI
 {
@@ -51,6 +51,7 @@ public class SharedMethod_UI
 
     private string txtShutDownTitle = "Shutdown machine?";
 
+<<<<<<< Updated upstream
     public Brush ChangeBackgroundToImage(Brush brush, string imagePath)
     {
         if (imagePath == null || imagePath == string.Empty)
@@ -77,24 +78,11 @@ public class SharedMethod_UI
         {
             return double.NaN;
         }
+=======
+    public string FluidUIConfigurationFileExtension => "fcf"; // fcf > fluid ui configuration file
+>>>>>>> Stashed changes
 
-        return value;
-    }
-
-    public int TransformDoubleNaNToInt(double value)
-    {
-        if (double.IsNaN(value))
-        {
-            return -1;
-        }
-
-        return (int)value;
-    }
-
-    public void CloseApplication()
-    {
-        Application.Current.Shutdown();
-    }
+    public string StandardTextFileExtension => "stf"; // stf > standard text file
 
     public QuadValueSetupViewModel BuildQuadValueSetup(EboardFluidUIBaseViewModel viewModel, Action action, BorderTargets borderTargets)
     {
@@ -143,51 +131,26 @@ public class SharedMethod_UI
         return quadValueSetupVM;
     }
 
+<<<<<<< Updated upstream
     public QuadValueSetupViewModel GetQuadValueSetupViewModel(
     EboardFluidUIBaseViewModel viewModel,
     Action quadValueAction,
     BorderTargets borderTargets)
+=======
+    public void CloseApplication()
+>>>>>>> Stashed changes
     {
-        var quadVM = this.BuildQuadValueSetup(viewModel, quadValueAction, borderTargets);
-
-        return quadVM;
+        Application.Current.Shutdown();
     }
 
-    public void MaximizeApplication(Window mainWindow)
+    public double ConvertNegativeSizeValuesToNaN(double value)
     {
-        // MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
-        if (mainWindow.WindowState == WindowState.Normal)
+        if (value <= 0)
         {
-            mainWindow.WindowState = WindowState.Maximized;
-
-            // mainWindow.Background = (SolidColorBrush)Application.Current.Resources["BackgroundBrush"];
-            Application.Current.Resources["EboardMainWindowMaximizeContextMenuHeader"] = "Normalize";
-        }
-        else
-        {
-            mainWindow.WindowState = WindowState.Normal;
-
-            // mainWindow.Background = new SolidColorBrush(Colors.Transparent);
-            Application.Current.Resources["EboardMainWindowMaximizeContextMenuHeader"] = "Maximize";
-        }
-    }
-
-    public string UserSelectImage(string imagePathProperty)
-    {
-        Microsoft.Win32.OpenFileDialog setPath = new Microsoft.Win32.OpenFileDialog();
-        setPath.InitialDirectory = Environment.GetEnvironmentVariable("userdir");
-        setPath.Filter = "files (*.*)|*.*";
-        setPath.FilterIndex = 2;
-        setPath.RestoreDirectory = true;
-
-        if (setPath.ShowDialog() == true)
-        {
-            imagePathProperty = setPath.FileName;
-
-            // viewModel.ImagePath = setPath.FileName;
+            return double.NaN;
         }
 
-        return imagePathProperty;
+        return value;
     }
 
     /// <summary>
@@ -223,11 +186,33 @@ public class SharedMethod_UI
         return string.Empty;
     }
 
-    public string FluidUIConfigurationFileExtension => "fcf"; // fcf > fluid ui configuration file
+    public QuadValueSetupViewModel GetQuadValueSetupViewModel(FluidUIBaseViewModel viewModel, Action quadValueAction, BorderTargets borderTargets)
+    {
+        var quadVM = this.BuildQuadValueSetup(viewModel, quadValueAction, borderTargets);
 
-    public string StandardTextFileExtension => "stf"; // stf > standard text file
+        return quadVM;
+    }
 
-    /// <summary>
+    public void MaximizeApplication(Window mainWindow)
+    {
+        // MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
+        if (mainWindow.WindowState == WindowState.Normal)
+        {
+            mainWindow.WindowState = WindowState.Maximized;
+
+            // mainWindow.Background = (SolidColorBrush)Application.Current.Resources["BackgroundBrush"];
+            Application.Current.Resources["EboardMainWindowMaximizeContextMenuHeader"] = "Normalize";
+        }
+        else
+        {
+            mainWindow.WindowState = WindowState.Normal;
+
+            // mainWindow.Background = new SolidColorBrush(Colors.Transparent);
+            Application.Current.Resources["EboardMainWindowMaximizeContextMenuHeader"] = "Maximize";
+        }
+    }
+
+     /// <summary>
     ///
     /// </summary>
     /// <param name="fileExtension"></param>
@@ -287,6 +272,34 @@ public class SharedMethod_UI
             string command = "/C shutdown /p";
             Process.Start("cmd.exe", command);
         }
+    }
+
+    public int TransformDoubleNaNToInt(double value)
+    {
+        if (double.IsNaN(value))
+        {
+            return -1;
+        }
+
+        return (int)value;
+    }
+
+    public string UserSelectImage(string imagePathProperty)
+    {
+        Microsoft.Win32.OpenFileDialog setPath = new Microsoft.Win32.OpenFileDialog();
+        setPath.InitialDirectory = Environment.GetEnvironmentVariable("userdir");
+        setPath.Filter = "files (*.*)|*.*";
+        setPath.FilterIndex = 2;
+        setPath.RestoreDirectory = true;
+
+        if (setPath.ShowDialog() == true)
+        {
+            imagePathProperty = setPath.FileName;
+
+            // viewModel.ImagePath = setPath.FileName;
+        }
+
+        return imagePathProperty;
     }
 }
 

@@ -36,9 +36,18 @@ using CommunityToolkit.Mvvm.Input;
 using EBoardConfigManager.Enums;
 using EBoardConfigManager.Helper;
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using EBoardSDK.ViewModels;
 using System;
 using System.Reflection;
+<<<<<<< Updated upstream
+=======
+using System.Text.Json;
+>>>>>>> Stashed changes
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -57,17 +66,14 @@ public partial class TextShapeViewModel : ShapeBaseViewModel
     [ObservableProperty]
     private string textString = "enter text";
 
-    [ObservableProperty]
-    private double scaleX = 1.0;
-
-    [ObservableProperty]
-    private double scaleY = 1.0;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="TextShapeViewModel"/> class.
     /// </summary>
     public TextShapeViewModel()
     {
+        this.SetMenuItemViewModel(new TextShapeMenuItemViewModel(this));
+        this.SetMenuItem(new TextShapeMenuItem(this.MenuItemViewModel!));
+        this.HasStroke = false;
     }
 
     /// <summary>
@@ -78,13 +84,22 @@ public partial class TextShapeViewModel : ShapeBaseViewModel
     {
         this.TextString = text;
         this.TextEntered = true;
+
+        this.SetMenuItemViewModel(new TextShapeMenuItemViewModel(this));
+        this.SetMenuItem(new TextShapeMenuItem(this.MenuItemViewModel!));
+        this.HasStroke = false;
     }
 
     public bool ResetText => !this.TextEntered;
 
     public override PluginCategories PluginCategory => PluginCategories.Shape;
 
+<<<<<<< Updated upstream
     public override ImageBrush PluginLogo { get; set; }
+=======
+    /// <inheritdoc/>
+    public override ImageBrush? Logo { get; set; } = new ();
+>>>>>>> Stashed changes
 
     public override UserControl Plugin => (UserControl)Activator.CreateInstance(this.ElementPluginView)!;
 
@@ -135,8 +150,6 @@ public partial class TextShapeViewModel : ShapeBaseViewModel
 
                 this.OnPropertyChanged(nameof(this.TextEntered));
                 this.OnPropertyChanged(nameof(this.TextString));
-                this.OnPropertyChanged(nameof(this.ScaleX));
-                this.OnPropertyChanged(nameof(this.ScaleY));
 
                 return new EBoardFeedbackMessage() { TaskResult = EBoardTaskResult.Success, ResultMessage = $"deserialized {path}" };
             }
@@ -159,9 +172,60 @@ public partial class TextShapeViewModel : ShapeBaseViewModel
 
         return new EBoardFeedbackMessage()
         {
+<<<<<<< Updated upstream
             ResultMessage = $"{path} :: saving eboard config: {result}",
             TaskResult = result.Equals(Result.Success) ? EBoardTaskResult.Success : EBoardTaskResult.Unknown,
         };
+=======
+            return;
+        }
+
+        if (model is TextShapeModel textShapeModel)
+        {
+            this.ApplyModel(textShapeModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<TextShapeModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new TextShapeModel(this);
+
+        this.SetModel(model);
+    }
+
+    private void ApplyModel(TextShapeModel textShapeModel)
+    {
+        this.TextString = textShapeModel.TextString;
+        this.TextEntered = textShapeModel.TextEntered;
+
+        this.ApplyShapeModel(textShapeModel);
+>>>>>>> Stashed changes
     }
 
     [RelayCommand]

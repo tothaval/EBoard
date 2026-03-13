@@ -94,6 +94,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
+<<<<<<< Updated upstream:EBoardSDK/Views/MainWindowLogoutBar.xaml
         <Button Content="{Binding TxtManual}"
                 Command="{Binding InvokeOrShowManualCommand}"                    
                 Grid.Column="0"/>
@@ -101,15 +102,90 @@
         <Button Content="{Binding TxtAbout}"
                 Command="{Binding InvokeOrShowAboutCommand}"                    
                 Grid.Column="1"/>
+=======
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Border Visibility="{Binding InstantiatedAsElement, Converter={StaticResource VisibilityToCollapsed}}"
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="4">
+            <TextBlock FontWeight="Bold"
+                       Text="{Binding Name}"
+                       Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
+                       Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Left"/>
+        </Border>
+        
+        <Border Background="{Binding MainViewModel.FluidUI.Design.Background}"
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
+                Grid.Row="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Visibility="{Binding InstantiatedAsElement, Converter={StaticResource VisibilityToCollapsed}}"/>
+
+        <Button Content="{Binding TxtManual}"
+                Command="{Binding InvokeOrShowManualCommand}"
+                Grid.Column="0"
+                Grid.Row="1">
+            <Button.ToolTip>
+                <ToolTip Visibility="{Binding ScreenExists, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                         StaysOpen="True">
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+
+        <Button Content="{Binding TxtAbout}"
+                Command="{Binding InvokeOrShowAboutCommand}"
+                Grid.Column="1"
+                Grid.Row="1">
+            <Button.ToolTip>
+                <ToolTip 
+                         StaysOpen="True">
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/LogOutBar/LogOutBarView.xaml
 
         <Button Content="{Binding TxtShutDownMachine}"
                 Command="{Binding ShutDownCommand}"
                 Grid.Column="2"
-                HorizontalAlignment="Stretch"/>
+                HorizontalAlignment="Stretch"
+                Grid.Row="1"/>
 
         <Button Content="{Binding TxtExitEboard}"
+<<<<<<< Updated upstream:EBoardSDK/Views/MainWindowLogoutBar.xaml
                 Command="{Binding CloseCommand}"                    
                 Grid.Column="3"/>
+=======
+                Command="{Binding CloseCommand}"
+                Visibility="Visible"                 
+                Grid.Column="3"
+                Grid.Row="1"/>
+
+        <Border Visibility="{Binding ManualClicked, Converter={StaticResource VisibilityToCollapsed}}"
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Grid.Row="1">
+            <Manual:ManualView DataContext="{Binding ManualViewModel}"/>
+        </Border>
+
+        <Border Visibility="{Binding AboutClicked, Converter={StaticResource VisibilityToCollapsed}}"
+                Grid.Column="0"
+                Grid.ColumnSpan="4"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Grid.Row="2">
+            <About:AboutView DataContext="{Binding AboutViewModel}"/>
+        </Border>
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/LogOutBar/LogOutBarView.xaml
     </Grid>
 </UserControl>
 

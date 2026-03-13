@@ -46,6 +46,14 @@
           d:DesignHeight="450" d:DesignWidth="800">
     
     <MenuItem.Resources>
+<<<<<<< Updated upstream
+=======
+        <Style TargetType="TextBlock" BasedOn="{StaticResource DefaultTextBlock}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+        </Style>
+
+>>>>>>> Stashed changes
         <Style TargetType="TabControl">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
@@ -118,6 +126,58 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <Style TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+
+            <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground}"/>
+            <Setter Property="BorderBrush" Value="{Binding ViewModel.FluidUI.Design.Border, NotifyOnSourceUpdated=True}"/>
+
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="DefaultButtonBorder"
+                         Background="{TemplateBinding Background}"
+                         BorderBrush="{TemplateBinding BorderBrush}"
+                         BorderThickness="3"                            
+                         CornerRadius="5" 
+                         MinWidth="50"
+                         MinHeight="25"
+                         Margin="5"
+                         Padding="5">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter Property="Background"
+                             TargetName="DefaultButtonBorder"
+                             Value="{Binding ViewModel.FluidUI.Design.Highlight}"/>
+                                <!--<Setter Property="Foreground"
+                                 Value="{Binding MainViewModel.FluidUI.Design.Highlight}"/>-->
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                    <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Background, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Foreground" Value="{Binding ViewModel.FluidUI.Design.Foreground, NotifyOnSourceUpdated=True}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </MenuItem.Resources>
 
     <TabControl Padding="5">
@@ -134,12 +194,45 @@
         </TabItem>
 
         <TabItem Header="Image">
+<<<<<<< Updated upstream
             <UniformGrid>
                 <Button Content="Background" Command="{Binding  SetBackgroundImageCommand}"/>
                 <Button Content="Foreground" Command="{Binding SetForegroundImageCommand}"/>
                 <Button Content="Border" Command="{Binding SetBorderImageCommand}"/>
                 <Button Content="Highlight" Command="{Binding SetHighlightImageCommand}"/>
             </UniformGrid>
+=======
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Text="path"
+                               Grid.Column="0"/>
+
+                    <TextBox Text="{Binding ImagePath, UpdateSourceTrigger=Default, Delay=500}"
+                             MaxWidth="200"
+                             Grid.Column="1"/>
+                    <Image Stretch="Fill"/>
+                </Grid>
+                
+                <Button Content="Image" Command="{Binding  SetImageCommand}"
+                        Grid.Row="1"/>
+
+                <Button Content="Reset" Command="{Binding ResetImageCommand}"
+                        Grid.Row="4"/>
+            </Grid>
+>>>>>>> Stashed changes
         </TabItem>
 
         <TabItem Header="Visual">

@@ -35,6 +35,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using EBoardSDK;
 using EBoardSDK.Enums;
 using EBoardSDK.Plugins;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;

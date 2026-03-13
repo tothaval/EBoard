@@ -213,10 +213,17 @@
               Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+            
+            <TextBlock Grid.Row="0"
+                       Text="{Binding Name}"
+                       Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Left"/>
 
-            <TextBox Grid.Row="0"
+            <TextBox Grid.Row="1"
                      Text="{Binding Title, NotifyOnSourceUpdated=True}"
                      IsReadOnly="{Binding IsTitleSet}"
                      IsReadOnlyCaretVisible="False"
@@ -238,7 +245,7 @@
                 </TextBox.InputBindings>
             </TextBox>
 
-        <TextBox Grid.Row="1"
+        <TextBox Grid.Row="2"
                  Text="{Binding Text}"
                  BorderThickness="0"
                  FontFamily="{Binding TextFont.FontFamily}"

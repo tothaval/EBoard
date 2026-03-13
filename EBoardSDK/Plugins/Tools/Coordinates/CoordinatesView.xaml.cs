@@ -32,10 +32,16 @@
 namespace EBoardSDK.Plugins.Tools.Coordinates;
 using System.Windows.Controls;
 
+<<<<<<< Updated upstream:EBoardSDK/Plugins/Tools/Coordinates/CoordinatesView.xaml.cs
 /// <summary>
 /// Interaktionslogik für CoordinatesView.xaml.
 /// </summary>
 public partial class CoordinatesView : UserControl
+=======
+using CommunityToolkit.Mvvm.ComponentModel;
+
+public partial class CoordinatesMenuItemViewModel : ObservableObject
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/Coordinates/CoordinatesMenuItemViewModel.cs
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="CoordinatesView"/> class.

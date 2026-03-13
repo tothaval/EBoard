@@ -42,7 +42,6 @@ namespace EBoardSDK.ViewModels;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EBoardConfigManager.Helper;
 using EBoardSDK.Controls.FluidUIMenu;
 using EBoardSDK.Enums;
 using EBoardSDK.Interfaces;
@@ -54,8 +53,15 @@ using EBoardSDK.Models.FluidUIFont;
 using EBoardSDK.Models.FluidUISize;
 using EBoardSDK.Models.FluidUIStand;
 using EBoardSDK.Plugins;
+<<<<<<< Updated upstream:EBoardSDK/ViewModels/EBoardViewModel.cs
 using EBoardSDK.Plugins.Tools.Coordinates;
 using EBoardSDK.SharedMethods;
+=======
+using EBoardSDK.Plugins.Eboard.Coordinates;
+using EBoardSDK.Plugins.Eboard.MenuBar;
+using EBoardSDK.Plugins.Eboard.ScreenChanger;
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes:EBoardSDK/ViewModels/ScreenViewModel.cs
 using EBoardSDK.Views;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -160,7 +166,20 @@ public partial class EBoardViewModel : EboardFluidUIBaseViewModel, IEboardIdenti
         base.BecomesInactive();
 
         this.fluidUIMenuViewModel = null;
+<<<<<<< Updated upstream:EBoardSDK/ViewModels/EBoardViewModel.cs
         this.screenControlViewModel = null;
+=======
+        if (this.eBoardView != null && this.eBoardView.ScreenBorder != null)
+        {
+        this.eBoardView.ScreenBorder.MouseMove -= this.ScreenBorder_MouseMove;
+
+        }
+
+        //foreach (var item in this.Elements)
+        //{
+        //    item.ScreenBecomesInactive();
+        //}
+>>>>>>> Stashed changes:EBoardSDK/ViewModels/ScreenViewModel.cs
     }
 
     internal void BeginElementSelectionMovement(ElementViewModel elementViewModel)
@@ -504,7 +523,7 @@ public partial class EBoardViewModel : EboardFluidUIBaseViewModel, IEboardIdenti
         }
     }
 
-    internal void RemoveElement(ElementViewModel elementViewModel)
+    internal void RemoveElement(ElementViewModel elementViewModel, bool confirmRemove = true)
     {
         string question = this.txtRemoveElementQuestion;
         string title = this.txtRemoveElementTitle;
@@ -515,10 +534,13 @@ public partial class EBoardViewModel : EboardFluidUIBaseViewModel, IEboardIdenti
         }
         else
         {
-            MessageBoxResult result = MessageBox.Show(question, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.No)
+            if (confirmRemove)
             {
-                return;
+                MessageBoxResult result = MessageBox.Show(question, title, MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No)
+                {
+                    return;
+                }
             }
 
             elementViewModel.Dispose();
@@ -681,18 +703,32 @@ public partial class EBoardViewModel : EboardFluidUIBaseViewModel, IEboardIdenti
                 var selectedTarget = selectionTargets.ToString();
                 var adaptedString = selectedTarget.Remove(selectedTarget.Length - 1);
 
-                if (pluginName != null)
+                if (item.Plugin != null)
                 {
+<<<<<<< Updated upstream:EBoardSDK/ViewModels/EBoardViewModel.cs
                     if (item.Plugin.PluginName.Equals(pluginName))
+=======
+                    if (pluginName != null)
+>>>>>>> Stashed changes:EBoardSDK/ViewModels/ScreenViewModel.cs
                     {
-                        return true;
+                        if (item.Plugin.Name.Equals(pluginName))
+                        {
+                            return true;
+                        }
                     }
+<<<<<<< Updated upstream:EBoardSDK/ViewModels/EBoardViewModel.cs
                 }
                 else
                 {
                     if (item.Plugin.PluginCategory.ToString().Equals(adaptedString))
+=======
+                    else
+>>>>>>> Stashed changes:EBoardSDK/ViewModels/ScreenViewModel.cs
                     {
-                        return true;
+                        if (item.Plugin.Category.ToString().Equals(adaptedString))
+                        {
+                            return true;
+                        }
                     }
                 }
 
@@ -725,6 +761,7 @@ public partial class EBoardViewModel : EboardFluidUIBaseViewModel, IEboardIdenti
 
     private void SwitchToPrevEboard()
     {
+<<<<<<< Updated upstream:EBoardSDK/ViewModels/EBoardViewModel.cs
         for (int i = 0; i < this.mainViewModel.EBoardBrowserViewModel.EBoards.Count; i++)
         {
             if (this.mainViewModel.EBoardBrowserViewModel.EBoards[i] == this.mainViewModel.EBoardBrowserViewModel.SelectedEBoard)
@@ -737,6 +774,11 @@ public partial class EBoardViewModel : EboardFluidUIBaseViewModel, IEboardIdenti
                 }
             }
         }
+=======
+        this.MousePosition = e.GetPosition(this.eBoardView.ScreenBorder);
+
+        this.OnPropertyChanged(nameof(this.MousePosition));
+>>>>>>> Stashed changes:EBoardSDK/ViewModels/ScreenViewModel.cs
     }
 
     private void UpdateElementsZIndexProperties()

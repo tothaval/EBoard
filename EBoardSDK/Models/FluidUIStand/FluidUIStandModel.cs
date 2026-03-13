@@ -79,6 +79,8 @@ public class FluidUIStandModel : IFluidUIStandModel
 
     /// <summary>
     /// Gets or sets the position of an element.
+    ///
+    /// TODO implement the position based on x and y int128.
     /// </summary>
     public Point Position { get; set; } = default;
 

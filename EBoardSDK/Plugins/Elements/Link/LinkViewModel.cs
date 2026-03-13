@@ -72,7 +72,7 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
     private ImageSource? imageSource;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(this.IsLinkEmpty))]
+    [NotifyPropertyChangedFor(nameof(IsLinkEmpty))]
     private bool isLinked = false;
 
     [ObservableProperty]
@@ -127,7 +127,41 @@ public partial class LinkViewModel : EBoardElementPluginBaseViewModel, ICollecti
         this.ExecuteOnClick();
     }
 
+<<<<<<< Updated upstream
     public void InsertLinkModel(LinkModel linkModel)
+=======
+    public void TriggerToolTipVisibility(bool visible)
+    {
+        this.HideToolTip = !visible;
+    }
+
+    public void SetFileLink(FileInfo fileInfo)
+    {
+        this.LinkTarget(LinkTargets.File, fileInfo.FullName, fileInfo.Name);
+    }
+
+    public void SetDirectoryLink(DirectoryInfo directoryInfo)
+    {
+        this.LinkTarget(LinkTargets.Folder, directoryInfo.FullName, directoryInfo.Name);
+    }
+
+    public void SetWebLink(string webLink)
+    {
+        this.LinkTarget(LinkTargets.Web, webLink);
+    }
+
+    /// <inheritdoc/>
+    public override void RefreshInitialization()
+    {
+        this.SetMenuItemViewModel(new LinkMenuItemViewModel(this));
+        this.SetMenuItem(new LinkMenuItem(this.MenuItemViewModel!));
+
+        this.OnPropertyChanged(nameof(this.ElementViewModel));
+    }
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
+>>>>>>> Stashed changes
     {
         try
         {

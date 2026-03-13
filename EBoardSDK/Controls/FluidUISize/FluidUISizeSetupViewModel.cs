@@ -117,6 +117,51 @@ public partial class FluidUISizeSetupViewModel : ObservableObject, IFluidUISizeS
         this.fluidUISizeManager.Reset();
     }
 
+<<<<<<< Updated upstream
+=======
+    public void UpdateValues()
+    {
+        this.OnPropertyChanged(nameof(this.CornerRadiusQuadSetup));
+        this.OnPropertyChanged(nameof(this.MarginQuadSetup));
+        this.OnPropertyChanged(nameof(this.PaddingQuadSetup));
+        this.OnPropertyChanged(nameof(this.ThicknessQuadSetup));
+    }
+
+    [RelayCommand]
+    public void ResetCorners()
+    {
+        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.CornerRadius);
+        this.CornerRadiusQuadSetup?.Reset();
+    }
+
+    [RelayCommand]
+    public void ResetMargin()
+    {
+        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.Margin);
+        this.MarginQuadSetup?.Reset();
+    }
+
+    [RelayCommand]
+    public void ResetPadding()
+    {
+        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.Padding);
+        this.PaddingQuadSetup?.Reset();
+    }
+
+    [RelayCommand]
+    public void ResetThickness()
+    {
+        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.Thickness);
+        this.ThicknessQuadSetup?.Reset();
+    }
+
+    [RelayCommand]
+    protected void ResetSize()
+    {
+        this.fluidUISizeManager.Reset_FluidUISizeWidthAndHeight();
+    }
+
+>>>>>>> Stashed changes
     private void MarginQuadSetup_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         var value = (Thickness)this.MarginQuadSetup.GetQuadValueObject(BorderTargets.Margin);
@@ -155,40 +200,6 @@ public partial class FluidUISizeSetupViewModel : ObservableObject, IFluidUISizeS
         {
             this.fluidUISizeManager.SetCornerRadius(value);
         }
-    }
-
-    [RelayCommand]
-    public void ResetCorners()
-    {
-        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.CornerRadius);
-        this.CornerRadiusQuadSetup?.Reset();
-    }
-
-    [RelayCommand]
-    public void ResetMargin()
-    {
-        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.Margin);
-        this.MarginQuadSetup?.Reset();
-    }
-
-    [RelayCommand]
-    public void ResetPadding()
-    {
-        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.Padding);
-        this.PaddingQuadSetup?.Reset();
-    }
-
-    [RelayCommand]
-    public void ResetThickness()
-    {
-        this.fluidUISizeManager.ResetFluidUISizeTarget(BorderTargets.Thickness);
-        this.ThicknessQuadSetup?.Reset();
-    }
-
-    [RelayCommand]
-    protected void ResetSize()
-    {
-        this.fluidUISizeManager.Reset_FluidUISizeWidthAndHeight();
     }
 }
 

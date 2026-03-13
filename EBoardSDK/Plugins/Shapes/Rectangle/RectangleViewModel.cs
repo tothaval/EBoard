@@ -32,8 +32,17 @@
 namespace EBoardSDK.Plugins.Shapes.Rectangle;
 
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream
+=======
+using EBoardSDK.Models;
+using EBoardSDK.Plugins.Shapes.TextShape;
+using EBoardSDK.Utilities;
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using EBoardSDK.ViewModels;
+using Serilog;
 using System.Reflection;
+using System.Text.Json;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -49,6 +58,8 @@ public partial class RectangleViewModel : ShapeBaseViewModel
     /// </summary>
     public RectangleViewModel()
     {
+        //this.SetMenuItemViewModel(new RectangleMenuItemViewModel(this));
+        //this.SetMenuItem(new RectangleMenuItem(this.MenuItemViewModel!));
     }
 
     public override PluginCategories PluginCategory => PluginCategories.Shape;
@@ -71,6 +82,7 @@ public partial class RectangleViewModel : ShapeBaseViewModel
         set { this.pluginName = value; }
     }
 
+<<<<<<< Updated upstream
     public override Assembly? ElementPluginAssembly => Assembly.GetAssembly(this.ElementPluginViewModel);
 
     public override ResourceDictionary ResourceDictionary => new();
@@ -80,6 +92,92 @@ public partial class RectangleViewModel : ShapeBaseViewModel
     public override Type ElementPluginView => typeof(RectangleView);
 
     public override Type ElementPluginViewModel => typeof(RectangleViewModel);
+=======
+    /// <inheritdoc/>
+    public override Type? PluginModelType => typeof(ShapeModel);
+
+    /// <inheritdoc/>
+    public override Type PluginViewModelType => typeof(RectangleViewModel);
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Load(string path)
+    {
+        try
+        {
+            var data = await new SDKDataManager().LoadPluginContent<ShapeModel>(path);
+
+            if (data != null)
+            {
+                this.ApplyShapeModel(data);
+
+                this.RefreshInitialization();
+
+                return FeedbackMessageFactory.Success($"deserialized {path}");
+            }
+        }
+        catch (Exception ex)
+        {
+            return FeedbackMessageFactory.Exception(ex.Message);
+        }
+
+        return FeedbackMessageFactory.Unknown($"Load() T {typeof(TextShapeModel).FullName}");
+    }
+
+    /// <inheritdoc/>
+    public override async Task<EboardFeedbackMessage> Save(string path)
+    {
+        var model = new ShapeModel(this);
+
+        return await new SDKDataManager().SavePluginContent(model, path);
+    }
+
+    /// <inheritdoc/>
+    public override void InsertModel<T>(T model)
+    {
+        if (model == null)
+        {
+            return;
+        }
+
+        if (model is ShapeModel shapeModel)
+        {
+            this.ApplyShapeModel(shapeModel);
+
+            return;
+        }
+
+        try
+        {
+            var json = model.ToString();
+
+            var jsonParsed = JsonSerializer.Deserialize<ShapeModel>(json!);
+
+            if (jsonParsed != null)
+            {
+                this.ApplyShapeModel(jsonParsed);
+            }
+        }
+        catch (JsonException jsonEx)
+        {
+            Log.Error(jsonEx.Message);
+
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex.Message);
+
+            throw;
+        }
+    }
+
+    public override void PrepareCopy()
+    {
+        var model = new ShapeModel(this);
+
+        this.SetModel(model);
+    }
+>>>>>>> Stashed changes
 }
 
 // EOF

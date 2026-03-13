@@ -31,10 +31,17 @@
 /// </p>
 namespace EBoardSDK.Plugins.Shapes.Path;
 
+<<<<<<< Updated upstream
 using EBoardSDK.Models;
 using System.Text.Json.Serialization;
 
 public class PathModel
+=======
+/// <summary>
+/// Serializable data model for <see cref="PathView"/>.
+/// </summary>
+public class PathModel : ShapeModel
+>>>>>>> Stashed changes
 {
     [JsonIgnore]
     private PathViewModel pathViewModel;
@@ -61,16 +68,25 @@ public class PathModel
     /// </summary>
     /// <param name="pathViewModel"></param>
     public PathModel(PathViewModel pathViewModel)
+        : base(pathViewModel)
     {
         this.pathViewModel = pathViewModel;
 
         this.PathEntered = pathViewModel.PathEntered;
         this.PathString = pathViewModel.PathString;
+<<<<<<< Updated upstream
         this.ScaleX = pathViewModel.ScaleX;
         this.ScaleY = pathViewModel.ScaleY;
 
         this.FluidUIContext = (FluidUIContext)pathViewModel.ViewModel.FluidUI;
     }
+=======
+    }
+
+    public bool PathEntered { get; set; } = false;
+
+    public string PathString { get; set; } = "enter path geometry";
+>>>>>>> Stashed changes
 }
 
 // EOf

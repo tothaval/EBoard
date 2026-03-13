@@ -31,13 +31,21 @@
 /// </p>
 namespace EEP_Drives;
 
+<<<<<<< Updated upstream
 using CommunityToolkit.Mvvm.Input;
+=======
+using CommunityToolkit.Mvvm.ComponentModel;
+>>>>>>> Stashed changes
 using EBoardSDK;
 using EBoardSDK.Enums;
 using EBoardSDK.Models;
 using EBoardSDK.Plugins;
+<<<<<<< Updated upstream
 using Serilog;
 using System.Diagnostics;
+=======
+using EBoardSDK.Utilities.Factories;
+>>>>>>> Stashed changes
 using System.IO;
 using System.Reflection;
 using System.Windows;

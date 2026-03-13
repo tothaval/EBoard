@@ -59,7 +59,14 @@ internal class PluginAreaModel
 
         //this.Links = new();
 
+<<<<<<< Updated upstream
         //var areavm = shapeAreaViewModel.AreaViewModel;
+=======
+        if (areavm == null || areavm.AreaVerticalOuterViewModel == null)
+        {
+            return;
+        }
+>>>>>>> Stashed changes
 
         //foreach (var item in areavm.AreaVerticalOuterViewModel.HorizontalInnerViewModels)
         //{

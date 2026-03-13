@@ -32,6 +32,10 @@
 namespace EBoardSDK.Plugins.Elements.About;
 
 using EBoardSDK.Enums;
+<<<<<<< Updated upstream:EBoardSDK/Plugins/Elements/About/AboutViewModel.cs
+=======
+using EBoardSDK.Plugins;
+>>>>>>> Stashed changes:EBoardSDK/Plugins/Eboard/About/AboutViewModel.cs
 using EBoardSDK.Utilities;
 using System;
 using System.Reflection;

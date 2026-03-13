@@ -79,44 +79,62 @@
             CornerRadius="{Binding ElementViewModel.FluidUI.Size.CornerRadius}"
             Margin="{Binding ElementViewModel.FluidUI.Size.Margin}"
             Padding="{Binding ElementViewModel.FluidUI.Size.Padding}">
-        <Border x:Name="MainBorder"
-            CornerRadius="{Binding ElementViewModel.FluidUI.Size.CornerRadius}">
-            <Border.OpacityMask>
-                <VisualBrush>
-                    <VisualBrush.Visual>
-                        <Border 
+
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   FontWeight="Bold"
+                   Text="{Binding Name}"
+                   Visibility="{Binding ElementViewModel.HideControl3, Converter={StaticResource InverseVisibilityToCollapsed}}"
+                   TextWrapping="Wrap"
+                   HorizontalAlignment="Center"/>
+            
+            <Border x:Name="MainBorder"
+                    CornerRadius="{Binding ElementViewModel.FluidUI.Size.CornerRadius}"
+                    Grid.Row="1">
+                <Border.OpacityMask>
+                    <VisualBrush>
+                        <VisualBrush.Visual>
+                            <Border 
                     Background="{Binding ElementViewModel.FluidUI.Design.Background}"
                     SnapsToDevicePixels="True"
                     CornerRadius="{Binding ElementViewModel.FluidUI.Size.CornerRadius, RelativeSource={RelativeSource AncestorType=Border}}"
                             Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}}"
                     Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}}"
                     />
-                    </VisualBrush.Visual>
-                </VisualBrush>
-            </Border.OpacityMask>
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </Border.OpacityMask>
 
-            <Grid Background="Transparent">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                    <RowDefinition Height="auto" />
-                </Grid.RowDefinitions>
+                <Grid Background="Transparent">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                    </Grid.RowDefinitions>
 
-                <Button Command="{Binding NewEntryCommand}"
+                    <Button Command="{Binding NewEntryCommand}"
                         Background="Transparent"
                         BorderBrush="{Binding ElementViewModel.FluidUI.Design.Border}"
                         Grid.Row="0">
-                    <Button.Content>
-                        <!-- TODO: change button to a style with highlight as hover color-->
-                        <TextBlock Text="{Binding CurrentDateTime, Converter={StaticResource DateTimeConverter}, NotifyOnSourceUpdated=True}"
+                        <Button.Content>
+                            <!-- TODO: change button to a style with highlight as hover color-->
+                            <TextBlock Text="{Binding CurrentDateTime, Converter={StaticResource DateTimeConverter}, NotifyOnSourceUpdated=True}"
                                    Style="{StaticResource DateTimeTextBlock}"
                                    Background="{Binding ElementViewModel.FluidUI.Design.Background}"
                                    Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
                                    Padding="5"/>
-                    </Button.Content>
-                </Button>
+                        </Button.Content>
+                    </Button>
 
-                <TextBox x:Name="TX_Title"
+                    <TextBox x:Name="TX_Title"
                          Style="{StaticResource HeaderTextBox}"
                          AcceptsReturn="True"
                          AcceptsTab="True"
@@ -128,11 +146,11 @@
                          Foreground="{Binding ElementViewModel.FluidUI.Design.Foreground}"
                      Text="{Binding Title, UpdateSourceTrigger=PropertyChanged, Delay=200}"/>
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled"
                       CanContentScroll="True"
                       Grid.Row="2">
-                    <TextBox x:Name="TX_Note"
+                        <TextBox x:Name="TX_Note"
                      Style="{StaticResource ContentTextBox}"
                          MinWidth="150"
                          MinHeight="150"                            
@@ -150,9 +168,10 @@
                              Height="250"
                      Text="{Binding Content, UpdateSourceTrigger=PropertyChanged, Delay=200}"
                          />
-                </ScrollViewer>
-            </Grid>
-        </Border>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+        </Grid>
     </Border>
 </UserControl>
 
